@@ -1,0 +1,9 @@
+body {
+    background-color : #fcf2df;
+}
+
+#annotationArea {
+    border:2px solid #dcdcdc;
+    background-color: #fff;
+    padding:20px 10px 20px 10px;
+}

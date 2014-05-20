@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{% block title %}{% endblock %}</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap-theme.min.css' %}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{% static 'css/custom.bootstrap.css' %}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css" media="screen" />
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+<div class="container">
+    <nav class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+            <div class="fcf2df">
+                <a class="navbar-brand" href="#">Annotator</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    {% load base_ext %}
+                    {% url 'home' as home_url %}
+                    {% url 'annotator' as annotator_url %}
+                    <li class="{% navactive request 'home' %}">
+                        <a href="{{ home_url }}">Übersicht</a>
+                    </li>
+                    <li class="{% navactive request 'annotator' %}">
+                        <a href="{{ annotator_url }}">bb</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="row">
+        <div id="content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+</div>
+    <script type="text/javascript" src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+    {% block scripts %}{% endblock %}
+</body>

@@ -9,7 +9,9 @@
 {% endblock %}
 
 {% block content %}
-    <div id="annotationArea" class="col-md-8">Loading...</div>
+    <div id="annotationArea" class="col-md-8">
+        <div id="annotationText">Loading...</div>
+    </div>
     <div id="miniMap" class="col-md-4"></div>
 {% endblock %}
 
@@ -25,21 +27,29 @@
                 server : "http://localhost:8181/loomp/content/get",
                 resourceName : "http://loomp.org/data/0669efda-898e-4ff9-a7da-7c7b723c5aeb"
             }; 
-            var url = config.server + "?uri=" + config.resourceName; // + "&callback=?";
+
             // load document from loomp
             jQuery.ajax(
                 { 
-                    url: url, 
+                    url: config.server + "?uri=" + config.resourceName, 
                     type: 'GET',
                     crossDomain: true,
                     dataType: 'json', 
                     async: false
                 }
             ).done(function(response) {
-                $("#annotationArea").html(response.content);
+                $("#annotationText").html(response.content);
                 $("#annotationArea").annotator().annotator('addPlugin', 'Neonion');
+
+                restoreAnnotations();
             });
 
         });
+
+        /* Restores the annotation from markup */
+        function restoreAnnotations() {
+    
+        }
+
     </script>
 {% endblock %}

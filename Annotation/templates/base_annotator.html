@@ -9,10 +9,21 @@
 {% endblock %}
 
 {% block content %}
-    <div id="annotationArea" class="col-md-8">
-        <div id="annotationText">Loading...</div>
+    <div class="col-md-8 panel" >
+        <div id="annotationArea" class="panel panel-default" >
+            <div id="documentTitle" class="panel-heading"></div>
+            <div id="documentText" class="panel-body">Loading...</div>
+        </div>
     </div>
-    <div id="miniMap" class="col-md-4"></div>
+    <div id="miniMap" class="col-md-4">
+        <button id="document-save" type="button" class="btn btn-default btn-sm">
+            <span class="glyphicon glyphicon-save"></span> Speichern
+        </button>
+
+        <div id="alert-saved" class="alert alert-success fade" role="alert">
+            Dokument gespeichert
+        </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
@@ -20,35 +31,90 @@
     <script type="text/javascript" src="{% static 'js/annotator.neonion.js' %}"></script>
 
     <script language="javascript">
+            
+        // TODO loomp address
+        var config = {
+            server : "http://localhost:8181/loomp",
+            resourceName : "http://loomp.org/data/269d9aa0-5b96-40b1-a38e-c11b604292b8",
+            uri : {
+                annotation : "http://vocab.loomp.org/model/Annotation",
+                annotationSet : "http://vocab.loomp.org/model/AnnotationSet"
+            },
+            service : {
+                get : "/content/get",
+                getAll : "/content/getAll",
+                save : "/content/save"
+            }
+        }; 
+
+        var data = {
+            document : null
+        }
+
         $(document).ready(function() {
-          
-            // TODO loomp address
-            var config = {
-                server : "http://localhost:8181/loomp/content/get",
-                resourceName : "http://loomp.org/data/0669efda-898e-4ff9-a7da-7c7b723c5aeb"
-            }; 
+            loadDocument(config.resourceName, config);
+            loadAnnotationSets(config);
 
-            // load document from loomp
-            jQuery.ajax(
-                { 
-                    url: config.server + "?uri=" + config.resourceName, 
-                    type: 'GET',
-                    crossDomain: true,
-                    dataType: 'json', 
-                    async: false
-                }
-            ).done(function(response) {
-                $("#annotationText").html(response.content);
-                $("#annotationArea").annotator().annotator('addPlugin', 'Neonion');
 
-                restoreAnnotations();
+            // attach event handler
+            $('#document-save').click(function () {
+                saveDocument(config);
             });
+
 
         });
 
+
+        function loadDocument (resourceName, config) {
+            // load document from loomp
+            jQuery.ajax(
+            { 
+                url: config.server + config.service.get + "?uri=" + config.resourceName, 
+                type: 'GET',
+                crossDomain: true,
+                dataType: 'json'
+            }
+            ).done(function(response) {
+                data.document = response;
+                $("#documentTitle").html(data.document.title);
+                $("#documentText").html(data.document.content);
+                $("#documentText").annotator().annotator('addPlugin', 'Neonion');
+
+                restoreAnnotations();
+                console.log(data.document);
+            });
+        }
+
+
         /* Restores the annotation from markup */
         function restoreAnnotations() {
-    
+            // TODO
+        }
+
+        function loadAnnotationSets(config) {
+            // TODO
+        }
+
+        function saveDocument(config) {
+            var contentNode = Annotator._instances[0].wrapper[0].childNodes[0];
+            data.document.content = contentNode.innerHTML;
+
+            jQuery.ajax(
+            { 
+                url: config.server + config.service.save, 
+                type: 'POST',
+                data : { "data" : JSON.stringify(data), fmt : "JSON" }
+            }).success(function(data, textStatus, jqXHR) {
+                console.log(data);
+
+                $("#alert-saved").addClass("in");
+                window.setTimeout(function() {
+                    $("#alert-saved").removeClass("in");
+                    $("#alert-saved").addClass("out");
+                }, 3000);
+            }).error(function(jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+            });        
         }
 
     </script>

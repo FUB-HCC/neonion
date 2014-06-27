@@ -4,9 +4,11 @@ Annotator.Plugin.Neonion = function (element, options) {
 
 		pluginInit : function () {
 
+			var anno = this.annotator;
+
 			this.annotator.viewer.addField({
 				load: function (field, annotation) {
-					field.innerHTML = "Testfield";
+					field.innerHTML = "Person";
 				}
 			})
 
@@ -27,15 +29,17 @@ Annotator.Plugin.Neonion = function (element, options) {
 					property : "rdfs:label",
 					about : "http://www.loomp.org/dic/pi/0.1/PFXEMONGDGT4ZP7U8NWKJ0ZAR05CN298"
 				 };
+
 				// add RDFa attributes to markup
 				annotation.highlights[0].setAttribute("typeof", annotation.rdf.typeof);
 				annotation.highlights[0].setAttribute("property", annotation.rdf.property);
 				annotation.highlights[0].setAttribute("about", annotation.rdf.about);
 				
 				//console.log(annotation.highlights[0]);	
+				//console.log(anno);	
 
 			});
-			console.log(this.annotator);	
+			
 		}
 	}
 

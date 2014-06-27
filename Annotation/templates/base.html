@@ -12,10 +12,10 @@
 </head>
 <body>
 <div class="container">
-    <nav class="navbar navbar-inverse" role="navigation">
+    <nav class="navbar navbar-default" role="navigation">
         <div class="container">
             <div class="fcf2df">
-                <a class="navbar-brand" href="#">Annotator</a>
+                <a class="navbar-brand" href="#">Neonion</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -26,16 +26,15 @@
                         <a href="{{ home_url }}">Übersicht</a>
                     </li>
                     <li class="{% navactive request 'annotator' %}">
-                        <a href="{{ annotator_url }}">bb</a>
+                        <a href="{{ annotator_url }}">Annotator</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-    <div class="row">
-        <div id="content">
-            {% block content %}{% endblock %}
-        </div>
+ 
+    <div id="content">
+        {% block content %}{% endblock %}
     </div>
 
 </div>

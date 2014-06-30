@@ -9,6 +9,8 @@
 {% endblock %}
 
 {% block content %}
+
+<div class="row">
     <div class="col-md-8 panel" >
         <div id="annotationArea" class="panel panel-default" >
             <div id="documentTitle" class="panel-heading"></div>
@@ -24,6 +26,8 @@
             Dokument gespeichert
         </div>
     </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -31,45 +35,27 @@
     <script type="text/javascript" src="{% static 'js/annotator.neonion.js' %}"></script>
 
     <script language="javascript">
-            
-        // TODO loomp address
-        var config = {
-            server : "http://localhost:8181/loomp",
-            resourceName : "http://loomp.org/data/269d9aa0-5b96-40b1-a38e-c11b604292b8",
-            uri : {
-                annotation : "http://vocab.loomp.org/model/Annotation",
-                annotationSet : "http://vocab.loomp.org/model/AnnotationSet"
-            },
-            service : {
-                get : "/content/get",
-                getAll : "/content/getAll",
-                save : "/content/save"
-            }
-        }; 
 
         var data = {
+            resourceName : "http://loomp.org/data/269d9aa0-5b96-40b1-a38e-c11b604292b8",
             document : null
-        }
+        };
 
         $(document).ready(function() {
             loadDocument(config.resourceName, config);
             loadAnnotationSets(config);
 
-
             // attach event handler
             $('#document-save').click(function () {
                 saveDocument(config);
             });
-
-
         });
-
 
         function loadDocument (resourceName, config) {
             // load document from loomp
             jQuery.ajax(
             { 
-                url: config.server + config.service.get + "?uri=" + config.resourceName, 
+                url: config.server + config.service.get + "?uri=" + data.resourceName, 
                 type: 'GET',
                 crossDomain: true,
                 dataType: 'json'
@@ -80,8 +66,12 @@
                 $("#documentText").html(data.document.content);
                 $("#documentText").annotator().annotator('addPlugin', 'Neonion');
 
+                $("#documentText span[about]").each(function() {
+                    $(this).attr("class", "annotator-hl");
+                });
+
                 restoreAnnotations();
-                console.log(data.document);
+                //console.log(data.document);
             });
         }
 
@@ -97,13 +87,13 @@
 
         function saveDocument(config) {
             var contentNode = Annotator._instances[0].wrapper[0].childNodes[0];
-            data.document.content = contentNode.innerHTML;
-
+            data.document.content = contentNode.outerHTML;
+            //console.log(data.document.content);
             jQuery.ajax(
             { 
                 url: config.server + config.service.save, 
                 type: 'POST',
-                data : { "data" : JSON.stringify(data), fmt : "JSON" }
+                data : { "data" : JSON.stringify(data.document), fmt : "JSON" }
             }).success(function(data, textStatus, jqXHR) {
                 console.log(data);
 

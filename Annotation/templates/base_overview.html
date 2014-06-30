@@ -11,23 +11,38 @@
 <div class="row">
     <div class="col-md-8">
         <div class="panel panel-default">
-            <div class="panel-heading">Lesezeichen</div>
+            <div class="panel-heading"><span class="glyphicon glyphicon-file"></span> Verf&uuml;gbare Dokumente</div>
             <!-- Table -->
-            <table class="table">
-                <tr>
-                    <td>1</td>
-                    <td>Dokument 1</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Dokument 2</td>
-                </tr>
+            <table id="document-table" class="table">
             </table>
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
-    <script language="javascript"></script>
+    <script language="javascript">
+
+    $(document).ready(function() {
+        loadDocumentList(config);
+    });
+
+    function loadDocumentList(config) {
+      // load document from loomp
+        jQuery.ajax(
+        { 
+            url: config.server + config.service.getAll + "?type=" + config.uri.elementText, 
+            type: 'GET',
+            crossDomain: true,
+            dataType: 'json'
+        }
+        ).done(function(response) {
+            response.forEach(function(entry) {
+                $("#document-table").append("<tr><td><a href='/annotator?doc=" + entry.uri + "'>" + entry.title + "</a></td></tr>");
+            });
+        });
+    }
+
+    </script>
 {% endblock %}

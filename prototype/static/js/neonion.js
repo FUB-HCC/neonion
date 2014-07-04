@@ -1,5 +1,6 @@
 var config = {
     server : "http://localhost:8181/loomp",
+    uriPrefix : "http://loomp.org/data/",
 
     uri : {
         annotation : "http://vocab.loomp.org/model/Annotation",

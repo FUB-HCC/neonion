@@ -1,31 +1,33 @@
 # Startup
 
 * get joseki, loomp and neonion
-        git clone ssh://git@stash.ag-nbi.de:7999/an/joseki.git
-        git clone ssh://git@stash.ag-nbi.de:7999/an/loomp-server.git
-        git clone ssh://git@stash.ag-nbi.de:7999/an/neonion.git
+    * `git clone ssh://git@stash.ag-nbi.de:7999/an/joseki.git`
+    * `git clone ssh://git@stash.ag-nbi.de:7999/an/loomp-server.git`
+    * `git clone ssh://git@stash.ag-nbi.de:7999/an/neonion.git`
 
 
 ## Run on your local machine
 
 For joseki and loomp you will need java 1.7 and grails ([Groovy enVironment Manager](http://gvmtool.net) is a nice tool to get started with grails). For neonion you need python with django installed.
 
-* the following steps need one shell each
-    * **joseki**
-        `cd joseki`
-        `java -server -Xmx512m -cp "lib/*" -Dlog4j.configuration=file:etc/log4j.properties joseki.rdfserver`
-        
-    <font color="red">
-    * **loomp-server**
-        tbd
-    </font>
-    
-    * **neonion**
-        `cd neonion`
-        `virtualenv venv`
-        `source venv/bin/activate`
-        `pip install -r requirements.txt` (you may need some python-dev stuff installed on your machine)
-        `python manage.py runserver`
+the following steps need one shell each:
+
+* **joseki**
+    `cd joseki`
+    `java -server -Xmx512m -cp "lib/*" -Dlog4j.configuration=file:etc/log4j.properties joseki.rdfserver`
+
+
+* **loomp-server**
+    `grails war`
+    `java $JAVA_OPTS -jar server/jetty-runner.jar --port 8080 target/*.war`
+
+
+* **neonion**
+    `cd neonion`
+    `virtualenv venv`
+    `source venv/bin/activate`
+    `pip install -r requirements.txt` (you may need some python-dev stuff installed on your machine)
+    `python manage.py runserver`
 
             
 ## Run on heroku

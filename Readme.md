@@ -29,7 +29,7 @@ the following steps need one shell each:
     * `pip install -r requirements.txt` (you may need some python-dev stuff installed on your machine)
     * `python manage.py runserver`
 
-            
+
 ## Run on heroku
 
 * **joseki**

@@ -5,5 +5,5 @@ from django.template import RequestContext
 def home(request):
     return render_to_response('base_overview.html', {}, context_instance=RequestContext(request))
 
-def annotator(request):
-    return render_to_response('base_annotator.html', {}, context_instance=RequestContext(request))
+def annotator(request, doc_id):
+    return render_to_response('base_annotator.html', { "doc_id" : doc_id }, context_instance=RequestContext(request))

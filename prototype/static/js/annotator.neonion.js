@@ -22,6 +22,10 @@ Annotator.Plugin.Neonion = function (element, options) {
 			});
 			*/
 
+			this.annotator.subscribe("beforeAnnotationCreated", function (annotation) {
+				
+			});
+
 			this.annotator.subscribe("annotationCreated", function (annotation) {
 				// update annotation object
 				annotation.rdf = { 
@@ -36,7 +40,8 @@ Annotator.Plugin.Neonion = function (element, options) {
 				annotation.highlights[0].setAttribute("about", annotation.rdf.about);
 				
 				//console.log(annotation.highlights[0]);	
-				//console.log(anno);	
+				//console.log(annotation);	
+				
 
 			});
 			

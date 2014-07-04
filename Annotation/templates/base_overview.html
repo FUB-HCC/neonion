@@ -11,7 +11,7 @@
 <div class="row">
     <div class="col-md-8">
         <div class="panel panel-default">
-            <div class="panel-heading"><span class="glyphicon glyphicon-file"></span> Verf&uuml;gbare Dokumente</div>
+            <div class="panel-heading">Verf&uuml;gbare Dokumente</div>
             <!-- Table -->
             <table id="document-table" class="table">
             </table>
@@ -39,7 +39,7 @@
         }
         ).done(function(response) {
             response.forEach(function(entry) {
-                $("#document-table").append("<tr><td><a href='/annotator?doc=" + entry.uri + "'>" + entry.title + "</a></td></tr>");
+                $("#document-table").append("<tr><td><a href='/annotator/" + entry.uri + "'>" + entry.title + "</a></td></tr>");
             });
         });
     }

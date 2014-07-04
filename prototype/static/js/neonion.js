@@ -1,4 +1,5 @@
 var config = {
+    
     server : "http://hcc-loomp.herokuapp.com",
 
     uri : {

@@ -13,21 +13,21 @@ For joseki and loomp you will need java 1.7 and grails ([Groovy enVironment Mana
 the following steps need one shell each:
 
 * **joseki**
-    `cd joseki`
-    `java -server -Xmx512m -cp "lib/*" -Dlog4j.configuration=file:etc/log4j.properties joseki.rdfserver`
+    * `cd joseki`
+    * `java -server -Xmx512m -cp "lib/*" -Dlog4j.configuration=file:etc/log4j.properties joseki.rdfserver`
 
 
 * **loomp-server**
-    `grails war`
-    `java $JAVA_OPTS -jar server/jetty-runner.jar --port 8080 target/*.war`
+    * `grails war`
+    * `java $JAVA_OPTS -jar server/jetty-runner.jar --port 8080 target/*.war`
 
 
 * **neonion**
-    `cd neonion`
-    `virtualenv venv`
-    `source venv/bin/activate`
-    `pip install -r requirements.txt` (you may need some python-dev stuff installed on your machine)
-    `python manage.py runserver`
+    * `cd neonion`
+    * `virtualenv venv`
+    * `source venv/bin/activate`
+    * `pip install -r requirements.txt` (you may need some python-dev stuff installed on your machine)
+    * `python manage.py runserver`
 
             
 ## Run on heroku
@@ -57,6 +57,6 @@ the following steps need one shell each:
     * `cd neonion`
     * Change the `server:` parameter in the config file (`prototype/static/js/neonion.js`) to the loomp-server URL .
     * `git add prototype/static/js/neonion.js`
-    * `git commit -m "updated loomp-server address"`
+    * `git commit -m "updated loomp-server adress"`
     * `heroku create`
     * `git push heroku master`

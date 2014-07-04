@@ -1,15 +1,9 @@
 # Startup
 
 * get joseki, loomp and neonion
-<<<<<<< HEAD
     * `git clone ssh://git@stash.ag-nbi.de:7999/an/joseki.git`
     * `git clone ssh://git@stash.ag-nbi.de:7999/an/loomp-server.git`
     * `git clone ssh://git@stash.ag-nbi.de:7999/an/neonion.git`
-=======
-    `git clone ssh://git@stash.ag-nbi.de:7999/an/joseki.git`
-    `git clone ssh://git@stash.ag-nbi.de:7999/an/loomp-server.git`
-    `git clone ssh://git@stash.ag-nbi.de:7999/an/neonion.git`
->>>>>>> e4371fbfff4f182a08d9f171d089fbf80f1e4d7c
 
 
 ## Run on your local machine

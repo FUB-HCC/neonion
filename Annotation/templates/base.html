@@ -2,13 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>{% block title %}{% endblock %}</title>
+    <title>Neonion - {% block title %}{% endblock %}</title>
     {% load staticfiles %}
+    {% block stylesheets %}{% endblock %}
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" type="text/css" media="screen" />
     <link rel="stylesheet" href="{% static 'css/bootstrap-theme.min.css' %}" type="text/css" media="screen" />
     <link rel="stylesheet" href="{% static 'css/custom.bootstrap.css' %}" type="text/css" media="screen" />
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css" media="screen" />
-    {% block stylesheets %}{% endblock %}
 </head>
 <body>
 <div class="container">

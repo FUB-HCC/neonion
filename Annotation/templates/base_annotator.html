@@ -2,10 +2,11 @@
 
 {% load staticfiles %}
 
-{% block title %}Annotationsbereich{% endblock %}
+{% block title %}Annotator{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{% static 'css/annotator.min.css' %}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{% static 'css/annotator.neonion.css' %}" type="text/css" media="screen" />
 {% endblock %}
 
 {% block content %}
@@ -61,24 +62,25 @@
                 dataType: 'json'
             }
             ).done(function(response) {
+
                 data.document = response;
                 $("#documentTitle").html(data.document.title);
                 $("#documentText").html(data.document.content);
-                $("#documentText").annotator().annotator('addPlugin', 'Neonion');
-
-                $("#documentText span[about]").each(function() {
-                    $(this).attr("class", "annotator-hl");
-                });
+                $("#documentText").annotator()
+                .annotator('addPlugin', 'Neonion');
 
                 restoreAnnotations();
-                //console.log(data.document);
             });
         }
 
 
         /* Restores the annotation from markup */
         function restoreAnnotations() {
-            // TODO
+            /*
+            $("#documentText span[about]").each(function() {
+                $(this).attr("class", "annotator-hl");
+            });
+            */
         }
 
         function loadAnnotationSets(config) {

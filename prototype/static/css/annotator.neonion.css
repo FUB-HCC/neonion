@@ -1,0 +1,19 @@
+body {
+    background-color : #fff;
+}
+
+#documentText {
+    min-height: 400px;
+}
+
+.suggestionItems {
+	width : 100%;
+	margin-bottom: 0px;
+}
+
+.suggestionItems > a {
+	/*width : 100%;*/
+	all : default;
+	-webkit-all: default;
+	-moz-all: default;
+}

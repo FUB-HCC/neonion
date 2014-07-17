@@ -1,0 +1,51 @@
+
+html{
+	margin:1em;
+}
+
+.document-list-buttons{
+    float:right;
+}
+
+.bg{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    background-color: #eaeaea;
+    z-index: -1000;
+
+}
+
+.bg-10 {
+    width: 10%;
+}
+.bg-20 {
+    width: 20%;
+}
+
+@media only screen and (max-width: 767px) {
+    .bg{
+        background-color: #ffffff;
+    }
+}
+
+
+.as-active{
+    font-weight: bold;
+}
+
+
+#document-table td{
+    padding-left: 1em;
+}
+
+#document-table tr:nth-child(2n+1){
+    background-color: #f1f1f1;
+}
+
+
+a:link {text-decoration: none;}
+a:visited {text-decoration: none;}
+a:hover {text-decoration: none !important; font-weight: bold;}
+a:active {text-decoration: none;}

@@ -4,22 +4,51 @@
 
 {% block title %}Übersicht{% endblock %}
 
-{% block stylesheets %}{% endblock %}
-
 {% block content %}
+<div class="bg bg-20"></div>
 
-<div class="row">
-    <div class="col-md-8">
-        <div class="panel panel-default">
-            <div class="panel-heading">Verf&uuml;gbare Dokumente</div>
-            <!-- Table -->
-            <table id="document-table" class="table">
-            </table>
+<div class="units-row end">
+    <div class="unit-20">
+        <div class="units-row">
+            <hgroup>
+                <h1>NEONION</h1>
+                <h3 class="subheading">rethinking Annotation</h3>
+            </hgroup>
         </div>
     </div>
+
+    <div class="unit-80">
+        <p class="input-groups">
+            <input type="text" name="go" placeholder="Search" />
+            <span class="btn-append">
+                <button class="btn btn-green">Search</button>
+            </span>
+        </p>
+    </div>
+
 </div>
 
+<div class="units-row">
+
+    <div class="unit-20">
+        <nav class="nav">
+            <ul>
+                <li><a href="/annotator">My Neonion</a></li>
+                <li><span>Annotate</span></li>
+                <li><span>Analyze</span></li>
+                <li><span>Profile</span></li>
+                <li><span>Settings</span></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="unit-80">
+        <table id="document-table" class="table-simple"></table>
+    </div>
+
+</div>
 {% endblock %}
+
 
 {% block scripts %}
     <script language="javascript">
@@ -31,17 +60,21 @@
     function loadDocumentList(config) {
       // load document from loomp
         jQuery.ajax(
-        { 
-            url: config.server + config.service.getAll + "?type=" + config.uri.elementText, 
+        {
+            url: config.server + config.service.getAll + "?type=" + config.uri.elementText,
             type: 'GET',
             crossDomain: true,
             dataType: 'json'
         }
         ).done(function(response) {
             response.forEach(function(entry) {
-                $("#document-table").append("<tr><td><a href='/annotator/" + entry.uri + "'>" + entry.title + "</a></td></tr>");
+                var element = $('<tr><td><a href="/annotator/' + entry.uri + '">' + entry.title + '</a><div class="document-list-buttons">[info] [delete]</div></td></tr>');
+                $("#document-table").append(element);
             });
+
         });
+
+
     }
 
     </script>

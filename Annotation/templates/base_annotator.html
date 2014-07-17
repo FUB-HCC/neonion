@@ -9,9 +9,44 @@
     <link rel="stylesheet" href="{% static 'css/annotator.neonion.css' %}" type="text/css" media="screen" />
 {% endblock %}
 
-{% block content %}
 
-<div class="row">
+{% block content %}
+<div class="bg bg-10"></div>
+
+<div class="units-row">
+
+    <div class="unit-10 annotator-nav">
+        <nav class="nav">
+            <ul>
+                <li><a href="/annotator">My Neonion</a></li>
+                <li><span>Fullscreen</span></li>
+                <li><span>Analyze</span></li>
+                <hr/>
+                <li><a href="#" class="annotation-set as-active">Person</a></li>
+                <li><span>Institution</span></li>
+                <li><span>Reference</span></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="unit-centered unit-60">
+        <div class="units-row">
+            <div id="annotationArea" class="panel panel-default" >
+                <h1 id="documentTitle" class="panel-heading"></h1>
+                <div id="documentText" class="panel-body">Loading...</div>
+            </div>
+
+        </div>
+        <div class="units-row">
+            <button class="btn btn-green" id="document-save" >
+                Speichern
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<!-- <div class="row">
     <div class="col-md-8 panel" >
         <div id="annotationArea" class="panel panel-default" >
             <div id="documentTitle" class="panel-heading"></div>
@@ -28,7 +63,7 @@
         </div>
     </div>
 </div>
-
+ -->
 {% endblock %}
 
 {% block scripts %}
@@ -55,8 +90,8 @@
         function loadDocument (resourceName, config) {
             // load document from loomp
             jQuery.ajax(
-            { 
-                url: config.server + config.service.get + "?uri=" + data.resourceName, 
+            {
+                url: config.server + config.service.get + "?uri=" + data.resourceName,
                 type: 'GET',
                 crossDomain: true,
                 dataType: 'json'
@@ -92,8 +127,8 @@
             data.document.content = contentNode.outerHTML;
             //console.log(data.document.content);
             jQuery.ajax(
-            { 
-                url: config.server + config.service.save, 
+            {
+                url: config.server + config.service.save,
                 type: 'POST',
                 data : { "data" : JSON.stringify(data.document), fmt : "JSON" }
             }).success(function(data, textStatus, jqXHR) {
@@ -106,7 +141,7 @@
                 }, 3000);
             }).error(function(jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
-            });        
+            });
         }
 
     </script>

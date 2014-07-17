@@ -87,8 +87,7 @@
                 $("#documentTitle").html(data.document.title);
                 $("#documentText").html(data.document.content);
                 $("#documentText").annotator()
-                .annotator('addPlugin', 'Neonion')
-                .annotator('addPlugin', 'Touch');
+                .annotator('addPlugin', 'Neonion');
 
                 restoreAnnotations();
             });

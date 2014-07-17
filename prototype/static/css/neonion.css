@@ -38,9 +38,6 @@ html{
     .units-row{clear:both;}
 }
 
-#documentText > div > div.annotator-adder > button{
-    background: transparent;
-}
 
 
 .btn-group-vertical{
@@ -81,6 +78,36 @@ html{
     display: block;
 }
 
+
+/*annotator.js hacks*/
+#documentText > div > div.annotator-adder > button{
+    background: transparent;
+}
+
+#annotator-field-0{
+    display: none;
+}
+
+.annotator-widget{
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
+}
+
+.annotator-listing{
+    -webkit-box-ordinal-group: 2;
+    -moz-box-ordinal-group: 2;
+    box-ordinal-group: 2;
+}
+
+.annotator-controls{
+    -webkit-box-ordinal-group: 3;
+    -moz-box-ordinal-group: 3;
+    box-ordinal-group: 3;
+}
 
 
 a:link {text-decoration: none;}

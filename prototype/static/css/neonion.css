@@ -14,22 +14,24 @@ html{
     height: 100%;
     background-color: #eaeaea;
     z-index: -1000;
-
 }
-
-.bg-10 {
-    width: 10%;
-}
-.bg-20 {
-    width: 20%;
-}
+.bg-10 {width: 10%;}
+.bg-20 {width: 20%;}
 
 @media only screen and (max-width: 767px) {
-    .bg{
-        background-color: #ffffff;
-    }
+    .bg{background-color: #ffffff;}
 }
 
+.btn-group-vertical{
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    width: 100%;
+}
+
+.annotator-btn{
+    width: 100%;
+}
 
 .as-active{
     font-weight: bold;

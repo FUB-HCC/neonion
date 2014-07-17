@@ -7,6 +7,7 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="{% static 'css/annotator.min.css' %}" type="text/css" media="screen" />
     <link rel="stylesheet" href="{% static 'css/annotator.neonion.css' %}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{% static 'css/annotator.touch.css' %}" type="text/css" media="screen" />
 {% endblock %}
 
 
@@ -51,6 +52,7 @@
 
 {% block scripts %}
     <script type="text/javascript" src="{% static 'js/annotator.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/annotator.touch.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/annotator.neonion.js' %}"></script>
 
     <script language="javascript">
@@ -85,7 +87,8 @@
                 $("#documentTitle").html(data.document.title);
                 $("#documentText").html(data.document.content);
                 $("#documentText").annotator()
-                .annotator('addPlugin', 'Neonion');
+                .annotator('addPlugin', 'Neonion')
+                .annotator('addPlugin', 'Touch');
 
                 restoreAnnotations();
             });

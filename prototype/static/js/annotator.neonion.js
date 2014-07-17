@@ -2,10 +2,10 @@ Annotator.Plugin.Neonion = function (element, options) {
 
 	var persons = [
 		{ label: "Unbekannte Person", uri : "http://de.dbpedia.org/resource/Unknown_Person" },
-		{ label: "Otto Hahn", uri : "http://de.dbpedia.org/resource/Otto_Hahn" },
-		{ label: "Max Planck", uri : "http://de.dbpedia.org/resource/Max_Planck" },
-		{ label: "Otto von Baeyer", uri : "http://de.dbpedia.org/resource/Otto_von_Baeyer" },
-		{ label: "Wilhelm Westphal", uri : "http://de.dbpedia.org/resource/Wilhelm_Westphal_(Physiker)" }
+		{ label: "Otto Hahn", uri : "https://www.wikidata.org/wiki/Q57065" },
+		{ label: "Max Planck", uri : "https://www.wikidata.org/wiki/Q9021" },
+		{ label: "Otto von Baeyer", uri : "https://www.wikidata.org/wiki/Q1682101" },
+		{ label: "Wilhelm Westphal", uri : "https://www.wikidata.org/wiki/Q95679" }
 	];
 
     return {

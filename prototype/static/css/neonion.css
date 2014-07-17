@@ -70,6 +70,10 @@ html{
    display: none;
 }
 
+.document-list-buttons .a{
+    /*margin-left: 1em;*/
+}
+
 .element-cell:hover{
     background-color: #c5e4dd;
 }
@@ -77,7 +81,9 @@ html{
     display: block;
 }
 
+
+
 a:link {text-decoration: none;}
 a:visited {text-decoration: none;}
-a:hover {text-decoration: none !important; font-weight: bold;}
+a:hover {text-decoration: none !important;}
 a:active {text-decoration: none;}

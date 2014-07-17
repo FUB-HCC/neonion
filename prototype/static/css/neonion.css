@@ -104,6 +104,7 @@ html{
 }
 .annotator-item > div > button{
     color: black;
+    padding-left: 1em;
 }
 
 
@@ -115,18 +116,39 @@ html{
     -webkit-box-orient: vertical;
     -moz-box-orient: vertical;
     box-orient: vertical;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    border-color: black !important;
+}
+.annotator-widget:after{
+    content: none;
 }
 .annotator-listing{
     -webkit-box-ordinal-group: 2;
     -moz-box-ordinal-group: 2;
     box-ordinal-group: 2;
 }
+
+
+
 .annotator-controls{
     -webkit-box-ordinal-group: 3;
     -moz-box-ordinal-group: 3;
     box-ordinal-group: 3;
+    /* remove terrific gradient and shadow */
+    border-top: 1px solid black !important;
+    background-image: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    /* remove border radius*/
+    -webkit-border-radius: none !important;
+    border-radius: none !important;
+    background-color: #eaeaea !important;
 }
 
+.annotator-resize{
+    background-image: none !important;
+}
 
 /* beautify the ugly buttons */
 .annotator-cancel{

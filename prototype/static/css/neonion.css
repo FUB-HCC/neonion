@@ -99,7 +99,7 @@ html{
 
 /* styling for the person-list */
 .annotator-item > div > button:first-child{
-    /*color: rgba(255, 255, 255, 0.9);*/
+    color: rgba(0, 0, 0, 0.5);
     border-bottom: 1px solid black;
 }
 .annotator-item > div > button{
@@ -130,6 +130,7 @@ html{
 
 /* beautify the ugly buttons */
 .annotator-cancel{
+      float: left;
       display: inline-block !important;
       vertical-align: top !important;
       font-family: "Helvetica Neue", Helvetica, Tahoma, sans-serif !important;
@@ -156,6 +157,7 @@ a.annotator-cancel:after{ /* remove the shitty x-icon from the cancel button */
     content:none;
 }
 .annotator-save{
+      float:right;
       display: inline-block !important;
       vertical-align: top !important;
       font-family: "Helvetica Neue", Helvetica, Tahoma, sans-serif !important;
@@ -180,6 +182,10 @@ a.annotator-cancel:after{ /* remove the shitty x-icon from the cancel button */
 }
 a.annotator-save:after{
     content:none; /* remove the icon from save button*/
+}
+
+.annotator-widget{
+    min-width: 150px !important;
 }
 /* end annotator hacks*/
 

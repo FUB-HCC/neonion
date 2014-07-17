@@ -22,6 +22,7 @@ html{
     .bg{background-color: #ffffff;}
 }
 
+
 .btn-group-vertical{
     position: relative;
     display: inline-block;
@@ -36,7 +37,6 @@ html{
 .as-active{
     font-weight: bold;
 }
-
 
 #document-table td{
     padding-left: 1em;

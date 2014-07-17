@@ -46,24 +46,6 @@
 
 </div>
 
-<!-- <div class="row">
-    <div class="col-md-8 panel" >
-        <div id="annotationArea" class="panel panel-default" >
-            <div id="documentTitle" class="panel-heading"></div>
-            <div id="documentText" class="panel-body">Loading...</div>
-        </div>
-    </div>
-    <div id="miniMap" class="col-md-4">
-        <button id="document-save" type="button" class="btn btn-default btn-sm">
-            <span class="glyphicon glyphicon-save"></span> Speichern
-        </button>
-
-        <div id="alert-saved" class="alert alert-success fade" role="alert">
-            Dokument gespeichert
-        </div>
-    </div>
-</div>
- -->
 {% endblock %}
 
 {% block scripts %}
@@ -85,6 +67,7 @@
             $('#document-save').click(function () {
                // saveDocument(config);
             });
+
         });
 
         function loadDocument (resourceName, config) {

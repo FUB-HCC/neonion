@@ -43,7 +43,6 @@ html{
 }
 
 
-
 .btn-group-vertical{
     position: relative;
     display: inline-block;
@@ -67,6 +66,16 @@ html{
     background-color: #f1f1f1;
 }
 
+.document-list-buttons{
+   display: none;
+}
+
+.element-cell:hover{
+    background-color: #c5e4dd;
+}
+.element-cell:hover .document-list-buttons{
+    display: block;
+}
 
 a:link {text-decoration: none;}
 a:visited {text-decoration: none;}

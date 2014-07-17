@@ -68,7 +68,9 @@
         }
         ).done(function(response) {
             response.forEach(function(entry) {
-                var element = $('<tr><td><a href="/annotator/' + entry.uri + '">' + entry.title + '</a><div class="document-list-buttons">[info] [delete]</div></td></tr>');
+                var uri = entry.uri.split("/")
+                var id = uri[uri.length-1]
+                var element = $('<tr><td><a href="/annotator/' + id + '">' + entry.title + '</a><div class="document-list-buttons">[info] [delete]</div></td></tr>');
                 $("#document-table").append(element);
             });
 

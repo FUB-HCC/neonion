@@ -79,15 +79,34 @@ html{
 }
 
 
-/*annotator.js hacks*/
-#documentText > div > div.annotator-adder > button{
-    background: transparent;
+#document-save{
+    display: none;
 }
 
+
+/*annotator.js hacks*/
+
+/* remove comments field */
 #annotator-field-0{
     display: none;
 }
 
+
+/* fix hover problem with annotate-button */
+#documentText > div > div.annotator-adder > button{
+    background: transparent;
+}
+
+/* styling for the person-list */
+.annotator-item > div > button:first-child{
+    color: rgba(255, 255, 255, 0.9);
+}
+.annotator-item > div > button{
+    color: black;
+}
+
+
+/* hack for the order of person-list and buttons */
 .annotator-widget{
     display: -webkit-box;
     display: -moz-box;
@@ -96,19 +115,72 @@ html{
     -moz-box-orient: vertical;
     box-orient: vertical;
 }
-
 .annotator-listing{
     -webkit-box-ordinal-group: 2;
     -moz-box-ordinal-group: 2;
     box-ordinal-group: 2;
 }
-
 .annotator-controls{
     -webkit-box-ordinal-group: 3;
     -moz-box-ordinal-group: 3;
     box-ordinal-group: 3;
 }
 
+
+/* beautify the ugly buttons */
+.annotator-cancel{
+      display: inline-block !important;
+      vertical-align: top !important;
+      font-family: "Helvetica Neue", Helvetica, Tahoma, sans-serif !important;
+      font-size: 1em !important;
+      font-weight: 400 !important;
+      line-height: 1.618em !important;
+      text-align: center !important;
+      text-decoration: none !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+      margin: 0 !important;
+      border: 1px solid transparent !important;
+      border-radius: 2px !important;
+      box-shadow: none !important;
+      cursor: pointer !important;
+      background: #a60811 !important;
+      padding: .3em 1.3em !important;
+      text-shadow: none !important;
+  }
+.annotator-cancel:hover {
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: #d70a16 !important;
+}
+a.annotator-cancel:after{ /* remove the shitty x-icon from the cancel button */
+    content:none;
+}
+.annotator-save{
+      display: inline-block !important;
+      vertical-align: top !important;
+      font-family: "Helvetica Neue", Helvetica, Tahoma, sans-serif !important;
+      font-size: 1em !important;
+      font-weight: 400 !important;
+      line-height: 1.618em !important;
+      text-align: center !important;
+      text-decoration: none !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+      margin: 0 !important;
+      border: 1px solid transparent !important;
+      border-radius: 2px !important;
+      box-shadow: none !important;
+      cursor: pointer !important;
+      background: #0f6a53 !important;
+      padding: .3em 1.3em !important;
+      text-shadow: none !important;
+  }
+.annotator-save:hover {
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: #159776 !important;
+}
+a.annotator-save:after{
+    content:none; /* remove the icon from save button*/
+}
+/* end annotator hacks*/
 
 a:link {text-decoration: none;}
 a:visited {text-decoration: none;}

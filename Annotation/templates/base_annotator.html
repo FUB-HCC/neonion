@@ -5,8 +5,8 @@
 {% block title %}Annotator{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{% static 'css/annotator.min.css' %}" type="text/css" media="screen" />
     <link rel="stylesheet" href="{% static 'css/annotator.neonion.css' %}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{% static 'css/annotator.min.css' %}" type="text/css" media="screen" />
 <!--     <link rel="stylesheet" href="{% static 'css/annotator.touch.css' %}" type="text/css" media="screen" /> -->
 {% endblock %}
 
@@ -90,6 +90,7 @@
                 .annotator('addPlugin', 'Neonion');
 
                 restoreAnnotations();
+                $('#document-save').show();
             });
         }
 

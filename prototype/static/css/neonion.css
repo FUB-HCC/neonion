@@ -15,11 +15,19 @@ html{
     background-color: #eaeaea;
     z-index: -1000;
 }
-.bg-10 {width: 10%;}
-.bg-20 {width: 20%;}
+.bg-10 {width: 110px;}
+.bg-20, .units-row .unit-20 {width: 165px !important;}
+
+.annotator-nav{
+    width: 90px !important;
+}
 
 @media only screen and (max-width: 767px) {
     .bg{background-color: #ffffff;}
+}
+
+#documentText > div > div.annotator-adder > button{
+    background: transparent;
 }
 
 

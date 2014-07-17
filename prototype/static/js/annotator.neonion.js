@@ -70,8 +70,8 @@ Annotator.Plugin.Neonion = function (element, options) {
 			list.empty();
 			// add items
 			$.each(persons, function(index, value) {
-				var css = index == 0 ? "btn-green" : "";
-
+				// var css = index == 0 ? "btn-green" : "";
+				var css = "";
 				list.append("<button type='button' class='annotator-btn " + css + "' uri='" +  value.uri + "'>" + value.label + "</button>");
 				if (associatedUri == value.uri) {
 					list.children(":last").addClass("active");

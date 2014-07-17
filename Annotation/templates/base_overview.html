@@ -43,7 +43,7 @@
     </div>
 
     <div class="unit-80">
-        <table id="document-table" class="table-simple"></table>
+        <table id="document-table" class="table-simple"><tr><td>Loading...</td></tr></table>
     </div>
 
 </div>
@@ -67,6 +67,7 @@
             dataType: 'json'
         }
         ).done(function(response) {
+            $('#document-table').html('');
             response.forEach(function(entry) {
                 var uri = entry.uri.split("/")
                 var id = uri[uri.length-1]

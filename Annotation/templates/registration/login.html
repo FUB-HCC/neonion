@@ -10,7 +10,7 @@
         {% if form.errors %}
         <p>Your username and password didn't match. Please try again.</p>
         {% endif %}
-
+        For testing purpose use: test:test
         <form id="loginform" method="post" action="{% url 'django.contrib.auth.views.login' %}">{% csrf_token %}
             <label>
                 <input id="id_username" maxlength="254" name="username" placeholder="Username" type="text" class="width-50">

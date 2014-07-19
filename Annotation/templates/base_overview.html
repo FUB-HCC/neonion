@@ -59,14 +59,12 @@
 
     function loadDocumentList(config) {
       // load document from loomp
-        jQuery.ajax(
-        {
+        jQuery.ajax({
             url: config.server + config.service.getAll + "?type=" + config.uri.elementText,
             type: 'GET',
             crossDomain: true,
             dataType: 'json'
-        }
-        ).done(function(response) {
+        }).done(function(response) {
             $('#document-table').html('');
             response.forEach(function(entry) {
                 var uri = entry.uri.split("/")

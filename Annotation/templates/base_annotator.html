@@ -7,7 +7,6 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="{% static 'css/annotator.neonion.css' %}" type="text/css" media="screen" />
     <link rel="stylesheet" href="{% static 'css/annotator.min.css' %}" type="text/css" media="screen" />
-<!--     <link rel="stylesheet" href="{% static 'css/annotator.touch.css' %}" type="text/css" media="screen" /> -->
 {% endblock %}
 
 
@@ -27,6 +26,8 @@
                 <li><a href="#" class="annotation-set as-active">Person</a></li>
                 <li><span>Institution</span></li>
                 <li><span>Reference</span></li>
+                 <hr/>
+                <li class="verticalLine"><span>|</span></li>
             </ul>
         </nav>
     </div>
@@ -37,13 +38,12 @@
                 <h2 id="documentTitle" class="panel-heading"></h2>
                 <div id="documentText" class="panel-body">Loading...</div>
             </div>
-
         </div>
-        <div class="units-row">
+        <!-- <div class="units-row">
             <button class="btn btn-green" id="document-save" >
                 Speichern
             </button>
-        </div>
+        </div> -->
     </div>
 
 </div>
@@ -52,7 +52,6 @@
 
 {% block scripts %}
     <script type="text/javascript" src="{% static 'js/annotator.min.js' %}"></script>
-    <!-- <script type="text/javascript" src="{% static 'js/annotator.touch.min.js' %}"></script> -->
     <script type="text/javascript" src="{% static 'js/annotator.neonion.js' %}"></script>
 
     <script language="javascript">

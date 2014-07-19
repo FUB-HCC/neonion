@@ -18,12 +18,14 @@
     </div>
 
     <div class="unit-80">
+    {% block right_top %}
         <p class="input-groups">
             <input type="text" name="go" placeholder="Search" />
             <span class="btn-append">
                 <button class="btn btn-green">Search</button>
             </span>
         </p>
+    {% endblock %}
     </div>
 
 </div>
@@ -38,12 +40,20 @@
                 <li><span>Analyze</span></li>
                 <li><span>Profile</span></li>
                 <li><span>Settings</span></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url "auth_logout" %}?next=/">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'django.contrib.auth.views.login' %}?next=/">Login</a></li>
+                {% endif %}
+
             </ul>
         </nav>
     </div>
 
     <div class="unit-80">
+    {% block right_bottom %}
         <table id="document-table" class="table-simple"><tr><td>Loading...</td></tr></table>
+    {% endblock %}
     </div>
 
 </div>

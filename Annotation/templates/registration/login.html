@@ -1,0 +1,29 @@
+{% extends "base_overview.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Login{% endblock %}
+
+{% block right_top %}{% endblock %}
+
+{% block right_bottom %}
+        {% if form.errors %}
+        <p>Your username and password didn't match. Please try again.</p>
+        {% endif %}
+
+        <form id="loginform" method="post" action="{% url 'django.contrib.auth.views.login' %}">{% csrf_token %}
+            <label>
+                <input id="id_username" maxlength="254" name="username" placeholder="Username" type="text" class="width-50">
+            </label>
+            <label>
+                <input id="id_password" name="password" placeholder="Password"  type="password" class="width-50">
+            </label>
+            <p>
+                <button class="btn-green width-50">Log in</button>
+            </p>
+            <input type="hidden" name="next" value="{{ next }}" />
+        </form>
+{% endblock %}
+
+
+

@@ -9,37 +9,10 @@
     {% block stylesheets %}{% endblock %}
     <link rel="stylesheet" href="{% static 'css/kube.css' %}" type="text/css" media="screen" />
     <link rel="stylesheet" href="{% static 'css/neonion.css' %}" type="text/css" media="screen" />
-    <!-- <link rel="stylesheet" href="{% static 'css/bootstrap-theme.min.css' %}" type="text/css" media="screen" /> -->
-    <!-- <link rel="stylesheet" href="{% static 'css/custom.bootstrap.css' %}" type="text/css" media="screen" /> -->
 </head>
 <body>
 
     {% block content %}{% endblock %}
-
-<!-- <div class="container">
-    <nav class="navbar navbar-default" role="navigation">
-        <div class="container">
-            <div class="fcf2df">
-                <a class="navbar-brand" href="#">Neonion</a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    {% load base_ext %}
-                    {% url 'home' as home_url %}
-                    {% url 'annotator' as annotator_url %}
-                    <li class="{% navactive request 'home' %}">
-                        <a href="{{ home_url }}">Übersicht</a>
-                    </li>
-                    <li>
-                        <a href="{{ annotator_url }}">Annotator</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-
-</div> -->
 
     <script type="text/javascript" src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>

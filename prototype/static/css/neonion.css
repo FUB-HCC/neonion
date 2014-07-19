@@ -71,6 +71,10 @@ html{
     display: none;
 }
 
+#loginform input{
+  margin-bottom: 1em;
+}
+
 
 /*annotator.js hacks*/
 

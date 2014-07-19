@@ -39,18 +39,6 @@ html{
 }
 
 
-
-.btn-group-vertical{
-    position: relative;
-    display: inline-block;
-    vertical-align: middle;
-    width: 100%;
-}
-
-.annotator-btn{
-    width: 100%;
-}
-
 .as-active{
     font-weight: bold;
 }
@@ -86,12 +74,28 @@ html{
 
 /*annotator.js hacks*/
 
+/* list of objects */
+.btn-group-vertical{
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    width: 100%;
+}
+.btn-group-vertical .annotator-btn{
+    width: 100%;
+}
+.btn-group-vertical .annotator-btn:nth-child(2n+1){
+    background-color: #f1f1f1;
+}
+.btn-group-vertical .annotator-btn:hover{
+    background-color:#c5e4dd;
+}
+
+
 /* remove comments field */
 #annotator-field-0{
     display: none;
 }
-
-
 /* fix hover problem with annotate-button */
 #documentText > div > div.annotator-adder > button{
     background: transparent;
@@ -123,12 +127,22 @@ html{
 .annotator-widget:after{
     content: none;
 }
+.annotator-editor.annotator-invert-y .annotator-controls{
+    border-bottom: none;
+    border-radius: 0px;
+    -webkit-border-bottom-right-radius: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -moz-border-radius-bottomright: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
 .annotator-listing{
     -webkit-box-ordinal-group: 2;
     -moz-box-ordinal-group: 2;
     box-ordinal-group: 2;
 }
-
 
 
 .annotator-controls{
@@ -140,11 +154,14 @@ html{
     background-image: none !important;
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
-    /* remove border radius*/
-    -webkit-border-radius: none !important;
-    border-radius: none !important;
     background-color: #eaeaea !important;
 }
+
+.annotator-viewer .annotator-controls{
+    background-color: transparent !important;
+    border-top: none !important;
+}
+
 
 .annotator-resize{
     background-image: none !important;
@@ -178,8 +195,9 @@ html{
 a.annotator-cancel:after{ /* remove the shitty x-icon from the cancel button */
     content:none;
 }
-.annotator-save{
-      float:right;
+.annotator-controls .annotator-save{
+    display:none;
+/*      float:right;
       display: inline-block !important;
       vertical-align: top !important;
       font-family: "Helvetica Neue", Helvetica, Tahoma, sans-serif !important;
@@ -196,7 +214,7 @@ a.annotator-cancel:after{ /* remove the shitty x-icon from the cancel button */
       cursor: pointer !important;
       background: #0f6a53 !important;
       padding: .3em 1.3em !important;
-      text-shadow: none !important;
+      text-shadow: none !important;*/
   }
 .annotator-save:hover {
   color: rgba(255, 255, 255, 0.9) !important;

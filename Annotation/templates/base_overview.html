@@ -22,7 +22,7 @@
         <p class="input-groups">
             <input type="text" name="go" placeholder="Search" />
             <span class="btn-append">
-                <button class="btn btn-green">Search</button>
+                <button class="btn btn-blue">Search</button>
             </span>
         </p>
     {% endblock %}
@@ -31,23 +31,20 @@
 </div>
 
 <div class="units-row">
-
     <div class="unit-20">
-        <nav class="nav">
-            <ul>
-                <li><a href="/annotator">My Neonion</a></li>
-                <li><span>Annotate</span></li>
-                <li><span>Analyze</span></li>
-                <li><span>Profile</span></li>
-                <li><span>Settings</span></li>
-                {% if user.is_authenticated %}
-                    <li><a href="{% url "auth_logout" %}?next=/">Logout</a></li>
-                {% else %}
-                    <li><a href="{% url 'django.contrib.auth.views.login' %}?next=/">Login</a></li>
-                {% endif %}
-
-            </ul>
-        </nav>
+        <table class="table-simple annotator-nav">
+            <tr><td><span class="fa fa-home fa-fw"></span><a href="/annotator">My Neonion</a></td></tr>
+            <tr><td><span class="fa fa-pencil-square-o fa-fw"></span><span>Annotate</span></td></tr>
+            <tr><td><span class="fa fa-bar-chart-o fa-fw"></span><span>Analyze</span></td></tr>
+            <tr><td><span class="fa fa-child fa-fw"></span><span>Profile</span></td></tr>
+            <tr><td><span class="fa fa-cogs fa-fw"></span><span>Settings</span></td></tr>
+            {% if user.is_authenticated %}
+                <tr><td><span class="fa fa-star fa-spin fa-fw"></span><a href="{% url "auth_logout" %}?next=/">Logout</a></td></tr>
+            {% else %}
+                <tr><td><span class="fa fa-star fa-spin fa-fw"></span><span><a href="{% url 'django.contrib.auth.views.login' %}?next=/">Login</a></span></td></tr>
+            {% endif %}
+            <tr id="help-link"><td><span class="fa fa-question fa-fw"></span><span>Help</span></td></tr>
+        </table>
     </div>
 
     <div class="unit-80">

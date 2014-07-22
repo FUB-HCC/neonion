@@ -33,17 +33,17 @@
 <div class="units-row">
     <div class="unit-20">
         <table class="table-simple annotator-nav">
-            <tr><td><span class="fa fa-home fa-fw"></span><a href="/annotator">My Neonion</a></td></tr>
-            <tr><td><span class="fa fa-pencil-square-o fa-fw"></span><span>Annotate</span></td></tr>
-            <tr><td><span class="fa fa-bar-chart-o fa-fw"></span><span>Analyze</span></td></tr>
-            <tr><td><span class="fa fa-child fa-fw"></span><span>Profile</span></td></tr>
-            <tr><td><span class="fa fa-cogs fa-fw"></span><span>Settings</span></td></tr>
+            <tr><td><a href="/annotator"><span class="fa fa-home fa-fw"></span>My Neonion</a></td></tr>
+            <tr><td><span><span class="fa fa-pencil-square-o fa-fw"></span>Annotate</span></td></tr>
+            <tr><td><span><span class="fa fa-bar-chart-o fa-fw"></span>Analyze</span></td></tr>
+            <tr><td><span><span class="fa fa-child fa-fw"></span>Profile</span></td></tr>
+            <tr><td><span><span class="fa fa-cogs fa-fw"></span>Settings</span></td></tr>
             {% if user.is_authenticated %}
-                <tr><td><span class="fa fa-star fa-spin fa-fw"></span><a href="{% url "auth_logout" %}?next=/">Logout</a></td></tr>
+                <tr><td><a href="{% url "auth_logout" %}?next=/"><span class="fa fa-star fa-spin fa-fw"></span>Logout</a></td></tr>
             {% else %}
-                <tr><td><span class="fa fa-star fa-spin fa-fw"></span><span><a href="{% url 'django.contrib.auth.views.login' %}?next=/">Login</a></span></td></tr>
+                <tr><td><span><a href="{% url 'django.contrib.auth.views.login' %}?next=/"><span class="fa fa-star fa-spin fa-fw"></span>Login</a></span></td></tr>
             {% endif %}
-            <tr id="help-link"><td><span class="fa fa-question fa-fw"></span><span>Help</span></td></tr>
+            <tr id="help-link"><td><span><span class="fa fa-question fa-fw"></span>Help</span></td></tr>
         </table>
     </div>
 
@@ -80,8 +80,8 @@
                     .append($('<td class="element-cell"></td>')
                         .append($('<a href="/annotator/' + id + '">' + entry.title + '</a>'))
                         .append($('<div class="document-list-buttons"></div>')
-                            .append('<span>[info]</span>')
-                            .append('<span>[delete]</span>')
+                            .append('<span class="fa fa-info-circle fa-fw" title="info"></span>')
+                            .append('<span class="fa fa-trash-o fa-fw" title="delete"></span>')
                         )
                     );
                 $("#document-table").append(element);

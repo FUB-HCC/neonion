@@ -35,7 +35,6 @@ html{
 }
 
 .nav .fa:hover{
-  color: #000000;
   cursor: pointer;
 }
 
@@ -48,9 +47,7 @@ html{
 }
 
 .nav .fa.deactivated:hover{
-  color: #aeaeae;
   cursor: default;
-
 }
 
 

@@ -22,9 +22,11 @@
                 <li><span class="fa fa-expand fa-fw fa-2x deactivated" title="Fullscreen"></span></li>
                 <li><span class="fa fa-bar-chart-o fa-fw fa-2x deactivated" title="Analyze"></span></li>
                 <li>&nbsp;</li>
-                <li><span class="fa fa-users fa-fw fa-2x active" title="Persons"></span></li>
-                <li><span class="fa fa-university fa-fw fa-2x deactivated" title="Institution"></span></li>
-                <li><span class="fa fa-book fa-fw fa-2x deactivated" title="References"></span></li>
+                <ul id="annotationSets">
+                    <li><span class="fa fa-users fa-fw fa-2x active" title="Persons" annotationSet="p"></span></li>
+                    <li><span class="fa fa-university fa-fw fa-2x" title="Institutions" annotationSet="i"> </span></li>
+                    <li><span class="fa fa-book fa-fw fa-2x" title="References" annotationSet="r"></span></li>
+                </ul>
                 <li id="help-link"><span class="fa fa-question fa-fw fa-2x" title="Help"></span></li>
             </ul>
         </nav>
@@ -34,7 +36,7 @@
         <div class="units-row">
             <div id="annotationArea" class="panel panel-default" >
                 <div id="documentTitle" class="panel-heading"></div>
-                <div id="documentText" class="panel-body">Loading...</div>
+                <div id="documentText" class="panel-body"><span class="fa fa-spinner fa-spin"></span> Loading...</div>
             </div>
         </div>
         <!-- <div class="units-row">
@@ -68,7 +70,26 @@
                // saveDocument(config);
             });
 
+            $( '#annotationSets li span' ).each( function(){
+                $( this ).click( function(){
+                    $( this ).toggleClass( 'active' );
+                    console.log( checkAnnotationSetSelection() );
+                });
+
+            });
+
+
         });
+
+        function checkAnnotationSetSelection(){
+            var activeAnnotationSets = [];
+            $( '#annotationSets li span' ).each( function(){
+                if( $( this ).hasClass('active') ){
+                    activeAnnotationSets.push( $( this ).attr( 'annotationSet' ) );
+                }
+            });
+            return activeAnnotationSets;
+        }
 
         function loadDocument (resourceName, config) {
             // load document from loomp

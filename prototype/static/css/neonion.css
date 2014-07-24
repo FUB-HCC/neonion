@@ -17,17 +17,31 @@ html{
     z-index: -1000;
 }
 .units-row .unit-10  {width: 100px;}
-.bg-10{width: 68px;}
+.bg-10{width: 50px;}
 .bg-20, .units-row .unit-20 {width: 165px;}
 
+#userInfo{
+  font-size: 0.7em;
+  line-height: 2em;
+  text-align: right;
+}
 
 .annotator-nav span{
   color: gray;
 }
 
 .annotator-nav .fa{
-  color:black;
-  margin-right: .25em;
+  color: #5f5f5f;
+  vertical-align:middle;
+  margin-right: .5em;
+}
+
+.annotator-nav tr:hover .fa, .annotator-nav li:hover .fa{
+  color: #2f4483;
+}
+
+.annotator-nav .fa:before{
+  font-size: 1.5em;
 }
 
 .nav .fa{
@@ -81,15 +95,20 @@ html{
     padding-left: 1em;
 }
 
-#document-table tr:nth-child(2n){
+#document-table tr td:nth-child(1){
+    text-align: right;
+    width: auto;
+}
+
+#document-table tr:nth-child(2n) td:nth-child(2){
     background-color: #ffffff;
 }
 
-#document-table tr:nth-child(2n+1){
+#document-table tr:nth-child(2n+1) td:nth-child(2){
     background-color: #f1f1f1;
 }
 
-#document-table tr:hover{
+#document-table tr td:hover td:nth-child(2){
     background-color: #E5E5E5;
 }
 
@@ -242,24 +261,6 @@ a.annotator-cancel:after{ /* remove the shitty x-icon from the cancel button */
 }
 .annotator-controls .annotator-save{
     display:none;
-/*      float:right;
-      display: inline-block !important;
-      vertical-align: top !important;
-      font-family: "Helvetica Neue", Helvetica, Tahoma, sans-serif !important;
-      font-size: 1em !important;
-      font-weight: 400 !important;
-      line-height: 1.618em !important;
-      text-align: center !important;
-      text-decoration: none !important;
-      color: rgba(255, 255, 255, 0.9) !important;
-      margin: 0 !important;
-      border: 1px solid transparent !important;
-      border-radius: 2px !important;
-      box-shadow: none !important;
-      cursor: pointer !important;
-      background: #0f6a53 !important;
-      padding: .3em 1.3em !important;
-      text-shadow: none !important;*/
   }
 .annotator-save:hover {
   color: rgba(255, 255, 255, 0.9) !important;
@@ -273,6 +274,58 @@ a.annotator-save:after{
     min-width: 150px !important;
 }
 /* end annotator hacks*/
+
+
+/* Fullscreen */
+:-webkit-full-screen {
+  background-color: white;
+  width: 50%;
+  height: 100%;
+  padding: 5em;
+
+}
+
+:-moz-full-screen {
+  background-color: white;
+  width: 50%;
+  height: 100%;
+  padding: 5em;
+
+
+}
+
+:-ms-fullscreen {
+  background-color: white;
+  width: 50%;
+  height: 100%;
+  padding: 5em;
+
+
+}
+
+:full-screen { /*pre-spec */
+  background-color: white;
+  width: 50%;
+  height: 100%;
+  padding: 5em;
+
+
+}
+
+:fullscreen { /* spec */
+  background-color: white;
+  width: 50%;
+  height: 100%;
+  padding: 5em;
+}
+
+
+#exit-fullscreen-btn{
+  font-size: 1.5em;
+  text-align: right;
+}
+
+/* end Fullscreen */
 
 a:link {text-decoration: none;color:#3d58a8;}
 a:visited {text-decoration: none;color:#3d58a8;}

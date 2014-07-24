@@ -18,16 +18,18 @@
     <div class="unit-10 annotator-nav">
         <nav class="nav">
             <ul>
-                <li><a href="/annotator"><span class="fa fa-home fa-fw fa-2x" title="MyNeonion"></span></a></li>
-                <li><span class="fa fa-expand fa-fw fa-2x deactivated" title="Fullscreen"></span></li>
-                <li><span class="fa fa-bar-chart-o fa-fw fa-2x deactivated" title="Analyze"></span></li>
+                <li><a href="/annotator"><span class="fa fa-home fa-fw" title="MyNeonion"></span></a></li>
+                <li><span class="fa fa-expand fa-fw" id="enableFullscreen" title="Fullscreen"></span></li>
+                <li><span class="fa fa-bar-chart-o fa-fw deactivated" title="Analyze"></span></li>
                 <li>&nbsp;</li>
                 <ul id="annotationSets">
-                    <li><span class="fa fa-users fa-fw fa-2x active" title="Persons" annotationSet="p"></span></li>
-                    <li><span class="fa fa-university fa-fw fa-2x" title="Institutions" annotationSet="i"> </span></li>
-                    <li><span class="fa fa-book fa-fw fa-2x" title="References" annotationSet="r"></span></li>
+                    <li>
+                        <span class="fa fa-users fa-fw active" title="Persons" annotationSet="p"></span>
+                    </li>
+                    <li><span class="fa fa-university fa-fw" title="Institutions" annotationSet="i"> </span></li>
+                    <li><span class="fa fa-book fa-fw" title="References" annotationSet="r"></span></li>
                 </ul>
-                <li id="help-link"><span class="fa fa-question fa-fw fa-2x" title="Help"></span></li>
+                <li id="help-link"><span class="fa fa-question fa-fw" title="Help"></span></li>
             </ul>
         </nav>
     </div>
@@ -75,7 +77,10 @@
                     $( this ).toggleClass( 'active' );
                     console.log( checkAnnotationSetSelection() );
                 });
+            });
 
+            $( '#enableFullscreen' ).click(function(){
+                enableFullscreen( document.getElementById( 'annotationArea' ) );
             });
 
 
@@ -90,6 +95,20 @@
             });
             return activeAnnotationSets;
         }
+
+        // Find the right method, call on correct element
+        function enableFullscreen(element) {
+          if(element.requestFullscreen) {
+            element.requestFullscreen();
+          } else if(element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+          } else if(element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+          } else if(element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+          }
+        }
+
 
         function loadDocument (resourceName, config) {
             // load document from loomp

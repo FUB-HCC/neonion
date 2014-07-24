@@ -17,16 +17,21 @@
         </div>
     </div>
 
-    <div class="unit-80">
-    {% block right_top %}
+    <div class=" unit-push-right unit-20" id="userInfo">
+        Foo Bar<br/>
+        5 Documents | 3 Annotation Sets
+    </div>
+
+
+    <div class="unit-push-right unit-50">
         <p class="input-groups">
             <input type="text" name="go" placeholder="Search" />
             <span class="btn-append">
                 <button class="btn btn-blue">Search</button>
             </span>
         </p>
-    {% endblock %}
     </div>
+
 
 </div>
 
@@ -38,11 +43,7 @@
             <tr><td><span><span class="fa fa-bar-chart-o fa-fw"></span>Analyze</span></td></tr>
             <tr><td><span><span class="fa fa-child fa-fw"></span>Profile</span></td></tr>
             <tr><td><span><span class="fa fa-cogs fa-fw"></span>Settings</span></td></tr>
-            {% if user.is_authenticated %}
-                <tr><td><a href="{% url "auth_logout" %}?next=/"><span class="fa fa-star fa-spin fa-fw"></span>Logout</a></td></tr>
-            {% else %}
-                <tr><td><span><a href="{% url 'django.contrib.auth.views.login' %}?next=/"><span class="fa fa-star fa-spin fa-fw"></span>Login</a></span></td></tr>
-            {% endif %}
+            <tr><td><a href="{% url "auth_logout" %}?next=/"><span class="fa fa-paper-plane fa-fw"></span>Logout</a></td></tr>
             <tr id="help-link"><td><span><span class="fa fa-question fa-fw"></span>Help</span></td></tr>
         </table>
     </div>
@@ -58,25 +59,54 @@
 
 
 {% block scripts %}
+    <script type="text/javascript" src="{% static 'js/moment.js' %}"></script>
+
     <script language="javascript">
 
     $(document).ready(function() {
         loadDocumentList(config);
     });
 
+    function compare_Documents(a,b) {
+      if (a.lastModified < b.lastModified)
+         return -1;
+      if (a.lastModified > b.lastModified)
+        return 1;
+      return 0;
+    }
+
     function loadDocumentList(config) {
-      // load document from loomp
+        var documentList = [];
+        // load document from loomp
         jQuery.ajax({
             url: config.server + config.service.getAll + "?type=" + config.uri.elementText,
             type: 'GET',
             crossDomain: true,
             dataType: 'json'
         }).done(function(response) {
-            $('#document-table').html('');
             response.forEach(function(entry) {
+                documentList.push( entry );
+            });
+            var today = moment().startOf("day");
+            var todayLabelSet = false;
+            var earlierLabelSet = false;
+            $('#document-table').html('<tr><td></td><td><a href="#">Import new Document</a></td></tr>');
+            documentList.sort( compare_Documents ).reverse().forEach( function( entry ) {
+                /* set label for first column (only once for each type) */
+                var label = '';
+                if( !todayLabelSet && entry.lastModified >= today ){
+                    label = 'Today';
+                    todayLabelSet = true;
+                }
+                if( !earlierLabelSet && entry.lastModified < today ){
+                    label = 'Earlier';
+                    earlierLabelSet = true;
+                }
+                /* create element for document list and append it */
                 var uri = entry.uri.split("/")
                 var id = uri[uri.length-1]
                 var element = $('<tr></tr>')
+                    .append( $('<td></td>').text( label ) ) // add label (today or earlier)
                     .append($('<td class="element-cell"></td>')
                         .append($('<a href="/annotator/' + id + '">' + entry.title + '</a>'))
                         .append($('<div class="document-list-buttons"></div>')
@@ -84,10 +114,10 @@
                             .append('<span class="fa fa-trash-o fa-fw" title="delete"></span>')
                         )
                     );
-                $("#document-table").append(element);
+                $('#document-table').append( element );
             });
-
         });
+
 
 
     }

@@ -1,12 +1,21 @@
-{% extends "base_overview.html" %}
+{% extends "base.html" %}
 
 {% load staticfiles %}
 
-{% block title %}Login{% endblock %}
+{% block content %}
+<div class="bg bg-20"></div>
 
-{% block right_top %}{% endblock %}
 
-{% block right_bottom %}
+<div class="units-row end">
+    <div class="unit-20 overview-nav">
+        <div class="units-row">
+            <hgroup>
+                <h1>NEONION</h1>
+                <h3 class="subheading">rethinking Annotation</h3>
+            </hgroup>
+        </div>
+    </div>
+    <div class="unit-80">
         {% if form.errors %}
         <p>Your username and password didn't match. Please try again.</p>
         {% endif %}
@@ -23,6 +32,9 @@
             </p>
             <input type="hidden" name="next" value="{{ next }}" />
         </form>
+    </div>
+</div>
+
 {% endblock %}
 
 

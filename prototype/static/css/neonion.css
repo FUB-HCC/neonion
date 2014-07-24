@@ -113,11 +113,14 @@ html{
 }
 
 .document-list-buttons{
-   display: none;
+   /*display: none;*/
+   color:transparent;
 }
 
 .element-cell:hover .document-list-buttons{
-    display: block;
+    /*display: block;*/
+  color:black;
+
 }
 
 

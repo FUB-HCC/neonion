@@ -15,25 +15,35 @@
             </hgroup>
         </div>
     </div>
-    <div class="unit-80">
+    <div class="unit-40">
+        <div class="units-row">
+        <h2>Please sign in</h2>
+        </div>
+        <div class="units-row">
         {% if form.errors %}
-        <p>Your username and password didn't match. Please try again.</p>
+            <p>Your username and password didn't match. Please try again.</p>
         {% endif %}
-        For testing purpose use: test:test
         <form id="loginform" method="post" action="{% url 'django.contrib.auth.views.login' %}">{% csrf_token %}
             <label>
-                <input id="id_username" maxlength="254" name="username" placeholder="Username" type="text" class="width-50">
+                <input id="id_username" maxlength="254" name="username" placeholder="Username" type="text" class="width-100">
             </label>
             <label>
-                <input id="id_password" name="password" placeholder="Password"  type="password" class="width-50">
+                <input id="id_password" name="password" placeholder="Password"  type="password" class="width-100">
             </label>
+            <p class="right">
+                Forgot password? <a href="#">click here</a>
+            </p>
             <p>
-                <button class="btn-blue width-50">Log in</button>
+                <button class="btn-blue">Sign in</button>
             </p>
             <input type="hidden" name="next" value="{{ next }}" />
-        </form>
+            </form>
+        </div>
+        <font color="green">For testing purpose use: test:test</font>
     </div>
 </div>
+
+
 
 {% endblock %}
 

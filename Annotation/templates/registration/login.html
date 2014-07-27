@@ -1,50 +1,28 @@
-{% extends "base.html" %}
+{% extends "registration/base_registration.html" %}
 
 {% load staticfiles %}
 
-{% block content %}
-<div class="bg bg-20"></div>
-
-
-<div class="units-row end">
-    <div class="unit-20 overview-nav">
-        <div class="units-row">
-            <hgroup>
-                <h1>NEONION</h1>
-                <h3 class="subheading">rethinking Annotation</h3>
-            </hgroup>
-        </div>
-    </div>
-    <div class="unit-40">
-        <div class="units-row">
-        <h2>Please sign in</h2>
-        </div>
-        <div class="units-row">
-        {% if form.errors %}
-            <p>Your username and password didn't match. Please try again.</p>
-        {% endif %}
-        <form id="loginform" method="post" action="{% url 'django.contrib.auth.views.login' %}">{% csrf_token %}
-            <label>
-                <input id="id_username" maxlength="254" name="username" placeholder="Username" type="text" class="width-100">
-            </label>
-            <label>
-                <input id="id_password" name="password" placeholder="Password"  type="password" class="width-100">
-            </label>
-            <p class="right">
-                Forgot password? <a href="#">click here</a>
-            </p>
-            <p>
-                <button class="btn-blue">Sign in</button>
-            </p>
-            <input type="hidden" name="next" value="{{ next }}" />
-            </form>
-        </div>
-        <font color="green">For testing purpose use: test:test</font>
-    </div>
+{% block registration %}
+<h2>Please sign in</h2>
 </div>
-
-
-
+<div class="units-row">
+{% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+<form id="loginform" method="post" action="{% url 'django.contrib.auth.views.login' %}">{% csrf_token %}
+    <label>
+        <input id="id_username" maxlength="254" name="username" placeholder="Username" type="text" class="width-50">
+    </label>
+    <label>
+        <input id="id_password" name="password" placeholder="Password"  type="password" class="width-50">
+    </label>
+    <p>
+        <button class="btn-blue">Sign in</button> Forgot password? <a href="#">click here</a>
+    </p>
+    <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+</div>
+<font color="green">For testing purpose use: test:test</font>
 {% endblock %}
 
 

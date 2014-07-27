@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block content %}
+<div class="bg bg-20"></div>
+
+
+<div class="units-row end">
+    <div class="unit-20 overview-nav">
+        <div class="units-row">
+            <hgroup>
+                <h1>NEONION</h1>
+                <h3 class="subheading">rethinking Annotation</h3>
+            </hgroup>
+        </div>
+    </div>
+    <div class="unit-80">
+        <div class="units-row">
+        {% block registration %}
+        {% endblock %}
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+
+

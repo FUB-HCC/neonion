@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'prototype',
+    # 'accounts',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -54,6 +55,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+
+# AUTH_USER_MODEL = 'accounts.User'
+# AUTHENTICATION_BACKENDS = ['accounts.backends.EmailAuthBackend', ]
+
 
 ROOT_URLCONF = 'Annotation.urls'
 

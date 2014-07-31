@@ -10,11 +10,3 @@ def home(request):
 
 # @login_required
 def annotator(request, doc_id):
-    return render_to_response('base_annotator.html', { "doc_id" : doc_id }, context_instance=RequestContext(request))
-<<<<<<< HEAD
-=======
-
-@login_required
-def import_document(request):
-    return render_to_response('base_import.html', { }, context_instance=RequestContext(request))
->>>>>>> 3af80b0ff65ab13e2bbf946de616fbab94675616

@@ -90,7 +90,7 @@
             var today = moment().startOf("day");
             var todayLabelSet = false;
             var earlierLabelSet = false;
-            $('#document-table').html('<tr><td></td><td><a href="#">Import new Document</a></td></tr>');
+            $('#document-table').html('<tr><td></td><td><a href="/import/">Import new Document</a></td></tr>');
             documentList.sort( compare_Documents ).reverse().forEach( function( entry ) {
                 /* set label for first column (only once for each type) */
                 var label = '';

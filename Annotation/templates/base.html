@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width; maximum-scale=1; minimum-scale=1;" />
+    <meta name="viewport" content="width=device-width, maximum-scale=1, minimum-scale=1" />
 
     <title>Neonion - {% block title %}{% endblock %}</title>
     {% load staticfiles %}
@@ -17,7 +17,6 @@
     {% block content %}{% endblock %}
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/neonion.js' %}"></script>
     {% block scripts %}{% endblock %}
 </body>

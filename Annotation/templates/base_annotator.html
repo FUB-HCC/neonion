@@ -39,11 +39,11 @@
                 <div id="documentText" class="panel-body"><span class="fa fa-spinner fa-spin"></span> Loading...</div>
             </div>
         </div>
-        <!-- <div class="units-row">
+         <div class="units-row">
             <button class="btn btn-green" id="document-save" >
                 Speichern
             </button>
-        </div> -->
+        </div> 
     </div>
 
 </div>
@@ -53,6 +53,7 @@
 {% block scripts %}
     <script type="text/javascript" src="{% static 'js/annotator.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/annotator.neonion.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/annotator.store.min.js' %}"></script>
 
     <script language="javascript">
 
@@ -67,7 +68,7 @@
 
             // attach event handler
             $('#document-save').click(function () {
-               // saveDocument(config);
+                saveDocument(config);
             });
 
             $( '#annotationSets li span' ).each( function(){
@@ -107,7 +108,6 @@
           }
         }
 
-
         function loadDocument (resourceName, config) {
             // load document from loomp
             jQuery.ajax(
@@ -123,6 +123,15 @@
                 $("#documentText").html(data.document.content);
                 $("#documentText").annotator()
                 .annotator('addPlugin', 'Neonion');
+                // .annotator('addPlugin', 'Store', {
+                //     // The endpoint of the store on your server.
+                //     prefix: 'http://hcc-annotator-store.herokuapp.com',
+
+                //     // Attach the uri of the current page to all annotations to allow search.
+                //     annotationData: {
+                //         'uri': data.resourceName
+                //     }
+                // });
 
                 restoreAnnotations();
                 $('#document-save').show();
@@ -141,13 +150,24 @@
 
         function loadAnnotationSets(config) {
             // TODO
+            jQuery.ajax({
+                url: config.server + config.service.getAll + "?type=" + config.uri.annotationSet,
+                type: 'GET',
+                crossDomain: true,
+                dataType: 'json'
+            }).done(function(response) {
+                //console.log(response);
+            });
         }
 
         function saveDocument(config) {
             var contentNode = Annotator._instances[0].wrapper[0].childNodes[0];
             data.document.content = contentNode.outerHTML;
+
+            console.log(data);
+
             //console.log(data.document.content);
-            jQuery.ajax(
+            /*jQuery.ajax(
             {
                 url: config.server + config.service.save,
                 type: 'POST',
@@ -162,7 +182,7 @@
                 }, 3000);
             }).error(function(jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
-            });
+            });*/
         }
 
     </script>

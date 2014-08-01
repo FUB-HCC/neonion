@@ -8,7 +8,7 @@
 
 ## Run on your local machine
 
-For joseki and loomp you will need java 1.7 and grails ([Groovy enVironment Manager](http://gvmtool.net) is a nice tool to get started with grails). For neonion you need python with django installed.
+For joseki and loomp you will need java 1.7 and grails 2.3.7 ([Groovy enVironment Manager](http://gvmtool.net) is a nice tool to get started with grails). For neonion you need python with django installed.
 
 the following steps need one shell each:
 

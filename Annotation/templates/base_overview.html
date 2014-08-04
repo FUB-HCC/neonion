@@ -18,7 +18,7 @@
     </div>
 
     <div class=" unit-push-right unit-20 small" id="userInfo">
-        Ted Nelson<br/>
+        {{ user.name }} {{ user.surname }}<br/>
         5 Documents | 3 Annotation Sets
     </div>
 
@@ -43,7 +43,7 @@
             <tr><td><span><span class="fa fa-bar-chart-o fa-fw"></span>Analyze</span></td></tr>
             <tr><td><span><span class="fa fa-child fa-fw"></span>Profile</span></td></tr>
             <tr><td><span><span class="fa fa-cogs fa-fw"></span>Settings</span></td></tr>
-            <!-- <tr><td><a href="{# url "auth_logout" #}?next=/"><span class="fa fa-sign-out fa-fw"></span>Logout</a></td></tr> -->
+            <tr><td><a href="{% url 'accounts:logout' %}?next=/"><span class="fa fa-sign-out fa-fw"></span>Logout</a></td></tr>
             <tr id="help-link"><td><span><span class="fa fa-question fa-fw"></span>Help</span></td></tr>
         </table>
     </div>

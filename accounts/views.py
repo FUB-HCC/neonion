@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render, render_to_response, redirect
 from django.template import RequestContext
 from django.contrib.auth import login as django_login, authenticate, logout as django_logout
 
@@ -22,7 +22,6 @@ def login(request):
         'form': form,
     }, context_instance=RequestContext(request))
 
-
 def register(request):
     """
     User registration view.
@@ -37,7 +36,6 @@ def register(request):
     return render_to_response('accounts/register.html', {
         'form': form,
     }, context_instance=RequestContext(request))
-
 
 def logout(request):
     """

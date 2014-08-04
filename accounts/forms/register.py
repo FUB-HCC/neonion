@@ -1,19 +1,54 @@
 from django import forms
 from accounts.models import User
+from django.contrib.auth import get_user_model
+
 
 class RegistrationForm(forms.ModelForm):
     """
     Form for registering a new account.
     """
-    email = forms.EmailField(widget=forms.widget.TextInput,label="Email")
-    password1 = forms.CharField(widget=forms.widget.PasswordInput,
-                                label="Password")
-    password2 = forms.CharField(widget=forms.widget.PasswordInput,
-                                label="Password (again)")
+    email = forms.EmailField(widget=forms.EmailInput(
+        attrs={
+            'placeholder': 'Email',
+            'class': 'width-100',
+        }),
+        label='')
+
+    name = forms.CharField( widget=forms.TextInput(
+        attrs={
+            'placeholder': 'Name',
+            'class': 'width-50',
+        }
+        ),
+        label='')
+
+
+    surname = forms.CharField( widget=forms.TextInput(
+        attrs={
+            'placeholder': 'Surname',
+            'class': 'width-50',
+        }
+        ),
+        label='')
+
+    password1 = forms.CharField(widget=forms.PasswordInput(
+        attrs={
+            'placeholder': 'Password',
+            'class': 'width-100',
+        }),
+        label='')
+
+    password2 = forms.CharField(widget=forms.PasswordInput(
+        attrs={
+            'placeholder': 'Password (again)',
+            'class': 'width-100',
+        }),
+        label='')
+
 
     class Meta:
         model = User
-        fields = ['email', 'password1', 'password2']
+        fields = ['email', 'name', 'surname', 'password1', 'password2']
 
     def clean(self):
         """

@@ -9,41 +9,41 @@ class RegistrationForm(forms.ModelForm):
     """
     email = forms.EmailField(widget=forms.EmailInput(
         attrs={
-            'placeholder': 'Email',
+            'placeholder': 'john.doe@example.com',
             'class': 'width-100',
         }),
-        label='')
+        label='Email')
 
     name = forms.CharField( widget=forms.TextInput(
         attrs={
-            'placeholder': 'Name',
+            'placeholder': 'John',
             'class': 'width-50',
         }
         ),
-        label='')
+        label='Name')
 
 
     surname = forms.CharField( widget=forms.TextInput(
         attrs={
-            'placeholder': 'Surname',
+            'placeholder': 'Doe',
             'class': 'width-50',
         }
         ),
-        label='')
+        label='Surname')
 
     password1 = forms.CharField(widget=forms.PasswordInput(
         attrs={
-            'placeholder': 'Password',
+            'placeholder': '********',
             'class': 'width-100',
         }),
-        label='')
+        label='Password')
 
     password2 = forms.CharField(widget=forms.PasswordInput(
         attrs={
-            'placeholder': 'Password (again)',
+            'placeholder': '********',
             'class': 'width-100',
         }),
-        label='')
+        label='Password(again)')
 
 
     class Meta:

@@ -9,10 +9,10 @@
     <form class="width-50" action="" method="post">
         {% csrf_token %}
         <!-- {{ form.as_p }} -->
-        <p>{{ form.email }}</p>
-        <p>{{ form.name }}{{ form.surname}}</p>
-        <p>{{ form.password1 }}</p>
-        <p>{{ form.password2 }}</p>
+        <p><label class="sticky">{{ form.email.label }}{{ form.email }}</label></p>
+        <p><label class="sticky">{{ form.name.label }}<br/>{{ form.name}}{{ form.surname}}</label></p>
+        <p><label class="sticky">{{ form.password1.label }}{{ form.password1 }}</label></p>
+        <p><label class="sticky">{{ form.password2.label }}{{ form.password2 }}</label></p>
         <button class="btn-blue">Register</button>
     </form>
 </div>

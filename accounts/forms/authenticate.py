@@ -5,13 +5,13 @@ class AuthenticationForm(forms.Form):
     Login form
     """
     email = forms.EmailField(widget=forms.EmailInput(attrs={
-                                                        'placeholder':'Email',
+                                                        'placeholder':'john.doe@example.com',
                                                         'class': 'width-100',
-                                                    }), label="")
+                                                    }), label="Email")
     password = forms.CharField(widget=forms.PasswordInput(attrs={
-                                                            'placeholder':'Password',
+                                                            'placeholder':'********',
                                                             'class': 'width-100 last_input'
-                                                        }), label="")
+                                                        }), label="Password")
 
     class Meta:
         fields = ['email', 'password']

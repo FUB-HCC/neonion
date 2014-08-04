@@ -12,7 +12,8 @@
 
     <form class="width-50" action="" method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        <p><label class="sticky">{{ form.email.label }}{{ form.email }}</label></p>
+        <p><label class="sticky">{{ form.password.label }}{{ form.password }}</label></p>
         <button class="btn-blue">Sign in</button>
         <span class="small right">Forgot password? <a href="#">click here</a></span><br>
     </form>

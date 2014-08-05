@@ -6,10 +6,7 @@
 <div class="big">Please sign in</div>
 </div>
 <div class="units-row">
-{% if form.errors %}
-    <p class="small color-red">Your username and password didn't match. Please try again.</p>
-{% endif %}
-
+    {% if form.errors %}<p class="small color-red">Your username and password didn't match. Please try again.</p>{% endif %}
     <form class="width-50" action="" method="post">
         {% csrf_token %}
         <p><label class="sticky">{{ form.email.label }}{{ form.email }}</label></p>
@@ -17,10 +14,5 @@
         <button class="btn-blue">Sign in</button>
         <span class="small right">Forgot password? <a href="#">click here</a></span><br>
     </form>
-
 <font color="green">For testing purpose use: test@test.de:test</font>
-
  {% endblock %}
-
-
-

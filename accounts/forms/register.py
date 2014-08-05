@@ -53,7 +53,6 @@ class RegistrationForm(forms.ModelForm):
     def clean(self):
         """
         Verifies that the values entered into the password fields match
-
         NOTE: Errors here will appear in ``non_field_errors()`` because it applies to more than one field.
         """
         cleaned_data = super(RegistrationForm, self).clean()

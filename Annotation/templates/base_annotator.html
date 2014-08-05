@@ -9,12 +9,11 @@
     <link rel="stylesheet" href="{% static 'css/annotator.min.css' %}" type="text/css" media="screen" />
 {% endblock %}
 
+{% block top %}
+    <div class="bg bg-10"></div>
+{% endblock %}
 
-{% block content %}
-<div class="bg bg-10"></div>
-
-<div class="units-row">
-
+{% block bottom_left %}
     <div class="unit-10 annotator-nav">
         <nav class="nav">
             <ul>
@@ -31,7 +30,9 @@
             </ul>
         </nav>
     </div>
+{% endblock %}
 
+{% block bottom_right %}
     <div class="unit-centered unit-60">
         <div class="units-row">
             <div id="annotationArea" class="panel panel-default" >
@@ -43,12 +44,10 @@
             <button class="btn btn-green" id="document-save" >
                 Speichern
             </button>
-        </div> 
+        </div>
     </div>
-
-</div>
-
 {% endblock %}
+
 
 {% block scripts %}
     <script type="text/javascript" src="{% static 'js/annotator.min.js' %}"></script>

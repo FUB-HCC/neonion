@@ -6,32 +6,18 @@
 
 {% block stylesheets %}{% endblock %}
 
-
-{% block content %}
-<div class="bg bg-20"></div>
-
-<div class="units-row">
-
-    <div class="unit-20 annotator-nav">
-        Nav
-    </div>
-
+{% block bottom_right %}
     <div class="unit-centered unit-60">
          <div class="units-row">
-            <button class="btn btn-green" id="document-retrieve" >
-                Importieren
-            </button>
+            <table id="document-table" class="table-simple"></table>
         </div> 
         <div class="units-row">
-            <div id="annotationArea" style="display:none;" class="panel panel-default" >
-                <div id="spinner"><span class="fa fa-spinner fa-spin"></span> Loading...</div>
+            <div class="panel panel-default" >
+                <div id="spinner" style="display:none;"><span class="fa fa-spinner fa-spin"></span> Loading...</div>
                 <div id="documentText" class="panel-body"></div>
             </div>
         </div>
     </div>
-
-</div>
-
 {% endblock %}
 
 {% block scripts %}
@@ -59,6 +45,29 @@
             "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil1"
         ]
 
+        $(document).ready(function() {
+            updateDocumentTable(docUris);
+
+            $("#document-table").on("click", "span", function() {
+                retrieveDocument(docUris[parseInt($(this).attr("index"))]);
+            });
+        });
+
+        function updateDocumentTable(entries) {
+            // clear table
+            $("#document-table").html("");
+            // create docuement tabel
+            $.each(entries, function(index, value) {
+                $("#document-table").append(
+                    "<tr><td></td><td class='element-cell'>" + 
+                    "<a href='#'>" + value + "</a>" +
+                    "<div class='document-list-buttons'><span index='" + index + "' class='fa fa-upload' title='Import'></span></div>" +
+                    "</td></tr>"
+                );
+            });
+
+        }
+
         function retrieveDocument(docUri) {
             $("#spinner").show();
             $("#documentText").html("");
@@ -66,27 +75,27 @@
         }
 
         function getPage(docUri, pageNum) {
-            jQuery.get(
-                config.cms.server + config.cms.service.getPage + docUri + "&pn=" + pageNum,
-                function(data, textStatus, jqXHR) {
+            jQuery.ajax({
+                url: config.cms.server + config.cms.service.getPage + docUri + "&pn=" + pageNum,
+                contentType: 'text/plain',
+                type: 'GET',
+                xhrFields : { withCredentials: false },
+                headers: { },
+                success : function(data, textStatus, jqXHR) {
                     $("#documentText").append(data);
                     getPage(docUri, pageNum + 1);
-            }).error(function(jqXHR, textStatus, errorThrown) {
-                endRetrieveDocument();
-
-                console.log(textStatus);
+                },
+                error : function(jqXHR, textStatus, errorThrown) {
+                    if (jqXHR.status == 404) {
+                        endRetrieveDocument();
+                    }
+                }
             });
         }
 
         function endRetrieveDocument() {
            $("#spinner").hide(); 
         }
-
-        $(document).ready(function() {
-            $("#document-retrieve").click(function() {
-                retrieveDocument(docUris[0]);
-            });
-        });
 
     </script>
 {% endblock %}

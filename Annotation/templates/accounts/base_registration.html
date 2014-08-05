@@ -2,36 +2,17 @@
 
 {% load staticfiles %}
 
-{% block content %}
-<div class="bg bg-20"></div>
 
+{% block top_right %}{% endblock %}
 
-<div class="units-row end">
-    <div class="unit-20 overview-nav">
-        <div class="units-row">
-            <hgroup>
-                <h1>NEONION</h1>
-                <h3 class="subheading">rethinking Annotation</h3>
-            </hgroup>
-        </div>
-    </div>
-</div>
+{% block bottom_left %}
+    <div class="unit-20">&nbsp;</div>
+{% endblock %}
 
-<div class="units-row end">
-    <div class="unit-20">
-    &nbsp
-    </div>
+{% block bottom_right %}
     <div class="unit-80">
         <div class="units-row">
         {% block registration %}
         {% endblock %}
     </div>
-</div>
-
-
-
-
 {% endblock %}
-
-
-

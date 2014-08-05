@@ -1,32 +1,37 @@
 var config = {
 
-    server : "http://hcc-loomp.herokuapp.com",
+    scms : {
 
-    uriPrefix: "http://loomp.org/data/",
+        server : "http://hcc-loomp.herokuapp.com",
 
-    uri : {
-        annotation : "http://vocab.loomp.org/model/Annotation",
-        annotationSet : "http://vocab.loomp.org/model/AnnotationSet",
-        elementText : "http://vocab.loomp.org/model/ElementText"
+        uriPrefix: "http://loomp.org/data/",
+
+        uri : {
+            annotation : "http://vocab.loomp.org/model/Annotation",
+            annotationSet : "http://vocab.loomp.org/model/AnnotationSet",
+            elementText : "http://vocab.loomp.org/model/ElementText"
+        },
+
+        service : {
+            get : "/content/get",
+            getAll : "/content/getAll",
+            save : "/content/save",
+            create : "/content/save"
+        }
+    },
+    
+    cms : {
+        server : "http://euler.mpiwg-berlin.mpg.de:8000",
+
+        service : {
+            getPage : "/hocr?document=",
+            list : ""
+        }
     },
 
-    service : {
-        get : "/content/get",
-        getAll : "/content/getAll",
-        save : "/content/save",
-        create : "/content/save"
+    gnd : {
+        server : "http://zbw.eu/beta/sparql"
     }
+
 };
 
-var cmsConfig = {
-    server : "http://euler.mpiwg-berlin.mpg.de:18080",
-
-    service : {
-        get : "/doc2?url=/Jahrbuch_der_MPG_Veroeffentlichungen_MPIs_1954-1974___Jahrbuch_der_MPG_Veroeffentlichungen_der_MPI-1974/pages&pn=1&viewmode=hocr&mode=hocr",
-        list : ""
-    }
-};
-
-var gndConfig = {
-    server : "http://zbw.eu/beta/sparql"
-}

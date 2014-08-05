@@ -62,12 +62,12 @@
         };
 
         $(document).ready(function() {
-            loadDocument(config.resourceName, config);
-            loadAnnotationSets(config);
+            loadDocument(config.scms.resourceName);
+            loadAnnotationSets();
 
             // attach event handler
             $('#document-save').click(function () {
-                saveDocument(config);
+                saveDocument();
             });
 
             $( '#annotationSets li span' ).each( function(){
@@ -107,11 +107,11 @@
           }
         }
 
-        function loadDocument (resourceName, config) {
+        function loadDocument (resourceName) {
             // load document from loomp
             jQuery.ajax(
             {
-                url: config.server + config.service.get + "?uri=" + config.uriPrefix + data.resourceName,
+                url: config.scms.server + config.scms.service.get + "?uri=" + config.scms.uriPrefix + data.resourceName,
                 type: 'GET',
                 crossDomain: true,
                 dataType: 'json'
@@ -150,12 +150,12 @@
         function loadAnnotationSets(config) {
             // TODO
             jQuery.ajax({
-                url: config.server + config.service.getAll + "?type=" + config.uri.annotationSet,
+                url: config.scms.server + config.scms.service.getAll + "?type=" + config.scms.uri.annotationSet,
                 type: 'GET',
                 crossDomain: true,
                 dataType: 'json'
             }).done(function(response) {
-                //console.log(response);
+    console.log(response);
             });
         }
 
@@ -168,7 +168,7 @@
             //console.log(data.document.content);
             /*jQuery.ajax(
             {
-                url: config.server + config.service.save,
+                url: config.scms.server + config.scms.service.save,
                 type: 'POST',
                 data : { "data" : JSON.stringify(data.document), fmt : "JSON" }
             }).success(function(data, textStatus, jqXHR) {

@@ -19,7 +19,8 @@
                         Importieren
                     </button>
                 </div>
-                <div id="documentText" class="panel-body"></div>
+                <div id="document-title" class="panel-heading big"></div>
+                <div id="document-text" class="panel-body"></div>
             </div>
         </div>
     </div>
@@ -57,9 +58,9 @@
 
                 var entityData = { 
                     uri : null , 
+                    title : $("#document-title").html(), content : normalizedContent(),
                     type : "http://vocab.loomp.org/model/ElementText",
                     dataCreated : 0, lastModified : 0, 
-                    title : "Testdokument", content : "<span>TEST Inhalt</span>"
                 };
 
 
@@ -96,7 +97,8 @@
         function retrieveDocument(docUri) {
             $("#spinner").show();
             $("#document-import").hide();
-            $("#documentText").html("");
+            $("#document-text").html("");
+            $("#document-title").html(docUri);
             getPage(docUri, 0);
         }
 
@@ -108,8 +110,12 @@
                 xhrFields : { withCredentials: false },
                 headers: { },
                 success : function(data, textStatus, jqXHR) {
-                    $("#documentText").append(data);
+                    $("#document-text").append(data);
+                    // TEST limit pages
+                    if (pageNum < 5)
                     getPage(docUri, pageNum + 1);
+                    else
+                    endRetrieveDocument(); 
                 },
                 error : function(jqXHR, textStatus, errorThrown) {
                     if (jqXHR.status == 404) {
@@ -122,6 +128,35 @@
         function endRetrieveDocument() {
            $("#spinner").hide(); 
            $("#document-import").show();
+        }
+
+        function normalizedContent() {
+            var stripMarkupRegex = /(<([^>]+)>)/ig;
+            var stripLinebreaksRegex = /(\r\n|\n|\r)/gm;
+            var collapseWhiteSpaceRegex = /\s+/g;
+            var fullTrimRegex = /^\s+|\s+$/g;
+
+            var paragrapgNodes = $("#document-text p.ocr_par");
+            var paragrapgs = new Array(paragrapgNodes.length);
+            
+            // normalize content and store paragraph
+            paragrapgNodes.each(function(index, value) {
+                paragrapgs[index] = value.innerHTML
+                .replace(stripMarkupRegex, "")
+                .replace(stripLinebreaksRegex, " ")
+                .replace(collapseWhiteSpaceRegex, " ")
+                .replace(fullTrimRegex, "");
+            });
+
+            // concat content blob
+            var content = "";
+            $.each(paragrapgs, function(index, value) {
+                if (value.length > 0) {
+                    content += "<p>" + value + "</p>";
+                }
+            });
+
+            return wrapContent(content);
         }
 
         function wrapContent(html) {

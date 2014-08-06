@@ -113,16 +113,16 @@
                 $("#documentTitle").html(data.document.title);
                 $("#documentText").html(data.document.content);
                 $("#documentText").annotator()
-                .annotator('addPlugin', 'Neonion');
-                // .annotator('addPlugin', 'Store', {
-                //     // The endpoint of the store on your server.
-                //     prefix: 'http://hcc-annotator-store.herokuapp.com',
+                .annotator('addPlugin', 'Neonion')
+                .annotator('addPlugin', 'Store', {
+                    // The endpoint of the store on your server.
+                    prefix: 'http://annotator.l3q.de',
 
-                //     // Attach the uri of the current page to all annotations to allow search.
-                //     annotationData: {
-                //         'uri': data.resourceName
-                //     }
-                // });
+                    // Attach the uri of the current page to all annotations to allow search.
+                    annotationData: {
+                        'uri': data.resourceName
+                    }
+                });
             });
         }
 

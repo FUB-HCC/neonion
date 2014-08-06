@@ -16,6 +16,7 @@ var config = {
             get : "/content/get",
             getAll : "/content/getAll",
             save : "/content/save",
+            delete : "/content/delete",
             create : "/content/save"
         }
     },

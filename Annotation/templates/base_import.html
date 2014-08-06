@@ -13,8 +13,14 @@
         </div> 
         <div class="units-row">
             <div class="panel panel-default" >
-                <div id="spinner" style="display:none;"><span class="fa fa-spinner fa-spin"></span> Loading...</div>
-                <div id="documentText" class="panel-body"></div>
+                <div >
+                    <span id="spinner" style="display:none;"><span class="fa fa-spinner fa-spin"></span> Dokument wird geladen...</span>
+                    <button style="display:none;" class="btn btn-green" id="document-import" >
+                        Importieren
+                    </button>
+                </div>
+                <div id="document-title" class="panel-heading big"></div>
+                <div id="document-text" class="panel-body"></div>
             </div>
         </div>
     </div>
@@ -48,8 +54,28 @@
         $(document).ready(function() {
             updateDocumentTable(docUris);
 
-            $("#document-table").on("click", "span", function() {
-                retrieveDocument(docUris[parseInt($(this).attr("index"))]);
+            $("#document-import").click(function() {
+
+                var entityData = { 
+                    uri : null , 
+                    title : $("#document-title").html(), content : normalizedContent(),
+                    type : "http://vocab.loomp.org/model/ElementText",
+                    dataCreated : 0, lastModified : 0, 
+                };
+
+
+                jQuery.ajax(
+                {
+                    url: config.scms.server + config.scms.service.create,
+                    type: 'POST',
+                    data : { "data" : JSON.stringify(entityData), fmt : "JSON" }
+                }).success(function(data, textStatus, jqXHR) {
+                    console.log(data);
+                     window.location = "/";
+                }).error(function(jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown);
+                });
+
             });
         });
 
@@ -61,7 +87,7 @@
                 $("#document-table").append(
                     "<tr><td></td><td class='element-cell'>" + 
                     "<a href='#'>" + value + "</a>" +
-                    "<div class='document-list-buttons'><span index='" + index + "' class='fa fa-upload' title='Import'></span></div>" +
+                    "<div class='document-list-buttons'><span onclick='retrieveDocument(\"" + value + "\")' class='fa fa-upload' title='Import'></span></div>" +
                     "</td></tr>"
                 );
             });
@@ -70,7 +96,9 @@
 
         function retrieveDocument(docUri) {
             $("#spinner").show();
-            $("#documentText").html("");
+            $("#document-import").hide();
+            $("#document-text").html("");
+            $("#document-title").html(docUri);
             getPage(docUri, 0);
         }
 
@@ -82,8 +110,12 @@
                 xhrFields : { withCredentials: false },
                 headers: { },
                 success : function(data, textStatus, jqXHR) {
-                    $("#documentText").append(data);
+                    $("#document-text").append(data);
+                    // TEST limit pages
+                    if (pageNum < 5)
                     getPage(docUri, pageNum + 1);
+                    else
+                    endRetrieveDocument(); 
                 },
                 error : function(jqXHR, textStatus, errorThrown) {
                     if (jqXHR.status == 404) {
@@ -95,6 +127,40 @@
 
         function endRetrieveDocument() {
            $("#spinner").hide(); 
+           $("#document-import").show();
+        }
+
+        function normalizedContent() {
+            var stripMarkupRegex = /(<([^>]+)>)/ig;
+            var stripLinebreaksRegex = /(\r\n|\n|\r)/gm;
+            var collapseWhiteSpaceRegex = /\s+/g;
+            var fullTrimRegex = /^\s+|\s+$/g;
+
+            var paragrapgNodes = $("#document-text p.ocr_par");
+            var paragrapgs = new Array(paragrapgNodes.length);
+            
+            // normalize content and store paragraph
+            paragrapgNodes.each(function(index, value) {
+                paragrapgs[index] = value.innerHTML
+                .replace(stripMarkupRegex, "")
+                .replace(stripLinebreaksRegex, " ")
+                .replace(collapseWhiteSpaceRegex, " ")
+                .replace(fullTrimRegex, "");
+            });
+
+            // concat content blob
+            var content = "";
+            $.each(paragrapgs, function(index, value) {
+                if (value.length > 0) {
+                    content += "<p>" + value + "</p>";
+                }
+            });
+
+            return wrapContent(content);
+        }
+
+        function wrapContent(html) {
+            return "<span xml:lang='de'>" + html + "</span>";
         }
 
     </script>

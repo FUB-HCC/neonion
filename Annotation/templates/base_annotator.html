@@ -40,11 +40,6 @@
                 <div id="documentText" class="panel-body"><span class="fa fa-spinner fa-spin"></span> Loading...</div>
             </div>
         </div>
-         <div class="units-row">
-            <button class="btn btn-green" id="document-save" >
-                Speichern
-            </button>
-        </div>
     </div>
 {% endblock %}
 
@@ -64,11 +59,6 @@
         $(document).ready(function() {
             loadDocument(config.scms.resourceName);
             loadAnnotationSets();
-
-            // attach event handler
-            $('#document-save').click(function () {
-                saveDocument();
-            });
 
             $( '#annotationSets li span' ).each( function(){
                 $( this ).click( function(){
@@ -117,23 +107,25 @@
                 dataType: 'json'
             }
             ).done(function(response) {
+                // TODO move loading document to server template
                 data.document = response;
+                console.log(response);
                 $("#documentTitle").html(data.document.title);
                 $("#documentText").html(data.document.content);
                 $("#documentText").annotator()
-                .annotator('addPlugin', 'Neonion');
-                // .annotator('addPlugin', 'Store', {
-                //     // The endpoint of the store on your server.
-                //     prefix: 'http://hcc-annotator-store.herokuapp.com',
+                .annotator('addPlugin', 'Neonion')
+                .annotator('addPlugin', 'Store', {
+                    // The endpoint of the store on your server.
+                    prefix: 'http://annotator.l3q.de',
 
-                //     // Attach the uri of the current page to all annotations to allow search.
-                //     annotationData: {
-                //         'uri': data.resourceName
-                //     }
-                // });
-
-                restoreAnnotations();
-                $('#document-save').show();
+                    // Attach the uri of the current page to all annotations to allow search.
+                    annotationData: {
+                        'uri': data.resourceName
+                    },
+                    loadFromSearch: {
+                        'uri': data.resourceName
+                    }
+                });
             });
         }
 
@@ -147,7 +139,7 @@
             */
         }
 
-        function loadAnnotationSets(config) {
+        function loadAnnotationSets() {
             // TODO
             jQuery.ajax({
                 url: config.scms.server + config.scms.service.getAll + "?type=" + config.scms.uri.annotationSet,
@@ -155,15 +147,13 @@
                 crossDomain: true,
                 dataType: 'json'
             }).done(function(response) {
-    console.log(response);
+                //console.log(response);
             });
         }
 
         function saveDocument(config) {
             var contentNode = Annotator._instances[0].wrapper[0].childNodes[0];
             data.document.content = contentNode.outerHTML;
-
-            console.log(data);
 
             //console.log(data.document.content);
             /*jQuery.ajax(
@@ -173,12 +163,6 @@
                 data : { "data" : JSON.stringify(data.document), fmt : "JSON" }
             }).success(function(data, textStatus, jqXHR) {
                 console.log(data);
-
-                $("#alert-saved").addClass("in");
-                window.setTimeout(function() {
-                    $("#alert-saved").removeClass("in");
-                    $("#alert-saved").addClass("out");
-                }, 3000);
             }).error(function(jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
             });*/

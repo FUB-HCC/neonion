@@ -15,3 +15,4 @@ def annotator(request, doc_id):
 @login_required
 def import_document(request):
     return render_to_response('base_import.html', { }, context_instance=RequestContext(request))
+

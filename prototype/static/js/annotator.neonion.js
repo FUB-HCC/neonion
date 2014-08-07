@@ -1,23 +1,39 @@
 Annotator.Plugin.Neonion = function (element, options) {
 
 	var persons = [
-		{ label: "Unbekannte Person", uri : "http://de.dbpedia.org/resource/Unknown_Person" },
+		{ label: "Unbekannte Person", uri : "http://neonion.com/resource/Unknown_Person" },
 		{ label: "Otto Hahn", uri : "https://www.wikidata.org/wiki/Q57065" },
 		{ label: "Max Planck", uri : "https://www.wikidata.org/wiki/Q9021" },
 		{ label: "Otto von Baeyer", uri : "https://www.wikidata.org/wiki/Q1682101" },
 		{ label: "Wilhelm Westphal", uri : "https://www.wikidata.org/wiki/Q95679" }
 	];
 
+	var user;
+
     return {
+
+		
 
 		pluginInit : function () {
 			
+			// add field to linked person
 			this.annotator.viewer.addField({
 				load: function (field, annotation) {
 					field.innerHTML = "Person: <a href='" + annotation.rdf.about + "' target='blank'>" + annotation.rdf.label + "</a>";
 				}
-			})
+			});
+			// add field with creator
+			this.annotator.viewer.addField({
+				load: function (field, annotation) {
+					var userField = "Unbekannt";
+					if (annotation.creator) {
+						userField = annotation.creator.email;
+					}
+					field.innerHTML = "Erfasser: " + userField + "</a>";
+				}
+			});
 
+			// add field containing the suggested ressources
 			var suggestionField = this.annotator.editor.addField({
 				load: this.updateSuggestionField,
 				submit: this.pluginSubmit
@@ -31,15 +47,23 @@ Annotator.Plugin.Neonion = function (element, options) {
 				$(".annotator-widget").submit();
 			});
 
-			/*
-			this.annotator.subscribe("beforeAnnotationCreated", function (annotation) {
-
+			// get logged in user credentials
+			$.ajax({
+				context : this, 
+				type : "get",
+				url : options.whoamiUrl, 
+				success : this.setUser, 
+				dataType : "json"
 			});
-			*/
 
+			// attach event handler to enrich DOM with RDFa
 			this.annotator.subscribe("annotationCreated", this.enrichRDFa);
 			this.annotator.subscribe("annotationUpdated", this.enrichRDFa);
 
+		},
+
+		setUser : function(userData) { 
+			user = userData; 
 		},
 
 		enrichRDFa : function(annotation) {
@@ -52,9 +76,12 @@ Annotator.Plugin.Neonion = function (element, options) {
 		pluginSubmit : function(field, annotation) {
 			var activeItem = $(field).children(":first").children(".active");
 
+			// add user to annotation
+			annotation.creator = user;
+
 			// update annotation object
 			annotation.rdf = {
-				typeof : "dbpedia-owl:Person",
+				typeof : "dbpedia-owl:Person", // "gndo:DifferentiatedPerson",
 				property : "rdfs:label",
 				about : activeItem.attr("uri"),
 				label : activeItem.text()

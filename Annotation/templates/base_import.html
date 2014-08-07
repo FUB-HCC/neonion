@@ -30,7 +30,7 @@
 
     <script language="javascript">
 
-        var docUris = [
+        var docNames = [
             "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1964-1965",
             "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1958-1960",
             "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1972-1973",
@@ -52,29 +52,11 @@
         ]
 
         $(document).ready(function() {
-            updateDocumentTable(docUris);
+            updateDocumentTable(docNames);
 
             $("#document-import").click(function() {
-
-                var entityData = { 
-                    uri : null , 
-                    title : $("#document-title").html(), content : normalizedContent(),
-                    type : "http://vocab.loomp.org/model/ElementText",
-                    dataCreated : 0, lastModified : 0, 
-                };
-
-                jQuery.ajax(
-                {
-                    url: config.scms.server + config.scms.service.create,
-                    type: 'POST',
-                    data : { "data" : JSON.stringify(entityData), fmt : "JSON" }
-                }).success(function(data, textStatus, jqXHR) {
-                    console.log(data);
-                     window.location = "/";
-                }).error(function(jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                });
-
+                $("#document-import").attr("disabled", true);
+                importDocuemt();
             });
         });
 
@@ -86,22 +68,26 @@
                 $("#document-table").append(
                     "<tr><td></td><td class='element-cell'>" + 
                     "<a href='#'>" + value + "</a>" +
-                    "<div class='document-list-buttons'><span onclick='retrieveDocument(\"" + value + "\")' class='fa fa-upload' title='Import'></span></div>" +
+                    "<div class='document-list-buttons'><span onclick='raiseDocumentRetrieval(\"" + value + "\")' class='fa fa-upload' title='Import'></span></div>" +
                     "</td></tr>"
                 );
             });
 
         }
 
-        function retrieveDocument(docUri) {
+    // ------------------------------------------------------ //
+    // Document retrieval and import to SCMS
+    // ------------------------------------------------------ //
+
+        function raiseDocumentRetrieval(docUri) {
             $("#spinner").show();
             $("#document-import").hide();
             $("#document-text").html("");
             $("#document-title").html(docUri);
-            getPage(docUri, 0);
+            getPageAsync(docUri, 0);
         }
 
-        function getPage(docUri, pageNum) {
+        function getPageAsync(docUri, pageNum) {
             jQuery.ajax({
                 url: sprintf(config.cms.server + config.cms.service.getPage, { uri : docUri, pn : pageNum }),
                 contentType: 'text/plain',
@@ -112,24 +98,24 @@
                     $("#document-text").append(data);
                     // TEST limit pages
                     if (pageNum < 5)
-                    getPage(docUri, pageNum + 1);
+                        getPageAsync(docUri, pageNum + 1);
                     else
-                    endRetrieveDocument(); 
+                        closureDocumentRetrieval(); 
                 },
                 error : function(jqXHR, textStatus, errorThrown) {
                     if (jqXHR.status == 404) {
-                        endRetrieveDocument();
+                        closureDocumentRetrieval();
                     }
                 }
             });
         }
 
-        function endRetrieveDocument() {
+        function closureDocumentRetrieval() {
            $("#spinner").hide(); 
            $("#document-import").show();
         }
 
-        function normalizedContent() {
+        function getNormalizedContent() {
             var stripMarkupRegex = /(<([^>]+)>)/ig;
             var stripLinebreaksRegex = /(\r\n|\n|\r)/gm;
             var collapseWhiteSpaceRegex = /\s+/g;
@@ -160,6 +146,26 @@
 
         function wrapContent(html) {
             return "<span xml:lang='de'>" + html + "</span>";
+        }
+
+        function importDocuemt() {
+            var entityData = { 
+                uri : null , 
+                title : $("#document-title").html(), 
+                content : getNormalizedContent(),
+                type : config.scms.uri.elementText,
+                dataCreated : 0, lastModified : 0, 
+            };
+
+            jQuery.ajax({
+                url: config.scms.server + config.scms.service.create,
+                type: 'POST',
+                data : { "data" : JSON.stringify(entityData), fmt : "JSON" }
+            }).success(function(data, textStatus, jqXHR) {
+                 window.location = "{% url 'home' %}"; // return to my neonion
+            }).error(function(jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+            });
         }
 
     </script>

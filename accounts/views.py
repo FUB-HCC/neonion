@@ -2,8 +2,10 @@ from django.shortcuts import render, render_to_response, redirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as django_login, authenticate, logout as django_logout
-
 from accounts.forms import AuthenticationForm, RegistrationForm
+
+from django.utils import simplejson
+from django.http import HttpResponse
 
 def login(request):
     """
@@ -51,6 +53,17 @@ def profile(request):
     # else:
     #     form = RegistrationForm()
     return render_to_response('accounts/profile.html', context_instance=RequestContext(request) )
+
+@login_required
+def me(request):
+    user = {
+       'email': request.user.email,
+       'name':  request.user.name,
+       'surname': request.user.surname,
+    }
+    return HttpResponse(simplejson.dumps(user), content_type="application/json")
+
+
 
 def logout(request):
     """

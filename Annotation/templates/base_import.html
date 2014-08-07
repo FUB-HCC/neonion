@@ -63,7 +63,6 @@
                     dataCreated : 0, lastModified : 0, 
                 };
 
-
                 jQuery.ajax(
                 {
                     url: config.scms.server + config.scms.service.create,
@@ -104,7 +103,7 @@
 
         function getPage(docUri, pageNum) {
             jQuery.ajax({
-                url: config.cms.server + config.cms.service.getPage + docUri + "&pn=" + pageNum,
+                url: sprintf(config.cms.server + config.cms.service.getPage, { uri : docUri, pn : pageNum }),
                 contentType: 'text/plain',
                 type: 'GET',
                 xhrFields : { withCredentials: false },

@@ -101,7 +101,7 @@
             // load document from loomp
             jQuery.ajax(
             {
-                url: config.scms.server + config.scms.service.get + "?uri=" + config.scms.uriPrefix + data.resourceName,
+                url: sprintf(config.scms.server + config.scms.service.get, { uri : config.scms.uriPrefix + data.resourceName }),
                 type: 'GET',
                 crossDomain: true,
                 dataType: 'json'
@@ -109,40 +109,24 @@
             ).done(function(response) {
                 // TODO move loading document to server template
                 data.document = response;
-                console.log(response);
                 $("#documentTitle").html(data.document.title);
                 $("#documentText").html(data.document.content);
                 $("#documentText").annotator()
-                .annotator('addPlugin', 'Neonion')
+                .annotator('addPlugin', 'Neonion', {"opt": "Hallo"})
                 .annotator('addPlugin', 'Store', {
                     // The endpoint of the store on your server.
-                    prefix: 'http://annotator.l3q.de',
-
+                    prefix : config.store.server,
                     // Attach the uri of the current page to all annotations to allow search.
-                    annotationData: {
-                        'uri': data.resourceName
-                    },
-                    loadFromSearch: {
-                        'uri': data.resourceName
-                    }
+                    annotationData: { 'uri' : data.resourceName },
+                    loadFromSearch: { 'uri' : data.resourceName }
                 });
             });
-        }
-
-
-        /* Restores the annotation from markup */
-        function restoreAnnotations() {
-            /*
-            $("#documentText span[about]").each(function() {
-                $(this).attr("class", "annotator-hl");
-            });
-            */
         }
 
         function loadAnnotationSets() {
             // TODO
             jQuery.ajax({
-                url: config.scms.server + config.scms.service.getAll + "?type=" + config.scms.uri.annotationSet,
+                url: sprintf(config.scms.server + config.scms.service.getAll, { type : config.scms.uri.annotationSet }),
                 type: 'GET',
                 crossDomain: true,
                 dataType: 'json'
@@ -152,8 +136,8 @@
         }
 
         function saveDocument(config) {
-            var contentNode = Annotator._instances[0].wrapper[0].childNodes[0];
-            data.document.content = contentNode.outerHTML;
+            /*var contentNode = Annotator._instances[0].wrapper[0].childNodes[0];
+            data.document.content = contentNode.outerHTML;*/
 
             //console.log(data.document.content);
             /*jQuery.ajax(

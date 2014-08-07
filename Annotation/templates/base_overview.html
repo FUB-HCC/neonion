@@ -47,7 +47,7 @@
         var documentList = [];
         // load document from loomp
         jQuery.ajax({
-            url: config.scms.server + config.scms.service.getAll + "?type=" + config.scms.uri.elementText,
+            url: sprintf(config.scms.server + config.scms.service.getAll, { type : config.scms.uri.elementText }),
             type: 'GET',
             crossDomain: true,
             dataType: 'json'

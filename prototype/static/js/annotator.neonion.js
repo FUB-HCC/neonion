@@ -11,9 +11,7 @@ Annotator.Plugin.Neonion = function (element, options) {
     return {
 
 		pluginInit : function () {
-
-			var anno = this.annotator;
-
+			
 			this.annotator.viewer.addField({
 				load: function (field, annotation) {
 					field.innerHTML = "Person: <a href='" + annotation.rdf.about + "' target='blank'>" + annotation.rdf.label + "</a>";

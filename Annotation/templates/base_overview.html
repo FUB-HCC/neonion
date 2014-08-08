@@ -23,6 +23,9 @@
     <div class="unit-80">
         <table id="document-table" class="table-simple"><tr><td><span class="fa fa-spinner fa-spin"></span> Loading...</td></tr></table>
     </div>
+
+    {% include 'import_dialog.html' %}
+
 {% endblock %}
 
 
@@ -58,7 +61,15 @@
             var today = moment().startOf("day");
             var todayLabelSet = false;
             var earlierLabelSet = false;
-            $('#document-table').html('<tr><td></td><td><a href="/import/">Import new Document</a></td></tr>');
+            $('#document-table').html('<tr><td></td><td><a href="#" id="show_import_dialog">Import new Document</a></td></tr>');
+
+            document.querySelector('#show_import_dialog').onclick = function() {
+                var dialog = document.querySelector('dialog');
+                dialogPolyfill.registerDialog(dialog);
+                dialog.showModal();
+                initImportDialog();
+            };
+
             documentList.sort( compare_Documents ).reverse().forEach( function( entry ) {
                 /* set label for first column (only once for each type) */
                 var label = '';
@@ -86,6 +97,5 @@
             });
         });
     }
-
     </script>
 {% endblock %}

@@ -340,3 +340,22 @@ a:link {text-decoration: none;color:#3d58a8;}
 a:visited {text-decoration: none;color:#3d58a8;}
 a:hover {text-decoration: none !important;color:#2f4483;}
 a:active {text-decoration: none;color:#3d58a8;}
+
+
+/*import dialog*/
+dialog#dialog-import{
+  height:80%;
+  min-width:45em;
+  overflow-y: auto;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+
+}
+
+dialog#dialog-import::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+dialog#dialog-import + .backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}

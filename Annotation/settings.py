@@ -49,7 +49,7 @@ INSTALLED_APPS = (
 
 AUTH_USER_MODEL = 'accounts.User'
 AUTHENTICATION_BACKENDS = ['accounts.backends.EmailAuthBackend', ]
-
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -60,8 +60,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-# AUTH_USER_MODEL = 'accounts.User'
-# AUTHENTICATION_BACKENDS = ['accounts.backends.EmailAuthBackend', ]
 
 
 ROOT_URLCONF = 'Annotation.urls'

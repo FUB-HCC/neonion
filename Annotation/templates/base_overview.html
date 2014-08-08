@@ -64,12 +64,7 @@
             $('#document-table').html('<tr><td></td><td><a href="#" id="show_import_dialog">Import new Document</a></td></tr>');
 
             document.querySelector('#show_import_dialog').onclick = function() {
-                var dialog = document.querySelector('dialog');
-                if( !dialog.show ){
-                   dialogPolyfill.registerDialog(dialog);
-                }
-                dialog.showModal();
-                initImportDialog();
+                showImportDialog();
             };
 
             documentList.sort( compare_Documents ).reverse().forEach( function( entry ) {

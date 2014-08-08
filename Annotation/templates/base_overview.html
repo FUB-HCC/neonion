@@ -65,7 +65,9 @@
 
             document.querySelector('#show_import_dialog').onclick = function() {
                 var dialog = document.querySelector('dialog');
-                dialogPolyfill.registerDialog(dialog);
+                if( !dialog.show ){
+                   dialogPolyfill.registerDialog(dialog);
+                }
                 dialog.showModal();
                 initImportDialog();
             };

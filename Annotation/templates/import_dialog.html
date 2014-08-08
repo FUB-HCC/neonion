@@ -1,20 +1,18 @@
 {% load staticfiles %}
 
 <dialog id='dialog-import' onshow="initImportDialog()">
-     <div class="units-row">
-        <table id="import-table" class="table-simple"></table>
-    </div>
     <div class="units-row">
-        <div class="panel panel-default" >
-            <div >
-                <span id="spinner" style="display:none;"><span class="fa fa-spinner fa-spin"></span> Dokument wird geladen...</span>
-                <button style="display:none;" class="btn btn-green" id="document-import" >
-                    Importieren
-                </button>
-            </div>
-            <div id="document-title" class="panel-heading big"></div>
-            <div id="document-text" class="panel-body"></div>
-        </div>
+        <span class="big">Import from ECHO Archive</span>
+    </div>
+    <div class="units-row" id="import-form-row">
+        <form method="post" action="" class="forms">
+            <ul class="forms-list" id="document-import-list">
+            </ul>
+        </form>
+    </div>
+    <div class="units-row end">
+        <button class="btn-red" onclick="closeDialog()">cancel</button>
+        <button class="btn-blue" onclick="importSelectedDocuments()">import</button>
     </div>
 </dialog>
 
@@ -57,18 +55,31 @@
     }
 
     function updateDocumentTable(entries) {
-        // clear table
-        $("#import-table").html("");
-        // create docuement tabel
+        // clear list
+        $("#document-import-list").html("");
+        // create docuement import list
         $.each(entries, function(index, value) {
-            $("#import-table").append(
-                "<tr><td></td><td class='element-cell'>" +
-                "<a href='#'>" + value + "</a>" +
-                "<div class='document-list-buttons'><span onclick='raiseDocumentRetrieval(\"" + value + "\")' class='fa fa-upload' title='Import'></span></div>" +
-                "</td></tr>"
-            );
-        });
 
+            var input = $( '<input type="checkbox" name="documents"></input>' ).attr( 'id', value ).attr( 'value', value );
+            var label = $( '<label></label>' ).text( value ).attr( 'for', value );
+            var li = $( '<li></li>' ).append(input).append(label);
+            $('#document-import-list').append( li );
+        });
+    }
+
+    function closeDialog(){
+        var dialog = document.querySelector('dialog');
+        if( !dialog.show ){
+           dialogPolyfill.registerDialog(dialog);
+        }
+        dialog.close();
+    }
+
+    function importSelectedDocuments(){
+        $('input[name="documents"]:checked').each(function() {
+            // TODO import document
+            console.log(this.value);
+        });
     }
 
 // ------------------------------------------------------ //

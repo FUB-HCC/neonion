@@ -344,12 +344,15 @@ a:active {text-decoration: none;color:#3d58a8;}
 
 /*import dialog*/
 dialog#dialog-import{
-  height:80%;
-  min-width:45em;
-  overflow-y: auto;
+  top:3em;
+  min-width:50em;
   border: 1px solid rgba(0, 0, 0, 0.3);
   box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+}
 
+dialog #import-form-row{
+  overflow-y: auto;
+  max-height: 30em;
 }
 
 dialog#dialog-import::backdrop {
@@ -358,4 +361,9 @@ dialog#dialog-import::backdrop {
 
 dialog#dialog-import + .backdrop {
   background-color: rgba(0, 0, 0, 0.5);
+}
+
+
+dialog input[type="checkbox"]{
+  margin-right: 0.5em;
 }

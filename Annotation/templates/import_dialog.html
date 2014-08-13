@@ -14,29 +14,29 @@
 
     var selectedDocs = [];
 
-    var docNames = [
-        "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1964-1965",
-        "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1958-1960",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1972-1973",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1968-1969",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1966-1967",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1964-1965",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1962-1963",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1961-1962",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1960-1961",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1958-1960",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1956-1958",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1954-1956",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil2",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil1",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1951-1952",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil3",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil2",
-        "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil1"
+    var docList = [
+        { name: "Tätigkeitsbericht der MPG 1964-1965", urn : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1964-1965" },
+        { name: "Tätigkeitsbericht der MPG 1958-1960", urn : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1958-1960" },
+        { name: "Tätigkeitsbericht der MPG 1972-1973", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1972-1973" },
+        { name: "Tätigkeitsbericht der MPG 1968-1969", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1968-1969" },
+        { name: "Tätigkeitsbericht der MPG 1966-1967", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1966-1967" },
+        { name: "Tätigkeitsbericht der MPG 1964-1965", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1964-1965" },
+        { name: "Tätigkeitsbericht der MPG 1962-1963", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1962-1963" },
+        { name: "Tätigkeitsbericht der MPG 1961-1962", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1961-1962" },
+        { name: "Tätigkeitsbericht der MPG 1960-1961", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1960-1961" },
+        { name: "Tätigkeitsbericht der MPG 1958-1960", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1958-1960" },
+        { name: "Tätigkeitsbericht der MPG 1956-1958", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1956-1958" },
+        { name: "Tätigkeitsbericht der MPG 1954-1956", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1954-1956" },
+        { name: "Tätigkeitsbericht der MPG 1952-1954 Teil1", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil1" },
+        { name: "Tätigkeitsbericht der MPG 1952-1954 Teil2", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil2" },
+        { name: "Tätigkeitsbericht der MPG 1951-1952", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1951-1952" },
+        { name: "Tätigkeitsbericht der MPG 1946-51 Teil1", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil1" },
+        { name: "Tätigkeitsbericht der MPG 1946-51 Teil2", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil2" },
+        { name: "Tätigkeitsbericht der MPG 1946-51 Teil3", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil3" }
     ]
 
     function initImportDialog() {
-        updateDocumentTable(docNames);
+        updateDocumentTable(docList);
 
         $("#document-import").click(function() {
             $("#document-import").attr("disabled", true);
@@ -50,8 +50,8 @@
         // create docuement import list
         $.each(entries, function(index, value) {
 
-            var input = $( '<input type="checkbox" name="documents"></input>' ).attr( 'id', value ).attr( 'value', value );
-            var label = $( '<label></label>' ).text( value ).attr( 'for', value );
+            var input = $( '<input type="checkbox" name="documents"></input>' ).attr( 'id', value.urn ).attr( 'value', value.urn );
+            var label = $( '<label></label>' ).text( value.name ).attr( 'for', value );
             var li = $( '<li></li>' ).append(input).append(label);
             $('#document-import-list').append( li );
         });
@@ -88,15 +88,15 @@
 // Document retrieval and import to SCMS
 // ------------------------------------------------------ //
 
-    function raiseDocumentRetrieval(docName) {
-        console.log("Import doc: " + docName);
+    function raiseDocumentRetrieval(doc) {
+        console.log("Import doc: " + doc);
         $("#document-cache").html("");
-        getPageAsync(docName, 1);
+        getPageAsync(doc, 1);
     }
 
-    function getPageAsync(docName, pageNum) {
+    function getPageAsync(doc, pageNum) {
         jQuery.ajax({
-            url: sprintf(config.cms.server + config.cms.service.getPage, { uri : docName, pn : pageNum }),
+            url: sprintf(config.cms.server + config.cms.service.getPage, { uri : doc, pn : pageNum }),
             contentType: 'text/plain',
             type: 'GET',
             xhrFields : { withCredentials: false },
@@ -105,21 +105,20 @@
                 $("#document-cache").append(data);
                 // TEST limit pages
                 if (pageNum < 20)
-                    getPageAsync(docName, pageNum + 1);
+                    getPageAsync(doc, pageNum + 1);
                  else
-                    closureDocumentRetrieval(docName);
+                    closureDocumentRetrieval(doc);
             },
             error : function(jqXHR, textStatus, errorThrown) {
                 if (jqXHR.status == 404) {
-                    closureDocumentRetrieval(docName);
+                    closureDocumentRetrieval(doc);
                 }
             }
         });
     }
 
-    function closureDocumentRetrieval(docName) {
-        //console.log(getNormalizedContent());
-        importDocuemt(docName);
+    function closureDocumentRetrieval(doc) {
+        importDocuemt(doc);
 
         // remove recenlty imported doc and proceed
         selectedDocs.shift()
@@ -164,7 +163,16 @@
         return "<span xml:lang='de'>" + html + "</span>";
     }
 
-    function importDocuemt(title) {
+    function importDocuemt(docUrn) {
+        var title = docUrn;
+        // get proper title
+        docList.forEach(function(element, index, array) {
+            if (element.urn == docUrn) {
+                title = element.name;
+            }
+        });
+
+        // assemble POST data
         var entityData = {
             uri : null ,
             title : title,

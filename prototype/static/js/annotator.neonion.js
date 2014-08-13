@@ -12,8 +12,6 @@ Annotator.Plugin.Neonion = function (element, options) {
 
     return {
 
-		
-
 		pluginInit : function () {
 			
 			// add field to linked person

@@ -1,26 +1,14 @@
-{% load staticfiles %}
+{% extends "base_dialog.html" %}
 
-<dialog id='dialog-import' onshow="initImportDialog()">
-    <div class="units-row">
-        <p class="big">Import from Euler Archive</p>
-        Please select the files you want to import to your working space
-    </div>
-    <div class="units-row" id="import-form-row">
-        <form method="post" action="" class="forms">
-            <ul class="forms-list" id="document-import-list">
-            </ul>
-        </form>
-    </div>
-    <div class="units-row end">
-        <button class="btn-red" onclick="closeImportDialog()">cancel</button>
-        <button class="btn-blue" onclick="importSelectedDocuments()">import</button>
-        <div id="document-cache" style="display:none"></div>
-    </div>
-</dialog>
+{% block dialogID %}dialog-import{% endblock %}
+{% block dialogTitle %}Import from Euler Archive{% endblock %}
+{% block dialogDesciption %}Please select the files you want to import to your working space{% endblock %}
 
-
-<link rel="stylesheet" href="{% static 'css/dialog-polyfill.css' %}" type="text/css" media="screen" />
-<script type="text/javascript" src="{% static 'js/dialog-polyfill.js' %}"></script>
+{% block dialogContent %}
+<form method="post" action="" class="forms">
+    <ul class="forms-list" id="document-import-list">
+    </ul>
+</form>
 
 <script language="javascript">
 
@@ -103,7 +91,7 @@
     function raiseDocumentRetrieval(docName) {
         console.log("Import doc: " + docName);
         $("#document-cache").html("");
-        getPageAsync(docName, 0);
+        getPageAsync(docName, 1);
     }
 
     function getPageAsync(docName, pageNum) {
@@ -116,10 +104,10 @@
             success : function(data, textStatus, jqXHR) {
                 $("#document-cache").append(data);
                 // TEST limit pages
-                //if (pageNum < 20)
+                if (pageNum < 20)
                     getPageAsync(docName, pageNum + 1);
-                // else
-                //     closureDocumentRetrieval(docName);
+                 else
+                    closureDocumentRetrieval(docName);
             },
             error : function(jqXHR, textStatus, errorThrown) {
                 if (jqXHR.status == 404) {
@@ -130,6 +118,7 @@
     }
 
     function closureDocumentRetrieval(docName) {
+        //console.log(getNormalizedContent());
         importDocuemt(docName);
 
         // remove recenlty imported doc and proceed
@@ -196,3 +185,11 @@
     }
 
 </script>
+
+{% endblock %}
+
+{% block dialogBottom %}
+<button class="btn-red" onclick="closeImportDialog()">cancel</button>
+<button class="btn-blue" onclick="importSelectedDocuments()">import</button>
+<div id="document-cache" style="display:none"></div>
+{% endblock %}

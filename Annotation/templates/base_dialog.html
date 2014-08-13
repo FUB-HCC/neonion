@@ -1,0 +1,17 @@
+{% load staticfiles %}
+
+<dialog id='{% block dialogID %}{% endblock %}'>
+    <div class="units-row">
+        <p class="big">{% block dialogTitle %}{% endblock %}</p>
+        {% block dialogDesciption %}{% endblock %}
+    </div>
+    <div class="units-row" id="import-form-row">
+        {% block dialogContent %}{% endblock %}
+    </div>
+    <div class="units-row end">
+        {% block dialogBottom %}{% endblock %}
+    </div>
+</dialog>
+
+<link rel="stylesheet" href="{% static 'css/dialog-polyfill.css' %}" type="text/css" media="screen" />
+<script type="text/javascript" src="{% static 'js/dialog-polyfill.js' %}"></script>

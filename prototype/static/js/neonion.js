@@ -47,7 +47,7 @@ var config = {
           var url = 'https://www.wikidata.org'+
               '/w/api.php?action=query&list=search&format=json&srsearch='+name+'~&srnamespace=0&srprop=titlesnippet&srlimit=25'+
               '&callback=?';
-          console.log(url);
+          //console.log(url);
           $.getJSON(
             url,
             function(data) {
@@ -56,7 +56,7 @@ var config = {
                 result.push( entity.title );
               });
               $('#result_1').append( result.join('|') );
-              console.log( result );
+              //console.log( result );
               callback(result);
           });
         },
@@ -66,7 +66,7 @@ var config = {
               '/w/api.php?action=wbgetentities&format=json&props=labels%7Cdescriptions%7Cclaims&languagefallback=&ids='+wd_ids+
               '&callback=?';
           var result = [];
-          console.log(url);
+          //console.log(url);
           $.getJSON(
             url,
             function(data) {
@@ -81,7 +81,6 @@ var config = {
                         var first;
                         for (var prop in entity.labels) {
                             first = prop;
-                            console.log(first);
                             break;
                         }
                         label = entity.labels[first].value;
@@ -110,10 +109,14 @@ var config = {
                       entity.claims.P31[0].mainsnak.datavalue &&
                       entity.claims.P31[0].mainsnak.datavalue.value &&
                       entity.claims.P31[0].mainsnak.datavalue.value['numeric-id'] == 5 ){
-                    result.push( { id:entity.id, label:label, birth:birth, descr:descr } )
+                        result.push( { 
+                            id : entity.id, label : label
+                            , uri : config.wikiData.prefix + entity.id
+                            , birth : birth, descr : descr 
+                        } );
                   }
                 });
-                console.log( result );
+                //console.log( result );
                 callback(result);
             });
         },
@@ -136,7 +139,7 @@ var config = {
               '/w/api.php?action=wbgetentities&format=json&props=labels&languagefallback=&ids='+wd_ids+
               '&callback=?';
           var result = [];
-          console.log(url);
+          //console.log(url);
           $.getJSON(
             url,
             function(data) {
@@ -149,7 +152,7 @@ var config = {
                 }
                 result.push( { id:entity.id, label:label } )
               });
-              console.log( result );
+              //console.log( result );
               return result;
             });
         }

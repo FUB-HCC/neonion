@@ -163,6 +163,9 @@ html{
 .btn-group-vertical .annotator-btn:hover{
     background-color:#c5e4dd;
 }
+.annotator-widget *{
+    color: black !important;
+}
 
 
 /* remove comments field */

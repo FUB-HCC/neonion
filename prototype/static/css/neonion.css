@@ -176,7 +176,7 @@ html{
 
 /* styling for the person-list */
 .annotator-item > div > button:first-child{
-    color: rgba(0, 0, 0, 0.5);
+    /*color: rgba(0, 0, 0, 0.5);*/
     border-bottom: 1px solid black;
 }
 .annotator-item > div > button{

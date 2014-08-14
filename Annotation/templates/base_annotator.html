@@ -48,6 +48,7 @@
     <script type="text/javascript" src="{% static 'js/annotator.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/annotator.neonion.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/annotator.store.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/moment.js' %}"></script>
 
     <script language="javascript">
 
@@ -113,7 +114,8 @@
                 $("#documentText").html(data.document.content);
                 $("#documentText").annotator()
                 .annotator('addPlugin', 'Neonion', { 
-                    whoamiUrl: config.neonion.whoami 
+                    whoamiUrl: config.neonion.whoami,
+                    wikiData : config.wikiData
                 })
                 .annotator('addPlugin', 'Store', {
                     // The endpoint of the store on your server.

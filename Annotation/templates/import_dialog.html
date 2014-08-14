@@ -104,7 +104,7 @@
             success : function(data, textStatus, jqXHR) {
                 $("#document-cache").append(data);
                 // TEST limit pages
-                if (pageNum < 20)
+                if (pageNum < 5)
                     getPageAsync(doc, pageNum + 1);
                  else
                     closureDocumentRetrieval(doc);

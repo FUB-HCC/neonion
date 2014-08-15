@@ -1,25 +1,37 @@
 Annotator.Plugin.Neonion = function (element, options) {
 
 	var user;
+	var adder;
+	var selectedType;
+	var compositor = {};
 
     return {
 
 		pluginInit : function () {
+ 			adder = $(this.annotator.adder[0]);
+
+			compositor[Annotator.Plugin.Neonion.prototype.surrogate.person.uri] = { 
+				unknownResource : Annotator.Plugin.Neonion.prototype.surrogate.unknownPerson,
+				search : Annotator.Plugin.Neonion.prototype.search.searchPerson,
+				formatter : Annotator.Plugin.Neonion.prototype.formatter.formatPerson
+			};
+			compositor[Annotator.Plugin.Neonion.prototype.surrogate.institute.uri] = { 
+				unknownResource : Annotator.Plugin.Neonion.prototype.surrogate.unknownInstitute,
+				search : Annotator.Plugin.Neonion.prototype.search.searchInstitute,
+				formatter : Annotator.Plugin.Neonion.prototype.formatter.formatInstitute
+			};
 
 			// add additional adder buttons
-			/*var adder = $(this.annotator.adder[0]);
-			adder.html("");
 			var types = [
 				Annotator.Plugin.Neonion.prototype.surrogate.person,
 				Annotator.Plugin.Neonion.prototype.surrogate.institute
 			];
-			types.forEach(function(index, value)) {
-				adder.append("<button class='btn-green'>" + Annotator.Plugin.Neonion.prototype.literals['de'].person + "</button>");
-			});
-			
+			this.setAnnotationTypes(types);
+			// catch submit event
 			adder.on( "click", "button", function (e) {
-				alert(this);
-			});*/
+				// set selected type
+				selectedType = $(this).attr("uri");
+			});
 
 			// add field to linked person
 			this.annotator.viewer.addField({
@@ -81,6 +93,10 @@ Annotator.Plugin.Neonion = function (element, options) {
 			this.annotator.subscribe("annotationUpdated", Annotator.Plugin.Neonion.prototype.enrichRDFa);
 		},
 
+		setAnnotationTypes : function(types) {
+			Annotator.Plugin.Neonion.prototype.overrideAdder(adder, types);
+		},
+
 		setUser : function(userData) { 
 			user = userData; 
 		},
@@ -93,7 +109,7 @@ Annotator.Plugin.Neonion = function (element, options) {
 
 			// update annotation object
 			annotation.rdf = {
-				typeof : Annotator.Plugin.Neonion.prototype.surrogate.person.uri,
+				typeof : selectedType,
 				property : "rdfs:label",
 				about : activeItem.attr("uri"),
 				label : activeItem.val()
@@ -102,22 +118,22 @@ Annotator.Plugin.Neonion = function (element, options) {
 
 		updateSuggestionField : function(field, annotation) {
 			// get selected text
-			var words = annotation.quote.split(" ");
 			var list = $(field).children(":first");
 			list.empty();
 
-			// search person in WikiData
-			Annotator.Plugin.Neonion.prototype.search.searchPerson(annotation.quote, function(items) {
-				// add unknown person resource
-				items.unshift(Annotator.Plugin.Neonion.prototype.surrogate.unknownPerson);
-				// create and add items
-				list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, Annotator.Plugin.Neonion.prototype.formatters.formatPerson));
-			
-				// activae corresponding button
-				if (annotation.rdf) {
-					list.children("button[uri='" + annotation.rdf.about + "']" ).addClass("active");
-				}
-			});
+			if (compositor[selectedType]) {
+				compositor[selectedType].search(annotation.quote, function(items) {
+					// add unknown person resource
+					items.unshift(compositor[selectedType].unknownResource);
+					// create and add items
+					list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, compositor[selectedType].formatter));
+				
+					// activae corresponding button
+					if (annotation.rdf) {
+						list.children("button[uri='" + annotation.rdf.about + "']" ).addClass("active");
+					}
+				});
+			}
 		}
 
 	}
@@ -155,10 +171,13 @@ Annotator.Plugin.Neonion.prototype.createListItems = function(list, formatter) {
 	});
 	return items;
 }
-/*
-Annotator.Plugin.Neonion.prototype.overrideAdder = function() {
 
-},*/
+Annotator.Plugin.Neonion.prototype.overrideAdder = function(adder, types) {
+	adder.html("");
+	types.forEach(function(value, index, array) {
+		adder.append("<button class='btn-green' uri='" + value.uri + "'>" + value._source.label + "</button>");
+	});
+},
 
 Annotator.Plugin.Neonion.prototype.comparator = {
 	compareByLabel : function(a, b) {
@@ -170,7 +189,7 @@ Annotator.Plugin.Neonion.prototype.comparator = {
 	}
 }
 
-Annotator.Plugin.Neonion.prototype.formatters = {
+Annotator.Plugin.Neonion.prototype.formatter = {
 	formatPerson : function(value) {
 		var label = "<span>" + value._source.label + "</span>";
 		if (value._source.birth) label += "<small>&nbsp;" + value._source.birth + "</small>";
@@ -178,7 +197,7 @@ Annotator.Plugin.Neonion.prototype.formatters = {
 		return label;
 	},
 	formatInstitute : function(value) {
-		var label = "<span>" + value.label + "</span>";
+		var label = "<span>" + value._source.label + "</span>";
 		// TODO formatting institute
 		return label;
 	}
@@ -191,8 +210,7 @@ Annotator.Plugin.Neonion.prototype.search = {
 	        callback(data.hits.hits);
 	    });
 	},
-
-	searchInstitute : function(callback) {
+	searchInstitute : function(name, callback) {
 		var url = 'http://wdq.wmflabs.org/api?q=claim[31:15916302]&callback=?';
 		$.getJSON(
 		url,
@@ -215,7 +233,7 @@ Annotator.Plugin.Neonion.prototype.search = {
 							//label = entity.labels[getFirst(entity.labels)].value; 
 						}
 					}
-					result.push( { _id : entity.id, _source : { label : label } } );
+					result.push( { _id : entity.id, _source : { uri : "http://wikidata.org/wiki/" + entity.id,label : label } } );
 				});
 				//console.log( result );
 				callback(result);

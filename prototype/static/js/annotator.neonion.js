@@ -181,9 +181,9 @@ Annotator.Plugin.Neonion.prototype.overrideAdder = function(adder, types) {
 
 Annotator.Plugin.Neonion.prototype.comparator = {
 	compareByLabel : function(a, b) {
-		if (a.label < b.label)
+		if (a._source.label < b._source.label)
 			return -1;
-		if (a.label > b.label)
+		if (a._source.label > b._source.label)
 			return 1;
 		return 0;
 	}
@@ -211,33 +211,10 @@ Annotator.Plugin.Neonion.prototype.search = {
 	    });
 	},
 	searchInstitute : function(name, callback) {
-		var url = 'http://wdq.wmflabs.org/api?q=claim[31:15916302]&callback=?';
-		$.getJSON(
-		url,
-		function(data) {
-			var ids = 'q' + data.items.join('|q');
-			var url = 'https://www.wikidata.org'+
-			'/w/api.php?action=wbgetentities&format=json&props=labels&languagefallback=&ids='+ ids + '&callback=?';
-			$.getJSON(
-			url,
-			function(data) {
-				var result = [];
-				$.each( data.entities, function( id, entity ) {
-					var label = null;
-					if(entity.labels) {
-						if( entity.labels.de )
-							label = entity.labels.de.value;
-						else if( entity.labels.en )
-							label = entity.labels.en.value;
-						else {                     
-							//label = entity.labels[getFirst(entity.labels)].value; 
-						}
-					}
-					result.push( { _id : entity.id, _source : { uri : "http://wikidata.org/wiki/" + entity.id,label : label } } );
-				});
-				//console.log( result );
-				callback(result);
-			});
-		});
+	    var url = 'http://elasticsearch.l3q.de/institutes/_search?size=80&pretty=true&source={"query":{"fuzzy_like_this":{"fields":["label","alias"],"like_text":"Institut"}}}';
+	    $.getJSON(url, function(data) {
+	    	data.hits.hits.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByLabel);
+	        callback(data.hits.hits);
+	    });
 	}
 }

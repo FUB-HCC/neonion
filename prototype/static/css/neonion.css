@@ -147,6 +147,21 @@ html{
 
 /*annotator.js hacks*/
 
+.annotator-adder{
+  background-image: none;
+}
+
+#documentText > div > div.annotator-adder > button{
+  background: none;
+}
+.annotator-adder button{
+  width: auto !important;
+  height: auto !important;
+  color: #333333 !important;
+  background: #eeeded !important;
+  text-indent: 0px !important;
+}
+
 /* list of objects */
 .btn-group-vertical{
     position: relative;

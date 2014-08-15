@@ -5,7 +5,22 @@ Annotator.Plugin.Neonion = function (element, options) {
     return {
 
 		pluginInit : function () {
+
+			// add additional adder buttons
+			/*var adder = $(this.annotator.adder[0]);
+			adder.html("");
+			var types = [
+				Annotator.Plugin.Neonion.prototype.surrogate.person,
+				Annotator.Plugin.Neonion.prototype.surrogate.institute
+			];
+			types.forEach(function(index, value)) {
+				adder.append("<button class='btn-green'>" + Annotator.Plugin.Neonion.prototype.literals['de'].person + "</button>");
+			});
 			
+			adder.on( "click", "button", function (e) {
+				alert(this);
+			});*/
+
 			// add field to linked person
 			this.annotator.viewer.addField({
 				load: function (field, annotation) {
@@ -13,9 +28,9 @@ Annotator.Plugin.Neonion = function (element, options) {
 						var fieldValue = "<a href='" + annotation.rdf.about + "' target='blank'>" + annotation.rdf.label + "</a>";
 						var fieldCaption;
 						switch(annotation.rdf.typeof) {
-							case Annotator.Plugin.Neonion.prototype.surrogate.person:
+							case Annotator.Plugin.Neonion.prototype.surrogate.person.uri:
 								fieldCaption = Annotator.Plugin.Neonion.prototype.literals['de'].person; break;
-							case Annotator.Plugin.Neonion.prototype.surrogate.institute:
+							case Annotator.Plugin.Neonion.prototype.surrogate.institute.uri:
 								fieldCaption = Annotator.Plugin.Neonion.prototype.literals['de'].institute; break;
 							default:
 								fieldCaption = Annotator.Plugin.Neonion.prototype.literals['de'].unknownResource;
@@ -78,7 +93,7 @@ Annotator.Plugin.Neonion = function (element, options) {
 
 			// update annotation object
 			annotation.rdf = {
-				typeof : Annotator.Plugin.Neonion.prototype.surrogate.person,
+				typeof : Annotator.Plugin.Neonion.prototype.surrogate.person.uri,
 				property : "rdfs:label",
 				about : activeItem.attr("uri"),
 				label : activeItem.val()
@@ -92,20 +107,16 @@ Annotator.Plugin.Neonion = function (element, options) {
 			list.empty();
 
 			// search person in WikiData
-			options.wikiData.search_items(words[words.length - 1], function(wdID) {
-				options.wikiData.get_person_data(wdID.join('|'), function(items) {
-					// sort list
-					items.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByLabel);
-					// add surogate for unknown resource
-					items.unshift(Annotator.Plugin.Neonion.prototype.surrogate.unknownPerson);
-					// create and add items
-					list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, Annotator.Plugin.Neonion.prototype.formatters.formatPerson));
-				
-					// activae corresponding button
-					if (annotation.rdf) {
-						list.children("button[uri='" + annotation.rdf.about + "']" ).addClass("active");
-					}
-				});
+			Annotator.Plugin.Neonion.prototype.search.searchPerson(annotation.quote, function(items) {
+				// add unknown person resource
+				items.unshift(Annotator.Plugin.Neonion.prototype.surrogate.unknownPerson);
+				// create and add items
+				list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, Annotator.Plugin.Neonion.prototype.formatters.formatPerson));
+			
+				// activae corresponding button
+				if (annotation.rdf) {
+					list.children("button[uri='" + annotation.rdf.about + "']" ).addClass("active");
+				}
 			});
 		}
 
@@ -123,10 +134,10 @@ Annotator.Plugin.Neonion.prototype.literals = {
 }
 
 Annotator.Plugin.Neonion.prototype.surrogate = {
-	person : { label : Annotator.Plugin.Neonion.prototype.literals['de'].person, uri : "https://www.wikidata.org/wiki/Q5" },
-	institute : { label : Annotator.Plugin.Neonion.prototype.literals['de'].institute, uri : "https://www.wikidata.org/wiki/Q31855" },
-	unknownPerson : { label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownPerson, uri : "http://neonion.com/resource/Unknown_Person" },
-	unknownInstitute : { label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownInstitute, uri : "http://neonion.com/resource/Unknown_Institute" }
+	person : { uri : "https://www.wikidata.org/wiki/Q5", _source : { label : Annotator.Plugin.Neonion.prototype.literals['de'].person } },
+	institute : { uri : "https://www.wikidata.org/wiki/Q31855" , _source : { label : Annotator.Plugin.Neonion.prototype.literals['de'].institute, } },
+	unknownPerson : { uri : "http://neonion.com/resource/Unknown_Person", _source : { label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownPerson } },
+	unknownInstitute : { uri : "http://neonion.com/resource/Unknown_Institute", _source : { label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownInstitute } }
 }
 
 Annotator.Plugin.Neonion.prototype.enrichRDFa = function(annotation) {
@@ -140,10 +151,14 @@ Annotator.Plugin.Neonion.prototype.createListItems = function(list, formatter) {
 	var items = [];
 	$.each(list, function(index, value) {
 		var label = formatter(value);
-		items.push("<button type='button' class='annotator-btn' value='" + value.label + "' uri='" + value.uri + "'>" + label	+ "</button>");
+		items.push("<button type='button' class='annotator-btn' value='" + value._source.label + "' uri='" + value._source.uri + "'>" + label	+ "</button>");
 	});
 	return items;
 }
+/*
+Annotator.Plugin.Neonion.prototype.overrideAdder = function() {
+
+},*/
 
 Annotator.Plugin.Neonion.prototype.comparator = {
 	compareByLabel : function(a, b) {
@@ -157,8 +172,8 @@ Annotator.Plugin.Neonion.prototype.comparator = {
 
 Annotator.Plugin.Neonion.prototype.formatters = {
 	formatPerson : function(value) {
-		var label = "<span>" + value.label + "</span>";
-		if (value.birth) label += "<small>&nbsp;" + value.birth + "</small>";
+		var label = "<span>" + value._source.label + "</span>";
+		if (value._source.birth) label += "<small>&nbsp;" + value._source.birth + "</small>";
 		//if (value.descr) label += "<br/><small>" + value.descr + "</small>";
 		return label;
 	},
@@ -166,5 +181,45 @@ Annotator.Plugin.Neonion.prototype.formatters = {
 		var label = "<span>" + value.label + "</span>";
 		// TODO formatting institute
 		return label;
+	}
+}
+
+Annotator.Plugin.Neonion.prototype.search = {
+	searchPerson : function(name, callback) {
+	    var url = 'http://elasticsearch.l3q.de/persons/_search?size=10&pretty=true&source={"query":{"fuzzy_like_this":{"fields":["label","alias"],"like_text":"' + name + '"}}}';
+	    $.getJSON(url, function(data) {
+	        callback(data.hits.hits);
+	    });
+	},
+
+	searchInstitute : function(callback) {
+		var url = 'http://wdq.wmflabs.org/api?q=claim[31:15916302]&callback=?';
+		$.getJSON(
+		url,
+		function(data) {
+			var ids = 'q' + data.items.join('|q');
+			var url = 'https://www.wikidata.org'+
+			'/w/api.php?action=wbgetentities&format=json&props=labels&languagefallback=&ids='+ ids + '&callback=?';
+			$.getJSON(
+			url,
+			function(data) {
+				var result = [];
+				$.each( data.entities, function( id, entity ) {
+					var label = null;
+					if(entity.labels) {
+						if( entity.labels.de )
+							label = entity.labels.de.value;
+						else if( entity.labels.en )
+							label = entity.labels.en.value;
+						else {                     
+							//label = entity.labels[getFirst(entity.labels)].value; 
+						}
+					}
+					result.push( { _id : entity.id, _source : { label : label } } );
+				});
+				//console.log( result );
+				callback(result);
+			});
+		});
 	}
 }

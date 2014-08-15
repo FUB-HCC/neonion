@@ -162,6 +162,15 @@ html{
   text-indent: 0px !important;
 }
 
+
+.annotator-widget {
+  min-width: 40em;
+}
+
+.annotator-widget button{
+   white-space:nowrap;
+}
+
 /* list of objects */
 .btn-group-vertical{
     position: relative;

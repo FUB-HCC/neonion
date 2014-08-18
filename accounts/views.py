@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as django_login, authenticate, logout as django_logout
 from accounts.forms import AuthenticationForm, RegistrationForm
 
-from django.utils import simplejson
+import json
 from django.http import HttpResponse
 
 def login(request):
@@ -61,7 +61,7 @@ def me(request):
        'name':  request.user.name,
        'surname': request.user.surname,
     }
-    return HttpResponse(simplejson.dumps(user), content_type="application/json")
+    return HttpResponse(json.dumps(user), content_type="application/json")
 
 
 

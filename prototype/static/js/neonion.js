@@ -9,7 +9,8 @@ var config = {
     },
 
     scms : {
-        server : "http://hcc-loomp.herokuapp.com",
+        // server : "http://hcc-loomp.herokuapp.com",
+        server : "/loomp",
         uriPrefix: "http://loomp.org/data/",
 
         uri : {
@@ -28,7 +29,7 @@ var config = {
             create : "/content/save"
         }
     },
-    
+
     cms : {
         server : "http://euler.mpiwg-berlin.mpg.de:8000",
 
@@ -46,7 +47,7 @@ var config = {
         },
 
         query : {
-            findPerson : 
+            findPerson :
             "PREFIX gndo: <http://d-nb.info/standards/elementset/gnd#>" +
             "SELECT ?res ?name year(?birth) year(?death) WHERE{" +
             "?res a gndo:DifferentiatedPerson . ?res gndo:preferredNameForThePerson ?name . ?res gndo:dateOfBirth ?birth . ?res gndo:dateOfDeath ?death . FILTER (%(filter)s)" +

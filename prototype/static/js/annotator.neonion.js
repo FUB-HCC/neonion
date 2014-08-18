@@ -205,16 +205,16 @@ Annotator.Plugin.Neonion.prototype.formatter = {
 
 Annotator.Plugin.Neonion.prototype.search = {
     searchPerson : function(name, callback) {
-        var url = 'http://elasticsearch.l3q.de/persons/_search?size=10&pretty=true&source={"query":{"fuzzy_like_this":{"fields":["label","alias"],"like_text":"' + name + '"}}}';
-        // var url = '/es/persons?q=' + name;
+        // var url = 'http://elasticsearch.l3q.de/persons/_search?size=10&pretty=true&source={"query":{"fuzzy_like_this":{"fields":["label","alias"],"like_text":"' + name + '"}}}';
+        var url = '/es/persons?q=' + name;
 
         $.getJSON(url, function(data) {
             callback(data.hits.hits);
         });
     },
     searchInstitute : function(name, callback) {
-        var url = 'http://elasticsearch.l3q.de/institutes/_search?size=80&pretty=true&source={"query":{"fuzzy_like_this":{"fields":["label","alias"],"like_text":"Institut"}}}';
-        // var url = '/es/institutes?q=Institut';
+        // var url = 'http://elasticsearch.l3q.de/institutes/_search?size=80&pretty=true&source={"query":{"fuzzy_like_this":{"fields":["label","alias"],"like_text":"Institut"}}}';
+        var url = '/es/institutes?q=Institut';
         $.getJSON(url, function(data) {
             data.hits.hits.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByLabel);
             callback(data.hits.hits);

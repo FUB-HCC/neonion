@@ -441,6 +441,7 @@ dialog#dialog-import .ui-widget-content{
 }
 
 #document-import-list .ui-selecting, dialog#dialog-import .ui-widget-content:hover {
+  cursor: pointer;
   background: rgb(255,255,255); /* Old browsers */
   background: -moz-linear-gradient(left,  rgba(255,255,255,1) 0%, rgba(0,173,232,1) 100%); /* FF3.6+ */
   background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(0,173,232,1))); /* Chrome,Safari4+ */

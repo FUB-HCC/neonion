@@ -399,6 +399,10 @@ dialog#dialog-import #close-dialog-button{
   top:0.5em;
   font-size: 1.5em;
   color: #FF3235;
+  cursor: pointer;
+}
+dialog#dialog-import #close-dialog-button:hover{
+  color: #CC282A;
 }
 
 dialog#dialog-import .dialog-body{

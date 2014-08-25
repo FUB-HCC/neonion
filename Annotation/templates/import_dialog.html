@@ -42,6 +42,7 @@
 
     function initImportDialog() {
         $( "#document-import-list" ).selectable();
+        $("#close-dialog-button").click( closeImportDialog );
 
         updateDocumentTable(docList);
 
@@ -49,6 +50,8 @@
             $("#document-import").attr("disabled", true);
             importDocuemt();
         });
+
+
     }
 
     function updateDocumentTable(entries) {

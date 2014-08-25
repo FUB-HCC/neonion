@@ -1,6 +1,6 @@
 
-html{
-	margin:1em;
+body{
+	padding:1em;
   max-width: 979px;
 }
 
@@ -378,11 +378,93 @@ dialog#dialog-import{
   min-width:50em;
   border: 1px solid rgba(0, 0, 0, 0.3);
   box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  padding: 0;
+}
+
+dialog#dialog-import div{
+  padding-left:  2em;
+  padding-right: 1em;
+}
+
+dialog#dialog-import .dialog-head{
+  line-height: 3em;
+  margin-bottom: 0px;
+  border-bottom: 3px solid rgba(0, 0, 0, 0.3);
+}
+
+dialog#dialog-import #close-dialog-button{
+  position: absolute;
+  right: 1em;
+  top:0.5em;
+  font-size: 1.5em;
+  color: #FF3235;
+}
+
+dialog#dialog-import .dialog-body{
+  padding-top: 1em;
+}
+
+dialog#dialog-import .dialog-body p{
+  margin-bottom: 0.5em;
 }
 
 dialog #import-form-row{
   overflow-y: auto;
-  max-height: 30em;
+  max-height: 16em;
+  /*margin-left: 2em;*/
+  margin-right: 1em;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 10px 0px 0px 10px;
+}
+
+dialog#dialog-import .dialog-foot{
+  text-align: right;
+  padding-bottom: 1em;
+}
+
+dialog#dialog-import .ui-widget-content{
+  border:none;
+  width: 100%;
+}
+
+#document-import-list{
+  margin: 0;
+}
+#import-form-row{
+  padding: 0 !important;
+}
+
+dialog#dialog-import .ui-widget-content{
+  padding-left:0.5em;
+}
+
+#document-import-list .ui-selecting, dialog#dialog-import .ui-widget-content:hover {
+  background: rgb(255,255,255); /* Old browsers */
+  background: -moz-linear-gradient(left,  rgba(255,255,255,1) 0%, rgba(0,173,232,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(0,173,232,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(left,  rgba(255,255,255,1) 0%,rgba(0,173,232,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(left,  rgba(255,255,255,1) 0%,rgba(0,173,232,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(left,  rgba(255,255,255,1) 0%,rgba(0,173,232,1) 100%); /* IE10+ */
+  background: linear-gradient(to right,  rgba(255,255,255,1) 0%,rgba(0,173,232,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ade8',GradientType=1 ); /* IE6-9 */
+}
+
+#document-import-list .ui-selected{
+  background: #00ADE8 !important;
+}
+
+
+dialog#dialog-import .dialog-cancel-btn{
+  text-decoration: underline;
+  margin-right: 2em;
+}
+dialog#dialog-import .dialog-cancel-btn:hover{
+  cursor: pointer;
+}
+
+#document-import-list{
+  list-style-type: none;
 }
 
 dialog#dialog-import::backdrop {
@@ -393,7 +475,16 @@ dialog#dialog-import + .backdrop {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-
-dialog input[type="checkbox"]{
-  margin-right: 0.5em;
+.btn-blue{
+  background: #00ADE8;
+  color: rgba(0, 0, 0, 1);
+  border-radius: 10px;
 }
+
+.btn-blue:hover {
+  background: #008ABA;
+    color: rgba(0, 0, 0, 0.9);
+
+}
+
+

@@ -1,16 +1,21 @@
 {% extends "base_dialog.html" %}
 
 {% block dialogID %}dialog-import{% endblock %}
+
 {% block dialogTitle %}Import from Euler Archive{% endblock %}
+
 {% block dialogDesciption %}Please select the files you want to import to your working space{% endblock %}
 
 {% block dialogContent %}
-<form method="post" action="" class="forms">
-    <ul class="forms-list" id="document-import-list">
-    </ul>
+<div id="import-form-row">
+    <ul id="document-import-list"></ul>
+</div>
+<!-- <form method="post" action="" class="forms" id="import-form-row">
+    <select id="document-import-list" size="10" multiple></select>
 </form>
-
+ -->
 <script language="javascript">
+
 
     var selectedDocs = [];
 
@@ -36,6 +41,8 @@
     ]
 
     function initImportDialog() {
+        $( "#document-import-list" ).selectable();
+
         updateDocumentTable(docList);
 
         $("#document-import").click(function() {
@@ -46,14 +53,12 @@
 
     function updateDocumentTable(entries) {
         // clear list
-        $("#document-import-list").html("");
+        $("#document-import-list").html('');
         // create docuement import list
         $.each(entries, function(index, value) {
-
-            var input = $( '<input type="checkbox" name="documents"></input>' ).attr( 'id', value.urn ).attr( 'value', value.urn );
-            var label = $( '<label></label>' ).text( value.name ).attr( 'for', value );
-            var li = $( '<li></li>' ).append(input).append(label);
-            $('#document-import-list').append( li );
+            // var item = new Option( value.urn, value.name );
+            var item = $('<li></li>').attr( 'id', value.urn ).text( value.name ).attr('class','ui-widget-content');
+            $('#document-import-list').append( item );
         });
     }
 
@@ -186,7 +191,7 @@
             type: 'POST',
             data : { "data" : JSON.stringify(entityData), fmt : "JSON" }
         }).success(function(data, textStatus, jqXHR) {
-             
+
         }).error(function(jqXHR, textStatus, errorThrown) {
             console.log(errorThrown);
         });
@@ -197,7 +202,7 @@
 {% endblock %}
 
 {% block dialogBottom %}
-<button class="btn-red" onclick="closeImportDialog()">cancel</button>
-<button class="btn-blue" onclick="importSelectedDocuments()">import</button>
+<span class="dialog-cancel-btn" onclick="closeImportDialog()">Cancel</span>
+<button class="btn-blue" onclick="importSelectedDocuments()">Import</button>
 <div id="document-cache" style="display:none"></div>
 {% endblock %}

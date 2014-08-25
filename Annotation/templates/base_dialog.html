@@ -1,14 +1,17 @@
 {% load staticfiles %}
 
-<dialog id='{% block dialogID %}{% endblock %}'>
-    <div class="units-row">
-        <p class="big">{% block dialogTitle %}{% endblock %}</p>
-        {% block dialogDesciption %}{% endblock %}
+<dialog class="import-dialog" id='{% block dialogID %}{% endblock %}'>
+    <div class="units-row dialog-head" >
+        <strong>{% block dialogTitle %}{% endblock %}</strong>
+        <span class="fa fa-times-circle" id="close-dialog-button"></span>
     </div>
-    <div class="units-row" id="import-form-row">
+    <div class="units-row end dialog-body">
+        <p>{% block dialogDesciption %}{% endblock %}</p>
         {% block dialogContent %}{% endblock %}
     </div>
-    <div class="units-row end">
+    <!-- <div class="units-row" id="import-form-row"> -->
+    <!-- </div> -->
+    <div class="units-row end dialog-foot">
         {% block dialogBottom %}{% endblock %}
     </div>
 </dialog>

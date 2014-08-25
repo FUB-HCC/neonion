@@ -2,5 +2,6 @@
 venv
 *.pyc
 *.pyo
+db.sqlite3
 staticfiles
 __pycache__

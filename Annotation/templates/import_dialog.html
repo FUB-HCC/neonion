@@ -42,6 +42,7 @@
 
     function initImportDialog() {
         $( "#document-import-list" ).selectable();
+        $('dialog').draggable();
         $("#close-dialog-button").click( closeImportDialog );
 
         updateDocumentTable(docList);
@@ -50,7 +51,6 @@
             $("#document-import").attr("disabled", true);
             importDocuemt();
         });
-
 
     }
 
@@ -83,8 +83,8 @@
     }
 
     function importSelectedDocuments(){
-        $('input[name="documents"]:checked').each(function() {
-            selectedDocs.push(this.value);
+        $('.ui-selected').each(function() {
+            selectedDocs.push( this.id );
         });
 
         if (selectedDocs.length > 0) {

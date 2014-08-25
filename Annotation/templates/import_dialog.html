@@ -144,6 +144,8 @@
         var collapseWhiteSpaceRegex = /\s+/g;
         var fullTrimRegex = /^\s+|\s+$/g;
 
+console.log($("#document-cache").html());
+
         var paragrapgNodes = $("#document-cache p.ocr_par");
         var paragrapgs = new Array(paragrapgNodes.length);
 
@@ -171,6 +173,22 @@
         return "<span xml:lang='de'>" + html + "</span>";
     }
 
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
     function importDocuemt(docUrn) {
         var title = docUrn;
         // get proper title
@@ -192,7 +210,7 @@
         jQuery.ajax({
             url: config.scms.server + config.scms.service.create,
             type: 'POST',
-            data : { "data" : JSON.stringify(entityData), fmt : "JSON" }
+            data : { "data" : JSON.stringify(entityData), fmt : "JSON", csrfmiddlewaretoken : getCookie('csrftoken') }
         }).success(function(data, textStatus, jqXHR) {
 
         }).error(function(jqXHR, textStatus, errorThrown) {

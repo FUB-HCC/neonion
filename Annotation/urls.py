@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     # Loomp proxy
     url(r'^loomp/content/get$', 'prototype.views.loomp_get', name='loomp_get'),
     url(r'^loomp/content/getAll$', 'prototype.views.loomp_getAll', name='getAll'),
+    url(r'^loomp/content/save$', 'prototype.views.loomp_save', name='save'),
     # url(r'^loomp/delete/(?P<query>[\w ]+)/?$', 'prototype.views.loomp_getAll', name='getAll'),
 
 # // GET services

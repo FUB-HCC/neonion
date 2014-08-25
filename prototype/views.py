@@ -44,6 +44,17 @@ def loomp_getAll( request ):
         if 'type' in request.GET:
             loomp_url = 'http://localhost:8080/content/getAll?type={}'.format( request.GET.get('type') )
             r = requests.get( loomp_url )
+            print(r.url)
+            return HttpResponse( r.text, content_type='application/json' )
+        else:
+            pass
+
+@login_required
+def loomp_save( request ):
+    if request.POST:
+        if 'data' in request.POST:
+            loomp_url = 'http://localhost:8080/content/save'
+            r = requests.post( loomp_url, data = { 'data' : request.POST.get('data'), 'fmt': 'JSON' } )
             return HttpResponse( r.text, content_type='application/json' )
         else:
             pass

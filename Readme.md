@@ -12,31 +12,42 @@ For joseki and loomp you will need java 1.7 and grails 2.3.7 ([Groovy enVironmen
 
 
 # tools und shell
-`sudo apt-get install vim git joe tmux curl`
+```
+sudo apt-get install vim git joe tmux curl
+```
 
 # (optional) nice bash config
-`wget nutz.noova.de/rdot -O - | bash -s`
+```
+wget nutz.noova.de/rdot -O - | bash -s
+```
 
 # python
-`sudo apt-get install python python3 python-virtualenv python-dev python3-dev libpq-dev`
+```
+sudo apt-get install python python3 python-virtualenv python-dev python3-dev libpq-dev
+```
 
 # java 1.7
-```sudo apt-add-repository ppa:webupd8team/java
+```
+sudo apt-add-repository ppa:webupd8team/java
 sudo apt-get update
-sudo apt-get install oracle-java7-installer```
+sudo apt-get install oracle-java7-installer
+```
 
 # elasticsearch
-```wget -qO - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add -
+```
+wget -qO - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add -
 sudo echo "deb http://packages.elasticsearch.org/elasticsearch/1.3/debian stable main" >> /etc/apt/sources.list
 sudo apt-get update
 sudo apt-get install elasticsearch
-sudo /etc/init.d/elasticsearch start```
+sudo /etc/init.d/elasticsearch start
+```
 
 # grails
-```curl -s get.gvmtool.net | bash
+```
+curl -s get.gvmtool.net | bash
 gvm install grails 2.3.7
-source ~/.gvm/bin/gvm-init.sh```
-
+source ~/.gvm/bin/gvm-init.sh
+```
 
 the following steps need one shell each:
 

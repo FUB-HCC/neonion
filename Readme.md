@@ -21,21 +21,21 @@ For joseki and loomp you will need java 1.7 and grails 2.3.7 ([Groovy enVironmen
 `sudo apt-get install python python3 python-virtualenv python-dev python3-dev libpq-dev`
 
 # java 1.7
-`sudo apt-add-repository ppa:webupd8team/java`
-`sudo apt-get update`
-`sudo apt-get install oracle-java7-installer`
+```sudo apt-add-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java7-installer```
 
 # elasticsearch
-`wget -qO - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add -`
-`sudo echo "deb http://packages.elasticsearch.org/elasticsearch/1.3/debian stable main" >> /etc/apt/sources.list`
-`sudo apt-get update`
-`sudo apt-get install elasticsearch`
-`sudo /etc/init.d/elasticsearch start`
+```wget -qO - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add -
+sudo echo "deb http://packages.elasticsearch.org/elasticsearch/1.3/debian stable main" >> /etc/apt/sources.list
+sudo apt-get update
+sudo apt-get install elasticsearch
+sudo /etc/init.d/elasticsearch start```
 
 # grails
-`curl -s get.gvmtool.net | bash`
-`gvm install grails 2.3.7`
-`source ~/.gvm/bin/gvm-init.sh`
+```curl -s get.gvmtool.net | bash
+gvm install grails 2.3.7
+source ~/.gvm/bin/gvm-init.sh```
 
 
 the following steps need one shell each:

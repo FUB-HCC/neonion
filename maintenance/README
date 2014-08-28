@@ -1,0 +1,4 @@
+get latest json-dump from: https://dumps.wikimedia.org/other/wikidata/
+
+run extract-script
+run import script

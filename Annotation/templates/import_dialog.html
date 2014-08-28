@@ -4,7 +4,7 @@
 
 {% block dialogTitle %}Import from EULER Archive{% endblock %}
 
-{% block dialogDesciption %}Please select the files you want to import to your working space{% endblock %}
+{% block dialogDesciption %}<i class="mid">Please select the files you want to import to your working space.</i>{% endblock %}
 
 {% block dialogContent %}
 <div id="import-form-row">
@@ -42,7 +42,7 @@
 
     function initImportDialog() {
         $( "#document-import-list" ).selectable();
-        $('dialog').draggable();
+        // $('dialog').draggable();
         $("#close-dialog-button").click( closeImportDialog );
 
         updateDocumentTable(docList);
@@ -223,7 +223,7 @@ console.log($("#document-cache").html());
 {% endblock %}
 
 {% block dialogBottom %}
-<span class="dialog-cancel-btn" onclick="closeImportDialog()">Cancel</span>
-<button class="btn-blue" onclick="importSelectedDocuments()">Import</button>
+<span class="dialog-cancel-btn mid" onclick="closeImportDialog()">Cancel</span>
+<button class="btn-blue mid" onclick="importSelectedDocuments()">Import</button>
 <div id="document-cache" style="display:none"></div>
 {% endblock %}

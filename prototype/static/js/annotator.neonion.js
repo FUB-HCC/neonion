@@ -3,34 +3,23 @@ Annotator.Plugin.Neonion = function (element, options) {
     var user;
     var adder;
     var selectedType;
-    var compositor = {};
+    var compositor;
 
     return {
 
         pluginInit : function () {
-             adder = $(this.annotator.adder[0]);
+            adder = $(this.annotator.adder[0]);
 
-            compositor[Annotator.Plugin.Neonion.prototype.surrogate.person.uri] = {
-                unknownResource : Annotator.Plugin.Neonion.prototype.surrogate.unknownPerson,
-                search : Annotator.Plugin.Neonion.prototype.search.searchPerson,
-                formatter : Annotator.Plugin.Neonion.prototype.formatter.formatPerson
-            };
-            compositor[Annotator.Plugin.Neonion.prototype.surrogate.institute.uri] = {
-                unknownResource : Annotator.Plugin.Neonion.prototype.surrogate.unknownInstitute,
-                search : Annotator.Plugin.Neonion.prototype.search.searchInstitute,
-                formatter : Annotator.Plugin.Neonion.prototype.formatter.formatInstitute
-            };
-
+            // create compositor
+            compositor = compositor || {};
+            // intialize default compositors
+            Annotator.Plugin.Neonion.prototype.initializeDefaultCompistor(compositor);
             // add additional adder buttons
-            var types = [
-                Annotator.Plugin.Neonion.prototype.surrogate.person,
-                Annotator.Plugin.Neonion.prototype.surrogate.institute
-            ];
-            this.setAnnotationTypes(types);
+            this.setAnnotationTypes(compositor);
             // catch submit event
             adder.on( "click", "button", function (e) {
                 // set selected type
-                selectedType = $(this).attr("uri");
+                selectedType = $(this).val();
             });
 
             // add field to linked person
@@ -39,13 +28,11 @@ Annotator.Plugin.Neonion = function (element, options) {
                     if (annotation.rdf) {
                         var fieldValue = "<a href='" + annotation.rdf.about + "' target='blank'>" + annotation.rdf.label + "</a>";
                         var fieldCaption;
-                        switch(annotation.rdf.typeof) {
-                            case Annotator.Plugin.Neonion.prototype.surrogate.person.uri:
-                                fieldCaption = Annotator.Plugin.Neonion.prototype.literals['de'].person; break;
-                            case Annotator.Plugin.Neonion.prototype.surrogate.institute.uri:
-                                fieldCaption = Annotator.Plugin.Neonion.prototype.literals['de'].institute; break;
-                            default:
-                                fieldCaption = Annotator.Plugin.Neonion.prototype.literals['de'].unknownResource;
+                        if (compositor[annotation.rdf.typeof]) {
+                            fieldCaption = compositor[annotation.rdf.typeof].label;
+                        }
+                        else {
+                            fieldCaption = Annotator.Plugin.Neonion.prototype.literals['de'].unknownResource;
                         }
                         field.innerHTML = fieldCaption + ":&nbsp;" + fieldValue;
                     }
@@ -93,8 +80,8 @@ Annotator.Plugin.Neonion = function (element, options) {
             this.annotator.subscribe("annotationUpdated", Annotator.Plugin.Neonion.prototype.enrichRDFa);
         },
 
-        setAnnotationTypes : function(types) {
-            Annotator.Plugin.Neonion.prototype.overrideAdder(adder, types);
+        setAnnotationTypes : function(compositor) {
+            Annotator.Plugin.Neonion.prototype.overrideAdder(adder, compositor);
         },
 
         setUser : function(userData) {
@@ -112,7 +99,7 @@ Annotator.Plugin.Neonion = function (element, options) {
                 typeof : selectedType,
                 property : "rdfs:label",
                 about : activeItem.attr("uri"),
-                label : activeItem.val()
+                label : unescape(activeItem.val())
              };
         },
 
@@ -149,11 +136,21 @@ Annotator.Plugin.Neonion.prototype.literals = {
     }
 }
 
-Annotator.Plugin.Neonion.prototype.surrogate = {
-    person : { uri : "https://www.wikidata.org/wiki/Q5", _source : { label : Annotator.Plugin.Neonion.prototype.literals['de'].person } },
-    institute : { uri : "https://www.wikidata.org/wiki/Q31855" , _source : { label : Annotator.Plugin.Neonion.prototype.literals['de'].institute, } },
-    unknownPerson : { uri : "http://neonion.com/resource/Unknown_Person", _source : { label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownPerson } },
-    unknownInstitute : { uri : "http://neonion.com/resource/Unknown_Institute", _source : { label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownInstitute } }
+Annotator.Plugin.Neonion.prototype.initializeDefaultCompistor = function(compositor) {
+     // add compositor for persons
+    compositor["https://www.wikidata.org/wiki/Q5"] = {
+        label : Annotator.Plugin.Neonion.prototype.literals['de'].person,
+        unknownResource : { _source : { uri : "http://neonion.com/resource/Unknown_Person", label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownPerson } },
+        search : Annotator.Plugin.Neonion.prototype.search.searchPerson,
+        formatter : Annotator.Plugin.Neonion.prototype.formatter.formatPerson
+    };
+    // add compositor for institutes
+    compositor["https://www.wikidata.org/wiki/Q31855"] = { 
+        label : Annotator.Plugin.Neonion.prototype.literals['de'].institute,
+        unknownResource : { _source : { uri : "http://neonion.com/resource/Unknown_Institute", label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownInstitute } },
+        search : Annotator.Plugin.Neonion.prototype.search.searchInstitute,
+        formatter : Annotator.Plugin.Neonion.prototype.formatter.formatInstitute
+    };
 }
 
 Annotator.Plugin.Neonion.prototype.enrichRDFa = function(annotation) {
@@ -167,16 +164,17 @@ Annotator.Plugin.Neonion.prototype.createListItems = function(list, formatter) {
     var items = [];
     $.each(list, function(index, value) {
         var label = formatter(value);
-        items.push("<button type='button' class='annotator-btn' value='" + value._source.label + "' uri='" + value._source.uri + "'>" + label    + "</button>");
+        console.log(value);
+        items.push("<button type='button' class='annotator-btn' value='" + escape(value._source.label) + "' uri='" + value._source.uri + "'>" + label + "</button>");
     });
     return items;
 }
 
-Annotator.Plugin.Neonion.prototype.overrideAdder = function(adder, types) {
+Annotator.Plugin.Neonion.prototype.overrideAdder = function(adder, compositor) {
     adder.html("");
-    types.forEach(function(value, index, array) {
-        adder.append("<button class='btn-green' uri='" + value.uri + "'>" + value._source.label + "</button>");
-    });
+    for (var uri in compositor) {
+        adder.append("<button class='btn-green' value='" + uri + "'>" + compositor[uri].label + "</button>");
+    }
 },
 
 Annotator.Plugin.Neonion.prototype.comparator = {

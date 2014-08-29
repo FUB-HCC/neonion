@@ -11,7 +11,7 @@ Annotator.Plugin.Neonion = function (element, options) {
             adder = $(this.annotator.adder[0]);
 
             // create compositor
-            compositor = compositor || {};
+            compositor = options.compositor || {};
             // intialize default compositors
             Annotator.Plugin.Neonion.prototype.initializeDefaultCompistor(compositor);
             // add additional adder buttons
@@ -107,11 +107,15 @@ Annotator.Plugin.Neonion = function (element, options) {
             // get selected text
             var list = $(field).children(":first");
             list.empty();
+            // reserve max height so annotator can arrange the editor window properly
+            list.css("min-height", list.css("max-height"));
 
             if (compositor[selectedType]) {
                 compositor[selectedType].search(annotation.quote, function(items) {
                     // add unknown person resource
                     items.unshift(compositor[selectedType].unknownResource);
+                    // clear min-height property
+                    list.css("min-height", "");
                     // create and add items
                     list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, compositor[selectedType].formatter));
 

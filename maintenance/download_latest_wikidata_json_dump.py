@@ -1,5 +1,6 @@
 import requests, os
 from bs4 import BeautifulSoup
+from datetime import datetime
 from optparse import OptionParser
 
 parser = OptionParser()
@@ -9,10 +10,13 @@ parser.add_option( '-o', '--outputfolder', dest='outputfolder', help='outfolder'
 if not options.outputfolder:
     parser.error('outputfolder not given')
 
+outputfolder = options.outputfolder
+
 url = 'https://dumps.wikimedia.org/other/wikidata/{}'
 
+
 def download_file( url ):
-    local_filename = os.path.join( options.outputfolder, url.split( '/' )[-1] )
+    local_filename = os.path.join( outputfolder, url.split( '/' )[-1] )
 
     r = requests.get( url, stream=True )
     download_size = int(r.headers['Content-Length'])
@@ -26,12 +30,25 @@ def download_file( url ):
 
     print( '{} ({} Bytes)'.format( url, format(int(r.headers['Content-Length']),',d') ) )
     with open( local_filename, 'wb' ) as f:
+        size_to_log = 250 * 1048576 # x MB
         downloaded = 0
+        last_time = datetime.now()
         for chunk in r.iter_content( chunk_size=1024 ):
             if chunk: # filter out keep-alive new chunks
                 downloaded += 1024
-                if downloaded % (500*1048576) == 0: # 500 MB
-                    print( '{} MB ({}%)'.format( downloaded/(1048576), 100*float(downloaded)/download_size ) )
+                if downloaded % (size_to_log) == 0:
+                    actual_time = datetime.now()
+                    delta = actual_time - last_time
+                    print(
+                        '{done} MB ({done_percent:.{digits}f}%, {speed:.{digits}f} KB/s)'
+                        .format(
+                            done         = downloaded/(1048576),
+                            done_percent = 100 * float(downloaded) / download_size,
+                            speed        = (size_to_log/(delta.seconds + delta.microseconds/1E6))/1024,
+                            digits       = 2,
+                            )
+                    )
+                    last_time = actual_time
                 f.write( chunk )
                 f.flush()
     return local_filename

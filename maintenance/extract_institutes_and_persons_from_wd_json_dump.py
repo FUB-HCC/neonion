@@ -4,14 +4,20 @@ from datetime import datetime
 from optparse import OptionParser
 
 parser = OptionParser()
-parser.add_option( '-f', '--file', dest='filename', help='Wikidata JSON-Dump from http://dumps.wikimedia.org/other/wikidata/')
+parser.add_option( '-i', '--inputfile',  dest='inputfile', help='Wikidata JSON-Dump from http://dumps.wikimedia.org/other/wikidata/' )
+parser.add_option( '-o', '--outputfolder', dest='outputfolder', help='outfolder', default='extracted_data' )
+
 (options, args) = parser.parse_args()
-if not options.filename:
-    parser.error('Filename not given')
+if not options.inputfile:
+    parser.error('Inputfile not given')
+if not options.outputfolder:
+    parser.error('Outputfolder not given')
+
 
 # import dataset
 def get_wikidata_items( filename ):
     for line in gzip.open( filename ):
+        line = line.strip()
         wd = {}
         try:
             wd = json.loads( line[0:-2] )
@@ -19,20 +25,26 @@ def get_wikidata_items( filename ):
             try:
                 wd = json.loads( line[0:-1] )
             except:
-                print( 'something went wrong parsing this line:' )
-                print( line )
+                if len( line > 2 ):
+                    print( 'something went wrong parsing this line:' )
+                    print( line )
                 continue
         yield wd
 
-items_without_any_label_file = open( 'items_without_any_label.csv',    'w' )
-person_file = open( 'persons.json',    'w' )
-institute_file = open( 'institutes.json',    'w' )
+
+# items_without_any_label_file = open( 'items_without_any_label.csv',    'w' )
+
+persons_filename = os.path.join( options.outputfolder, 'persons.json' )
+person_file = open( persons_filename, 'w' )
+
+institutes_filename = os.path.join( options.outputfolder, 'institutes.json' )
+institute_file = open( institutes_filename, 'w' )
 
 done = 0
 human = 0
 nr_of_mpis = 0
 
-for wd_item in get_wikidata_items( options.filename ):
+for wd_item in get_wikidata_items( options.inputfile ):
     is_human = False
     is_mpi = False
     item     = {}

@@ -1,12 +1,24 @@
 import json
 from datetime import datetime
 from pyelasticsearch import ElasticSearch
+from optparse import OptionParser
+
+
+parser = OptionParser()
+parser.add_option( '-i', '--inputfolder', dest='inputfolder', help='infolder', default='extracted_data' )
+(options, args) = parser.parse_args()
+if not options.inputfolder:
+    parser.error('inputfolder not given')
+institutes_filename = os.path.join( options.outputfolder, 'institutes.json' )
+persons_filename = os.path.join( options.outputfolder, 'persons.json' )
+
+
 es = ElasticSearch('http://localhost:9200/')
 
 
 done = 0
 institutes = []
-for line in open('institutes.json'):
+for line in open( institutes_filename ):
   line = line.strip()
   institute = json.loads( line )
   institute['uri'] = 'http://wikidata.org/wiki/'+institute['id']
@@ -29,7 +41,7 @@ print(  datetime.now().strftime("%H:%M:%S"),format(done,',d'))
 
 done = 0
 persons = []
-for line in open('persons.json'):
+for line in open( persons_filename ):
   line = line.strip()
   person = json.loads( line )
   person['uri'] = 'http://wikidata.org/wiki/'+person['id']

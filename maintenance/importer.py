@@ -20,6 +20,8 @@ def import_json_into_es():
 
   done = 0
   institutes = []
+  es.delete_index('institutes')
+
   for line in open( institutes_filename ):
     line = line.strip()
     institute = json.loads( line )
@@ -43,6 +45,7 @@ def import_json_into_es():
 
   done = 0
   persons = []
+  es.delete_index('persons')
   for line in open( persons_filename ):
     line = line.strip()
     person = json.loads( line )

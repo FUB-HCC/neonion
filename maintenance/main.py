@@ -139,8 +139,9 @@ def extract_from_wd_dump():
 
         if wd_item['type'] == 'item':
             if not 'labels' in wd_item:
-                items_without_any_label_file.write( wd_item['id']+'\n' )
-                items_without_any_label_file.flush()
+                pass
+                # items_without_any_label_file.write( wd_item['id']+'\n' )
+                # items_without_any_label_file.flush()
 
 
             if 'claims' in wd_item:

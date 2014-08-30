@@ -1,21 +1,9 @@
 import requests, os
-from bs4 import BeautifulSoup
 from datetime import datetime
-from optparse import OptionParser
-
-parser = OptionParser()
-
-parser.add_option( '-o', '--outputfolder', dest='outputfolder', help='outfolder', default='dumps' )
-(options, args) = parser.parse_args()
-if not options.outputfolder:
-    parser.error('outputfolder not given')
-
-outputfolder = options.outputfolder
-
-url = 'https://dumps.wikimedia.org/other/wikidata/{}'
 
 
-def download_file( url ):
+def download_file( url, outputfolder ):
+    print( 80*'=' )
     local_filename = os.path.join( outputfolder, url.split( '/' )[-1] )
 
     r = requests.get( url, stream=True )
@@ -26,6 +14,7 @@ def download_file( url ):
         local_size = os.path.getsize( local_filename )
         if local_size == download_size:
             print('skip')
+            print( 80*'='+'\n' )
             return local_filename
 
     print( '{} ({} Bytes)'.format( url, format(int(r.headers['Content-Length']),',d') ) )
@@ -51,16 +40,28 @@ def download_file( url ):
                     last_time = actual_time
                 f.write( chunk )
                 f.flush()
+    print( 80*'='+'\n' )
     return local_filename
 
-if __name__ == '__main__':
-    resp = requests.get( url.format('') )
-    soup = BeautifulSoup( resp.text )
-    all_dumps = set()
-    for a in soup.find_all('a'):
-        href = a.attrs['href'].strip()
-        if not href == '../':
-            all_dumps.add( href )
+def strip_file_extension( s ):
+    return '.'.join( s.split( '.' )[:-2])
 
-    latest_dump = sorted(all_dumps)[-1]
-    download_file( url.format( latest_dump ) )
+def latest_dump_from_folder( folder ):
+    files = os.listdir( folder )
+    return sorted( list( files ) )[-1] # map( strip_file_extension, files )
+
+def get_wikidata_items( filename ):
+    for line in gzip.open( filename ):
+        line = line.strip()
+        wd = {}
+        try:
+            wd = json.loads( line[0:-2] )
+        except:
+            try:
+                wd = json.loads( line[0:-1] )
+            except:
+                # if len( line > 2 ):
+                print( 'something went wrong parsing this line:' )
+                print( line )
+                continue
+        yield wd

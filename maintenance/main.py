@@ -3,6 +3,13 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from pyelasticsearch import ElasticSearch
 
+# /web/neonion.imp.fu-berlin.de/neonion/neonion/maintenance/venv27/bin/python /web/neonion.imp.fu-berlin.de/neonion/neonion/maintenance/main.py
+
+
+dumps_folder    = '/web/neonion.imp.fu-berlin.de/neonion/neonion/maintenance/dumps'
+extract_folder  = '/web/neonion.imp.fu-berlin.de/neonion/neonion/maintenance/extracted_data'
+
+
 # DOWNLOAD
 def download_file( url, outputfolder ):
     print( 80*'=' )
@@ -50,9 +57,7 @@ def latest_dump_from_folder( folder ):
     return sorted( list( files ) )[-1] # map( strip_file_extension, files )
 
 url = 'https://dumps.wikimedia.org/other/wikidata/{}'
-def download_wd_dump():
-
-    outputfolder = 'dumps'
+def download_wd_dump( outputfolder ):
 
     if not os.path.exists( outputfolder ):
         print( 80*'=' )
@@ -91,9 +96,7 @@ def get_wikidata_items( filename ):
                 continue
         yield wd
 
-def extract_from_wd_dump():
-    inputfolder = 'dumps'
-    outputfolder = 'extracted_data'
+def extract_from_wd_dump( inputfolder, outputfolder):
     latest_dump = latest_dump_from_folder( inputfolder )
 
     if not os.path.exists( outputfolder ):
@@ -247,8 +250,7 @@ def extract_from_wd_dump():
 
 
 # IMPORT
-def import_json_into_es():
-    inputfolder = 'extracted_data'
+def import_json_into_es( inputfolder ):
 
     institutes_filename = os.path.join( inputfolder, 'institutes.json' )
     persons_filename = os.path.join( inputfolder, 'persons.json' )
@@ -312,12 +314,12 @@ def import_json_into_es():
     print(  datetime.now().strftime("%H:%M:%S"),format(done,',d'))
 
 if __name__ == '__main__':
-    download_wd_dump()
-    extract_from_wd_dump()
-    import_json_into_es()
+    download_wd_dump( dumps_folder )
+    extract_from_wd_dump( dumps_folder, extract_folder )
+    import_json_into_es( extract_folder )
 else:
     print( 'usage:' )
-    print( '    main.download_wd_dump()      # downloads the latest wikidata dump file' )
-    print( '    main.extract_from_wd_dump()  # extracts person and institute data from latest dump' )
-    print( '    main.import_json_into_es()   # imports person and institute data into local elastcisearch (deletes and recreates index)' )
+    print( '    main.download_wd_dump( dumps_folder )      # downloads the latest wikidata dump file' )
+    print( '    main.extract_from_wd_dump( dumps_folder, extract_folder )  # extracts person and institute data from latest dump' )
+    print( '    main.import_json_into_es( extract_folder )   # imports person and institute data into local elastcisearch (deletes and recreates index)' )
 

@@ -305,7 +305,13 @@ def import_json_into_es():
         es.bulk_index( 'persons', 'person', persons, id_field='id' )
     print(  datetime.now().strftime("%H:%M:%S"),format(done,',d'))
 
+if __name__ == '__main__':
+    download_wd_dump()
+    extract_from_wd_dump()
+    import_json_into_es()
+else:
+    print( 'usage:' )
+    print( '    main.download_wd_dump()      # downloads the latest wikidata dump file' )
+    print( '    main.extract_from_wd_dump()  # extracts person and institute data from latest dump' )
+    print( '    main.import_json_into_es()   # imports person and institute data into local elastcisearch (deletes and recreates index)' )
 
-download_wd_dump()
-extract_from_wd_dump()
-import_json_into_es()

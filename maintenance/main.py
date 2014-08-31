@@ -45,8 +45,8 @@ def download_file( url, outputfolder ):
     print( 80*'='+'\n' )
     return local_filename
 
-def strip_file_extension( s ):
-    return '.'.join( s.split( '.' )[:-2])
+# def strip_file_extension( s, n ):
+#     return '.'.join( s.split( '.' )[:-1*n])
 
 def latest_dump_from_folder( folder ):
     files = os.listdir( folder )
@@ -260,8 +260,8 @@ def import_json_into_es():
 
     done = 0
     institutes = []
-    es.delete_index('institutes')
-
+    es.delete_index( 'institutes' )
+    es.create_index( 'institutes' )
     for line in open( institutes_filename ):
         line = line.strip()
         institute = json.loads( line )
@@ -286,6 +286,7 @@ def import_json_into_es():
     done = 0
     persons = []
     es.delete_index('persons')
+    es.create_index( 'persons' )
     for line in open( persons_filename ):
         line = line.strip()
         person = json.loads( line )

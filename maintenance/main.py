@@ -258,7 +258,10 @@ def import_json_into_es():
 
     done = 0
     institutes = []
-    es.delete_index( 'institutes' )
+
+    try:    es.delete_index( 'institutes' )
+    except: pass
+
     es.create_index( 'institutes' )
     for line in open( institutes_filename ):
         line = line.strip()
@@ -283,7 +286,10 @@ def import_json_into_es():
 
     done = 0
     persons = []
-    es.delete_index('persons')
+
+    try:    es.delete_index('persons')
+    except: pass
+
     es.create_index( 'persons' )
     for line in open( persons_filename ):
         line = line.strip()

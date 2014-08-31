@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from pyelasticsearch import ElasticSearch
 
-
+# DOWNLOAD
 def download_file( url, outputfolder ):
     print( 80*'=' )
     local_filename = os.path.join( outputfolder, url.split( '/' )[-1] )
@@ -45,33 +45,11 @@ def download_file( url, outputfolder ):
     print( 80*'='+'\n' )
     return local_filename
 
-# def strip_file_extension( s, n ):
-#     return '.'.join( s.split( '.' )[:-1*n])
-
 def latest_dump_from_folder( folder ):
     files = os.listdir( folder )
     return sorted( list( files ) )[-1] # map( strip_file_extension, files )
 
-def get_wikidata_items( filename ):
-    for line in gzip.open( filename ):
-        line = line.strip()
-        wd = {}
-        try:
-            wd = json.loads( line[0:-2] )
-        except:
-            try:
-                wd = json.loads( line[0:-1] )
-            except:
-                # if len( line > 2 ):
-                print( 'something went wrong parsing this line:' )
-                print( line )
-                continue
-        yield wd
-
-
 url = 'https://dumps.wikimedia.org/other/wikidata/{}'
-
-
 def download_wd_dump():
 
     outputfolder = 'dumps'
@@ -94,6 +72,24 @@ def download_wd_dump():
     latest_dump = sorted(all_dumps)[-1]
     download_file( url.format( latest_dump ), outputfolder )
 
+
+
+# EXTRACT
+def get_wikidata_items( filename ):
+    for line in gzip.open( filename ):
+        line = line.strip()
+        wd = {}
+        try:
+            wd = json.loads( line[0:-2] )
+        except:
+            try:
+                wd = json.loads( line[0:-1] )
+            except:
+                # if len( line > 2 ):
+                print( 'something went wrong parsing this line:' )
+                print( line )
+                continue
+        yield wd
 
 def extract_from_wd_dump():
     inputfolder = 'dumps'
@@ -240,7 +236,7 @@ def extract_from_wd_dump():
             institute_file.write( json.dumps( item )+'\n' )
 
         done +=1
-        if done % 10000 == 0:
+        if done % 250000 == 0:
             print(  '{} total: {} human: {} mpis: {}'.format(
                         datetime.now().strftime('%H:%M:%S'),
                         format(done, ',d'),
@@ -249,6 +245,8 @@ def extract_from_wd_dump():
                     )
             )
 
+
+# IMPORT
 def import_json_into_es():
     inputfolder = 'extracted_data'
 
@@ -306,7 +304,6 @@ def import_json_into_es():
     if len(persons) > 0:
         es.bulk_index( 'persons', 'person', persons, id_field='id' )
     print(  datetime.now().strftime("%H:%M:%S"),format(done,',d'))
-
 
 
 download_wd_dump()

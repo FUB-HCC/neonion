@@ -194,7 +194,7 @@ Annotator.Plugin.Neonion.prototype.comparator = {
 Annotator.Plugin.Neonion.prototype.formatter = {
     formatPerson : function(value) {
         var label = "<span>" + value._source.label + "</span>";
-        if (value._source.birth) label += "<small>&nbsp;" + value._source.birth + "</small>";
+        if (value._source.birth) label += "<small><span>&nbsp;" + value._source.birth + "</span></small>";
         //if (value.descr) label += "<br/><small>" + value.descr + "</small>";
         return label;
     },

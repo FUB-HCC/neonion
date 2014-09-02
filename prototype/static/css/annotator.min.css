@@ -626,7 +626,10 @@
     background-color: #f1f1f1;
 }
 .btn-group-vertical .annotator-btn:hover{
-    background-color: rgba( 0,173, 232, 0.3);
+    background-color: rgba( 0,173, 232, 1);
+}
+.btn-group-vertical .annotator-btn:hover span{
+    color: white;
 }
 
 

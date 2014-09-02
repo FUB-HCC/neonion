@@ -67,6 +67,29 @@ Annotator.Plugin.Neonion = function (element, options) {
                 source.addClass("active");
                 $(".annotator-widget").submit();
             });
+            
+            var overlay = $("<div class='annotator-overlay' style='display:none;'></div>");
+            $(element).parent().append(overlay);
+            //$(this.annotator.wrapper[0]).append(overlay);
+            // mouse hover for detail window
+            $(suggestionField).on( "mouseenter", "button", function (e) {
+                var dataIndex = parseInt($(this).val());
+                var dataItem = $(element).data("results")[dataIndex];
+                var decorator = compositor[selectedType].decorator || Annotator.Plugin.Neonion.prototype.decorator.decorateDefault;
+               
+                /*var pos = $(".annotator-editor").position();        
+                pos.left += $(".annotator-editor").width();     
+                overlay.css(pos);*/
+                overlay.html(decorator(dataItem));
+                overlay.show();
+            });
+            $(suggestionField).on( "mousemove", "button", function (e) {
+                var pos = { top : e.pageY, left: e.pageX + 30 };        
+                overlay.css(pos);
+            });
+            $(suggestionField).on( "mouseleave", "button", function (e) {
+                overlay.hide();
+            });
 
             // get logged in user credentials
             $.ajax({
@@ -95,13 +118,15 @@ Annotator.Plugin.Neonion = function (element, options) {
 
             // add user to annotation
             annotation.creator = user;
+            var itemIndex = parseInt(activeItem.val());
+            var dataItem = $(element).data("results")[itemIndex];
 
             // update annotation object
             annotation.rdf = {
                 typeof : selectedType,
                 property : "rdfs:label",
-                about : activeItem.attr("uri"),
-                label : unescape(activeItem.val())
+                about : dataItem.uri,
+                label : dataItem.label
              };
         },
 
@@ -114,6 +139,8 @@ Annotator.Plugin.Neonion = function (element, options) {
 
             if (compositor[selectedType]) {
                 compositor[selectedType].search(annotation.quote, function(items) {
+                    // store last result set in jQuery data collection
+                    $(element).data("results", items);
                     // update score
                     Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence(items);
                     // add unknown person resource
@@ -184,10 +211,10 @@ Annotator.Plugin.Neonion.prototype.enrichRDFa = function(annotation) {
 
 Annotator.Plugin.Neonion.prototype.createListItems = function(list, formatter) {
     var items = [];
-    $.each(list, function(index, value) {
-        var label = formatter(value);
-        items.push("<button type='button' class='annotator-btn' value='" + escape(value.label) + "' uri='" + value.uri + "'>" + label + "</button>");
-    });
+    for(var i = 0; i < list.length; i++) {
+        var label = formatter(list[i]);
+        items.push("<button type='button' class='annotator-btn' value='" + i + "'>" + label + "</button>");
+    }
     return items;
 }
 
@@ -204,6 +231,7 @@ Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence = function(ite
     // count occurrence of each resource
     annotatorItems.each(function() {
         var annotation = $(this).data("annotation");
+        console.log(annotation);
         if (annotation.rdf && annotation.rdf.about) {
             if (!occurrence[annotation.rdf.about]) {
                 occurrence[annotation.rdf.about] = 0;
@@ -221,17 +249,20 @@ Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence = function(ite
     }
     // sort by score 
     items.sort(function(a, b) { return b.score - a.score; });
-    console.log(items);
+    //console.log(items);
 }
 
 Annotator.Plugin.Neonion.prototype.comparator = {
     compareByLabel : function(a, b) {
-        if (a.label < b.label)
+        return Annotator.Plugin.Neonion.prototype.comparator.compareByField("label", a, b);
+    },
+    compareByField : function(field, a, b) {
+        if (a[field] < b[field])
             return -1;
-        if (a.label > b.label)
+        if (a[field] > b[field])
             return 1;
         return 0;
-    },
+    }
 }
 
 Annotator.Plugin.Neonion.prototype.formatter = {
@@ -245,6 +276,24 @@ Annotator.Plugin.Neonion.prototype.formatter = {
         var label = "<span>" + value.label + "</span>";
         // TODO formatting institute
         return label;
+    }
+}
+
+Annotator.Plugin.Neonion.prototype.decorator = {
+    decorateDefault: function(data) {
+        var html = "";
+        for (var key in data) {
+            if (!Array.isArray(data[key])) {
+                html += "<p><b>" + key + "</b>&nbsp;<span>" + data[key] + "</span></p>";
+            }
+        }
+        return html;
+    },
+    decoratePerson : function(data) {
+        return "<div>Datenblatt zu Person</div>";
+    },
+    decorateInstitute : function(data) {
+        return "<div>Datenblatt zu Institution</div>";
     }
 }
 

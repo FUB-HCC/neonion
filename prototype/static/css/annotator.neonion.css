@@ -17,3 +17,15 @@ body {
 	-webkit-all: default;
 	-moz-all: default;
 }
+
+.annotator-overlay {
+	position: absolute;
+	background-color: #fff;
+	padding: 10px;
+	top: 100px;
+	left: 50px;
+	border: 1px solid black;
+	border-radius: 5px;
+	max-width: 400;
+	z-index: 1200;
+}

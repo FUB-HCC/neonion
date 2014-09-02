@@ -305,14 +305,12 @@ dialog#dialog-import .ui-widget-content{
   margin-bottom: 1px;
 }
 
-#document-import-list .ui-selecting, dialog#dialog-import .ui-widget-content:hover {
+#document-import-list .ui-selecting, dialog#dialog-import .ui-widget-content:hover, #document-import-list .ui-selected {
   cursor: pointer;
+  color: rgba(255, 255, 255, 0.9);
   background: #00ADE8;
 }
 
-#document-import-list .ui-selected{
-  background: #00ADE8;
-}
 
 
 dialog#dialog-import .dialog-cancel-btn{

@@ -713,3 +713,37 @@ a.annotator-cancel:after{ /* remove the shitty x-icon from the cancel button */
   color: rgba(255, 255, 255, 0.9) !important;
   background: #d70a16 !important;
 }
+
+
+
+.annotator-adder button:hover{
+    background-color: rgba(0,173, 232, 1) !important;
+    color: white !important;
+}
+
+.annotator-adder button:first-child{
+    border-top: 1px solid black;
+    border-bottom: 1px solid gray;
+    -webkit-border-top-left-radius: 5px  !important;
+    -webkit-border-top-right-radius: 5px !important;
+    -moz-border-radius-topleft: 5px !important;
+    -moz-border-radius-topright: 5px !important;
+    border-top-left-radius: 5px !important;
+    border-top-right-radius: 5px !important;
+
+}
+.annotator-adder button{
+    min-width: 7em;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-radius: 0px !important;
+}
+.annotator-adder button:last-child{
+    border-bottom: 1px solid black;
+    -webkit-border-bottom-right-radius: 5px !important;
+    -webkit-border-bottom-left-radius: 5px !important;
+    -moz-border-radius-bottomright: 5px !important;
+    -moz-border-radius-bottomleft: 5px !important;
+    border-bottom-right-radius: 5px !important;
+    border-bottom-left-radius: 5px !important;
+}

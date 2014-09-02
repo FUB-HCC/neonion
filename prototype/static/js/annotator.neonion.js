@@ -149,7 +149,7 @@ Annotator.Plugin.Neonion.prototype.initializeDefaultCompistor = function(composi
         formatter : Annotator.Plugin.Neonion.prototype.formatter.formatPerson
     };
     // add compositor for institutes
-    compositor["https://www.wikidata.org/wiki/Q31855"] = { 
+    compositor["https://www.wikidata.org/wiki/Q31855"] = {
         label : Annotator.Plugin.Neonion.prototype.literals['de'].institute,
         unknownResource : { _source : { uri : "http://neonion.com/resource/Unknown_Institute", label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownInstitute } },
         search : Annotator.Plugin.Neonion.prototype.search.searchInstitute,
@@ -177,7 +177,7 @@ Annotator.Plugin.Neonion.prototype.createListItems = function(list, formatter) {
 Annotator.Plugin.Neonion.prototype.overrideAdder = function(adder, compositor) {
     adder.html("");
     for (var uri in compositor) {
-        adder.append("<button class='btn-green' value='" + uri + "'>" + compositor[uri].label + "</button>");
+        adder.append("<button class='btn' value='" + uri + "'>" + compositor[uri].label + "</button>");
     }
 },
 

@@ -13,7 +13,7 @@
     -webkit-box-shadow: none;
     -o-box-shadow: none;
     box-shadow: none;
-    color: #909090;
+    color: black;
 }
 .annotator-adder {
     background-image: url('data:image/png;
@@ -81,16 +81,19 @@
     padding: 0;
     bottom: 15px;
     left: -18px;
-    min-width: 265px;
+    min-width: 40em;
     background-color: rgba(251, 251, 251, 0.98);
-    border: 1px solid rgba(122, 122, 122, 0.6);
+    border: 1px solid rgba(0, 0, 0, 1);
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    -o-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
+
 }
 .annotator-invert-x .annotator-widget {
     left: auto;
@@ -579,4 +582,163 @@
 }
 .annotator-hl-filtered {
     background-color: transparent;
+}
+
+
+
+/*annotator.js hacks*/
+
+.annotator-adder{
+  background-image: none;
+}
+
+#documentText > div > div.annotator-adder > button{
+  background: none;
+}
+.annotator-adder button{
+  width: auto !important;
+  height: auto !important;
+  color: #333333 !important;
+  background: #eeeded !important;
+  text-indent: 0px !important;
+}
+
+.annotator-widget button{
+   white-space:nowrap;
+}
+
+/* remove comments field in the adder */
+#annotator-field-0{
+    display: none;
+}
+
+/* list of objects */
+.btn-group-vertical{
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    width: 100%;
+    max-height: 25em;
+    overflow-y:auto;
+}
+.btn-group-vertical .annotator-btn{
+    width: 100%;
+}
+.btn-group-vertical .annotator-btn:nth-child(2n+1){
+    background-color: #f1f1f1;
+}
+.btn-group-vertical .annotator-btn:hover{
+    background-color:#c5e4dd;
+}
+
+
+
+/* styling for the person-list */
+.annotator-item > div > button:first-child{
+    border-bottom: 1px solid black;
+}
+.annotator-item > div > button{
+    color: black;
+    padding-left: 1em;
+}
+
+
+/* Border Radius for Control panel of adder*/
+.annotator-editor.annotator-invert-y .annotator-controls{
+    border-bottom: none;
+    border-radius: 0px;
+    -webkit-border-bottom-right-radius: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -moz-border-radius-bottomright: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+/* order of the adder elements */
+.annotator-listing{
+    -webkit-box-ordinal-group: 2;
+    -moz-box-ordinal-group: 2;
+    box-ordinal-group: 2;
+}
+/* order of adder elements and removal of shadows */
+.annotator-controls{
+    -webkit-box-ordinal-group: 3;
+    -moz-box-ordinal-group: 3;
+    box-ordinal-group: 3;
+    /* remove terrific gradient and shadow */
+    border-top: 1px solid black !important;
+    background-image: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    background-color: #eaeaea !important;
+}
+
+
+
+
+/* fix hover problem with annotate-button */
+#documentText > div > div.annotator-adder > button{
+    /*background: transparent;*/
+}
+
+.annotator-widget:after{
+    /*content: none;*/
+}
+
+
+/* TODO !*/
+
+.annotator-viewer .annotator-controls{
+/*    background-color: transparent !important;
+    border-top: none !important;
+*/}
+
+
+.annotator-resize{
+    background-image: none !important;
+}
+
+.annotator-controls .annotator-save{
+    display:none;
+  }
+.annotator-save:hover {
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: #159776 !important;
+}
+a.annotator-save:after{
+    content:none; /* remove the icon from save button*/
+}
+
+/* end annotator hacks*/
+
+
+
+
+/* beautify the ugly buttons */
+.annotator-cancel{
+      float: left;
+      display: inline-block !important;
+      vertical-align: top !important;
+      font-family: "Helvetica Neue", Helvetica, Tahoma, sans-serif !important;
+      font-size: 1em !important;
+      font-weight: 400 !important;
+      line-height: 1.618em !important;
+      text-align: center !important;
+      text-decoration: none !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+      margin: 0 !important;
+      border: 1px solid transparent !important;
+      border-radius: 2px !important;
+      box-shadow: none !important;
+      cursor: pointer !important;
+      background: #a60811 !important;
+      padding: .3em 1.3em !important;
+      text-shadow: none !important;
+  }
+.annotator-cancel:hover {
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: #d70a16 !important;
+}
+a.annotator-cancel:after{ /* remove the shitty x-icon from the cancel button */
+    content:none;
 }

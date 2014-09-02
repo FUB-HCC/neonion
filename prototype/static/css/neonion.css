@@ -49,9 +49,6 @@ body{
   margin-right: .5em;
 }
 
-.annotator-nav tr:hover .fa, .annotator-nav li:hover .fa{
-  color: #2f4483;
-}
 
 .annotator-nav .fa:before{
   font-size: 1.5em;
@@ -66,8 +63,13 @@ body{
 }
 
 .nav .fa.active{
-  color:#3d58a8;
+  color: rgba(0,173, 232, 1);
 }
+
+.annotator-nav tr:hover .fa, .annotator-nav li:hover .fa{
+  color: rgba(0,173, 232, 1);;
+}
+
 
 .nav .fa.deactivated{
   color:#aeaeae;
@@ -202,10 +204,29 @@ body{
 
 /* end Fullscreen */
 
-a:link {text-decoration: none;color:#3d58a8;}
-a:visited {text-decoration: none;color:#3d58a8;}
-a:hover {text-decoration: none !important;color:#2f4483;}
-a:active {text-decoration: none;color:#3d58a8;}
+a:link {
+  text-decoration: none;
+  /*color:#3d58a8;*/
+  color: black;
+}
+a:visited {
+  text-decoration: none;
+  /*color:#3d58a8;*/
+  color: black;
+
+}
+a:hover {
+  text-decoration: none !important;
+  /*color:#2f4483;*/
+  color: rgba( 0,173, 232, 1);
+
+}
+a:active {
+  text-decoration: none;
+  /*color:#3d58a8;*/
+  color: #005F7F;
+
+}
 
 
 /*import dialog*/

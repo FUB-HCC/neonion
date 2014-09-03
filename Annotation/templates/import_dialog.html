@@ -223,7 +223,7 @@ console.log($("#document-cache").html());
 {% endblock %}
 
 {% block dialogBottom %}
-<span class="dialog-cancel-btn mid" onclick="closeImportDialog()">Cancel</span>
-<button class="btn-blue mid" onclick="importSelectedDocuments()">Import</button>
+<span class="btn dialog-cancel-btn mid" onclick="closeImportDialog()">Cancel</span>
+<button class="btn btn-small btn-outline mid" onclick="importSelectedDocuments()">Import</button>
 <div id="document-cache" style="display:none"></div>
 {% endblock %}

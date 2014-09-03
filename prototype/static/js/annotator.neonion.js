@@ -169,7 +169,7 @@ Annotator.Plugin.Neonion.prototype.createListItems = function(list, formatter) {
     $.each(list, function(index, value) {
         var label = formatter(value);
         console.log(value);
-        items.push("<button type='button' class='annotator-btn' value='" + escape(value._source.label) + "' uri='" + value._source.uri + "'>" + label + "</button>");
+        items.push("<button type='button' class='btn annotator-btn' value='" + escape(value._source.label) + "' uri='" + value._source.uri + "'>" + label + "</button>");
     });
     return items;
 }

@@ -2,23 +2,16 @@
 body{
 	padding:1em;
   max-width: 979px;
+  font-size: 14px;
+}
+
+#headline{
+  border-bottom: 1px solid black;
 }
 
 .document-list-buttons{
     float:right;
 }
-
-.bg{
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    height: 100%;
-    background-color: #eaeaea;
-    z-index: -1000;
-}
-.units-row .unit-10  {width: 100px;}
-.bg-10{width: 50px;}
-.bg-20, .units-row .unit-20 {width: 165px;}
 
 .small{
     font-size: 0.7em;
@@ -39,69 +32,20 @@ body{
   text-align: right;
 }
 
-.annotator-nav span{
-  color: gray;
+.orange{
+  color: #f39100;
 }
 
-.annotator-nav .fa{
-  color: #8E8E93;
-  vertical-align:middle;
-  margin-right: .5em;
-}
-
-
-.annotator-nav .fa:before{
-  font-size: 1.5em;
-}
-
-.nav .fa{
-  color:#8E8E93;
-}
-
-.nav .fa:hover{
-  cursor: pointer;
-}
-
-.nav .fa.active{
-  color: rgba(0,173, 232, 1);
-}
-
-.annotator-nav a:hover .fa, .annotator-nav li:hover .fa{
-  color: rgba(0,173, 232, 1);
+.color-red{
+  color: #FF3235;
 }
 
 
-.nav .fa.deactivated{
-  color:#aeaeae;
-}
-
-.nav .fa.deactivated:hover{
-  cursor: default;
-}
-
-
-#help-link{
-  position: absolute;
-  bottom: 1em;
-}
 
 .verticalLine {
     display:none;
 }
 
-
-@media only screen and (max-width: 979px) {
-  html{margin:0px;padding:5px;}
-  .bg{background-color: #ffffff;}
-  .nav ul li{float: left;margin-right: 1.618em;}
-  .nav ul{width: 100%;}
-  .units-row .unit-20, .units-row .unit-10{width: 100%; float:none;background-color: #eaeaea;}
-   div.unit-10.annotator-nav > nav > ul > hr {display:none;}
-  .verticalLine{display:block;}
-  .units-row{clear:both;}
-  #help-link{position:relative;}
-  :-moz-full-screen,:-ms-fullscreen,:full-screen,:fullscreen,:-webkit-full-screen {width: 100%;}
-}
 
 
 .as-active{
@@ -122,12 +66,20 @@ body{
 }
 
 #document-table tr:nth-child(2n+1) td:nth-child(2){
-    background-color: #f1f1f1;
+    /*background-color: #f1f1f1;*/
 }
 
 #document-table tr td:hover td:nth-child(2){
-    background-color: #E5E5E5;
+    /*background-color: #E5E5E5;*/
 }
+
+#document-table tr a{
+  color: #8E8E93;
+}
+#document-table tr a:hover{
+  color: black;
+}
+
 
 .document-list-buttons{
    /*display: none;*/
@@ -316,9 +268,11 @@ dialog#dialog-import .ui-widget-content{
 dialog#dialog-import .dialog-cancel-btn{
   text-decoration: underline;
   margin-right: 2em;
+  background-color: transparent;
 }
 dialog#dialog-import .dialog-cancel-btn:hover{
   cursor: pointer;
+  color: black;
 }
 
 #document-import-list{
@@ -331,19 +285,6 @@ dialog#dialog-import::backdrop {
 
 dialog#dialog-import + .backdrop {
   background-color: rgba(0, 0, 0, 0.5);
-}
-
-.btn-blue{
-  background: #00ADE8;
-  /*color: rgba(0, 0, 0, 1);*/
-  border-radius: 10px;
-  border-color: #8E8E93;
-}
-
-.btn-blue:hover {
-  background: #008ABA;
-  color: rgba(255, 255, 255, 0.9);
-
 }
 
 
@@ -373,3 +314,106 @@ background: rgba(0,0,0,0.1);
 dialog#dialog-import ::-webkit-scrollbar-thumb:window-inactive {
 background: rgba(0,0,0,0.9);
 }
+
+
+/* Button */
+.btn-outline {
+/*  text-shadow:  .5px  0px 0px #fff,
+               -.5px  0px 0px #fff;
+*/
+
+}
+.btn-outline:hover {
+  /*font-weight: bold;*/
+/*  text-shadow:  .5px  0px 0px #000,
+               -.5px  0px 0px #000;
+*/  color: black;
+  background-color: #d6d6d6;
+  border: 1px solid black;
+}
+
+
+/* Navigation */
+.nav a,
+.nav span{
+  display: inline-block;
+  white-space: nowrap;
+}
+.nav a{
+  width: 100%;
+}
+.nav a:hover, .nav a:hover .fa{
+  color: black;
+}
+.nav a.nav-active{
+  color: #f39100;
+  font-weight: bold;
+  cursor: default;
+}
+.nav a:hover{
+  font-weight: bold;
+}
+
+.nav span:before{
+  margin-right: 5em;
+}
+
+/*.nav li:first-child{
+  border-top: 1px solid black;
+}
+*/
+.nav li{
+  border-bottom: 1px solid black;
+}
+
+
+.nav .fa{
+  font-size: 1.5em;
+  margin-right: 1em;
+  margin-left: 1em;
+  color: #000000;
+  vertical-align: middle;
+}
+
+.nav .fa:hover{
+  cursor: pointer;
+}
+
+.nav .fa.active{
+  color: rgba(0,173, 232, 1);
+}
+
+.nav .fa.deactivated{
+  color:#aeaeae;
+}
+
+.nav .fa.deactivated:hover{
+  cursor: default;
+}
+#help-link{
+  border:none;
+  position: absolute;
+  bottom: 1em;
+}
+
+
+
+
+
+
+
+
+
+@media only screen and (max-width: 979px) {
+  html{margin:0px;padding:5px;}
+  .bg{background-color: #ffffff;}
+  .nav ul li{float: left;margin-right: 1.618em;}
+  .nav ul{width: 100%;}
+  .units-row .unit-20, .units-row .unit-10{width: 100%; float:none;background-color: #eaeaea;}
+   div.unit-10.annotator-nav > nav > ul > hr {display:none;}
+  .verticalLine{display:block;}
+  .units-row{clear:both;}
+  #help-link{position:relative;}
+  :-moz-full-screen,:-ms-fullscreen,:full-screen,:fullscreen,:-webkit-full-screen {width: 100%;}
+}
+

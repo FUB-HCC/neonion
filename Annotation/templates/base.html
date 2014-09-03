@@ -16,33 +16,31 @@
 
 {% block top %}
     <div class="bg bg-20"></div>
-    <div class="units-row end">
+    <div class="units-row end" id="headline">
 
         <div class="unit-20">
             {% block top_left %}
             <div class="units-row">
-                <hgroup>
-                    <h1>NEONION</h1>
-                    <h3 class="subheading">rethinking annotation</h3>
-                </hgroup>
+                <h1>ne<span class="orange">o</span>ni<span class="orange">o</span>n</h1>
             </div>
             {% endblock %}
         </div>
 
         {% block top_right %}
-        <div class=" unit-push-right unit-20 small" id="userInfo">
+
+        <!-- <div class=" unit-push-right unit-20 small" id="userInfo">
             {{ user.name }} {{ user.surname }}<br/>
             5 Documents | 3 Annotation Sets
-        </div>
+        </div> -->
 
-        <div class="unit-push-right unit-60">
+        <!-- <div class="unit-push-right unit-60">
             <p class="input-groups">
                 <input type="text" name="go" placeholder="Search" />
                 <span class="btn-append">
                     <button class="btn btn-blue">Search</button>
                 </span>
             </p>
-        </div>
+        </div> -->
         {% endblock %}
 
     </div>

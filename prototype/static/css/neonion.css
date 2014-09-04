@@ -44,21 +44,18 @@ body{
 }
 
 .annotator-nav .fa{
-  color: #5f5f5f;
+  color: #8E8E93;
   vertical-align:middle;
   margin-right: .5em;
 }
 
-.annotator-nav tr:hover .fa, .annotator-nav li:hover .fa{
-  color: #2f4483;
-}
 
 .annotator-nav .fa:before{
   font-size: 1.5em;
 }
 
 .nav .fa{
-  color:#5f5f5f;
+  color:#8E8E93;
 }
 
 .nav .fa:hover{
@@ -66,8 +63,13 @@ body{
 }
 
 .nav .fa.active{
-  color:#3d58a8;
+  color: rgba(0,173, 232, 1);
 }
+
+.annotator-nav a:hover .fa, .annotator-nav li:hover .fa{
+  color: rgba(0,173, 232, 1);
+}
+
 
 .nav .fa.deactivated{
   color:#aeaeae;
@@ -149,174 +151,6 @@ body{
 
 
 
-/*annotator.js hacks*/
-
-.annotator-adder{
-  background-image: none;
-}
-
-#documentText > div > div.annotator-adder > button{
-  background: none;
-}
-.annotator-adder button{
-  width: auto !important;
-  height: auto !important;
-  color: #333333 !important;
-  background: #eeeded !important;
-  text-indent: 0px !important;
-}
-
-
-.annotator-widget {
-  min-width: 40em;
-}
-
-.annotator-widget button{
-   white-space:nowrap;
-}
-
-/* list of objects */
-.btn-group-vertical{
-    position: relative;
-    display: inline-block;
-    vertical-align: middle;
-    width: 100%;
-    max-height: 25em;
-    overflow-y:auto;
-
-}
-.btn-group-vertical .annotator-btn{
-    width: 100%;
-}
-.btn-group-vertical .annotator-btn:nth-child(2n+1){
-    background-color: #f1f1f1;
-}
-.btn-group-vertical .annotator-btn:hover{
-    background-color:#c5e4dd;
-}
-.annotator-widget *{
-    color: black !important;
-}
-
-
-/* remove comments field */
-#annotator-field-0{
-    display: none;
-}
-/* fix hover problem with annotate-button */
-#documentText > div > div.annotator-adder > button{
-    background: transparent;
-}
-
-/* styling for the person-list */
-.annotator-item > div > button:first-child{
-    /*color: rgba(0, 0, 0, 0.5);*/
-    border-bottom: 1px solid black;
-}
-.annotator-item > div > button{
-    color: black;
-    padding-left: 1em;
-}
-
-
-/* hack for the order of person-list and buttons */
-.annotator-widget{
-    display: -webkit-box;
-    display: -moz-box;
-    display: box;
-    -webkit-box-orient: vertical;
-    -moz-box-orient: vertical;
-    box-orient: vertical;
-    -webkit-box-shadow: none !important;
-    box-shadow: none !important;
-    border-color: black !important;
-}
-.annotator-widget:after{
-    content: none;
-}
-.annotator-editor.annotator-invert-y .annotator-controls{
-    border-bottom: none;
-    border-radius: 0px;
-    -webkit-border-bottom-right-radius: 5px;
-    -webkit-border-bottom-left-radius: 5px;
-    -moz-border-radius-bottomright: 5px;
-    -moz-border-radius-bottomleft: 5px;
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
-}
-
-.annotator-listing{
-    -webkit-box-ordinal-group: 2;
-    -moz-box-ordinal-group: 2;
-    box-ordinal-group: 2;
-}
-
-
-.annotator-controls{
-    -webkit-box-ordinal-group: 3;
-    -moz-box-ordinal-group: 3;
-    box-ordinal-group: 3;
-    /* remove terrific gradient and shadow */
-    border-top: 1px solid black !important;
-    background-image: none !important;
-    -webkit-box-shadow: none !important;
-    box-shadow: none !important;
-    background-color: #eaeaea !important;
-}
-
-.annotator-viewer .annotator-controls{
-    background-color: transparent !important;
-    border-top: none !important;
-}
-
-
-.annotator-resize{
-    background-image: none !important;
-}
-
-/* beautify the ugly buttons */
-.annotator-cancel{
-      float: left;
-      display: inline-block !important;
-      vertical-align: top !important;
-      font-family: "Helvetica Neue", Helvetica, Tahoma, sans-serif !important;
-      font-size: 1em !important;
-      font-weight: 400 !important;
-      line-height: 1.618em !important;
-      text-align: center !important;
-      text-decoration: none !important;
-      color: rgba(255, 255, 255, 0.9) !important;
-      margin: 0 !important;
-      border: 1px solid transparent !important;
-      border-radius: 2px !important;
-      box-shadow: none !important;
-      cursor: pointer !important;
-      background: #a60811 !important;
-      padding: .3em 1.3em !important;
-      text-shadow: none !important;
-  }
-.annotator-cancel:hover {
-  color: rgba(255, 255, 255, 0.9) !important;
-  background: #d70a16 !important;
-}
-a.annotator-cancel:after{ /* remove the shitty x-icon from the cancel button */
-    content:none;
-}
-.annotator-controls .annotator-save{
-    display:none;
-  }
-.annotator-save:hover {
-  color: rgba(255, 255, 255, 0.9) !important;
-  background: #159776 !important;
-}
-a.annotator-save:after{
-    content:none; /* remove the icon from save button*/
-}
-
-.annotator-widget{
-
-}
-/* end annotator hacks*/
 
 
 /* Fullscreen */
@@ -370,10 +204,29 @@ a.annotator-save:after{
 
 /* end Fullscreen */
 
-a:link {text-decoration: none;color:#3d58a8;}
-a:visited {text-decoration: none;color:#3d58a8;}
-a:hover {text-decoration: none !important;color:#2f4483;}
-a:active {text-decoration: none;color:#3d58a8;}
+a:link {
+  text-decoration: none;
+  /*color:#3d58a8;*/
+  color: black;
+}
+a:visited {
+  text-decoration: none;
+  /*color:#3d58a8;*/
+  color: black;
+
+}
+a:hover {
+  text-decoration: none !important;
+  /*color:#2f4483;*/
+  color: rgba( 0,173, 232, 1);
+
+}
+a:active {
+  text-decoration: none;
+  /*color:#3d58a8;*/
+  color: #005F7F;
+
+}
 
 
 /*import dialog*/
@@ -452,14 +305,12 @@ dialog#dialog-import .ui-widget-content{
   margin-bottom: 1px;
 }
 
-#document-import-list .ui-selecting, dialog#dialog-import .ui-widget-content:hover {
+#document-import-list .ui-selecting, dialog#dialog-import .ui-widget-content:hover, #document-import-list .ui-selected {
   cursor: pointer;
+  color: rgba(255, 255, 255, 0.9);
   background: #00ADE8;
 }
 
-#document-import-list .ui-selected{
-  background: #00ADE8;
-}
 
 
 dialog#dialog-import .dialog-cancel-btn{
@@ -484,7 +335,7 @@ dialog#dialog-import + .backdrop {
 
 .btn-blue{
   background: #00ADE8;
-  color: rgba(0, 0, 0, 1);
+  /*color: rgba(0, 0, 0, 1);*/
   border-radius: 10px;
   border-color: #8E8E93;
 }

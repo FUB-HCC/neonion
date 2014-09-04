@@ -28,7 +28,6 @@
         <table id="document-table" class="table-simple"><tr><td><span class="fa fa-spinner fa-spin"></span> Loading...</td></tr></table>
     </div>
 
-    {% include 'import_dialog.html' %}
 
 {% endblock %}
 
@@ -69,9 +68,9 @@
 
             $('.nav a').on('click', function() {$('.nav a').each(function(){$(this).removeClass('nav-active')});$(this).addClass('nav-active');});
 
-            document.querySelector('#show_import_dialog').onclick = function() {
-                showImportDialog();
-            };
+            // document.querySelector('#show_import_dialog').onclick = function() {
+            //     showImportDialog();
+            // };
 
             documentList.sort( compare_Documents ).reverse().forEach( function( entry ) {
                 /* set label for first column (only once for each type) */

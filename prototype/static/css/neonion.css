@@ -86,6 +86,11 @@ body{
    color:transparent;
 }
 
+
+.annotator-btn{
+  text-align: left;
+}
+
 .element-cell:hover .document-list-buttons{
     /*display: block;*/
   color:black;

@@ -67,7 +67,7 @@ Annotator.Plugin.Neonion = function (element, options) {
                 source.addClass("active");
                 $(".annotator-widget").submit();
             });
-            
+
             var overlay = $("<div class='annotator-overlay' style='display:none;'></div>");
             $(element).parent().append(overlay);
             //$(this.annotator.wrapper[0]).append(overlay);
@@ -76,15 +76,15 @@ Annotator.Plugin.Neonion = function (element, options) {
                 var dataIndex = parseInt($(this).val());
                 var dataItem = $(element).data("results")[dataIndex];
                 var decorator = compositor[selectedType].decorator || Annotator.Plugin.Neonion.prototype.decorator.decorateDefault;
-               
-                /*var pos = $(".annotator-editor").position();        
-                pos.left += $(".annotator-editor").width();     
+
+                /*var pos = $(".annotator-editor").position();
+                pos.left += $(".annotator-editor").width();
                 overlay.css(pos);*/
                 overlay.html(decorator(dataItem));
                 overlay.show();
             });
             $(suggestionField).on( "mousemove", "button", function (e) {
-                var pos = { top : e.pageY, left: e.pageX + 30 };        
+                var pos = { top : e.pageY, left: e.pageX + 30 };
                 overlay.css(pos);
             });
             $(suggestionField).on( "mouseleave", "button", function (e) {
@@ -166,20 +166,20 @@ Annotator.Plugin.Neonion = function (element, options) {
 // Prototype extensions
 Annotator.Plugin.Neonion.prototype.literals = {
     en : {
-        person :            "Person", 
+        person :            "Person",
         unknownPerson :     "Unknown person",
-        institute :         "Institute", 
+        institute :         "Institute",
         unknownInstitute :  "Unknown institute",
-        unknown :           "Unknown", 
+        unknown :           "Unknown",
         unknownResource :   "Unknown resource",
         creator :           "Creator"
     },
     de : {
-        person :            "Person", 
+        person :            "Person",
         unknownPerson :     "Unbekannte Person",
-        institute :         "Institut", 
+        institute :         "Institut",
         unknownInstitute :  "Unbekanntes Institut",
-        unknown :           "Unbekannt", 
+        unknown :           "Unbekannt",
         unknownResource :   "Unbekannte Ressource",
         creator :           "Erfasser"
     }
@@ -213,7 +213,7 @@ Annotator.Plugin.Neonion.prototype.createListItems = function(list, formatter) {
     var items = [];
     for(var i = 0; i < list.length; i++) {
         var label = formatter(list[i]);
-        items.push("<button type='button' class='annotator-btn' value='" + i + "'>" + label + "</button>");
+        items.push("<button type='button' class='btn annotator-btn' value='" + i + "'>" + label + "</button>");
     }
     return items;
 }
@@ -235,11 +235,11 @@ Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence = function(ite
         if (annotation.rdf && annotation.rdf.about) {
             if (!occurrence[annotation.rdf.about]) {
                 occurrence[annotation.rdf.about] = 0;
-            } 
+            }
             occurrence[annotation.rdf.about]++;
         }
     });
-    // calculate score 
+    // calculate score
     for(var i = 0; i < items.length; i++){
         var uri = items[i].uri;
         items[i].score = 1 + (1 - i / (items.length - 1));

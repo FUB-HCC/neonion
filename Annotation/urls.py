@@ -21,16 +21,8 @@ urlpatterns = patterns('',
     url(r'^loomp/content/save$', 'prototype.views.loomp_save', name='save'),
     # url(r'^loomp/delete/(?P<query>[\w ]+)/?$', 'prototype.views.loomp_getAll', name='getAll'),
 
-# // GET services
-# get : "/content/get?uri=%(uri)s",
-# getAll : "/content/getAll?type=%(type)s",
-
-# delete : "/content/delete?uri=%(uri)s",
-# // POST services
-# save : "/content/save",
-# create : "/content/save"
-
-
-
-
+    url(r'^document/list/$', 'prototype.documents.list', name='doc_list'),
+    url(r'^document/get/(?P<doc_id>.+)$', 'prototype.documents.get', name='doc_get'),
+    url(r'^document/query(?P<search_string>.+)$', 'prototype.documents.query', name='doc_query'),
+    url(r'^document/meta(?P<doc_id>.+)$', 'prototype.documents.meta', name='doc_meta'),
 )

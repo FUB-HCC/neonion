@@ -404,21 +404,24 @@ background: rgba(0,0,0,0.9);
 
 
 
-
-
-
-
-
-@media only screen and (max-width: 979px) {
-  html{margin:0px;padding:5px;}
-  .bg{background-color: #ffffff;}
-  .nav ul li{float: left;margin-right: 1.618em;}
-  .nav ul{width: 100%;}
-  .units-row .unit-20, .units-row .unit-10{width: 100%; float:none;background-color: #eaeaea;}
-   div.unit-10.annotator-nav > nav > ul > hr {display:none;}
-  .verticalLine{display:block;}
-  .units-row{clear:both;}
-  #help-link{position:relative;}
-  :-moz-full-screen,:-ms-fullscreen,:full-screen,:fullscreen,:-webkit-full-screen {width: 100%;}
+/* Logo */
+.neonion-logo{
+    white-space: nowrap;
 }
 
+.orange{
+    color: #f39100;
+}
+
+.ul_1{
+    border-bottom: 1px solid black;
+}
+
+.ul_2{
+    border-bottom: 3px solid #f39100;
+}
+
+.ul_3{
+    padding-bottom: 8px;
+    border-bottom: 3px solid black;
+}

@@ -33,3 +33,9 @@ def list(request):
 
 def get(request):
     return render_to_response('base_import.html', { }, context_instance=RequestContext(request))
+
+def meta(request):
+    return render_to_response('base_import.html', { }, context_instance=RequestContext(request))
+
+def query(request):
+    return render_to_response('base_import.html', { }, context_instance=RequestContext(request))

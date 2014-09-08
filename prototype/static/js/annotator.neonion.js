@@ -70,16 +70,11 @@ Annotator.Plugin.Neonion = function (element, options) {
 
             var overlay = $("<div class='annotator-overlay' style='display:none;'></div>");
             $(element).parent().append(overlay);
-            //$(this.annotator.wrapper[0]).append(overlay);
             // mouse hover for detail window
             $(suggestionField).on( "mouseenter", "button", function (e) {
                 var dataIndex = parseInt($(this).val());
                 var dataItem = $(element).data("results")[dataIndex];
                 var decorator = compositor[selectedType].decorator || Annotator.Plugin.Neonion.prototype.decorator.decorateDefault;
-
-                /*var pos = $(".annotator-editor").position();
-                pos.left += $(".annotator-editor").width();
-                overlay.css(pos);*/
                 overlay.html(decorator(dataItem));
                 overlay.show();
             });
@@ -191,14 +186,16 @@ Annotator.Plugin.Neonion.prototype.initializeDefaultCompistor = function(composi
         label : Annotator.Plugin.Neonion.prototype.literals['de'].person,
         unknownResource : { uri : "http://neonion.com/resource/Unknown_Person", label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownPerson },
         search : Annotator.Plugin.Neonion.prototype.search.searchPerson,
-        formatter : Annotator.Plugin.Neonion.prototype.formatter.formatPerson
+        formatter : Annotator.Plugin.Neonion.prototype.formatter.formatPerson,
+        decorator : Annotator.Plugin.Neonion.prototype.decorator.decoratePerson
     };
     // add compositor for institutes
     compositor["https://www.wikidata.org/wiki/Q31855"] = {
         label : Annotator.Plugin.Neonion.prototype.literals['de'].institute,
         unknownResource : { uri : "http://neonion.com/resource/Unknown_Institute", label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownInstitute },
         search : Annotator.Plugin.Neonion.prototype.search.searchInstitute,
-        formatter : Annotator.Plugin.Neonion.prototype.formatter.formatInstitute
+        formatter : Annotator.Plugin.Neonion.prototype.formatter.formatInstitute,
+        decorator : Annotator.Plugin.Neonion.prototype.decorator.decorateInstitute
     };
 }
 
@@ -269,7 +266,6 @@ Annotator.Plugin.Neonion.prototype.formatter = {
     formatPerson : function(value) {
         var label = "<span>" + value.label + "</span>";
         if (value.birth) label += "<small>&nbsp;" + value.birth + "</small>";
-        //if (value.descr) label += "<br/><small>" + value.descr + "</small>";
         return label;
     },
     formatInstitute : function(value) {
@@ -290,10 +286,16 @@ Annotator.Plugin.Neonion.prototype.decorator = {
         return html;
     },
     decoratePerson : function(data) {
-        return "<div>Datenblatt zu Person</div>";
+        var html = "<strong>" + data.label + "</strong>";
+        if (data.birth) html += "<small>&nbsp;&#42;&nbsp;" + data.birth + "</small>";
+        if (data.death) html += "<small>&nbsp;&#8224;&nbsp;" + data.death + "</small>";
+        if (data.descr) html += "<br/>" + data.descr;
+        return html;
     },
     decorateInstitute : function(data) {
-        return "<div>Datenblatt zu Institution</div>";
+        var html = "<strong>" + data.label + "</strong>";
+        if (data.descr) html += "<br/>" + data.descr;
+        return html;
     }
 }
 
@@ -307,8 +309,9 @@ Annotator.Plugin.Neonion.prototype.search = {
     searchInstitute : function(name, callback) {
         var url = '/es/institutes?q=Institut';
         $.getJSON(url, function(data) {
-            data.hits.hits.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByLabel);
-            callback(Annotator.Plugin.Neonion.prototype.search.esNormalizeData(data));
+            data = Annotator.Plugin.Neonion.prototype.search.esNormalizeData(data);
+            data.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByLabel)
+            callback(data);
         });
     },
     esNormalizeData : function(data) {

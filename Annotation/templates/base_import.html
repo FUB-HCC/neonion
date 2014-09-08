@@ -44,76 +44,34 @@ Please select the files you want to import to your working space.
 </div>
 {% endblock %}
 
+{% block scripts %}
 
 <script language="javascript">
 
     var selectedDocs = [];
 
-    var docList = [
-        { name: "Tätigkeitsbericht der MPG 1964-1965", urn : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1964-1965" },
-        { name: "Tätigkeitsbericht der MPG 1958-1960", urn : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1958-1960" },
-        { name: "Tätigkeitsbericht der MPG 1972-1973", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1972-1973" },
-        { name: "Tätigkeitsbericht der MPG 1968-1969", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1968-1969" },
-        { name: "Tätigkeitsbericht der MPG 1966-1967", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1966-1967" },
-        { name: "Tätigkeitsbericht der MPG 1964-1965", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1964-1965" },
-        { name: "Tätigkeitsbericht der MPG 1962-1963", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1962-1963" },
-        { name: "Tätigkeitsbericht der MPG 1961-1962", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1961-1962" },
-        { name: "Tätigkeitsbericht der MPG 1960-1961", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1960-1961" },
-        { name: "Tätigkeitsbericht der MPG 1958-1960", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1958-1960" },
-        { name: "Tätigkeitsbericht der MPG 1956-1958", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1956-1958" },
-        { name: "Tätigkeitsbericht der MPG 1954-1956", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1954-1956" },
-        { name: "Tätigkeitsbericht der MPG 1952-1954 Teil1", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil1" },
-        { name: "Tätigkeitsbericht der MPG 1952-1954 Teil2", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil2" },
-        { name: "Tätigkeitsbericht der MPG 1951-1952", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1951-1952" },
-        { name: "Tätigkeitsbericht der MPG 1946-51 Teil1", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil1" },
-        { name: "Tätigkeitsbericht der MPG 1946-51 Teil2", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil2" },
-        { name: "Tätigkeitsbericht der MPG 1946-51 Teil3", urn : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil3" }
-    ]
-
-    function initImportDialog() {
+    $(document).ready(function() {
         $( "#document-import-list" ).selectable();
-        // $('dialog').draggable();
-        $("#close-dialog-button").click( closeImportDialog );
-
-        updateDocumentTable(docList);
-
+        
         $("#document-import").click(function() {
             $("#document-import").attr("disabled", true);
             importDocuemt();
         });
 
-    }
+        refreshDocuments();
+    });
 
-    function updateDocumentTable(entries) {
-        // clear list
-        $("#document-import-list").html('');
-        // create docuement import list
-        $.each(entries, function(index, value) {
-            // var item = new Option( value.urn, value.name );
-            var item = $('<li></li>').attr( 'id', value.urn ).text( value.name ).attr('class','ui-widget-content');
-            $('#document-import-list').append( item );
+    function refreshDocuments() {
+        $.getJSON("/document/list", function(data) {
+            // clear list
+            $("#document-import-list").html('');
+            // create docuement import list
+            $.each(data, function(index, value) {
+                // var item = new Option( value.urn, value.name );
+                var item = $('<li></li>').attr( 'id', value.urn ).text( value.name ).attr('class','ui-widget-content');
+                $('#document-import-list').append( item );
+            });
         });
-    }
-
-    function showImportDialog() {
-        // var dialog = document.querySelector('dialog');
-        var dialog = $('#dialog');
-        console.log( dialog )
-        if( !dialog.show ){
-           dialogPolyfill.registerDialog(dialog);
-        }
-        dialog.showModal();
-        initImportDialog();
-    }
-
-    function closeImportDialog(){
-        // var dialog = document.querySelector('dialog');
-        var dialog = $('#dialog');
-        console.log( dialog )
-        if( !dialog.show ){
-           dialogPolyfill.registerDialog(dialog);
-        }
-        dialog.close();
     }
 
     function importSelectedDocuments(){
@@ -178,7 +136,7 @@ Please select the files you want to import to your working space.
         var collapseWhiteSpaceRegex = /\s+/g;
         var fullTrimRegex = /^\s+|\s+$/g;
 
-console.log($("#document-cache").html());
+        //console.log($("#document-cache").html());
 
         var paragrapgNodes = $("#document-cache p.ocr_par");
         var paragrapgs = new Array(paragrapgNodes.length);
@@ -254,4 +212,4 @@ console.log($("#document-cache").html());
 
 </script>
 
-
+{% endblock %}

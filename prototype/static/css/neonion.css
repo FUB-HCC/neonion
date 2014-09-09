@@ -401,7 +401,26 @@ background: rgba(0,0,0,0.9);
   bottom: 1em;
 }
 
+/*fixed Navigation for Annoator View*/
+.annotator-nav{
+  position: fixed;
+  left:0em;
+  top:0em;
+}
 
+.annotator-nav li{
+  border: none;
+}
+
+
+/* annotator menu */
+#annotator_menu{
+  padding: 0.5em;
+  border: 1px solid black;
+  position: absolute;
+  right: 2em;
+  top: 2em;
+}
 
 
 /* Logo */

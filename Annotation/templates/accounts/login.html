@@ -4,16 +4,25 @@
 
 {% block title %}Login{% endblock %}
 
+{% block nav %}
+<ul>
+    <li><a href="/accounts/login"  class="nav-active"><span class="fa fa-sign-in fa-fw"></span>Login</a></li>
+    <li><a href="/accounts/register"><span class="fa fa-plus-square-o fa-fw"></span>Register</a></li>
+    <li id="help-link"><span><span class="fa fa-question fa-fw"></span>Help</span></li>
+</ul>
+{% endblock %}
+
+
 {% block registration %}
-<div class="big">Please sign in</div>
-</div>
-<div class="units-row">
+<div class="big" style="margin-top:1em;margin-bottom:1em;">Sign in</div>
+
+<div class="units-row" style="margin-left:5em;">
     {% if form.errors %}<p class="small color-red">Your username and password didn't match. Please try again.</p>{% endif %}
     <form class="width-50" action="" method="post">
         {% csrf_token %}
         <p><label class="sticky">{{ form.email.label }}{{ form.email }}</label></p>
         <p><label class="sticky">{{ form.password.label }}{{ form.password }}</label></p>
-        <button class="btn-blue">Sign in</button>
+        <button class="btn btn-small btn-outline">Sign in</button>
         <span class="small right">Forgot password? <a href="#">click here</a></span><br>
     </form>
 <font color="green">For testing purpose use: test@test.de:test</font>

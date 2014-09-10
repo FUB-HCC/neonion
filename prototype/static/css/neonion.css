@@ -454,6 +454,9 @@ background: rgba(0,0,0,0.9);
   .unit-20{ display: table-footer-group; }
   .unit-80{ display: table-header-group; }
   #help-link { position: inherit;  }
-  .annotator-nav{ position: inherit; }
+  .annotator-nav{ position: inherit; display: block;}
   .annotator-nav li{ float: left; }
+  #annotator_menu{
+    display: none;
+  }
 }

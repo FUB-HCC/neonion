@@ -458,5 +458,6 @@ background: rgba(0,0,0,0.9);
   .annotator-nav{ height: 3em; position: inherit; display: block;}
   .annotator-nav li{ float: left; }
   .annotator-nav li a{ padding:0; }
+  .annotator-nav li#help-link { right: 1em; position: absolute; bottom:auto; }
   #annotator_menu{ display: none; }
 }

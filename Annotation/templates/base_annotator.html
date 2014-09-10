@@ -76,7 +76,6 @@
 
         $(document).ready(function() {
             loadDocument(config.scms.resourceName);
-            loadAnnotationSets();
 
             $( '#annotationSets li span' ).each( function(){
                 $( this ).click( function(){
@@ -169,13 +168,16 @@
                     loadFromSearch: { 'uri' : data.resourceName }
                 });
 
-                // TEST
-                console.log(Annotator.Plugin.Neonion.prototype.getContributors());
+                // get contributors and last annotation
+                /*console.log(Annotator.Plugin.Neonion.prototype.getContributors());
                 console.log(Annotator.Plugin.Neonion.prototype.getLastAnnotation('andre.breitenfeld@fu-berlin.de'));
+                Annotator.Plugin.Neonion.prototype.getUserAnnotations("user.email").forEach(function(entry) {
+                    Annotator.Plugin.Neonion.prototype.hideAnnotation(entry);
+                });*/
 
             });
         }
-
+        /*
         function loadAnnotationSets() {
             // TODO
             jQuery.ajax({
@@ -187,6 +189,6 @@
                 //console.log(response);
             });
         }
-
+        */
     </script>
 {% endblock %}

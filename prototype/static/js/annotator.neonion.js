@@ -128,6 +128,7 @@ Annotator.Plugin.Neonion = function (element, options) {
         updateSuggestionField : function(field, annotation) {
             // get selected text
             var list = $(field).children(":first");
+
             list.empty();
             // reserve max height so annotator can arrange the editor window properly
             list.css("min-height", list.css("max-height"));
@@ -158,6 +159,11 @@ Annotator.Plugin.Neonion = function (element, options) {
 };
 
 // Prototype extensions
+Annotator.Plugin.Neonion.prototype.classes = {
+    visible : "annotator-hl",
+    hide : "annotator-hl-filtered"
+}
+
 Annotator.Plugin.Neonion.prototype.literals = {
     en : {
         person :            "Person",
@@ -200,6 +206,18 @@ Annotator.Plugin.Neonion.prototype.initializeDefaultCompistor = function(composi
 
 Annotator.Plugin.Neonion.prototype.getAnnotationHighlights = function() {
     return $(".annotator-hl:not(.annotator-hl-temporary)");
+}
+
+Annotator.Plugin.Neonion.prototype.showAnnotation = function(annotation) {
+    annotation.highlights.forEach(function(entry) {
+        entry.className = Annotator.Plugin.Neonion.prototype.classes.visible;
+    });
+}
+
+Annotator.Plugin.Neonion.prototype.hideAnnotation = function(annotation) {
+    annotation.highlights.forEach(function(entry) {
+        entry.className = Annotator.Plugin.Neonion.prototype.classes.hide;
+    });
 }
 
 Annotator.Plugin.Neonion.prototype.getContributors = function() {

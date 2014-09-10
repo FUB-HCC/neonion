@@ -406,6 +406,7 @@ background: rgba(0,0,0,0.9);
   position: fixed;
   left:0em;
   top:0em;
+  height:100%;
 }
 
 .annotator-nav li{
@@ -443,4 +444,16 @@ background: rgba(0,0,0,0.9);
 .ul_3{
     padding-bottom: 8px;
     border-bottom: 3px solid black;
+}
+
+
+/* responsivene menu */
+@media only screen and (max-width: 767px) {
+
+  body{ display: table; }
+  .unit-20{ display: table-footer-group; }
+  .unit-80{ display: table-header-group; }
+  #help-link { position: inherit;  }
+  .annotator-nav{ position: inherit; }
+  .annotator-nav li{ float: left; }
 }

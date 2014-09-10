@@ -58,8 +58,6 @@
     <script type="text/javascript" src="{% static 'js/annotator.neonion.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/annotator.store.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/moment.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/randomColor.js' %}"></script>   <!-- https://github.com/davidmerfield/randomColor -->
-    <script type="text/javascript" src="{% static 'js/tinycolor.min.js' %}"></script> <!-- https://github.com/bgrins/TinyColor -->
     <script type="text/javascript" src="{% static 'js/jquery-ui-1.11.1.custom.min.js' %}"></script>
 
     <script language="javascript">
@@ -68,6 +66,13 @@
             resourceName : "{{ doc_id }}",
             document : null
         };
+
+        var randomshift = Math.floor((Math.random() * 360) + 1);
+        function makeColor(colorNum, colors){
+            if (colors < 1) colors = 1; // defaults to one color - avoid divide by zero
+            return randomshift + ( colorNum * (360 / colors) ) % 360;
+        }
+
 
         $(document).ready(function() {
             loadDocument(config.scms.resourceName);
@@ -84,9 +89,12 @@
                 enableFullscreen( document.getElementById( 'annotationArea' ) );
             });
 
-
+            var i = 0
+            var totalcolors = 4;
             $( '#annotator_menu li' ).each(function(){
-                $( this ).css('background', tinycolor(randomColor()).setAlpha(.5).toString() );
+                    var color = "hsla( " + makeColor(i, totalcolors) + ", 100%, 50%, 0.3 )";
+                    $( this )[0].style.backgroundColor = color;
+                    i = i + 1;
             });
 
             $( '#scoll_to_latest_annotation' ).click(function(){

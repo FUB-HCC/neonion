@@ -168,6 +168,11 @@
                     annotationData: { 'uri' : data.resourceName },
                     loadFromSearch: { 'uri' : data.resourceName }
                 });
+
+                // TEST
+                console.log(Annotator.Plugin.Neonion.prototype.getContributors());
+                console.log(Annotator.Plugin.Neonion.prototype.getLastAnnotation('andre.breitenfeld@fu-berlin.de'));
+
             });
         }
 

@@ -131,7 +131,6 @@ Annotator.Plugin.Neonion = function (element, options) {
             list.empty();
             // reserve max height so annotator can arrange the editor window properly
             list.css("min-height", list.css("max-height"));
-
             if (compositor[selectedType]) {
                 compositor[selectedType].search(annotation.quote, function(items) {
                     // store last result set in jQuery data collection
@@ -199,6 +198,44 @@ Annotator.Plugin.Neonion.prototype.initializeDefaultCompistor = function(composi
     };
 }
 
+Annotator.Plugin.Neonion.prototype.getAnnotationHighlights = function() {
+    return $(".annotator-hl:not(.annotator-hl-temporary)");
+}
+
+Annotator.Plugin.Neonion.prototype.getContributors = function() {
+    var highlights = Annotator.Plugin.Neonion.prototype.getAnnotationHighlights();
+    var constributors = [];
+    highlights.each(function() {
+        var annotation = $(this).data("annotation");
+        var userId = annotation.creator.email;
+        if (constributors.indexOf(userId)) {
+            constributors.push(userId);
+        }
+    });
+    return constributors;
+}
+
+Annotator.Plugin.Neonion.prototype.getUserAnnotations = function(userId) {
+    var highlights = Annotator.Plugin.Neonion.prototype.getAnnotationHighlights();
+    var annotations = [];
+    highlights.each(function() {
+        var annotation = $(this).data("annotation");
+        if (annotation.creator.email == userId) {
+            annotations.push(annotation);
+        }
+    });
+    return annotations;
+}
+
+Annotator.Plugin.Neonion.prototype.getLastAnnotation = function(userId) {
+    var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations(userId);
+    if (annotations.length > 0) {
+        annotations.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByUpdated);
+        return annotations[annotations.length-1];
+    }
+    return null;
+}
+
 Annotator.Plugin.Neonion.prototype.enrichRDFa = function(annotation) {
     // add RDFa attributes to markup
     annotation.highlights[0].setAttribute("typeof", annotation.rdf.typeof);
@@ -223,12 +260,11 @@ Annotator.Plugin.Neonion.prototype.overrideAdder = function(adder, compositor) {
 },
 
 Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence = function(items) {
-    var annotatorItems = $(".annotator-hl:not(.annotator-hl-temporary)");
+    var highlights = Annotator.Plugin.Neonion.prototype.getAnnotationHighlights();
     var occurrence = {};
     // count occurrence of each resource
-    annotatorItems.each(function() {
+    highlights.each(function() {
         var annotation = $(this).data("annotation");
-        console.log(annotation);
         if (annotation.rdf && annotation.rdf.about) {
             if (!occurrence[annotation.rdf.about]) {
                 occurrence[annotation.rdf.about] = 0;
@@ -252,6 +288,9 @@ Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence = function(ite
 Annotator.Plugin.Neonion.prototype.comparator = {
     compareByLabel : function(a, b) {
         return Annotator.Plugin.Neonion.prototype.comparator.compareByField("label", a, b);
+    },
+    compareByUpdated : function(a, b) {
+        return Number(Date.parse(a.updated)) - Number(Date.parse(b.updated));
     },
     compareByField : function(field, a, b) {
         if (a[field] < b[field])

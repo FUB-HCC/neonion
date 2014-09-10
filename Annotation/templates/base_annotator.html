@@ -97,9 +97,7 @@
             });
 
             $( '#scoll_to_latest_annotation' ).click(function(){
-
                 var target = $('.annotator-hl').last(); /* TODO: replace with correct identifiert for last annotation */
-
                 $('html, body').stop().animate(
                   { 'scrollTop': target.offset().top },
                   1000,
@@ -108,13 +106,20 @@
                     window.location.hash = target;
                   }
                 );
-
                 /* blink for more attention */
                 for(i=0;i<2;i++) {
                     $(target).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
                   }
-
             });
+
+            $('#annotator_menu :checkbox').click(function() {
+                if ($(this).is(':checked')) {
+                    console.log('check'); /* TODO: show annotations of this user */
+                } else {
+                    console.log('uncheck'); /* TODO: hide annotations of this user */
+                }
+            });
+
 
         });
 

@@ -108,6 +108,10 @@ Annotator.Plugin.Neonion = function (element, options) {
             user = userData;
         },
 
+        getUser : function() {
+            return user;
+        },
+
         pluginSubmit : function(field, annotation) {
             var activeItem = $(field).children(":first").children(".active");
 
@@ -205,7 +209,7 @@ Annotator.Plugin.Neonion.prototype.initializeDefaultCompistor = function(composi
 }
 
 Annotator.Plugin.Neonion.prototype.getAnnotationHighlights = function() {
-    return $(".annotator-hl:not(.annotator-hl-temporary)");
+    return $(".annotator-hl:not(.annotator-hl-temporary),." + Annotator.Plugin.Neonion.prototype.classes.hide);
 }
 
 Annotator.Plugin.Neonion.prototype.showAnnotation = function(annotation) {

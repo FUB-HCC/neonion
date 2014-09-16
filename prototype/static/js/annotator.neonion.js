@@ -60,6 +60,8 @@ Annotator.Plugin.Neonion = function (element, options) {
         // add field containing the suggested ressources
         var resourceField = this.annotator.editor.addField({
             load: function(field, annotation) { 
+                // restore type from annotation if provided
+                selectedType = annotation.rdf ? annotation.rdf.typeof : selectedType;
                 // reserve max height so annotator can arrange the editor window properly
                 var list = $(field).find("#resource-list");
                 list.css("min-height", list.css("max-height"));

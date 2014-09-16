@@ -29,15 +29,6 @@ var config = {
             create : "/content/save"
         }
     }
-/*
-    cms : {
-        server : "http://euler.mpiwg-berlin.mpg.de:8000",
 
-        service : {
-            getPage : "/hocr?document=%(uri)s&pn=%(pn)s",
-            list : ""
-        }
-    },
-*/
 };
 

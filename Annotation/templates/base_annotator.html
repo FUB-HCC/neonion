@@ -40,8 +40,8 @@
         </div>
         <div class="units-row">
             <div id="annotationArea" class="panel panel-default" >
-                <div id="documentTitle" class="panel-heading big"></div>
-                <div id="documentText" class="panel-body"><span class="fa fa-spinner fa-spin"></span> Loading...</div>
+                <div id="documentTitle" class="panel-heading big">{{ doc_title }}</div>
+                <div id="documentText" class="panel-body"> {% autoescape off %}{{ doc_content }}{% endautoescape %}</div>
             </div>
         </div>
     </div>
@@ -57,20 +57,17 @@
 
     <script language="javascript">
 
-        var annotator = null;
-        var data = {
-            resourceName : "{{ doc_id }}",
-            document : null
-        };
-
+        var resourceUri = "{{ doc_id }}"
         var randomshift = Math.floor((Math.random() * 360) + 1);
+        var userColors = {};
+
         function makeColor(colorNum, colors){
             if (colors < 1) colors = 1; // defaults to one color - avoid divide by zero
             return randomshift + ( colorNum * (360 / colors) ) % 360;
         }
 
         $(document).ready(function() {
-            loadDocument(config.scms.resourceName);
+            var annotator = setupAnnotator();
 
             $( '#enableFullscreen' ).click(function(){
                 enableFullscreen( document.getElementById( 'annotationArea' ) );
@@ -105,6 +102,7 @@
                 if ($(this).is(':checked')) {  
                     annotations.forEach(function(item) {
                         Annotator.Plugin.Neonion.prototype.showAnnotation(item);
+                        updateAnnotation(item);
                     });
                 } else {
                     annotations.forEach(function(item) {
@@ -113,6 +111,52 @@
                 }
             });
         });
+
+        function setupAnnotator () {
+            $("#documentText").annotator()
+            .annotator('addPlugin', 'Neonion', {
+                whoamiUrl: config.neonion.whoami
+            })
+            .annotator('addPlugin', 'Store', {
+                // The endpoint of the store on your server.
+                prefix : config.store.server,
+                // Attach the uri of the current page to all annotations to allow search.
+                annotationData: { 'uri' : resourceUri },
+                loadFromSearch: { 'uri' : resourceUri }
+            });
+
+            var annotator = $("#documentText").data("annotator")
+            .subscribe("annotationCreated", annotationChanged)
+            .subscribe("annotationUpdated", annotationChanged)
+            .subscribe("annotationDeleted", refreshContributors);
+            
+            // TODO raise refresh list when store plugin has finished async request
+            window.setTimeout(function() {
+                refreshContributors();
+                var users = Annotator.Plugin.Neonion.prototype.getContributors();  
+                users.forEach(function(user) {
+                    var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations(user);
+                    annotations.forEach(function(ann){ 
+                        updateAnnotation(ann);
+                    }); 
+                });
+            }, 1000);
+            return annotator; 
+        }
+
+        function annotationChanged (annotation) {
+            refreshContributors();
+            updateAnnotation(annotation);
+        }
+
+        function updateAnnotation(annotation) {
+            if (annotation.creator) {
+                var color = userColors[annotation.creator.email];
+                annotation.highlights.forEach(function(highlight){
+                    $(highlight).css("backgroundColor", color);
+                });
+            }
+        }
 
         function refreshContributors() {
             var users = Annotator.Plugin.Neonion.prototype.getContributors();    
@@ -127,8 +171,10 @@
                     checked : true
                 });                
                 var listItem = $("<li>");
-                var color = "hsla( " + makeColor(i++, totalcolors) + ", 100%, 50%, 0.3 )";
-                listItem.css("backgroundColor", color);
+                if (!userColors[user]) {
+                   userColors[user] = "hsla( " + makeColor(i++, totalcolors) + ", 100%, 50%, 0.3 )" 
+                }
+                listItem.css("backgroundColor", userColors[user]);
                 listItem.append(input);
                 listItem.append("<label for='" + user + "'>" + user + "</label>");
                 $('#annotator_contributors').append(listItem);
@@ -156,39 +202,6 @@
             } else if(element.msRequestFullscreen) {
                 element.msRequestFullscreen();
             }
-        }
-
-        function loadDocument (resourceName) {
-            // load document from loomp
-            jQuery.ajax(
-            {
-                url: sprintf(config.scms.server + config.scms.service.get, { uri : config.scms.uriPrefix + data.resourceName }),
-                type: 'GET',
-                crossDomain: true,
-                dataType: 'json'
-            }
-            ).done(function(response) {
-                // TODO move loading document to server template
-                data.document = response;
-                $("#documentTitle").html(data.document.title);
-                $("#documentText").html(data.document.content);
-                $("#documentText").annotator()
-                .annotator('addPlugin', 'Neonion', {
-                    whoamiUrl: config.neonion.whoami,
-                    search : config.search
-                })
-                .annotator('addPlugin', 'Store', {
-                    // The endpoint of the store on your server.
-                    prefix : config.store.server,
-                    // Attach the uri of the current page to all annotations to allow search.
-                    annotationData: { 'uri' : data.resourceName },
-                    loadFromSearch: { 'uri' : data.resourceName }
-                });
-
-                annotator = $("#documentText").data("annotator");
-                // TODO raise refresh list when store plugin has finished async request
-                window.setTimeout(refreshContributors, 1000);
-            });
         }
 
     </script>

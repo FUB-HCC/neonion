@@ -28,8 +28,8 @@ var config = {
             save : "/content/save",
             create : "/content/save"
         }
-    },
-
+    }
+/*
     cms : {
         server : "http://euler.mpiwg-berlin.mpg.de:8000",
 
@@ -38,22 +38,6 @@ var config = {
             list : ""
         }
     },
-
-    /*gnd : {
-        server : "http://zbw.eu/beta/sparql",
-
-        servive : {
-            query : "query?query=%(query)s&output=json"
-        },
-
-        query : {
-            findPerson :
-            "PREFIX gndo: <http://d-nb.info/standards/elementset/gnd#>" +
-            "SELECT ?res ?name year(?birth) year(?death) WHERE{" +
-            "?res a gndo:DifferentiatedPerson . ?res gndo:preferredNameForThePerson ?name . ?res gndo:dateOfBirth ?birth . ?res gndo:dateOfDeath ?death . FILTER (%(filter)s)" +
-            "} LIMIT %(limit)s"
-        }
-    }*/
-
+*/
 };
 

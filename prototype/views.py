@@ -16,7 +16,10 @@ def home(request):
 
 @login_required
 def annotator(request, doc_id):
-    return render_to_response('base_annotator.html', { "doc_id" : doc_id }, context_instance=RequestContext(request))
+    loomp_url = 'http://localhost:8080/content/get?uri={}'.format( "http://loomp.org/data/" + doc_id )
+    r = requests.get( loomp_url )
+    doc = json.loads(r.text)
+    return render_to_response('base_annotator.html', { "doc_id" : doc_id, "doc_title" : doc['title'], "doc_content" : doc['content'] }, context_instance = RequestContext(request))
 
 @login_required
 def elasticsearch(request, index ):
@@ -30,7 +33,7 @@ def elasticsearch(request, index ):
             return HttpResponse( r.text, content_type='application/json' )
 
 @login_required
-def loomp_get( request ):
+def loomp_get(request):
     if request.GET:
         if 'uri' in request.GET:
             loomp_url = 'http://localhost:8080/content/get?uri={}'.format( request.GET.get('uri') )
@@ -40,7 +43,7 @@ def loomp_get( request ):
             pass
 
 @login_required
-def loomp_getAll( request ):
+def loomp_getAll(request):
     if request.GET:
         if 'type' in request.GET:
             loomp_url = 'http://localhost:8080/content/getAll?type={}'.format( request.GET.get('type') )
@@ -51,7 +54,7 @@ def loomp_getAll( request ):
             pass
 
 @login_required
-def loomp_save( request ):
+def loomp_save(request):
     if request.POST:
         if 'data' in request.POST:
             loomp_url = 'http://localhost:8080/content/save'

@@ -736,7 +736,7 @@ a.annotator-cancel:after{ /* remove the shitty x-icon from the cancel button */
 
 }
 .annotator-adder button{
-    min-width: 7em;
+    min-width: 10em;
     border-left: 1px solid black;
     border-right: 1px solid black;
     border-radius: 0px !important;

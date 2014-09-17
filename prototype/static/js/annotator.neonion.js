@@ -55,13 +55,56 @@ Annotator.Plugin.Neonion = function (element, options) {
             });
 
             // add field containing the suggested ressources
-            var suggestionField = this.annotator.editor.addField({
-                load: this.updateSuggestionField,
+            var resourceField = this.annotator.editor.addField({
+                load: function(field, annotation) { 
+                    // reserve max height so annotator can arrange the editor window properly
+                    var list = $(field).find("#resource-list");
+                    list.css("min-height", list.css("max-height"));
+
+                    $(field).find("#resource-search").val(annotation.quote); 
+                    $(field).find("#resource-form").submit();
+                },
                 submit: this.pluginSubmit
             });
-            $(suggestionField).children((":first")).replaceWith("<div class='btn-group-vertical'></div>");
+            
+            $(resourceField).children((":first")).replaceWith(
+                "<div id='resource-panel'><div id='resource-list' class='btn-group-vertical'></div><form id='resource-form'></form></div>"
+            );
+            var resourceForm = $(resourceField).find("#resource-form");
+            
+            // input for search term
+            resourceForm.append("<input id='resource-search' type='text' />");
+            //resourceForm.append("<input type='submit' value='" + Annotator.Plugin.Neonion.prototype.literals.de.search + "' />");
+            // attach submit handler handler
+            resourceForm.submit(function() {
+                // get search term
+                var searchTerm = $(this).find("#resource-search").val();
+                var list = $(this).parent().find("#resource-list");
+                if (compositor[selectedType]) {
+                    compositor[selectedType].search(searchTerm, function(items) {
+                        // store last result set in jQuery data collection
+                        $(element).data("results", items);
+                        // update score
+                        Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence(items);
+                        // add unknown person resource
+                        if (compositor[selectedType].unknownResource) {
+                            items.unshift(compositor[selectedType].unknownResource);
+                        }
+                        
+                        // clear list and min-height css property
+                        list.css("min-height", "");
+                        list.empty();
+                        // create and add items
+                        list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, compositor[selectedType].formatter));
+                    });
+                }
+                return false;
+            });
+
+            var resourceList = $(resourceField).find("#resource-list");
+            resourceList.html(Annotator.Plugin.Neonion.prototype.createSpinner());
             // attach click handler
-            $(suggestionField).on( "click", "button", function (e) {
+            resourceList.on( "click", "button", function (e) {
                 var source = $(this);
                 source.parent().children().removeClass("active");
                 source.addClass("active");
@@ -71,18 +114,18 @@ Annotator.Plugin.Neonion = function (element, options) {
             var overlay = $("<div class='annotator-overlay' style='display:none;'></div>");
             $(element).parent().append(overlay);
             // mouse hover for detail window
-            $(suggestionField).on( "mouseenter", "button", function (e) {
+            resourceList.on( "mouseenter", "button", function (e) {
                 var dataIndex = parseInt($(this).val());
                 var dataItem = $(element).data("results")[dataIndex];
                 var decorator = compositor[selectedType].decorator || Annotator.Plugin.Neonion.prototype.decorator.decorateDefault;
                 overlay.html(decorator(dataItem));
                 overlay.show();
             });
-            $(suggestionField).on( "mousemove", "button", function (e) {
+            resourceList.on( "mousemove", "button", function (e) {
                 var pos = { top : e.pageY, left: e.pageX + 30 };
                 overlay.css(pos);
             });
-            $(suggestionField).on( "mouseleave", "button", function (e) {
+            resourceList.on( "mouseleave", "button", function (e) {
                 overlay.hide();
             });
 
@@ -108,6 +151,10 @@ Annotator.Plugin.Neonion = function (element, options) {
             user = userData;
         },
 
+        getUser : function() {
+            return user;
+        },
+
         pluginSubmit : function(field, annotation) {
             var activeItem = $(field).children(":first").children(".active");
 
@@ -123,36 +170,6 @@ Annotator.Plugin.Neonion = function (element, options) {
                 about : dataItem.uri,
                 label : dataItem.label
              };
-        },
-
-        updateSuggestionField : function(field, annotation) {
-            // get selected text
-            var list = $(field).children(":first");
-
-            list.empty();
-            // reserve max height so annotator can arrange the editor window properly
-            list.css("min-height", list.css("max-height"));
-            if (compositor[selectedType]) {
-                compositor[selectedType].search(annotation.quote, function(items) {
-                    // store last result set in jQuery data collection
-                    $(element).data("results", items);
-                    // update score
-                    Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence(items);
-                    // add unknown person resource
-                    if (compositor[selectedType].unknownResource) {
-                        items.unshift(compositor[selectedType].unknownResource);
-                    }
-                    // clear min-height property
-                    list.css("min-height", "");
-                    // create and add items
-                    list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, compositor[selectedType].formatter));
-
-                    // activae corresponding button
-                    if (annotation.rdf) {
-                        list.children("button[uri='" + annotation.rdf.about + "']" ).addClass("active");
-                    }
-                });
-            }
         }
     }
 
@@ -166,6 +183,7 @@ Annotator.Plugin.Neonion.prototype.classes = {
 
 Annotator.Plugin.Neonion.prototype.literals = {
     en : {
+        search :            "Search",
         person :            "Person",
         unknownPerson :     "Unknown person",
         institute :         "Institute",
@@ -175,6 +193,7 @@ Annotator.Plugin.Neonion.prototype.literals = {
         creator :           "Creator"
     },
     de : {
+        search :            "Suchen",
         person :            "Person",
         unknownPerson :     "Unbekannte Person",
         institute :         "Institut",
@@ -205,7 +224,7 @@ Annotator.Plugin.Neonion.prototype.initializeDefaultCompistor = function(composi
 }
 
 Annotator.Plugin.Neonion.prototype.getAnnotationHighlights = function() {
-    return $(".annotator-hl:not(.annotator-hl-temporary)");
+    return $(".annotator-hl:not(.annotator-hl-temporary),." + Annotator.Plugin.Neonion.prototype.classes.hide);
 }
 
 Annotator.Plugin.Neonion.prototype.showAnnotation = function(annotation) {
@@ -268,6 +287,10 @@ Annotator.Plugin.Neonion.prototype.createListItems = function(list, formatter) {
         items.push("<button type='button' class='btn annotator-btn' value='" + i + "'>" + label + "</button>");
     }
     return items;
+}
+
+Annotator.Plugin.Neonion.prototype.createSpinner = function() {
+    return "<span style='margin:5px;' class='fa fa-spinner fa-spin'></span>";
 }
 
 Annotator.Plugin.Neonion.prototype.overrideAdder = function(adder, compositor) {

@@ -31,11 +31,29 @@ def list(request):
     response_data.append({ "name": "Tätigkeitsbericht der MPG 1946-51 Teil3", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil3" })
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
+@login_required
 def get(request):
-    return render_to_response('base_import.html', { }, context_instance=RequestContext(request))
+    if request.GET:
+        if 'uri' in request.GET:
+            response_data = []
+            pn = 1
+            while True:
+                try:
+                    cms_url = 'http://euler.mpiwg-berlin.mpg.de:8000/hocr?document={0}&pn={1}'.format( request.GET.get('uri'), pn++)
+                    print(cms_url)
+                    response_data(requests.get(cms_url))
+                    #print(r.url)
+                except (ConnectionError, RequestException) as err:
+                    print(err.value)
+                    break
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
+        else:
+            pass
 
+@login_required
 def meta(request):
-    return render_to_response('base_import.html', { }, context_instance=RequestContext(request))
+    pass
 
+@login_required
 def query(request):
-    return render_to_response('base_import.html', { }, context_instance=RequestContext(request))
+    pass

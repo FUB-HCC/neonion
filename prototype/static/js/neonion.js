@@ -5,7 +5,7 @@ var config = {
     },
 
     store : {
-        server : "http://annotator.neonion.imp.fu-berlin.de" //"http://annotator.l3q.de"
+        server : "http://annotator.neonion.imp.fu-berlin.de"
     },
 
     scms : {

@@ -23,10 +23,9 @@ def elasticsearch(request, index ):
     if request.GET:
         if 'q' in request.GET:
             query = request.GET.get('q')
-            if index == 'persons':      size = 10
-            elif index == 'institutes': size = 100
-            else:                       size = 1
+            size = 10
             url = 'http://localhost:9200/'+index+'/_search?size='+str(size)+'&pretty=true&source={"query":{"fuzzy_like_this":{"fields":["label","alias"],"like_text":"' + query + '"}}}'
+            print(url)
             r = requests.get( url )
             return HttpResponse( r.text, content_type='application/json' )
 

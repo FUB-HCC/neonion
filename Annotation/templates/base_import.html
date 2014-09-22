@@ -76,7 +76,11 @@
         });
 
         if (selectedDocs.length > 0) {
-            raiseDocumentRetrieval(selectedDocs[0]);
+            //raiseDocumentRetrieval(selectedDocs[0]);
+
+            $.getJSON("/document/get?uri" + selectedDocs[0], function(data) {
+                console.log(data);
+            });
         }
     }
 

@@ -156,7 +156,7 @@ Annotator.Plugin.Neonion = function (element, options) {
         },
 
         pluginSubmit : function(field, annotation) {
-            var activeItem = $(field).children(":first").children(".active");
+            var activeItem = $(field).find(".active");
 
             // add user to annotation
             annotation.creator = user;

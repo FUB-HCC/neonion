@@ -27,16 +27,12 @@
 
 
 {% block bottom_right %}
-Please select the files you want to import to your working space.
-<div class="unit-80">
+<div class="unit-80" style="padding-top: 1em;">
+    <p style="">Please select the files you want to import to your working space.</p>
     <div class="import-dialog" id="dialog-import">
-        <div class="units-row dialog-body">
-            <div id="import-form-row">
-                <ul id="document-import-list"></ul>
-            </div>
-        </div>
+        <ul id="document-import-list"></ul>
         <div class="units-row end dialog-foot">
-            <span class="btn dialog-cancel-btn mid" onclick="closeImportDialog()">Cancel</span>
+            <button class="btn btn-small btn-outline mid cancel-btn">Cancel</button>
             <button class="btn btn-small btn-outline mid" onclick="importSelectedDocuments()">Import</button>
             <div id="document-cache" style="display:none"></div>
         </div>
@@ -52,7 +48,7 @@ Please select the files you want to import to your working space.
 
     $(document).ready(function() {
         $( "#document-import-list" ).selectable();
-        
+
         $("#document-import").click(function() {
             $("#document-import").attr("disabled", true);
             importDocuemt();

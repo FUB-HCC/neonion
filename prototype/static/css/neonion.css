@@ -41,21 +41,14 @@ body{
   color: #FF3235;
 }
 
-
-
 .verticalLine {
     display:none;
 }
-
-
 
 .as-active{
     font-weight: bold;
 }
 
-#document-table td{
-    padding-left: 1em;
-}
 
 #document-table tr td:nth-child(1){
     text-align: right;
@@ -188,7 +181,21 @@ a:active {
 
 
 /*import dialog*/
-dialog#dialog-import{
+#dialog-import{
+  margin-left: 2em;
+}
+
+#document-import-list li{
+  border: none;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+}
+
+#document-import-list li:hover{
+  cursor: pointer;;
+}
+
+/*dialog#dialog-import{
   top:3em;
   min-width:50em;
   border: 1px solid rgba(0, 0, 0, 0.3);
@@ -271,12 +278,15 @@ dialog#dialog-import .ui-widget-content{
 
 
 
-dialog#dialog-import .dialog-cancel-btn{
+.cancel-btn{
   text-decoration: underline;
+  border: none;
   margin-right: 2em;
   background-color: transparent;
 }
-dialog#dialog-import .dialog-cancel-btn:hover{
+.cancel-btn:hover{
+  border:none !important;
+  background: none !important;
   cursor: pointer;
   color: black;
 }
@@ -293,7 +303,7 @@ dialog#dialog-import + .backdrop {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-
+*/
 dialog#dialog-import ::-webkit-scrollbar {
     width: 16px;
     height: 16px;
@@ -320,6 +330,8 @@ background: rgba(0,0,0,0.1);
 dialog#dialog-import ::-webkit-scrollbar-thumb:window-inactive {
 background: rgba(0,0,0,0.9);
 }
+
+
 
 
 /* Button */

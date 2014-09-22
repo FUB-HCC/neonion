@@ -4,9 +4,7 @@
 
 {% block title %}Import{% endblock %}
 
-
 {% block top_right %}{% endblock %}
-
 
 {% block bottom_left %}
     <div class="unit-20">
@@ -24,7 +22,6 @@
         </nav>
     </div>
 {% endblock %}
-
 
 {% block bottom_right %}
 <div class="unit-80" style="padding-top: 1em;">
@@ -45,6 +42,7 @@
 <script language="javascript">
 
     var selectedDocs = [];
+    var docList = [];
 
     $(document).ready(function() {
         $( "#document-import-list" ).selectable();
@@ -59,6 +57,7 @@
 
     function refreshDocuments() {
         $.getJSON("/document/list", function(data) {
+            docList = data;
             // clear list
             $("#document-import-list").html('');
             // create docuement import list
@@ -74,95 +73,47 @@
         $( '.ui-selected' ).each(function() {
             selectedDocs.push( this.id );
         });
+        importNextDocument();
+    }
 
+    function importNextDocument() {
         if (selectedDocs.length > 0) {
-            //raiseDocumentRetrieval(selectedDocs[0]);
-
-            $.getJSON("/document/get?uri" + selectedDocs[0], function(data) {
-                console.log(data);
+            var urn = selectedDocs.shift();
+            console.log("Import document " + urn);
+            $.get("/document/get/" + urn, function(data) {
+                importDocuemt(urn, data);
+                importNextDocument();
             });
         }
     }
 
-// ------------------------------------------------------ //
-// Document retrieval and import to SCMS
-// ------------------------------------------------------ //
+    function importDocuemt(docUrn, content) {
+        var title = docUrn;
+        // get proper title
+        docList.forEach(function(element, index, array) {
+            if (element.urn == docUrn) {
+                title = element.name;
+            }
+        });
 
-    function raiseDocumentRetrieval(doc) {
-        console.log("Import doc: " + doc);
-        $("#document-cache").html("");
-        getPageAsync(doc, 1);
-    }
+        // assemble POST data
+        var entityData = {
+            uri : null ,
+            title : title,
+            content : content,
+            type : config.scms.uri.elementText,
+            dataCreated : 0, lastModified : 0,
+        };
 
-    function getPageAsync(doc, pageNum) {
         jQuery.ajax({
-            url: sprintf(config.cms.server + config.cms.service.getPage, { uri : doc, pn : pageNum }),
-            contentType: 'text/plain',
-            type: 'GET',
-            xhrFields : { withCredentials: false },
-            headers: { },
-            success : function(data, textStatus, jqXHR) {
-                $("#document-cache").append(data);
-                // TEST limit pages
-                if (pageNum < 5)
-                    getPageAsync(doc, pageNum + 1);
-                 else
-                    closureDocumentRetrieval(doc);
-            },
-            error : function(jqXHR, textStatus, errorThrown) {
-                if (jqXHR.status == 404) {
-                    closureDocumentRetrieval(doc);
-                }
-            }
+            url: config.scms.server + config.scms.service.create,
+            type: 'POST',
+            data : { "data" : JSON.stringify(entityData), fmt : "JSON", csrfmiddlewaretoken : getCookie('csrftoken') }
+        }).success(function(data, textStatus, jqXHR) {
+
+        }).error(function(jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown);
         });
-    }
-
-    function closureDocumentRetrieval(doc) {
-        importDocuemt(doc);
-
-        // remove recenlty imported doc and proceed
-        selectedDocs.shift()
-        if (selectedDocs.length > 0) {
-            raiseDocumentRetrieval(selectedDocs[0]);
-        }
-        else {
-            closeImportDialog();
-        }
-    }
-
-    function getNormalizedContent() {
-        var stripMarkupRegex = /(<([^>]+)>)/ig;
-        var stripLinebreaksRegex = /(\r\n|\n|\r)/gm;
-        var collapseWhiteSpaceRegex = /\s+/g;
-        var fullTrimRegex = /^\s+|\s+$/g;
-
-        //console.log($("#document-cache").html());
-
-        var paragrapgNodes = $("#document-cache p.ocr_par");
-        var paragrapgs = new Array(paragrapgNodes.length);
-
-        // normalize content and store paragraph
-        paragrapgNodes.each(function(index, value) {
-            paragrapgs[index] = value.innerHTML
-            .replace(stripMarkupRegex, "")
-            .replace(stripLinebreaksRegex, " ")
-            .replace(collapseWhiteSpaceRegex, " ")
-            .replace(fullTrimRegex, "");
-        });
-
-        // concat content blob
-        var content = "";
-        $.each(paragrapgs, function(index, value) {
-            if (value.length > 0) {
-                content += "<p>" + value + "</p>";
-            }
-        });
-
-        return wrapContent(content);
-    }
-
-    function wrapContent(html) {
-        return "<span xml:lang='de'>" + html + "</span>";
     }
 
     function getCookie(name) {
@@ -179,35 +130,6 @@
             }
         }
         return cookieValue;
-    }
-
-    function importDocuemt(docUrn) {
-        var title = docUrn;
-        // get proper title
-        docList.forEach(function(element, index, array) {
-            if (element.urn == docUrn) {
-                title = element.name;
-            }
-        });
-
-        // assemble POST data
-        var entityData = {
-            uri : null ,
-            title : title,
-            content : getNormalizedContent(),
-            type : config.scms.uri.elementText,
-            dataCreated : 0, lastModified : 0,
-        };
-
-        jQuery.ajax({
-            url: config.scms.server + config.scms.service.create,
-            type: 'POST',
-            data : { "data" : JSON.stringify(entityData), fmt : "JSON", csrfmiddlewaretoken : getCookie('csrftoken') }
-        }).success(function(data, textStatus, jqXHR) {
-
-        }).error(function(jqXHR, textStatus, errorThrown) {
-            console.log(errorThrown);
-        });
     }
 
 </script>

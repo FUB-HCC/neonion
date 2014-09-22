@@ -5,7 +5,9 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
 import json
+import re
 import requests
+from requests.exceptions import ConnectionError, RequestException
 from django.http import HttpResponse
 
 @login_required
@@ -32,28 +34,35 @@ def list(request):
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 @login_required
-def get(request):
-    if request.GET:
-        if 'uri' in request.GET:
-            response_data = []
-            pn = 1
-            while True:
-                try:
-                    cms_url = 'http://euler.mpiwg-berlin.mpg.de:8000/hocr?document={0}&pn={1}'.format( request.GET.get('uri'), pn++)
-                    print(cms_url)
-                    response_data(requests.get(cms_url))
-                    #print(r.url)
-                except (ConnectionError, RequestException) as err:
-                    print(err.value)
-                    break
-            return HttpResponse(json.dumps(response_data), content_type="application/json")
-        else:
-            pass
+def get(request, doc_id):
+    response_data = []
+    pn = 1
+    while True:
+        try:
+            cms_url = u'http://euler.mpiwg-berlin.mpg.de:8000/hocr?document={0}&pn={1}'.format(doc_id, pn)
+            print(cms_url)
+            pn += 1
+            response = requests.get(cms_url)
+            if (response.status_code == 200):
+                response_data.append(response.text)
+            #else:
+            break
+        except (ConnectionError, RequestException) as err:
+            break
+    
+    # strip markup
+    response_data = map(postProcessContent, response_data)
+    return HttpResponse(''.join(response_data), content_type="text/plain")
+
+def postProcessContent(row):
+      row = re.sub(r'\n', '', row)
+      row = re.sub(r'<\/*span[^>]*?>', '', row)
+      return row
 
 @login_required
-def meta(request):
+def meta(request, doc_id):
     pass
 
 @login_required
-def query(request):
+def query(request, search_string):
     pass

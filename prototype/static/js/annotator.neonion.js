@@ -387,11 +387,9 @@ Annotator.Plugin.Neonion.prototype.search = {
         });
     },
     searchInstitute : function(name, callback) {
-        var url = '/es/institutes?q=Institut';
+        var url = '/es/institutes?q=' + name;
         $.getJSON(url, function(data) {
-            data = Annotator.Plugin.Neonion.prototype.search.esNormalizeData(data);
-            data.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByLabel)
-            callback(data);
+            callback(Annotator.Plugin.Neonion.prototype.search.esNormalizeData(data));
         });
     },
     esNormalizeData : function(data) {

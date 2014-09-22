@@ -88,12 +88,9 @@
                 if (annotation) {
                     var target = $(annotation.highlights[0]);
                     $('html, body').stop().animate(
-                      { 'scrollTop': target.offset().top },
+                      { 'scrollTop': target.offset().top - 50 },
                       1000,
-                      'easeInOutQuart',
-                      function (){
-                        window.location.hash = target;
-                      }
+                      'easeInOutQuart'
                     );
                     /* blink for more attention */
                     for(var i = 0; i < 2; i++) {

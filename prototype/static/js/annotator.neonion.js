@@ -243,7 +243,7 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
         highlights.each(function() {
             var annotation = $(this).data("annotation");
             var userId = annotation.creator.email;
-            if (constributors.indexOf(userId)) {
+            if (constributors.indexOf(userId) == -1) {
                 constributors.push(userId);
             }
         });

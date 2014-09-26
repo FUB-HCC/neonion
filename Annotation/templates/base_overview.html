@@ -33,9 +33,7 @@
 
 
 {% block scripts %}
-    <script type="text/javascript" src="{% static 'js/moment.js' %}"></script>
-
-    <script language="javascript">
+<script language="javascript">
 
     $(document).ready(function() {
         loadDocumentList(config);
@@ -66,11 +64,9 @@
             var earlierLabelSet = false;
             $('#document-table').html('');
 
-            $('.nav a').on('click', function() {$('.nav a').each(function(){$(this).removeClass('nav-active')});$(this).addClass('nav-active');});
-
-            // document.querySelector('#show_import_dialog').onclick = function() {
-            //     showImportDialog();
-            // };
+            $('.nav a').on('click', function() {
+                $('.nav a').each(function(){$(this).removeClass('nav-active')});$(this).addClass('nav-active');}
+            );
 
             documentList.sort( compare_Documents ).reverse().forEach( function( entry ) {
                 /* set label for first column (only once for each type) */
@@ -99,5 +95,6 @@
             });
         });
     }
-    </script>
+    
+</script>
 {% endblock %}

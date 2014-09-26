@@ -108,6 +108,7 @@ STATICFILES_DIRS = (
 
 # neonion specific
 ANNOTATION_STORE_URL = "http://annotator.neonion.imp.fu-berlin.de"
+ELASTICSEARCH_URL = "http://localhost:9200"
 
 # STATIC_URL = '/static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')

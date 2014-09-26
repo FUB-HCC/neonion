@@ -3,10 +3,11 @@
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.template import RequestContext, Context
 from django.contrib.auth.decorators import login_required
 
 import json
+import random
 import requests
 from django.http import HttpResponse
 
@@ -22,13 +23,14 @@ def annotator(request, doc_id):
     r = requests.get( loomp_url )
     doc = json.loads(r.text)
 
-    context = {}
-    context["doc_id"] = doc_id,
-    context["doc_title"] = doc['title']
-    context["doc_content"] = doc['content']
-    context["me_url"] = reverse('accounts:accounts.views.me')
-    context["store_url"] = settings.ANNOTATION_STORE_URL
-    return render_to_response('base_annotator.html', context, context_instance = RequestContext(request))
+    data = {}
+    data['doc_id'] = doc_id
+    data['doc_title'] = doc['title']
+    data['doc_content'] = doc['content']
+    data['me_url'] = reverse('accounts:accounts.views.me')
+    data['store_url'] = settings.ANNOTATION_STORE_URL
+    
+    return render_to_response('base_annotator.html', Context(data), context_instance = RequestContext(request))
 
 @login_required
 def import_document(request):
@@ -40,15 +42,21 @@ def elasticsearch(request, index):
         if 'q' in request.GET:
             query = request.GET.get('q')
             size = 10
-            url = 'http://localhost:9200/'+index+'/_search?size='+str(size)+'&pretty=true&source={"query":{"fuzzy_like_this":{"fields":["label","alias"],"like_text":"' + query + '"}}}'
+            url = settings.ELASTICSEARCH_URL + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={"query":{"fuzzy_like_this":{"fields":["label","alias"],"like_text":"' + query + '"}}}'
             print(url)
             r = requests.get( url )
             return HttpResponse( r.text, content_type='application/json' )
 
 @login_required
 def elasticsearchCreate(request, index):
-    # TODO
-    pass
+    if request.GET:
+        data = dict(request.GET.iterlists())
+        data['new'] = True
+        # random identifer
+        data['uri'] = random.getrandbits(64)
+        print(data);
+
+        return HttpResponse(json.dumps(data), content_type="application/json")
 
 @login_required
 def loomp_get(request):

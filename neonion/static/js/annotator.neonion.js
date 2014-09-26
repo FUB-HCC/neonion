@@ -103,7 +103,8 @@ Annotator.Plugin.Neonion = function (element, options) {
                 // reserve max height so annotator can arrange the editor window properly
                 var list = $(field).find("#resource-list");
                 list.css("min-height", list.css("max-height"));
-
+                
+                $(field).show();
                 $(field).find("#resource-search").val(annotation.quote); 
                 $(field).find("#resource-form").submit();
             },
@@ -195,20 +196,59 @@ Annotator.Plugin.Neonion = function (element, options) {
     this.initEditorEntityCreation = function() {
         var createField = this.annotator.editor.addField({
             load: function(field, annotation) { 
+                createForm.hide();
+                createForm.html('');
                 if (compositor[selectedType] && compositor[selectedType].allowCreation) {
-
+                    compositor[selectedType].fields.forEach(function(element, index, array) {
+                        createForm.append(
+                            "<label for='" + element.name + "''>" + 
+                            element.label + 
+                            "</label><input type='text' id='" + element.name + "'><br>"
+                        );
+                    });
+                    createForm.append("<input type='submit' class='btn annotator-btn' value='" 
+                        + Annotator.Plugin.Neonion.prototype.literals['de'].create + "' />"
+                    );
                 } 
             },
             submit: function(field, annotation) {
 
             }
         });
-//console.log($(createField));
-        $(createField).html(
-            "<button id='create-toggle' class='btn annotator-btn' >" + Annotator.Plugin.Neonion.prototype.literals['de'].create + "</button>"
+
+        $(createField).children((":first")).replaceWith(
+            "<button id='create-toggle' class='btn annotator-btn' >" 
+            + Annotator.Plugin.Neonion.prototype.literals['de'].create + 
+            "</button><form id='create-form'>fhjkfhfkjgdhfkjghfk</form>"
         );
 
-        //console.log($(createField).append("<form id='create-form'></form>"));
+        $(createField).find("#create-toggle").click(function() {
+            $(editorFields.search).slideToggle();
+            createForm.slideToggle();
+            return false;
+        });
+
+        var createForm = $(createField).find("#create-form");
+        createForm.submit(function() {
+            if (compositor[selectedType]) {
+                var fields = {};
+                var formFields = this.elements;
+                // collect fields
+                compositor[selectedType].fields.forEach(function(element, index, array) {
+                    fields[element.name] = formFields[element.name].value;
+                });
+                // create entity
+                if (compositor[selectedType].create) {
+                    compositor[selectedType].create(fields, function(data) {
+                        console.log(data);
+                    });
+                }
+                else {
+                    console.warn("No create entity service provided");
+                }
+            }
+            return false;
+        });
 
         return createField;
     }
@@ -270,7 +310,12 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
                 create : Annotator.Plugin.Neonion.prototype.create.createPerson,
                 search : Annotator.Plugin.Neonion.prototype.search.searchPerson,
                 formatter : Annotator.Plugin.Neonion.prototype.formatter.formatPerson,
-                decorator : Annotator.Plugin.Neonion.prototype.decorator.decoratePerson
+                decorator : Annotator.Plugin.Neonion.prototype.decorator.decoratePerson,
+                fields : [ 
+                    { name : 'label', label : 'Name', type : 'text' },
+                    { name : 'birth', label : 'Geburtsdatum', type : 'text' },
+                    { name : 'death', label : 'Sterbedatum', type : 'type' }
+                ]
             },
             // add compositor for institutes
             "https://www.wikidata.org/wiki/Q31855" : {

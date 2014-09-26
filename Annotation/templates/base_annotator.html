@@ -34,7 +34,7 @@
 
 {% block bottom_right %}
     <div class="unit-centered unit-60">
-        <div id="annotator_menu">
+        <div id="annotator_menu" style="position:fixed;">
            <ul id="annotator_contributors" class="forms-list"></ul>
             <a href="#" id="scoll_to_latest_annotation"><i class="fa fa-arrow-circle-down"></i> scroll to last annotation</a>
         </div>
@@ -89,11 +89,12 @@
                   1000,
                   'easeInOutQuart'
                 );
-                /* blink for more attention */
+                // blink for more attention 
                 for(var i = 0; i < 2; i++) {
                     $(target).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
                 }
             }
+            return false;
         });
 
         //$('#annotator_menu :checkbox').click(function() {
@@ -102,7 +103,7 @@
             if ($(this).is(':checked')) {  
                 annotations.forEach(function(item) {
                     Annotator.Plugin.Neonion.prototype.showAnnotation(item);
-                    updateAnnotation(item);
+                    colorizeAnnotation(item);
                 });
             } else {
                 annotations.forEach(function(item) {

@@ -5,6 +5,7 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext, Context
 from django.contrib.auth.decorators import login_required
+from pyelasticsearch import ElasticSearch
 
 import json
 import random
@@ -49,12 +50,19 @@ def elasticsearch(request, index):
 
 @login_required
 def elasticsearchCreate(request, index):
-    if request.GET:
-        data = dict(request.GET.iterlists())
+    if request.method == 'GET':
+        data = dict(map(lambda (k,v): (k, ''.join(v)), request.GET.iterlists()))
         data['new'] = True
         # random identifer
-        data['uri'] = random.getrandbits(64)
-        print(data);
+        data['uri'] = ''.join(random.choice('0123456789ABCDEF') for i in range(32))
+     
+        # store data in elasticsearch
+        es = ElasticSearch(settings.ELASTICSEARCH_URL)
+        if index == 'persons':
+            es.index(index, "person", data)
+        elif index == 'institutes':
+            es.index(index, "institute", data)
+        es.refresh(index)
 
         return HttpResponse(json.dumps(data), content_type="application/json")
 

@@ -12,7 +12,6 @@
 </ul>
 {% endblock %}
 
-
 {% block registration %}
 <div class="big" style="margin-top:1em;margin-bottom:1em;">Sign Up</div>
 <div class="units-row" style="margin-left:5em;">
@@ -25,5 +24,9 @@
         <p><label class="sticky">{{ form.password2.label }}{{ form.password2 }}</label></p>
         <button class="btn btn-small btn-outline">Register</button>
     </form>
+
+    {% for error in form.non_field_errors %}
+    <p class="label label-outline label-red">{{ error|escape }}</p>
+    {% endfor %}
 </div>
 {% endblock %}

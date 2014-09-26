@@ -10,7 +10,7 @@ from django.http import HttpResponse
 
 def login(request):
     """
-    Log in view
+    Login view
     """
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -22,6 +22,7 @@ def login(request):
                     return redirect('/')
     else:
         form = AuthenticationForm()
+
     return render_to_response('accounts/login.html', {
         'form': form,
     }, context_instance=RequestContext(request))
@@ -34,9 +35,10 @@ def register(request):
         form = RegistrationForm(data=request.POST)
         if form.is_valid():
             user = form.save()
-            return redirect('/')
+            #return redirect('/')
     else:
         form = RegistrationForm()
+
     return render_to_response('accounts/register.html', {
         'form': form,
     }, context_instance=RequestContext(request))

@@ -14,10 +14,9 @@
 
 
 {% block registration %}
-<div class="big" style="margin-top:1em;margin-bottom:1em;">Sign in</div>
+<div class="big" style="margin-top:1em;margin-bottom:1em;">Login</div>
 
 <div class="units-row" style="margin-left:5em;">
-    {% if form.errors %}<p class="small color-red">Your username and password didn't match. Please try again.</p>{% endif %}
     <form class="width-50" action="" method="post">
         {% csrf_token %}
         <p><label class="sticky">{{ form.email.label }}{{ form.email }}</label></p>
@@ -25,4 +24,7 @@
         <button class="btn btn-small btn-outline">Sign in</button>
         <span class="small right">Forgot password? <a href="#">click here</a></span><br>
     </form>
+    {% for error in form.non_field_errors %}
+    <p class="label label-outline label-red">{{ error|escape }}</p>
+    {% endfor %}
 {% endblock %}

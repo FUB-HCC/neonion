@@ -1,2 +1,2 @@
-web: gunicorn Annotation.wsgi
+web: gunicorn neonion.wsgi
 

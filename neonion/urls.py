@@ -9,9 +9,10 @@ urlpatterns = patterns('',
 	url(r'^import/$', 'neonion.views.import_document', name='annotator'),
 
     url(r'^annotator/(?P<doc_id>.+)/$', 'neonion.views.annotator', name='annotator'),
+    
     url(r'^admin/', include(admin.site.urls)),
-
     url(r'^accounts/', include('accounts.urls', namespace='accounts')),
+    url(r'^documents/', include('documents.urls', namespace='documents')),
 
     # Elasticsearch proxy
     url(r'^es/(?P<index>\w+)$', 'neonion.views.elasticsearch', name='elasticsearchSearch'),

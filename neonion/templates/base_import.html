@@ -56,7 +56,7 @@
     });
 
     function refreshDocuments() {
-        $.getJSON("/document/list", function(data) {
+        $.getJSON("/documents/list", function(data) {
             docList = data;
             // clear list
             $("#document-import-list").html('');

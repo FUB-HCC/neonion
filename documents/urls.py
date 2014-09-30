@@ -1,8 +1,8 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('',
-    url(r'^document/list/$', 'neonion.documents.list', name='doc_list'),
-    url(r'^document/get/(?P<doc_id>.+)$', 'neonion.documents.get', name='doc_get'),
-    url(r'^document/query/(?P<search_string>.+)$', 'neonion.documents.query', name='doc_query'),
-    url(r'^document/meta/(?P<doc_id>.+)$', 'neonion.documents.meta', name='doc_meta'),
+    url(r'^list/$', 'documents.views.list', name='doc_list'),
+    url(r'^get/(?P<doc_id>.+)$', 'documents.views.get', name='doc_get'),
+    url(r'^query/(?P<search_string>.+)$', 'documents.views.query', name='doc_query'),
+    url(r'^meta/(?P<doc_id>.+)$', 'documents.views.meta', name='doc_meta'),
 )

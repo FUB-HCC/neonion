@@ -63,9 +63,9 @@ MIDDLEWARE_CLASSES = (
 
 
 
-ROOT_URLCONF = 'Annotation.urls'
+ROOT_URLCONF = 'neonion.urls'
 
-WSGI_APPLICATION = 'Annotation.wsgi.application'
+WSGI_APPLICATION = 'neonion.wsgi.application'
 
 
 # Database

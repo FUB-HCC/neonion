@@ -1,13 +1,5 @@
 var config = {
 
-    neonion : {
-        whoami : "/accounts/me"
-    },
-
-    store : {
-        server : "http://annotator.neonion.imp.fu-berlin.de"
-    },
-
     scms : {
         // server : "http://hcc-loomp.herokuapp.com",
         server : "/loomp",

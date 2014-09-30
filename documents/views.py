@@ -52,10 +52,10 @@ def get(request, doc_id):
             break
     
     # strip markup
-    response_data = map(postProcessContent, response_data)
+    response_data = map(postprocessContent, response_data)
     return HttpResponse(''.join(response_data), content_type="text/plain")
 
-def postProcessContent(row):
+def postprocessContent(row):
       row = re.sub(r'\n', '', row)
       row = re.sub(r'<\/*span[^>]*?>', '', row)
       return row

@@ -116,11 +116,11 @@
     function setupAnnotator () {
         $("#documentText").annotator()
         .annotator('addPlugin', 'Neonion', {
-            whoamiUrl: config.neonion.whoami
+            whoamiUrl: "{{ me_url }}"
         })
         .annotator('addPlugin', 'Store', {
             // The endpoint of the store on your server.
-            prefix : config.store.server,
+            prefix : "{{ store_url }}",
             // Attach the uri of the current page to all annotations to allow search.
             annotationData: { 'uri' : resourceUri },
             loadFromSearch: { 'uri' : resourceUri }

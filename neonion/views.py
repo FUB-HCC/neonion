@@ -1,5 +1,7 @@
 # coding=utf-8
 
+from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
@@ -19,7 +21,18 @@ def annotator(request, doc_id):
     loomp_url = 'http://localhost:8080/content/get?uri={}'.format( "http://loomp.org/data/" + doc_id )
     r = requests.get( loomp_url )
     doc = json.loads(r.text)
-    return render_to_response('base_annotator.html', { "doc_id" : doc_id, "doc_title" : doc['title'], "doc_content" : doc['content'] }, context_instance = RequestContext(request))
+
+    context = {}
+    context["doc_id"] = doc_id,
+    context["doc_title"] = doc['title']
+    context["doc_content"] = doc['content']
+    context["me_url"] = reverse('accounts:accounts.views.me')
+    context["store_url"] = settings.ANNOTATION_STORE_URL
+    return render_to_response('base_annotator.html', context, context_instance = RequestContext(request))
+
+@login_required
+def import_document(request):
+    return render_to_response('base_import.html', { }, context_instance=RequestContext(request))
 
 @login_required
 def elasticsearch(request, index):
@@ -67,7 +80,3 @@ def loomp_save(request):
             return HttpResponse( r.text, content_type='application/json' )
         else:
             pass
-
-@login_required
-def import_document(request):
-    return render_to_response('base_import.html', { }, context_instance=RequestContext(request))

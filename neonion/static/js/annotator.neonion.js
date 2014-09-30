@@ -93,7 +93,9 @@ Annotator.Plugin.Neonion = function (element, options) {
         var resourceForm = $(resourceField).find("#resource-form");
         
         // input for search term
-        resourceForm.append("<input id='resource-search' type='text' />");
+        resourceForm.append("<input id='resource-search' type='text' autocomplete='off' placeholder='" 
+            + Annotator.Plugin.Neonion.prototype.literals['de'].searchText + "' />"
+        );
         //resourceForm.append("<input type='submit' value='" + Annotator.Plugin.Neonion.prototype.literals.de.search + "' />");
         // attach submit handler handler
         resourceForm.submit(function() {
@@ -165,13 +167,15 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
     options: {},
 
     classes : {
-        visible : "annotator-hl",
-        hide : "annotator-hl-filtered"
+        visible :               "annotator-hl",
+        hide :                  "annotator-hl-filtered"
     },
 
     literals : {
         en : {
             search :            "Search",
+            searchText :        "Search text",
+            create :            "Create",     
             person :            "Person",
             unknownPerson :     "Unknown person",
             institute :         "Institute",
@@ -182,6 +186,8 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
         },
         de : {
             search :            "Suchen",
+            searchText :        "Suchtext",
+            create :            "Anlegen",
             person :            "Person",
             unknownPerson :     "Unbekannte Person",
             institute :         "Institut",
@@ -195,7 +201,9 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
     setAnnotationTypes : function(adder, compositor) {
         adder.html("");
         for (var uri in compositor) {
-            adder.append("<button class='btn' value='" + uri + "'>" + compositor[uri].label + "</button>");
+            if (!compositor[uri].omitAdder) {
+                adder.append("<button class='btn' value='" + uri + "'>" + compositor[uri].label + "</button>");
+            }
         }
     },
 
@@ -204,7 +212,10 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
              // add compositor for persons
             "https://www.wikidata.org/wiki/Q5" : {
                 label : Annotator.Plugin.Neonion.prototype.literals['de'].person,
+                omitAdder : false,
+                allowCreation : true,
                 unknownResource : { uri : "http://neonion.com/resource/Unknown_Person", label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownPerson },
+                create : Annotator.Plugin.Neonion.prototype.create.createPerson,
                 search : Annotator.Plugin.Neonion.prototype.search.searchPerson,
                 formatter : Annotator.Plugin.Neonion.prototype.formatter.formatPerson,
                 decorator : Annotator.Plugin.Neonion.prototype.decorator.decoratePerson
@@ -212,7 +223,10 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
             // add compositor for institutes
             "https://www.wikidata.org/wiki/Q31855" : {
                 label : Annotator.Plugin.Neonion.prototype.literals['de'].institute,
+                omitAdder : false,
+                allowCreation : true,
                 unknownResource : { uri : "http://neonion.com/resource/Unknown_Institute", label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownInstitute },
+                create : Annotator.Plugin.Neonion.prototype.create.createInstitute,
                 search : Annotator.Plugin.Neonion.prototype.search.searchInstitute,
                 formatter : Annotator.Plugin.Neonion.prototype.formatter.formatInstitute,
                 decorator : Annotator.Plugin.Neonion.prototype.decorator.decorateInstitute
@@ -374,13 +388,13 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
         searchPerson : function(name, callback) {
             var url = '/es/persons?q=' + name;
             $.getJSON(url, function(data) {
-                callback(Annotator.Plugin.Neonion.prototype.search.esNormalizeData(data));
+                if (callback) callback(Annotator.Plugin.Neonion.prototype.search.esNormalizeData(data));
             });
         },
         searchInstitute : function(name, callback) {
             var url = '/es/institutes?q=' + name;
             $.getJSON(url, function(data) {
-                callback(Annotator.Plugin.Neonion.prototype.search.esNormalizeData(data));
+                if (callback) callback(Annotator.Plugin.Neonion.prototype.search.esNormalizeData(data));
             });
         },
         esNormalizeData : function(data) {
@@ -389,6 +403,24 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
                 array.push(value._source);
             });
             return array;
+        }
+    },
+    create : {
+        createPerson : function(data, callback) {
+            $.ajax({
+                dataType: "json", url: '/es/create/person', data: data,
+                success: function(data, jqXHR) {
+                    if (callback) callback(data);
+                }
+            });
+        },
+        createInstitute : function(data, callback) {
+            $.ajax({
+                dataType: "json", url: '/es/create/institute', data: data,
+                success: function(data, jqXHR) {
+                    if (callback) callback(data);
+                }
+            });
         }
     }
 });

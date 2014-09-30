@@ -22,7 +22,7 @@ def annotator(request, doc_id):
     return render_to_response('base_annotator.html', { "doc_id" : doc_id, "doc_title" : doc['title'], "doc_content" : doc['content'] }, context_instance = RequestContext(request))
 
 @login_required
-def elasticsearch(request, index ):
+def elasticsearch(request, index):
     if request.GET:
         if 'q' in request.GET:
             query = request.GET.get('q')
@@ -31,6 +31,11 @@ def elasticsearch(request, index ):
             print(url)
             r = requests.get( url )
             return HttpResponse( r.text, content_type='application/json' )
+
+@login_required
+def elasticsearchCreate(request, index):
+    # TODO
+    pass
 
 @login_required
 def loomp_get(request):

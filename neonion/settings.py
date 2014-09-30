@@ -1,5 +1,5 @@
 """
-Django settings for Annotation project.
+Django settings for neonion project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
@@ -43,8 +43,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'prototype',
+    'neonion',
     'accounts',
+    'documents',
 )
 
 AUTH_USER_MODEL = 'accounts.User'

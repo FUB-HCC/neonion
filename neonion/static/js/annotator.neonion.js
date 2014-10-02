@@ -5,16 +5,38 @@ Annotator.Plugin.Neonion = function (element, options) {
     // private vars
     var user = null;
     var compositor = {};
+    var selectedType = null;
+    var viewerFields = {};
+    var editorFields = {};
 
     // properties
-    this.setUser = function(userData) { user = userData; },
-    this.getUser = function() { return user; },
-    this.setCompositor = function(compositorData) { compositor = compositorData; },
-    this.getCompositor = function() { return compositor; },
+    this.setUser = function(userData) { user = userData; }
+    this.getUser = function() { return user; }
+    this.setCompositor = function(compositorData) { compositor = compositorData; }
+    this.getCompositor = function() { return compositor; }
 
-    // provide init methods
+    // init method
     this.pluginInit = function () {
-        var selectedType = null;
+        
+        this.overrideAdder();
+        viewerFields = this.initViewerFields();
+        editorFields = {
+            search : this.initEditorEntitySearch(),
+            create : this.initEditorEntityCreation()
+        }
+
+        // get logged in user credentials
+        $.ajax({
+            context : this,
+            type : "get",
+            url : options.whoamiUrl,
+            success : this.setUser,
+            dataType : "json"
+        });
+    }
+
+    // overrides the adder according provided types
+    this.overrideAdder = function() {
         var adder = $(this.annotator.adder[0]);
 
         // create compositor
@@ -25,40 +47,56 @@ Annotator.Plugin.Neonion = function (element, options) {
         adder.on( "click", "button", function (e) {
             // set selected type
             selectedType = $(this).val();
-        });
+            // show or hide entity creation field
+            if (compositor[selectedType] && compositor[selectedType].allowCreation) {
+                $(editorFields.create).show();
+            }
+            else {
+                $(editorFields.create).hide();
+            }
+        });  
+        return adder; 
+    }
 
-        // add field to linked person
-        this.annotator.viewer.addField({
-            load: function (field, annotation) {
-                if (annotation.rdf) {
-                    var fieldValue = "<a href='" + annotation.rdf.about + "' target='blank'>" + annotation.rdf.label + "</a>";
-                    var fieldCaption;
-                    if (compositor[annotation.rdf.typeof]) {
-                        fieldCaption = compositor[annotation.rdf.typeof].label;
+    // creates additional fields in viewer
+    this.initViewerFields = function() {
+        return {
+            // add field to linked person
+            resource : this.annotator.viewer.addField({
+                load: function (field, annotation) {
+                    if (annotation.rdf) {
+                        var fieldValue = "<a href='" + annotation.rdf.about + "' target='blank'>" + annotation.rdf.label + "</a>";
+                        var fieldCaption;
+                        if (compositor[annotation.rdf.typeof]) {
+                            fieldCaption = compositor[annotation.rdf.typeof].label;
+                        }
+                        else {
+                            fieldCaption = Annotator.Plugin.Neonion.prototype.literals['de'].unknownResource;
+                        }
+                        field.innerHTML = fieldCaption + ":&nbsp;" + fieldValue;
                     }
                     else {
-                        fieldCaption = Annotator.Plugin.Neonion.prototype.literals['de'].unknownResource;
+                        field.innerHTML = Annotator.Plugin.Neonion.prototype.literals['de'].unknownResource
                     }
-                    field.innerHTML = fieldCaption + ":&nbsp;" + fieldValue;
                 }
-                else {
-                    field.innerHTML = Annotator.Plugin.Neonion.prototype.literals['de'].unknownResource
+            }),
+            // add field with creator
+            creator : this.annotator.viewer.addField({
+                load: function (field, annotation) {
+                    var userField = Annotator.Plugin.Neonion.prototype.literals['de'].unknown;
+                    if (annotation.creator) {
+                        userField = annotation.creator.email;
+                    }
+                    field.innerHTML = Annotator.Plugin.Neonion.prototype.literals['de'].creator + ": " + userField;
                 }
-            }
-        });
-        // add field with creator
-        this.annotator.viewer.addField({
-            load: function (field, annotation) {
-                var userField = Annotator.Plugin.Neonion.prototype.literals['de'].unknown;
-                if (annotation.creator) {
-                    userField = annotation.creator.email;
-                }
-                field.innerHTML = Annotator.Plugin.Neonion.prototype.literals['de'].creator + ": " + userField;
-            }
-        });
+            })
+        };
+    }
 
+    // creates the search field in editor
+    this.initEditorEntitySearch = function() {
         // add field containing the suggested ressources
-        var resourceField = this.annotator.editor.addField({
+        var searchField = this.annotator.editor.addField({
             load: function(field, annotation) { 
                 // restore type from annotation if provided
                 selectedType = annotation.rdf ? annotation.rdf.typeof : selectedType;
@@ -86,19 +124,19 @@ Annotator.Plugin.Neonion = function (element, options) {
                  };
             }
         });
-        
-        $(resourceField).children((":first")).replaceWith(
-            "<div id='resource-panel'><div id='resource-list' class='btn-group-vertical'></div><form id='resource-form'></form></div>"
+
+        $(searchField).children((":first")).replaceWith(
+            "<div id='resource-list' class='btn-group-vertical'></div><form id='resource-form'></form>"
         );
-        var resourceForm = $(resourceField).find("#resource-form");
+        var searchForm = $(searchField).find("#resource-form");
         
         // input for search term
-        resourceForm.append("<input id='resource-search' type='text' autocomplete='off' placeholder='" 
+        searchForm.append("<input id='resource-search' type='text' autocomplete='off' placeholder='" 
             + Annotator.Plugin.Neonion.prototype.literals['de'].searchText + "' />"
         );
-        //resourceForm.append("<input type='submit' value='" + Annotator.Plugin.Neonion.prototype.literals.de.search + "' />");
+        //searchForm.append("<input type='submit' value='" + Annotator.Plugin.Neonion.prototype.literals.de.search + "' />");
         // attach submit handler handler
-        resourceForm.submit(function() {
+        searchForm.submit(function() {
             // get search term
             var searchTerm = $(this).find("#resource-search").val();
             var list = $(this).parent().find("#resource-list");
@@ -123,7 +161,7 @@ Annotator.Plugin.Neonion = function (element, options) {
             return false;
         });
 
-        var resourceList = $(resourceField).find("#resource-list");
+        var resourceList = $(searchField).find("#resource-list");
         resourceList.html(this.createSpinner());
         // attach click handler
         resourceList.on( "click", "button", function (e) {
@@ -151,14 +189,28 @@ Annotator.Plugin.Neonion = function (element, options) {
             overlay.hide();
         });
 
-        // get logged in user credentials
-        $.ajax({
-            context : this,
-            type : "get",
-            url : options.whoamiUrl,
-            success : this.setUser,
-            dataType : "json"
+        return searchField;
+    }
+
+    this.initEditorEntityCreation = function() {
+        var createField = this.annotator.editor.addField({
+            load: function(field, annotation) { 
+                if (compositor[selectedType] && compositor[selectedType].allowCreation) {
+
+                } 
+            },
+            submit: function(field, annotation) {
+
+            }
         });
+//console.log($(createField));
+        $(createField).html(
+            "<button id='create-toggle' class='btn annotator-btn' >" + Annotator.Plugin.Neonion.prototype.literals['de'].create + "</button>"
+        );
+
+        //console.log($(createField).append("<form id='create-form'></form>"));
+
+        return createField;
     }
 };
 
@@ -224,7 +276,7 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
             "https://www.wikidata.org/wiki/Q31855" : {
                 label : Annotator.Plugin.Neonion.prototype.literals['de'].institute,
                 omitAdder : false,
-                allowCreation : true,
+                allowCreation : false,
                 unknownResource : { uri : "http://neonion.com/resource/Unknown_Institute", label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownInstitute },
                 create : Annotator.Plugin.Neonion.prototype.create.createInstitute,
                 search : Annotator.Plugin.Neonion.prototype.search.searchInstitute,

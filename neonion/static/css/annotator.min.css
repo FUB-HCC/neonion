@@ -628,7 +628,7 @@
 .btn-group-vertical .annotator-btn:hover{
     background-color: rgba( 0,173, 232, 1);
 }
-.btn-group-vertical .annotator-btn:hover span{
+.btn-group-vertical .annotator-btn:hover *{
     color: white;
 }
 

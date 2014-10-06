@@ -1,5 +1,6 @@
 # coding=utf-8
 
+from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
@@ -39,7 +40,7 @@ def get(request, doc_id):
     pn = 1
     while True:
         try:
-            cms_url = u'http://euler.mpiwg-berlin.mpg.de:8000/hocr?document={0}&pn={1}'.format(doc_id, pn)
+            cms_url = settings.EULER_URL + u'/hocr?document={0}&pn={1}'.format(doc_id, pn)
             print(cms_url)
             pn += 1
             response = requests.get(cms_url)
@@ -51,10 +52,10 @@ def get(request, doc_id):
             break
     
     # strip markup
-    response_data = map(postProcessContent, response_data)
+    response_data = map(postprocessContent, response_data)
     return HttpResponse(''.join(response_data), content_type="text/plain")
 
-def postProcessContent(row):
+def postprocessContent(row):
       row = re.sub(r'\n', '', row)
       row = re.sub(r'<\/*span[^>]*?>', '', row)
       return row

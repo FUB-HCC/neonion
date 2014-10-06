@@ -1,5 +1,5 @@
 """
-Django settings for Annotation project.
+Django settings for neonion project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
@@ -43,8 +43,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'prototype',
+    'neonion',
     'accounts',
+    'documents',
 )
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -62,9 +63,9 @@ MIDDLEWARE_CLASSES = (
 
 
 
-ROOT_URLCONF = 'Annotation.urls'
+ROOT_URLCONF = 'neonion.urls'
 
-WSGI_APPLICATION = 'Annotation.wsgi.application'
+WSGI_APPLICATION = 'neonion.wsgi.application'
 
 
 # Database
@@ -104,6 +105,10 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(PROJECT_PATH, 'static'),
 )
+
+# neonion specific
+ANNOTATION_STORE_URL = "http://annotator.neonion.imp.fu-berlin.de"
+ELASTICSEARCH_URL = "http://localhost:9200"
 
 # STATIC_URL = '/static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')

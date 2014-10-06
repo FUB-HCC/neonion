@@ -21,3 +21,16 @@
 	max-width: 400;
 	z-index: 1200;
 }
+
+.annotator-widget .annotator-item #create-toggle {
+	width: 100%;
+}
+
+.annotator-widget .annotator-item #create-form {
+	padding : 5px;
+}
+.annotator-widget .annotator-item #create-form input {
+	border : 1px solid #dcdcdc;
+	border-radius : 5px;
+	padding : 3px 5px 3px 5px;
+}

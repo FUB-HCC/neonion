@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Annotator{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{% static 'css/annotator.neonion.css' %}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{% static 'css/annotator.min.css' %}" type="text/css" media="screen" />
+{% endblock %}
+
+{% block top %}
+    <div class="bg bg-10"></div>
+{% endblock %}
+
+{% block bottom_left %}
+    <div class="unit-10 annotator-nav">
+        <nav class="nav">
+            <ul>
+                <li><a href="/annotator"><span class="fa fa-home fa-fw" title="MyNeonion"></span></a></li>
+                <li><span class="fa fa-expand fa-fw" id="enableFullscreen" title="Fullscreen"></span></li>
+                <li><span class="fa fa-bar-chart-o fa-fw deactivated" title="Analyze"></span></li>
+                <li>&nbsp;</li>
+                <ul id="annotationSets">
+                    <li><span class="fa fa-users fa-fw active" title="Persons" annotationSet="p"></span></li>
+                    <li><span class="fa fa-university fa-fw" title="Institutions" annotationSet="i"> </span></li>
+                    <li><span class="fa fa-book fa-fw" title="References" annotationSet="r"></span></li>
+                </ul>
+                <li id="help-link"><span class="fa fa-question fa-fw" title="Help"></span></li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+{% block bottom_right %}
+    <div class="unit-centered unit-60">
+        <div id="annotator_menu" style="position:fixed;">
+           <ul id="annotator_contributors" class="forms-list"></ul>
+            <a href="#" id="scoll_to_latest_annotation"><i class="fa fa-arrow-circle-down"></i> scroll to last annotation</a>
+        </div>
+        <div class="units-row">
+            <div id="annotationArea" class="panel panel-default" >
+                <div id="documentTitle" class="panel-heading big">{{ doc_title }}</div>
+                <div id="documentText" class="panel-body"> {% autoescape off %}{{ doc_content }}{% endautoescape %}</div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+<script type="text/javascript" src="{% static 'js/annotator.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/annotator.neonion.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/annotator.store.min.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'js/jquery-ui-1.11.1.custom.min.js' %}"></script>
+
+<script language="javascript">
+
+    var resourceUri = "{{ doc_id }}";
+    var randomshift = Math.floor((Math.random() * 360) + 1);
+    var userColors = {};
+
+    function makeColor(colorNum, colors){
+        if (colors < 1) colors = 1; // defaults to one color - avoid divide by zero
+        return randomshift + ( colorNum * (360 / colors) ) % 360;
+    }
+
+    $(document).ready(function() {
+        var annotator = setupAnnotator();
+
+        $( '#enableFullscreen' ).click(function(){
+            enableFullscreen( document.getElementById( 'annotationArea' ) );
+        });
+
+        $( '#annotationSets li span' ).each( function(){
+            $( this ).click( function(){
+                $( this ).toggleClass( 'active' );
+                console.log( checkAnnotationSetSelection() );
+            });
+        });
+
+        $( '#scoll_to_latest_annotation' ).click(function(){
+            var annotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation(annotator.plugins.Neonion.getUser().email);
+            if (annotation) {
+                var target = $(annotation.highlights[0]);
+                $('html, body').stop().animate(
+                  { 'scrollTop': target.offset().top - 50 },
+                  1000,
+                  'easeInOutQuart'
+                );
+                // blink for more attention 
+                for(var i = 0; i < 2; i++) {
+                    $(target).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
+                }
+            }
+            return false;
+        });
+
+        //$('#annotator_menu :checkbox').click(function() {
+        $("#annotator_menu").on("click", "input[type=checkbox]", function() {
+            var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations($(this).val());
+            if ($(this).is(':checked')) {  
+                annotations.forEach(function(item) {
+                    Annotator.Plugin.Neonion.prototype.showAnnotation(item);
+                    colorizeAnnotation(item);
+                });
+            } else {
+                annotations.forEach(function(item) {
+                    Annotator.Plugin.Neonion.prototype.hideAnnotation(item);
+                });
+            }
+        });
+    });
+
+    function setupAnnotator () {
+        $("#documentText").annotator()
+        .annotator('addPlugin', 'Neonion', {
+            whoamiUrl: "{{ me_url }}"
+        })
+        .annotator('addPlugin', 'Store', {
+            // The endpoint of the store on your server.
+            prefix : "{{ store_url }}",
+            // Attach the uri of the current page to all annotations to allow search.
+            annotationData: { 'uri' : resourceUri },
+            loadFromSearch: { 'uri' : resourceUri }
+        });
+
+        var annotator = $("#documentText").data("annotator")
+        .subscribe("annotationCreated", annotationChanged)
+        .subscribe("annotationUpdated", annotationChanged)
+        .subscribe("annotationDeleted", refreshContributors);
+        
+        // TODO raise refresh list when store plugin has finished async request
+        window.setTimeout(function() {
+            refreshContributors();
+            var users = Annotator.Plugin.Neonion.prototype.getContributors();  
+            users.forEach(function(user) {
+                var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations(user);
+                annotations.forEach(function(ann){ 
+                    colorizeAnnotation(ann);
+                }); 
+            });
+        }, 1000);
+        return annotator; 
+    }
+
+    function annotationChanged (annotation) {
+        refreshContributors();
+        colorizeAnnotation(annotation);
+    }
+
+    function colorizeAnnotation(annotation) {
+        if (annotation.creator) {
+            var color = userColors[annotation.creator.email];
+            annotation.highlights.forEach(function(highlight){
+                $(highlight).css("backgroundColor", color);
+            });
+        }
+    }
+
+    function refreshContributors() {
+        var users = Annotator.Plugin.Neonion.prototype.getContributors();   
+        var items = [];
+
+        users.forEach(function(user) {
+            var lastAnnotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation(user); 
+            var isoUpated = lastAnnotation.updated ? lastAnnotation.updated : new Date().toISOString();
+            items.push({ 
+                user: user, // creator of annotation
+                updated : isoUpated // date when annotation was updated
+            });
+        });
+        // sort according last activity
+        items.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByUpdated);
+        items.reverse();
+
+        var i = 0
+        var totalcolors = users.length;
+        $('#annotator_contributors').html('');
+        items.forEach(function(item) {
+            var input = $("<input>").attr({
+                id : item.user,
+                value : item.user,
+                type : "checkbox",
+                checked : true
+            });                
+            var listItem = $("<li>");
+            if (!userColors[item.user]) {
+               userColors[item.user] = "hsla( " + makeColor(i++, totalcolors) + ", 100%, 50%, 0.3 )" 
+            }
+            listItem.css("backgroundColor", userColors[item.user]);
+            listItem.append(input);
+            listItem.append("<label for='" + item.user + "'>" + item.user + " (" + moment(item.updated).fromNow(true) + ")" + "</label>");
+            $('#annotator_contributors').append(listItem);
+        });
+    }
+
+    function checkAnnotationSetSelection(){
+        var activeAnnotationSets = [];
+        $( '#annotationSets li span' ).each( function(){
+            if( $( this ).hasClass('active') ){
+                activeAnnotationSets.push( $( this ).attr( 'annotationSet' ) );
+            }
+        });
+        return activeAnnotationSets;
+    }
+
+    // Find the right method, call on correct element
+    function enableFullscreen(element) {
+        if(element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if(element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+        } else if(element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+        } else if(element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+        }
+    }
+
+</script>
+{% endblock %}

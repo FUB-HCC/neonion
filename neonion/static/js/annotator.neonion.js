@@ -218,6 +218,8 @@ Annotator.Plugin.Neonion = function (element, options) {
                             "<input type='submit' class='btn annotator-btn' value='" +
                             Annotator.Plugin.Neonion.prototype.literals['de'].create + "' />"
                         );
+                        // prefill first field
+                        createForm.find("#" + compositor[selectedType].fields[0].name).val(annotation.quote);
                     }
                     else {
                         console.error("No entity field description provided");  
@@ -245,7 +247,8 @@ Annotator.Plugin.Neonion = function (element, options) {
                 var formFields = this.elements;
                 // collect fields
                 compositor[selectedType].fields.forEach(function(element, index, array) {
-                    fields[element.name] = formFields[element.name].value;
+                    var value = formFields[element.name].value;
+                    fields[element.name] = value ? value : null;
                 });
                 // create entity
                 if (compositor[selectedType].create) {
@@ -324,8 +327,8 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
                 decorator : Annotator.Plugin.Neonion.prototype.decorator.decoratePerson,
                 fields : [ 
                     { name : 'label', label : 'Vollständiger Name', type : 'text', required : true },
-                    { name : 'descr', label : 'Kurzbeschreibung', type : 'text', required : true },
-                    { name : 'birth', label : 'Geburtsdatum', type : 'date', required : true },
+                    { name : 'descr', label : 'Kurzbeschreibung', type : 'text' },
+                    { name : 'birth', label : 'Geburtsdatum', type : 'date' },
                     { name : 'death', label : 'Sterbedatum', type : 'date' }
                 ]
             },
@@ -392,6 +395,22 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
             return annotations[annotations.length-1];
         }
         return null;
+    },
+
+    getCookie : function(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     },
 
     /*enrichRDFa : function(annotation) {
@@ -517,7 +536,9 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
     create : {
         createPerson : function(data, callback) {
             $.ajax({
-                dataType: "json", url: '/es/create/persons', data: data,
+                dataType: "json", type: "POST",
+                url: '/es/create/persons', 
+                data: { "data" : JSON.stringify(data), csrfmiddlewaretoken : Annotator.Plugin.Neonion.prototype.getCookie('csrftoken') },
                 success: function(data, jqXHR) {
                     if (callback) callback(data);
                 }
@@ -525,7 +546,9 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
         },
         createInstitute : function(data, callback) {
             $.ajax({
-                dataType: "json", url: '/es/create/institutes', data: data,
+                dataType: "json", type: "POST",
+                url: '/es/create/institutes', 
+                data: { "data" : JSON.stringify(data), csrfmiddlewaretoken : Annotator.Plugin.Neonion.prototype.getCookie('csrftoken') },
                 success: function(data, jqXHR) {
                     if (callback) callback(data);
                 }

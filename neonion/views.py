@@ -50,12 +50,12 @@ def elasticsearch(request, index):
 
 @login_required
 def elasticsearchCreate(request, index):
-    if request.method == 'GET':
-        data = dict(map(lambda (k,v): (k, ''.join(v)), request.GET.iterlists()))
+    if request.method == 'POST':
+        data = json.loads(request.POST['data'])
         data['new'] = True
         # random identifer
         data['uri'] = ''.join(random.choice('0123456789ABCDEF') for i in range(32))
-     
+        
         # store data in elasticsearch
         es = ElasticSearch(settings.ELASTICSEARCH_URL)
         if index == 'persons':
@@ -63,7 +63,7 @@ def elasticsearchCreate(request, index):
         elif index == 'institutes':
             es.index(index, "institute", data)
         es.refresh(index)
-
+        
         return HttpResponse(json.dumps(data), content_type="application/json")
 
 @login_required

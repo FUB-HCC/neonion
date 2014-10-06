@@ -1,5 +1,5 @@
 """
-WSGI config for Annotation project.
+WSGI config for neonion project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
 """
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Annotation.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "neonion.settings")
 
 from django.core.wsgi import get_wsgi_application
 from dj_static import Cling

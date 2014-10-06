@@ -38,23 +38,7 @@
             {% endblock %}
         </div>
 
-        {% block top_right %}
-
-        <!-- <div class=" unit-push-right unit-20 small" id="userInfo">
-            {{ user.name }} {{ user.surname }}<br/>
-            5 Documents | 3 Annotation Sets
-        </div> -->
-
-        <!-- <div class="unit-push-right unit-60">
-            <p class="input-groups">
-                <input type="text" name="go" placeholder="Search" />
-                <span class="btn-append">
-                    <button class="btn btn-blue">Search</button>
-                </span>
-            </p>
-        </div> -->
-        {% endblock %}
-
+        {% block top_right %}{% endblock %}
     </div>
 {% endblock %}
 
@@ -66,7 +50,7 @@
 {% endblock %}
 
 {% block content %}{% endblock %}
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="{% static 'js/neonion.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/sprintf.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/moment.js' %}"></script>

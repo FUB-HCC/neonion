@@ -58,7 +58,7 @@ the following steps need one shell each:
 
 * **loomp-server**
     * `grails war`
-    * `java $JAVA_OPTS -jar server/jetty-runner.jar --port 8080 target/*.war`
+    * `java $JAVA_OPTS -jar server/jetty-runner.jar --port 9090 target/*.war`
 
 
 * **neonion**

@@ -3,22 +3,32 @@ Annotator.Plugin.Neonion = function (element, options) {
     Annotator.Plugin.apply(this, arguments);
 
     // private vars
+    var adder  = null;
     var user = null;
     var compositor = {};
     var selectedType = null;
     var viewerFields = {};
     var editorFields = {};
+    var visibleAnnotationSets = [];
 
     // properties
     this.setUser = function(userData) { user = userData; }
     this.getUser = function() { return user; }
     this.setCompositor = function(compositorData) { compositor = compositorData; }
     this.getCompositor = function() { return compositor; }
+    this.setVisibleAnnotationSets = function(visible) {
+        visibleAnnotationSets = visible;
+        for (var uri in compositor) {
+            compositor[uri].omitAdder = (visible.indexOf(uri) == -1);
+        }
+        this.applyAnnotationSets(adder, this.getCompositor());
+    }
+    this.getVisibleAnnotationSets = function() { return visibleSets; }
 
     // init method
     this.pluginInit = function () {
         
-        this.overrideAdder();
+        adder = this.overrideAdder();
         viewerFields = this.initViewerFields();
         editorFields = {
             search : this.initEditorEntitySearch(),
@@ -39,10 +49,16 @@ Annotator.Plugin.Neonion = function (element, options) {
     this.overrideAdder = function() {
         var adder = $(this.annotator.adder[0]);
 
-        // create compositor
-        this.setCompositor(options.compositor || Annotator.Plugin.Neonion.prototype.defaultCompositor());
+        // create compositor with default annotation sets
+        this.setCompositor(options.compositor || this.defaultCompositor());
+        // collect default visible annotation sets
+        for (var uri in compositor) {
+            if (!compositor[uri].omitAdder) {
+                visibleAnnotationSets.push(uri);  
+            }
+        }
         // add additional adder buttons
-        this.setAnnotationTypes(adder, this.getCompositor());
+        this.applyAnnotationSets(adder, this.getCompositor());
         // catch submit event
         adder.on( "click", "button", function (e) {
             // set selected type
@@ -71,23 +87,23 @@ Annotator.Plugin.Neonion = function (element, options) {
                             fieldCaption = compositor[annotation.rdf.typeof].label;
                         }
                         else {
-                            fieldCaption = Annotator.Plugin.Neonion.prototype.literals['de'].unknownResource;
+                            fieldCaption = Annotator.Plugin.Neonion.prototype.literals['en'].unknownResource;
                         }
                         field.innerHTML = fieldCaption + ":&nbsp;" + fieldValue;
                     }
                     else {
-                        field.innerHTML = Annotator.Plugin.Neonion.prototype.literals['de'].unknownResource
+                        field.innerHTML = Annotator.Plugin.Neonion.prototype.literals['en'].unknownResource
                     }
                 }
             }),
             // add field with creator
             creator : this.annotator.viewer.addField({
                 load: function (field, annotation) {
-                    var userField = Annotator.Plugin.Neonion.prototype.literals['de'].unknown;
+                    var userField = Annotator.Plugin.Neonion.prototype.literals['en'].unknown;
                     if (annotation.creator) {
                         userField = annotation.creator.email;
                     }
-                    field.innerHTML = Annotator.Plugin.Neonion.prototype.literals['de'].creator + ": " + userField;
+                    field.innerHTML = Annotator.Plugin.Neonion.prototype.literals['en'].creator + ": " + userField;
                 }
             })
         };
@@ -136,9 +152,9 @@ Annotator.Plugin.Neonion = function (element, options) {
         
         // input for search term
         searchForm.append("<input id='resource-search' type='text' autocomplete='off'  placeholder='" 
-            + Annotator.Plugin.Neonion.prototype.literals['de'].searchText + "' required />"
+            + Annotator.Plugin.Neonion.prototype.literals['en'].searchText + "' required />"
         );
-        //searchForm.append("<input type='submit' value='" + Annotator.Plugin.Neonion.prototype.literals.de.search + "' />");
+        //searchForm.append("<input type='submit' value='" + Annotator.Plugin.Neonion.prototype.literals['en'].search + "' />");
         // attach submit handler handler
         searchForm.submit(function() {
             // get search term
@@ -216,7 +232,7 @@ Annotator.Plugin.Neonion = function (element, options) {
                         });
                         createForm.append(
                             "<input type='submit' class='btn annotator-btn' value='" +
-                            Annotator.Plugin.Neonion.prototype.literals['de'].create + "' />"
+                            Annotator.Plugin.Neonion.prototype.literals['en'].create + "' />"
                         );
                         // prefill first field
                         createForm.find("#" + compositor[selectedType].fields[0].name).val(annotation.quote);
@@ -230,7 +246,7 @@ Annotator.Plugin.Neonion = function (element, options) {
 
         $(createField).children((":first")).replaceWith(
             "<button id='create-toggle' class='btn annotator-btn' >" 
-            + Annotator.Plugin.Neonion.prototype.literals['de'].create + 
+            + Annotator.Plugin.Neonion.prototype.literals['en'].create + 
             "</button><form id='create-form'>fhjkfhfkjgdhfkjghfk</form>"
         );
 
@@ -304,7 +320,7 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
         }
     },
 
-    setAnnotationTypes : function(adder, compositor) {
+    applyAnnotationSets : function(adder, compositor) {
         adder.html("");
         for (var uri in compositor) {
             if (!compositor[uri].omitAdder) {
@@ -317,27 +333,27 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
         return {
              // add compositor for persons
             "https://www.wikidata.org/wiki/Q5" : {
-                label : Annotator.Plugin.Neonion.prototype.literals['de'].person,
+                label : Annotator.Plugin.Neonion.prototype.literals['en'].person,
                 omitAdder : false,
                 allowCreation : true,
-                unknownResource : { uri : "http://neonion.com/resource/Unknown_Person", label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownPerson },
+                unknownResource : { uri : "http://neonion.org/resource/Unknown_Person", label : Annotator.Plugin.Neonion.prototype.literals['en'].unknownPerson },
                 create : Annotator.Plugin.Neonion.prototype.create.createPerson,
                 search : Annotator.Plugin.Neonion.prototype.search.searchPerson,
                 formatter : Annotator.Plugin.Neonion.prototype.formatter.formatPerson,
                 decorator : Annotator.Plugin.Neonion.prototype.decorator.decoratePerson,
                 fields : [ 
-                    { name : 'label', label : 'Vollständiger Name', type : 'text', required : true },
-                    { name : 'descr', label : 'Kurzbeschreibung', type : 'text' },
-                    { name : 'birth', label : 'Geburtsdatum', type : 'date' },
-                    { name : 'death', label : 'Sterbedatum', type : 'date' }
+                    { name : 'label', label : 'Full name', type : 'text', required : true },
+                    { name : 'descr', label : 'Occupation', type : 'text' },
+                    { name : 'birth', label : 'Date of birth', type : 'date' },
+                    { name : 'death', label : 'Date of death', type : 'date' }
                 ]
             },
             // add compositor for institutes
             "https://www.wikidata.org/wiki/Q31855" : {
-                label : Annotator.Plugin.Neonion.prototype.literals['de'].institute,
+                label : Annotator.Plugin.Neonion.prototype.literals['en'].institute,
                 omitAdder : false,
                 allowCreation : false,
-                unknownResource : { uri : "http://neonion.com/resource/Unknown_Institute", label : Annotator.Plugin.Neonion.prototype.literals['de'].unknownInstitute },
+                unknownResource : { uri : "http://neonion.org/resource/Unknown_Institute", label : Annotator.Plugin.Neonion.prototype.literals['en'].unknownInstitute },
                 create : Annotator.Plugin.Neonion.prototype.create.createInstitute,
                 search : Annotator.Plugin.Neonion.prototype.search.searchInstitute,
                 formatter : Annotator.Plugin.Neonion.prototype.formatter.formatInstitute,

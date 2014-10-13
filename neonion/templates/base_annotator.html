@@ -22,8 +22,8 @@
                 <li><span class="fa fa-bar-chart-o fa-fw deactivated" title="Analyze"></span></li>
                 <li>&nbsp;</li>
                 <ul id="annotationSets">
-                    <li><span class="fa fa-users fa-fw active" title="Persons" annotationSet="p"></span></li>
-                    <li><span class="fa fa-university fa-fw" title="Institutions" annotationSet="i"> </span></li>
+                    <li><span class="fa fa-users fa-fw active" title="Persons" annotationSet="https://www.wikidata.org/wiki/Q5"></span></li>
+                    <li><span class="fa fa-university fa-fw active" title="Institutions" annotationSet="https://www.wikidata.org/wiki/Q31855"> </span></li>
                     <li><span class="fa fa-book fa-fw" title="References" annotationSet="r"></span></li>
                 </ul>
                 <li id="help-link"><span class="fa fa-question fa-fw" title="Help"></span></li>
@@ -75,7 +75,8 @@
         $( '#annotationSets li span' ).each( function(){
             $( this ).click( function(){
                 $( this ).toggleClass( 'active' );
-                console.log( checkAnnotationSetSelection() );
+                var active = checkAnnotationSetSelection();
+                annotator.plugins.Neonion.setVisibleAnnotationSets(active);
             });
         });
 
@@ -195,7 +196,7 @@
         });
     }
 
-    function checkAnnotationSetSelection(){
+    function checkAnnotationSetSelection() {
         var activeAnnotationSets = [];
         $( '#annotationSets li span' ).each( function(){
             if( $( this ).hasClass('active') ){

@@ -29,11 +29,26 @@ Annotator.Plugin.Neonion = function (element, options) {
     this.pluginInit = function () {
         
         adder = this.overrideAdder();
+        console.log(adder);
         viewerFields = this.initViewerFields();
         editorFields = {
             search : this.initEditorEntitySearch(),
             create : this.initEditorEntityCreation()
         }
+
+        // bind events to document
+         $(document).bind({
+            mouseup : function(handler) {
+                // skip adder if only one button is visible
+                if ($(adder).is(":visible")) {
+                    var childBtn = $(adder).find("button")
+                    // only one button is visible in adder
+                    if (childBtn.length == 1) {
+                        childBtn.click();
+                    }
+                }
+            }
+        });
 
         // get logged in user credentials
         $.ajax({

@@ -3,6 +3,7 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as django_login, authenticate, logout as django_logout
 from accounts.forms import AuthenticationForm, RegistrationForm
+from accounts.models import User
 
 import json
 from django.http import HttpResponse
@@ -63,11 +64,17 @@ def me(request):
     }
     return HttpResponse(json.dumps(user), content_type="application/json")
 
-
-
 def logout(request):
     """
     Log out view
     """
     django_logout(request)
     return redirect('/')
+
+
+def list(request):
+    activeUser = []
+    for user in User.objects.all():
+        activeUser.append(user.email)
+
+    return HttpResponse(json.dumps(activeUser), content_type="application/json")

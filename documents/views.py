@@ -12,6 +12,10 @@ from requests.exceptions import ConnectionError, RequestException
 from django.http import HttpResponse
 
 @login_required
+def create(request):
+    pass
+
+@login_required
 def list(request):
     response_data = []
     response_data.append({ "name": "Tätigkeitsbericht der MPG 1964-1965", "urn" : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1964-1965" })

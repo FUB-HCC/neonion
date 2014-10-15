@@ -4,6 +4,7 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
+from documents.models import Document
 
 import json
 import re
@@ -13,10 +14,32 @@ from django.http import HttpResponse
 
 @login_required
 def create(request):
-    pass
+    if request.method == 'POST':
+        pass
 
 @login_required
 def list(request):
+    documents = []
+    for doc in Document.objects.all():
+        documents.append({ "name" : doc.name, "urn" : doc.urn })
+
+    return HttpResponse(json.dumps(documents), content_type="application/json")
+
+@login_required
+def get(request, doc_id):
+    pass
+
+@login_required
+def meta(request, doc_id):
+    pass
+
+@login_required
+def query(request, search_string):
+    pass
+
+
+@login_required
+def importList(request):
     response_data = []
     response_data.append({ "name": "Tätigkeitsbericht der MPG 1964-1965", "urn" : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1964-1965" })
     response_data.append({ "name": "Tätigkeitsbericht der MPG 1958-1960", "urn" : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1958-1960" })
@@ -39,7 +62,7 @@ def list(request):
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 @login_required
-def get(request, doc_id):
+def importGet(request, doc_id):
     response_data = []
     pn = 1
     while True:
@@ -65,9 +88,9 @@ def postprocessContent(row):
       return row
 
 @login_required
-def meta(request, doc_id):
+def importMeta(request, doc_id):
     pass
 
 @login_required
-def query(request, search_string):
+def importQuery(request, search_string):
     pass

@@ -40,8 +40,8 @@
         </div>
         <div class="units-row">
             <div id="annotationArea" class="panel panel-default" >
-                <div id="documentTitle" class="panel-heading big">{{ doc_title }}</div>
-                <div id="documentText" class="panel-body"> {% autoescape off %}{{ doc_content }}{% endautoescape %}</div>
+                <div id="documentTitle" class="panel-heading big">{{ title }}</div>
+                <div id="documentText" class="panel-body"> {% autoescape off %}{{ content }}{% endautoescape %}</div>
             </div>
         </div>
     </div>
@@ -57,7 +57,7 @@
 
 <script language="javascript">
 
-    var resourceUri = "{{ doc_id }}";
+    var resourceUri = "{{ urn }}";
     var userColors = {};
 
     function makeColor(colorNum, colors){

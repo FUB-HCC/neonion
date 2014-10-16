@@ -30,7 +30,7 @@
         <ul id="document-import-list"></ul>
         <div class="units-row end dialog-foot">
             <button class="btn btn-small btn-outline mid cancel-btn">Cancel</button>
-            <button class="btn btn-small btn-outline mid" onclick="importSelectedDocuments()">Import</button>
+            <button class="btn btn-small btn-outline mid" id="btn-import" onclick="importSelectedDocuments()">Import</button>
             <div id="document-cache" style="display:none"></div>
         </div>
     </div>
@@ -56,7 +56,7 @@
     });
 
     function refreshDocuments() {
-        $.getJSON("/documents/import/list", function(data) {
+        $.getJSON("/documents/euler/list", function(data) {
             docList = data;
             // clear list
             $("#document-import-list").html('');
@@ -70,9 +70,12 @@
     }
 
     function importSelectedDocuments(){
+        $("#btn-import").prop('disabled', true);
+
         $( '.ui-selected' ).each(function() {
             selectedDocs.push( this.id );
         });
+        
         importNextDocument();
     }
 
@@ -80,40 +83,11 @@
         if (selectedDocs.length > 0) {
             var urn = selectedDocs.shift();
             console.log("Import document " + urn);
-            $.get("/document/get/" + urn, function(data) {
-                importDocuemt(urn, data);
+            $.getJSON("/documents/euler/import/" + urn, function(data) {
+                console.log(data);
                 importNextDocument();
             });
         }
-    }
-
-    function importDocuemt(docUrn, content) {
-        var title = docUrn;
-        // get proper title
-        docList.forEach(function(element, index, array) {
-            if (element.urn == docUrn) {
-                title = element.name;
-            }
-        });
-
-        // assemble POST data
-        var entityData = {
-            uri : null ,
-            title : title,
-            content : content,
-            type : config.scms.uri.elementText,
-            dataCreated : 0, lastModified : 0,
-        };
-
-        jQuery.ajax({
-            url: config.scms.server + config.scms.service.create,
-            type: 'POST',
-            data : { "data" : JSON.stringify(entityData), fmt : "JSON", csrfmiddlewaretoken : getCookie('csrftoken') }
-        }).success(function(data, textStatus, jqXHR) {
-
-        }).error(function(jqXHR, textStatus, errorThrown) {
-            console.log(errorThrown);
-        });
     }
 
     function getCookie(name) {

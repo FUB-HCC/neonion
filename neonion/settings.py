@@ -44,8 +44,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'neonion',
-    'accounts',
     'documents',
+    'accounts',
 )
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -109,6 +109,7 @@ STATICFILES_DIRS = (
 # neonion specific
 ANNOTATION_STORE_URL = "http://annotator.neonion.imp.fu-berlin.de"
 ELASTICSEARCH_URL = "http://localhost:9200"
+EULER_URL = 'http://euler.mpiwg-berlin.mpg.de:8000'
 
 # STATIC_URL = '/static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')

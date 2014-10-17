@@ -50,7 +50,7 @@
     function loadDocumentList() {
         var documentList = [];
         // load document list
-        jQuery.getJSON("/documents/list", function(response) {
+        $.getJSON("/documents/list", function(response) {
             response.forEach(function(entry) {
                 documentList.push( entry );
             });

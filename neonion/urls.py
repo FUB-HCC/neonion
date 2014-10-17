@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('accounts.urls', namespace='accounts')),
     url(r'^documents/', include('documents.urls', namespace='documents')),
+    url(r'^endpoint/', include('endpoint.urls', namespace='endpoint')),
 
     # Elasticsearch proxy
     url(r'^es/(?P<index>\w+)$', 'neonion.views.elasticsearch', name='elasticsearchSearch'),

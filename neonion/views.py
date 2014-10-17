@@ -27,6 +27,7 @@ def annotator(request, doc_urn):
         'title' : doc.title,
         'content' : doc.content,
         'me_url' : reverse('accounts:accounts.views.me'),
+        'endpoint_url' : '/endpoint/',
         'store_url' : settings.ANNOTATION_STORE_URL,
     }
     return render_to_response('base_annotator.html', Context(data), context_instance = RequestContext(request))

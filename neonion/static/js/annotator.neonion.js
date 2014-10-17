@@ -29,7 +29,6 @@ Annotator.Plugin.Neonion = function (element, options) {
     this.pluginInit = function () {
         
         adder = this.overrideAdder();
-        console.log(adder);
         viewerFields = this.initViewerFields();
         editorFields = {
             search : this.initEditorEntitySearch(),

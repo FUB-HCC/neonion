@@ -46,10 +46,11 @@ INSTALLED_APPS = (
     'neonion',
     'documents',
     'accounts',
+    'endpoint',
 )
 
 AUTH_USER_MODEL = 'accounts.User'
-AUTHENTICATION_BACKENDS = ['accounts.backends.EmailAuthBackend', ]
+AUTHENTICATION_BACKENDS = ['accounts.backends.EmailAuthBackend', 'sesame.backends.ModelBackend',]
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 MIDDLEWARE_CLASSES = (
@@ -59,6 +60,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'sesame.middleware.AuthenticationMiddleware',
 )
 
 
@@ -110,6 +112,7 @@ STATICFILES_DIRS = (
 ANNOTATION_STORE_URL = "http://annotator.neonion.imp.fu-berlin.de"
 ELASTICSEARCH_URL = "http://localhost:9200"
 EULER_URL = 'http://euler.mpiwg-berlin.mpg.de:8000'
+ENDPOINT_UPDATE = 'http://localhost:8080/openrdf-workbench/repositories/neonion/update'
 
 # STATIC_URL = '/static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')

@@ -12,3 +12,4 @@ requests==2.3.0
 simplejson==3.6.2
 six==1.7.3
 static==1.0.2
+SPARQLWrapper=1.6.4

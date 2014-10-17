@@ -33,6 +33,7 @@
 {% endblock %}
 
 {% block bottom_right %}
+    {% csrf_token %}
     <div class="unit-centered unit-60">
         <div id="annotator_menu" style="position:fixed;">
            <ul id="annotator_contributors" class="forms-list"></ul>
@@ -116,7 +117,8 @@
     function setupAnnotator () {
         $("#documentText").annotator()
         .annotator('addPlugin', 'Neonion', {
-            whoamiUrl: "{{ me_url }}"
+            whoamiUrl: "{{ me_url }}",
+            endpointUrl : "{{ endpoint_url }}"
         })
         .annotator('addPlugin', 'Store', {
             // The endpoint of the store on your server.
@@ -127,7 +129,10 @@
         });
 
         var annotator = $("#documentText").data("annotator")
-        .subscribe("annotationCreated", annotationChanged)
+        .subscribe("annotationCreated", function(annotation) { 
+            notifyEndpoint(annotation);
+            annotationChanged(annotation); 
+        })
         .subscribe("annotationUpdated", annotationChanged)
         .subscribe("annotationDeleted", refreshContributors);
         
@@ -143,6 +148,15 @@
             });
         }, 1000);
         return annotator; 
+    }
+
+    function notifyEndpoint(annotation) {
+        console.log(annotation);
+        $.post('/endpoint/annotationcreated', { 
+            annotation : JSON.stringify(annotation),
+            docUrn : resourceUri,
+            csrfmiddlewaretoken : $("input[name=csrfmiddlewaretoken]").val() 
+        });
     }
 
     function annotationChanged (annotation) {

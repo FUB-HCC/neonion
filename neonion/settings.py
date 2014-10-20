@@ -50,7 +50,7 @@ INSTALLED_APPS = (
 )
 
 AUTH_USER_MODEL = 'accounts.User'
-AUTHENTICATION_BACKENDS = ['accounts.backends.EmailAuthBackend', 'sesame.backends.ModelBackend',]
+AUTHENTICATION_BACKENDS = ['accounts.backends.EmailAuthBackend']
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 MIDDLEWARE_CLASSES = (
@@ -60,7 +60,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'sesame.middleware.AuthenticationMiddleware',
 )
 
 

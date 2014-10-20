@@ -6,6 +6,7 @@ from SPARQLWrapper import SPARQLWrapper
 from django.shortcuts import render
 from django.http import HttpResponse
 
+@login_required
 def annotation_created(request):
     if request.method == 'POST':
         docUrl = 'http://www.neonion.org/documents/' + request.POST['docUrn']

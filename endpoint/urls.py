@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
 
 urlpatterns = patterns('',
-    url(r'^annotationcreated$', 'endpoint.views.annotation_created', name='annotation_created'),
+    url(r'^annotationcreated$', 'endpoint.views.annotation_created'),
 )

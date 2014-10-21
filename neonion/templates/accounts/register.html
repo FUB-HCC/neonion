@@ -25,8 +25,12 @@
         <button class="btn btn-small btn-outline">Register</button>
     </form>
 
-    {% for error in form.non_field_errors %}
-    <p class="label label-outline label-red">{{ error|escape }}</p>
-    {% endfor %}
+    {% if success %}
+        <p class="label label-outline label-green">You have successfully registered. An administrator must approve this request before you can login.</p>
+    {% else %}
+        {% for error in form.non_field_errors %}
+        <p class="label label-outline label-red">{{ error|escape }}</p>
+        {% endfor %}
+    {% endif %}
 </div>
 {% endblock %}

@@ -17,7 +17,7 @@
     <div class="unit-10 annotator-nav">
         <nav class="nav">
             <ul>
-                <li><a href="/annotator"><span class="fa fa-home fa-fw" title="MyNeonion"></span></a></li>
+                <li><a href="{% url 'neonion.views.home' %}"><span class="fa fa-home fa-fw" title="MyNeonion"></span></a></li>
                 <li><span class="fa fa-expand fa-fw" id="enableFullscreen" title="Fullscreen"></span></li>
                 <li><span class="fa fa-bar-chart-o fa-fw deactivated" title="Analyze"></span></li>
                 <li>&nbsp;</li>
@@ -117,7 +117,7 @@
     function setupAnnotator () {
         $("#documentText").annotator()
         .annotator('addPlugin', 'Neonion', {
-            whoamiUrl: "{{ me_url }}",
+            whoamiUrl: "{% url 'accounts.views.me' %}",
             endpointUrl : "{{ endpoint_url }}"
         })
         .annotator('addPlugin', 'Store', {

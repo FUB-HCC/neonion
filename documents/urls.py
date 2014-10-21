@@ -1,13 +1,13 @@
 from django.conf.urls import patterns, url
 
 urlpatterns = patterns('',
-    url(r'^list/$', 'documents.views.list', name='doc_list'),
-    url(r'^get/(?P<doc_urn>.+)$', 'documents.views.get', name='doc_get'),
-    url(r'^meta/(?P<doc_urn>.+)$', 'documents.views.meta', name='doc_meta'),
-    url(r'^query/(?P<search_string>.+)$', 'documents.views.query', name='doc_query'),
+    url(r'^list/$', 'documents.views.list'),
+    url(r'^get/(?P<doc_urn>.+)$', 'documents.views.get'),
+    url(r'^meta/(?P<doc_urn>.+)$', 'documents.views.meta'),
+    url(r'^query/(?P<search_string>.+)$', 'documents.views.query'),
 
-	url(r'^euler/import/(?P<doc_urn>.+)$', 'documents.views.euler_import', name='euler_import'),
+	url(r'^euler/import/(?P<doc_urn>.+)$', 'documents.views.euler_import'),
     url(r'^euler/list/$', 'documents.views.euler_list', name='euler_list'),
-    url(r'^euler/query/(?P<search_string>.+)$', 'documents.views.euler_query', name='euler_query'),
-    url(r'^euler/meta/(?P<doc_urn>.+)$', 'documents.views.euler_meta', name='euler_meta'),
+    url(r'^euler/query/(?P<search_string>.+)$', 'documents.views.euler_query'),
+    url(r'^euler/meta/(?P<doc_urn>.+)$', 'documents.views.euler_meta'),
 )

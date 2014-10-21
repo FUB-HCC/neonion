@@ -26,7 +26,6 @@ def annotator(request, doc_urn):
         'urn' : doc_urn,
         'title' : doc.title,
         'content' : doc.content,
-        'me_url' : reverse('accounts:accounts.views.me'),
         'endpoint_url' : '/endpoint/',
         'store_url' : settings.ANNOTATION_STORE_URL,
     }

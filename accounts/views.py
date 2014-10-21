@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as django_login, authenticate, logout as django_logout
 from accounts.forms import AuthenticationForm, RegistrationForm
 from accounts.models import User
+from django.conf.urls import patterns, url
 
 import json
 from django.http import HttpResponse
@@ -31,20 +32,22 @@ def register(request):
     """
     User registration view.
     """
+    success = False
     if request.method == 'POST':
         form = RegistrationForm(data=request.POST)
         if form.is_valid():
             user = form.save()
+            success = True
             #return redirect('/')
     else:
         form = RegistrationForm()
 
     return render_to_response('accounts/register.html', {
-        'form': form,
+        'form': form, 'success' : success
     }, context_instance=RequestContext(request))
 
 @login_required
-def profile(request):
+def profile(request, user):
     """
     profile view.
     """
@@ -73,10 +76,40 @@ def logout(request):
     django_logout(request)
     return redirect('/')
 
-
+@login_required
 def list(request):
-    activeUser = []
+    # get user enumeration
+    users = []
     for user in User.objects.all():
-        activeUser.append(user.email)
+        users.append({ 
+            'username' : user.email, 
+            'isActive' : user.is_active,
+            'isAdmin' : user.is_admin,
+        })
+    
+    return render_to_response('accounts/list_user.html', {
+        'users' : users
+    }, context_instance=RequestContext(request))
 
-    return HttpResponse(json.dumps(activeUser), content_type="application/json")
+
+@login_required
+def delete_user(request, userID):
+    user = User.objects.filter(email=userID)[0]
+    if (not user.is_admin):
+        user.delete()
+
+    return redirect('accounts.views.list')
+
+
+@login_required
+def edit_user(request, userID):
+    if request.method == 'GET':
+        user = User.objects.filter(email=userID)[0]
+        if ('active' in request.GET):
+            user.is_active = bool(int(request.GET['active']))
+        if ('admin' in request.GET):
+            user.is_admin = bool(int(request.GET['admin']))
+        
+        user.save()
+
+    return redirect('accounts.views.list')

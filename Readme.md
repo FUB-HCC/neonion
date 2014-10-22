@@ -35,13 +35,6 @@ sudo apt-get install elasticsearch
 sudo /etc/init.d/elasticsearch start
 ```
 
-# grails
-```
-curl -s get.gvmtool.net | bash
-gvm install grails 2.3.7
-source ~/.gvm/bin/gvm-init.sh
-```
-
 the following steps need one shell each:
 
 * **neonion**
@@ -52,13 +45,3 @@ the following steps need one shell each:
     * `python manage.py runserver`
 
 
-
-## Run on heroku
-
-* **neonion**
-    * `cd neonion`
-    * Change the `server:` parameter in the config file (`prototype/static/js/neonion.js`) to the loomp-server URL .
-    * `git add prototype/static/js/neonion.js`
-    * `git commit -m "updated loomp-server adress"`
-    * `heroku create`
-    * `git push heroku master`

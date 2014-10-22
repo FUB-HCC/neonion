@@ -126,7 +126,7 @@ Annotator.Plugin.Neonion = function (element, options) {
     // creates the search field in editor
     this.initEditorEntitySearch = function() {
         // add field containing the suggested ressources
-        var searchField = this.annotator.editor.addField({
+        var field = this.annotator.editor.addField({
             load: function(field, annotation) { 
                 // restore type from annotation if provided
                 selectedType = annotation.rdf ? annotation.rdf.typeof : selectedType;
@@ -153,22 +153,26 @@ Annotator.Plugin.Neonion = function (element, options) {
                      };
                      // remove from data
                      $(element).data("resource", null);
-                     //console.log(annotation);
-                     //console.log(dataItem);
                 }
             }
         });
 
-        $(searchField).children((":first")).replaceWith(
+        $(field).children((":first")).replaceWith(
             "<div id='resource-list' class='btn-group-vertical'></div><form id='resource-form'></form>"
         );
-        var searchForm = $(searchField).find("#resource-form");
         
-        // input for search term
-        searchForm.append("<input id='resource-search' type='text' autocomplete='off'  placeholder='" 
-            + Annotator.Plugin.Neonion.prototype.literals['en'].searchText + "' required />"
-        );
-        //searchForm.append("<input type='submit' value='" + Annotator.Plugin.Neonion.prototype.literals['en'].search + "' />");
+        // create input for search term
+        var searchInput = $('<input>').attr({
+            type : 'text',
+            id : 'resource-search',
+            autocomplete : 'off',
+            placeholder : Annotator.Plugin.Neonion.prototype.literals['en'].searchText,
+            required : true
+        });
+
+        var searchForm = $(field).find("#resource-form");
+        searchInput.appendTo(searchForm);
+
         // attach submit handler handler
         searchForm.submit(function() {
             // get search term
@@ -194,8 +198,26 @@ Annotator.Plugin.Neonion = function (element, options) {
             }
             return false;
         });
+        // attach key event to search while typing
+        searchInput.keyup(function(e) {
+            var keyCode = e.which || e.keyCode;
+            // fire only on printable characters and backspace
+            if (keyCode >= 32 || keyCode == 8) {
+                var timeoutID = $(searchForm).data("timeoutID");
+                if (timeoutID) {
+                    // clear prior timeout
+                    window.clearTimeout(timeoutID);
+                }
+                // submit search form delayed
+                timeoutID = window.setTimeout(function() {
+                    $(searchForm).removeData("timeoutID");
+                    $(searchForm).submit();  
+                }, 200);
+                $(searchForm).data("timeoutID", timeoutID)
+            }
+        });
 
-        var resourceList = $(searchField).find("#resource-list");
+        var resourceList = $(field).find("#resource-list");
         resourceList.html(this.createSpinner());
         // attach click handler
         resourceList.on( "click", "button", function (e) {
@@ -227,7 +249,7 @@ Annotator.Plugin.Neonion = function (element, options) {
             overlay.hide();
         });
 
-        return searchField;
+        return field;
     }
 
     this.initEditorEntityCreation = function() {
@@ -350,7 +372,7 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
                 label : Annotator.Plugin.Neonion.prototype.literals['en'].person,
                 omitAdder : false,
                 allowCreation : true,
-                unknownResource : { uri : "http://neonion.org/resource/Unknown_Person", label : Annotator.Plugin.Neonion.prototype.literals['en'].unknownPerson },
+                unknownResource : { uri : "http://neonion.org/resource/Unknown_Person", label : this.literals['en'].unknownPerson },
                 create : Annotator.Plugin.Neonion.prototype.create.createPerson,
                 search : Annotator.Plugin.Neonion.prototype.search.searchPerson,
                 formatter : Annotator.Plugin.Neonion.prototype.formatter.formatPerson,
@@ -367,7 +389,7 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
                 label : Annotator.Plugin.Neonion.prototype.literals['en'].institute,
                 omitAdder : false,
                 allowCreation : false,
-                unknownResource : { uri : "http://neonion.org/resource/Unknown_Institute", label : Annotator.Plugin.Neonion.prototype.literals['en'].unknownInstitute },
+                unknownResource : { uri : "http://neonion.org/resource/Unknown_Institute", label : this.literals['en'].unknownInstitute },
                 create : Annotator.Plugin.Neonion.prototype.create.createInstitute,
                 search : Annotator.Plugin.Neonion.prototype.search.searchInstitute,
                 formatter : Annotator.Plugin.Neonion.prototype.formatter.formatInstitute,
@@ -442,13 +464,6 @@ jQuery.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
         }
         return cookieValue;
     },
-
-    /*enrichRDFa : function(annotation) {
-        // add RDFa attributes to markup
-        annotation.highlights[0].setAttribute("typeof", annotation.rdf.typeof);
-        annotation.highlights[0].setAttribute("property", annotation.rdf.property);
-        annotation.highlights[0].setAttribute("about", annotation.rdf.about);
-    },*/
 
     createListItems : function(list, formatter) {
         var items = [];

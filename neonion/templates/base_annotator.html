@@ -35,7 +35,7 @@
 {% block bottom_right %}
     {% csrf_token %}
     <div class="unit-centered unit-60">
-        <div id="annotator_menu" style="position:fixed;">
+        <div id="annotator_menu" style="display:none;position:fixed;">
            <ul id="annotator_contributors" class="forms-list"></ul>
             <a href="#" id="scoll_to_latest_annotation"><i class="fa fa-arrow-circle-down"></i> scroll to last annotation</a>
         </div>
@@ -58,7 +58,7 @@
 
 <script language="javascript">
 
-    var resourceUri = "{{ urn }}";
+    var docUrn = "{{ urn }}";
     var userColors = {};
 
     function makeColor(colorNum, colors){
@@ -124,8 +124,8 @@
             // The endpoint of the store on your server.
             prefix : "{{ store_url }}",
             // Attach the uri of the current page to all annotations to allow search.
-            annotationData: { 'uri' : resourceUri },
-            loadFromSearch: { 'uri' : resourceUri }
+            annotationData: { 'uri' : docUrn },
+            loadFromSearch: { 'uri' : docUrn }
         });
 
         var annotator = $("#documentText").data("annotator")
@@ -152,9 +152,9 @@
 
     function notifyEndpoint(annotation) {
         console.log(annotation);
-        $.post('/endpoint/annotationcreated', { 
+        $.post("{% url 'endpoint.views.annotation_created' %}", { 
             annotation : JSON.stringify(annotation),
-            docUrn : resourceUri,
+            docUrn : docUrn,
             csrfmiddlewaretoken : $("input[name=csrfmiddlewaretoken]").val() 
         });
     }

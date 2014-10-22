@@ -26,11 +26,11 @@ def list(request):
     return HttpResponse(json.dumps(documents), content_type="application/json")
 
 @login_required
-def get(request, doc_urn):
+def get(request, docUrn):
     pass
 
 @login_required
-def meta(request, doc_urn):
+def meta(request, docUrn):
     pass
 
 @login_required
@@ -63,12 +63,12 @@ def euler_list(request):
     return HttpResponse(json.dumps(doc_list), content_type="application/json")
 
 @login_required
-def euler_import(request, doc_urn):
+def euler_import(request, docUrn):
     doc_rows = []
     pn = 1
     while True:
         try:
-            cms_url = settings.EULER_URL + u'/hocr?document={0}&pn={1}'.format(doc_urn, pn)
+            cms_url = settings.EULER_URL + u'/hocr?document={0}&pn={1}'.format(docUrn, pn)
             print(cms_url)
             pn += 1
             response = requests.get(cms_url)
@@ -81,11 +81,11 @@ def euler_import(request, doc_urn):
     
     # strip markup
     doc_rows = map(postprocess_content, doc_rows)
-    doc_title = " ".join(doc_urn.split("_"))
+    doc_title = " ".join(docUrn.split("_"))
 
-    new_document = Document.objects.create_document(doc_urn, doc_title, ''.join(doc_rows))
+    new_document = Document.objects.create_document(docUrn, doc_title, ''.join(doc_rows))
 
-    return HttpResponse(json.dumps({ "urn" : doc_urn, "title" : doc_title}), content_type="application/json")
+    return HttpResponse(json.dumps({ "urn" : docUrn, "title" : doc_title}), content_type="application/json")
 
 def postprocess_content(row):
       row = re.sub(r'\n', '', row)
@@ -93,7 +93,7 @@ def postprocess_content(row):
       return row
 
 @login_required
-def euler_meta(request, doc_urn):
+def euler_meta(request, docUrn):
     pass
 
 @login_required

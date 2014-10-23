@@ -3,21 +3,36 @@
 /*jshint sub:true */
 /*global Annotator:false */
 
+/**
+ * @preserve Copyright 2014 HCC FU Berlin.
+ * write licence text
+ */
 (function () {
     "use strict"; // enable strict mode
 
+    /**
+    * neonion plugin for Annotator
+    * @implements {Annotator.Plugin}
+    */
     Annotator.Plugin.Neonion = function (element, options) {
-        // call constructor
+
+        /**
+         * Call constructor.
+         * @constructor
+         */
         Annotator.Plugin.apply(this, arguments);
 
-        // private vars
-        var adder = null;
-        var user = null;
-        var compositor = {};
-        var selectedType = null;
-        var viewerFields = {};
-        var editorFields = {};
-        var visibleAnnotationSets = [];
+        /**
+         *  Internal vars
+         *  @private
+         */
+        var adder = null,
+            user = null,
+            compositor = {},
+            selectedType = null,
+            viewerFields = {},
+            editorFields = {},
+            visibleAnnotationSets = [];
 
         // properties
         this.setUser = function (userData) {
@@ -34,7 +49,8 @@
         };
         this.setVisibleAnnotationSets = function (visible) {
             visibleAnnotationSets = visible;
-            for (var uri in compositor) {
+            var uri;
+            for (uri in compositor) {
                 if (compositor.hasOwnProperty(uri)) {
                     compositor[uri].omitAdder = (visible.indexOf(uri) === -1);
                 }
@@ -45,7 +61,10 @@
             return visibleAnnotationSets;
         };
 
-        // init method
+        /**
+         * Initializes the plugin.
+         * @override
+         */
         this.pluginInit = function () {
 
             adder = this.overrideAdder();
@@ -346,6 +365,10 @@
         events: {},
         options: {},
 
+        /**
+        * Enum annotator classes.
+        * @enum {string}
+        */
         classes: {
             visible: "annotator-hl",
             hide: "annotator-hl-filtered"
@@ -647,4 +670,5 @@
             }
         }
     });
+
 })();

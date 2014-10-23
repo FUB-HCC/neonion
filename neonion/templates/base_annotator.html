@@ -57,6 +57,7 @@
 <script type="text/javascript" src="{% static 'js/jquery-ui-1.11.1.custom.min.js' %}"></script>
 
 <script language="javascript">
+    "use strict";
 
     var docUrn = "{{ urn }}";
     var userColors = {};
@@ -151,7 +152,7 @@
     }
 
     function notifyEndpoint(annotation) {
-        console.log(annotation);
+        //console.log(annotation);
         $.post("{% url 'endpoint.views.annotation_created' %}", { 
             annotation : JSON.stringify(annotation),
             docUrn : docUrn,

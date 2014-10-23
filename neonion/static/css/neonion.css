@@ -1,13 +1,13 @@
 
 body{
-	padding:1em;
-  max-width: 979px;
-  font-size: 14px;
-  background-color : #fff;
+    padding:1em;
+    max-width: 979px;
+    font-size: 14px;
+    background-color : #fff;
 }
 
 #headline{
-  border-bottom: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
 .document-list-buttons{
@@ -20,25 +20,25 @@ body{
 }
 
 .mid{
-  font-size: 0.9em;
+    font-size: 0.9em;
 }
 
 .big{
-  font-size: 1.8em;
-  margin-bottom: 0.5em;
+    font-size: 1.8em;
+    margin-bottom: 0.5em;
 }
 
 #userInfo{
-  line-height: 2em;
-  text-align: right;
+    line-height: 2em;
+    text-align: right;
 }
 
 .orange{
-  color: #f39100;
+    color: #f39100;
 }
 
 .color-red{
-  color: #FF3235;
+    color: #FF3235;
 }
 
 .verticalLine {
@@ -48,7 +48,6 @@ body{
 .as-active{
     font-weight: bold;
 }
-
 
 #document-table tr td:nth-child(1){
     text-align: right;
@@ -60,353 +59,211 @@ body{
 }
 
 #document-table tr:nth-child(2n+1) td:nth-child(2){
-    /*background-color: #f1f1f1;*/
+
 }
 
 #document-table tr td:hover td:nth-child(2){
-    /*background-color: #E5E5E5;*/
+
 }
 
 #document-table tr a{
-  color: #8E8E93;
+    color: #8E8E93;
 }
 #document-table tr a:hover{
-  color: black;
+    color: black;
 }
-
 
 .document-list-buttons{
-   /*display: none;*/
-   color:transparent;
+    color:transparent;
 }
 
-
 .annotator-btn{
-  text-align: left;
+    text-align: left;
 }
 
 .element-cell:hover .document-list-buttons{
-    /*display: block;*/
-  color:black;
-
+    color:black;
 }
 
 #loginform input{
-  margin-bottom: 1em;
+    margin-bottom: 1em;
 }
 
 #loginform .last_input{
-  margin-bottom: 0em;
+    margin-bottom: 0em;
 }
-
-
-
-
 
 
 /* Fullscreen */
 :-webkit-full-screen {
-  background-color: white;
-  width: 50%;
-  height: 100%;
-  padding: 5em;
-
+    background-color: white;
+    width: 50%;
+    height: 100%;
+    padding: 5em;
 }
 
 :-moz-full-screen {
-  background-color: white;
-  width: 50%;
-  height: 100%;
-  padding: 5em;
-
-
+    background-color: white;
+    width: 50%;
+    height: 100%;
+    padding: 5em;
 }
 
 :-ms-fullscreen {
-  background-color: white;
-  width: 50%;
-  height: 100%;
-  padding: 5em;
-
-
+    background-color: white;
+    width: 50%;
+    height: 100%;
+    padding: 5em;
 }
 
 :full-screen { /*pre-spec */
-  background-color: white;
-  width: 50%;
-  height: 100%;
-  padding: 5em;
-
-
+    background-color: white;
+    width: 50%;
+    height: 100%;
+    padding: 5em;
 }
 
 :fullscreen { /* spec */
-  background-color: white;
-  width: 50%;
-  height: 100%;
-  padding: 5em;
+    background-color: white;
+    width: 50%;
+    height: 100%;
+    padding: 5em;
 }
 
-
 #exit-fullscreen-btn{
-  font-size: 1.5em;
-  text-align: right;
+    font-size: 1.5em;
+    text-align: right;
 }
 
 /* end Fullscreen */
 
 a:link {
-  text-decoration: none;
-  /*color:#3d58a8;*/
-  color: black;
+    text-decoration: none;
+    color: black;
 }
 a:visited {
-  text-decoration: none;
-  /*color:#3d58a8;*/
-  color: black;
+    text-decoration: none;
+    color: black;
 
 }
 a:hover {
-  text-decoration: none !important;
-  /*color:#2f4483;*/
-  color: rgba( 0,173, 232, 1);
+    text-decoration: none !important;
+    color: rgba( 0,173, 232, 1);
 
 }
 a:active {
-  text-decoration: none;
-  /*color:#3d58a8;*/
-  color: #005F7F;
+    text-decoration: none;
+    color: #005F7F;
 
 }
 
 
 /*import dialog*/
 #dialog-import{
-  margin-left: 2em;
+    margin-left: 2em;
 }
 
 #document-import-list li{
-  border: none;
-  padding-top: 0.25em;
-  padding-bottom: 0.25em;
+    border: none;
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+}
+
+#document-import-list{
+    margin: 0;
 }
 
 #document-import-list li:hover{
-  cursor: pointer;;
+    cursor: pointer;
 }
 
-/*dialog#dialog-import{
-  top:3em;
-  min-width:50em;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-  border-radius: 15px;
-  padding: 0;
-}
-
-dialog#dialog-import div{
-  padding-left:  2em;
-  padding-right: 1em;
-}
-
-
-dialog#dialog-import .dialog-head{
-  line-height: 3em;
-  margin-bottom: 0px;
-  border-bottom: 3px solid rgba(0, 173, 232, 100);
-}
-
-dialog#dialog-import #close-dialog-button{
-  position: absolute;
-  right: 1em;
-  top:0.5em;
-  font-size: 1.5em;
-  color: #FF3235;
-  cursor: pointer;
-}
-dialog#dialog-import #close-dialog-button:hover{
-  color: #CC282A;
-}
-
-dialog#dialog-import .dialog-body{
-  padding-top: 1em;
-}
-
-dialog#dialog-import .dialog-body p{
-  margin-bottom: 0.5em;
-}
-
-dialog #import-form-row{
-  overflow-y: auto;
-  max-height: 16em;
-  /*margin-left: 2em;*/
-  margin-left: -.5em;
-  margin-right: 0.5em;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  border-radius: 10px;// 0px 0px 10px;
-}
-
-dialog#dialog-import .dialog-foot{
-  text-align: right;
-  padding-bottom: 1em;
-  margin-right: 0.5em;
-}
-
-dialog#dialog-import .ui-widget-content{
-  border:none;
-  width: 100%;
-}
-
-#document-import-list{
-  margin: 0;
-}
 #import-form-row{
-  padding: 0 !important;
+    padding: 0 !important;
 
-}
-
-dialog#dialog-import .ui-widget-content{
-  padding-left:0.5em;
-  margin-bottom: 1px;
 }
 
 #document-import-list .ui-selecting, dialog#dialog-import .ui-widget-content:hover, #document-import-list .ui-selected {
-  cursor: pointer;
-  color: rgba(255, 255, 255, 0.9);
-  background: #00ADE8;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.9);
+    background: #00ADE8;
 }
 
-
-
+/* Button */
 .cancel-btn{
-  text-decoration: underline;
-  border: none;
-  margin-right: 2em;
-  background-color: transparent;
+    text-decoration: underline;
+    border: none;
+    margin-right: 2em;
+    background-color: transparent;
 }
 .cancel-btn:hover{
-  border:none !important;
-  background: none !important;
-  cursor: pointer;
-  color: black;
+    border:none !important;
+    background: none !important;
+    cursor: pointer;
+    color: black;
 }
 
 #document-import-list{
-  list-style-type: none;
+    list-style-type: none;
 }
 
-dialog#dialog-import::backdrop {
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-dialog#dialog-import + .backdrop {
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-*/
-dialog#dialog-import ::-webkit-scrollbar {
-    width: 16px;
-    height: 16px;
-}
-
-dialog#dialog-import ::-webkit-scrollbar-track {
--webkit-border-radius: 10px;
-border-radius: 10px;
-}
-
-dialog#dialog-import ::-webkit-scrollbar-thumb {
--webkit-border-radius: 10px;
-border-radius: 10px;
-background: rgba(0,173,232,0.5);
-}
-
-dialog#dialog-import ::-webkit-scrollbar-thumb:horizontal {
--webkit-border-radius: 10px;
-border-radius: 10px;
-background: rgba(0,0,0,0.1);
--webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.2);
-}
-
-dialog#dialog-import ::-webkit-scrollbar-thumb:window-inactive {
-background: rgba(0,0,0,0.9);
-}
-
-
-
-
-/* Button */
-.btn-outline {
-/*  text-shadow:  .5px  0px 0px #fff,
-               -.5px  0px 0px #fff;
-*/
-
-}
 .btn-outline:hover {
-  /*font-weight: bold;*/
-/*  text-shadow:  .5px  0px 0px #000,
-               -.5px  0px 0px #000;
-*/  color: black;
-  background-color: #d6d6d6;
-  border: 1px solid black;
+    color: black;
+    background-color: #d6d6d6;
+    border: 1px solid black;
 }
-
 
 /* Navigation */
 .nav a,
 .nav span{
-  display: inline-block;
-  white-space: nowrap;
+    display: inline-block;
+    white-space: nowrap;
 }
 .nav a{
-  width: 100%;
+    width: 100%;
 }
 .nav a:hover, .nav a:hover .fa{
-  color: black;
+    color: black;
 }
 .nav a.nav-active{
-  color: #f39100;
-  font-weight: bold;
-  cursor: default;
+    color: #f39100;
+    font-weight: bold;
+    cursor: default;
 }
 .nav a:hover{
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .nav span:before{
-  margin-right: 5em;
+    margin-right: 5em;
 }
 
-/*.nav li:first-child{
-  border-top: 1px solid black;
-}
-*/
 .nav li{
-  border-bottom: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
 
 .nav .fa{
-  font-size: 1.5em;
-  margin-right: 1em;
-  margin-left: 1em;
-  color: #000000;
-  vertical-align: middle;
+    font-size: 1.5em;
+    margin-right: 1em;
+    margin-left: 1em;
+    color: #000000;
+    vertical-align: middle;
 }
 
 .nav .fa:hover{
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .nav .fa.active{
-  color: rgba(0,173, 232, 1);
+    color: rgba(0,173, 232, 1);
 }
 
 .nav .fa.deactivated{
-  color:#aeaeae;
+    color:#aeaeae;
 }
 
 .nav .fa.deactivated:hover{
-  cursor: default;
+    cursor: default;
 }
 #help-link{
     display: none;
@@ -417,14 +274,14 @@ background: rgba(0,0,0,0.9);
 
 /*fixed Navigation for Annoator View*/
 .annotator-nav{
-  position: fixed;
-  left:0em;
-  top:0em;
-  height:100%;
+    position: fixed;
+    left:0em;
+    top:0em;
+    height:100%;
 }
 
 .annotator-nav li{
-  border: none;
+    border: none;
 }
 
 
@@ -465,14 +322,14 @@ background: rgba(0,0,0,0.9);
 /* responsivene menu */
 @media only screen and (max-width: 767px) {
 
-  body{ display: table; }
-  .unit-20{ display: table-footer-group; }
-  .unit-80{ display: table-header-group; }
-  .unit-60{ clear: both; }
-  #help-link { position: inherit;  }
-  .annotator-nav{ height: 3em; position: inherit; display: block;}
-  .annotator-nav li{ float: left; }
-  .annotator-nav li a{ padding:0; }
-  .annotator-nav li#help-link { right: 1em; position: absolute; bottom:auto;}
-  #annotator_menu{ display: none; }
+    body{ display: table; }
+    .unit-20{ display: table-footer-group; }
+    .unit-80{ display: table-header-group; }
+    .unit-60{ clear: both; }
+    #help-link { position: inherit;  }
+    .annotator-nav{ height: 3em; position: inherit; display: block;}
+    .annotator-nav li{ float: left; }
+    .annotator-nav li a{ padding:0; }
+    .annotator-nav li#help-link { right: 1em; position: absolute; bottom:auto;}
+    #annotator_menu{ display: none; }
 }

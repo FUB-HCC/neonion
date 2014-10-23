@@ -6,8 +6,6 @@ import requests
 
 from django.http import HttpResponse
 from django.conf import settings
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from documents.models import Document
 from requests.exceptions import ConnectionError, RequestException
@@ -18,9 +16,9 @@ def list(request):
     documents = []
     for doc in Document.objects.all():
         documents.append({ 
-            "urn" : doc.urn, 
-            "title" : doc.title, 
-            "createdAt" : str(doc.created)
+            "urn": doc.urn,
+            "title": doc.title,
+            "createdAt": str(doc.created)
         })
 
     return HttpResponse(json.dumps(documents), content_type="application/json")
@@ -72,7 +70,7 @@ def euler_import(request, docUrn):
             print(cms_url)
             pn += 1
             response = requests.get(cms_url)
-            if (response.status_code == 200):
+            if response.status_code == 200:
                 doc_rows.append(response.text)
             else:
                 break
@@ -85,12 +83,12 @@ def euler_import(request, docUrn):
 
     new_document = Document.objects.create_document(docUrn, doc_title, ''.join(doc_rows))
 
-    return HttpResponse(json.dumps({ "urn" : docUrn, "title" : doc_title}), content_type="application/json")
+    return HttpResponse(json.dumps({"urn": docUrn, "title": doc_title}), content_type="application/json")
 
 def postprocess_content(row):
-      row = re.sub(r'\n', '', row)
-      row = re.sub(r'<\/*span[^>]*?>', '', row)
-      return row
+    row = re.sub(r'\n', '', row)
+    row = re.sub(r'<\/*span[^>]*?>', '', row)
+    return row
 
 @login_required
 def euler_meta(request, docUrn):

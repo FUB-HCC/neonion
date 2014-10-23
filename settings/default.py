@@ -66,7 +66,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'neonion.urls'
 
-WSGI_APPLICATION = 'neonion.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
@@ -106,12 +106,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(PROJECT_PATH, 'static'),
 )
-
-# neonion specific
-ANNOTATION_STORE_URL = "http://annotator.neonion.imp.fu-berlin.de"
-ELASTICSEARCH_URL = "http://localhost:9200"
-EULER_URL = 'http://euler.mpiwg-berlin.mpg.de:8000'
-ENDPOINT_UPDATE = 'http://localhost:8080/openrdf-workbench/repositories/neonion/update'
 
 # STATIC_URL = '/static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')

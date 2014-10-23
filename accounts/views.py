@@ -1,13 +1,13 @@
-from django.shortcuts import render, render_to_response, redirect
+import json
+
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as django_login, authenticate, logout as django_logout
 from accounts.forms import AuthenticationForm, RegistrationForm
 from accounts.models import User
-from django.conf.urls import patterns, url
-
-import json
 from django.http import HttpResponse
+
 
 def login(request):
     """
@@ -28,6 +28,7 @@ def login(request):
         'form': form,
     }, context_instance=RequestContext(request))
 
+
 def register(request):
     """
     User registration view.
@@ -43,7 +44,7 @@ def register(request):
         form = RegistrationForm()
 
     return render_to_response('accounts/register.html', {
-        'form': form, 'success' : success
+        'form': form, 'success': success
     }, context_instance=RequestContext(request))
 
 @login_required
@@ -63,9 +64,9 @@ def profile(request, user):
 @login_required
 def me(request):
     user = {
-       'email': request.user.email,
-       'name':  request.user.name,
-       'surname': request.user.surname,
+        'email': request.user.email,
+        'name':  request.user.name,
+        'surname': request.user.surname,
     }
     return HttpResponse(json.dumps(user), content_type="application/json")
 
@@ -82,20 +83,20 @@ def list(request):
     users = []
     for user in User.objects.all():
         users.append({ 
-            'username' : user.email, 
-            'isActive' : user.is_active,
-            'isAdmin' : user.is_admin,
+            'username': user.email,
+            'isActive': user.is_active,
+            'isAdmin': user.is_admin,
         })
     
     return render_to_response('accounts/list_user.html', {
-        'users' : users
+        'users': users
     }, context_instance=RequestContext(request))
 
 
 @login_required
 def delete_user(request, userID):
     user = User.objects.filter(email=userID)[0]
-    if (not user.is_admin):
+    if not user.is_admin:
         user.delete()
 
     return redirect('accounts.views.list')
@@ -105,9 +106,9 @@ def delete_user(request, userID):
 def edit_user(request, userID):
     if request.method == 'GET':
         user = User.objects.filter(email=userID)[0]
-        if ('active' in request.GET):
+        if 'active' in request.GET:
             user.is_active = bool(int(request.GET['active']))
-        if ('admin' in request.GET):
+        if 'admin' in request.GET:
             user.is_admin = bool(int(request.GET['admin']))
         
         user.save()

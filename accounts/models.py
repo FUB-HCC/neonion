@@ -16,15 +16,14 @@ class NeonionUserManager(BaseUserManager):
         user.save()
         return user
 
-        
 
 class User(AbstractBaseUser):
-    email     = models.EmailField( 'email address', unique=True, db_index=True )
-    name      = models.CharField( 'persons name', max_length=256)
-    surname   = models.CharField( 'persons surname', max_length=256)
-    joined    = models.DateTimeField( auto_now_add=True )
+    email = models.EmailField( 'email address', unique=True, db_index=True )
+    name = models.CharField( 'persons name', max_length=256)
+    surname = models.CharField( 'persons surname', max_length=256)
+    joined = models.DateTimeField( auto_now_add=True )
     is_active = models.BooleanField( default=False )
-    is_admin  = models.BooleanField( default=False )
+    is_admin = models.BooleanField( default=False )
 
     USERNAME_FIELD = 'email'
 

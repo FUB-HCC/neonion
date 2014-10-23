@@ -6,7 +6,7 @@ urlpatterns = patterns('',
     url(r'^meta/(?P<docUrn>.+)$', 'documents.views.meta'),
     url(r'^query/(?P<search_string>.+)$', 'documents.views.query'),
 
-	url(r'^euler/import/(?P<docUrn>.+)$', 'documents.views.euler_import'),
+    url(r'^euler/import/(?P<docUrn>.+)$', 'documents.views.euler_import'),
     url(r'^euler/list/$', 'documents.views.euler_list'),
     url(r'^euler/query/(?P<search_string>.+)$', 'documents.views.euler_query'),
     url(r'^euler/meta/(?P<docUrn>.+)$', 'documents.views.euler_meta'),

@@ -23,7 +23,7 @@ Annotator.Plugin.Neonion = function (element, options) {
         }
         this.applyAnnotationSets(adder, this.getCompositor());
     }
-    this.getVisibleAnnotationSets = function() { return visibleSets; }
+    this.getVisibleAnnotationSets = function() { return visibleAnnotationSets; }
 
     // init method
     this.pluginInit = function () {
@@ -37,7 +37,7 @@ Annotator.Plugin.Neonion = function (element, options) {
 
         // bind events to document
          $(document).bind({
-            mouseup : function(handler) {
+            mouseup : function() {
                 // skip adder if only one button is visible
                 if ($(adder).is(":visible")) {
                     var childBtn = $(adder).find("button")

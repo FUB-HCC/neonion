@@ -40,9 +40,17 @@ def import_document(request):
 def elasticsearch(request, index):
     if request.GET:
         if 'q' in request.GET:
-            query = request.GET.get('q')
             size = 10
-            url = settings.ELASTICSEARCH_URL + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={"query":{"fuzzy_like_this":{"fields":["label","alias"],"like_text":"' + query + '"}}}'
+            query = {
+                'query': {
+                    'fuzzy_like_this': {
+                        'like_text': request.GET.get('q'),
+                        'fields': ['label','alias'],
+                        'fuzziness': 0.1,
+                    }
+                }
+            }
+            url = settings.ELASTICSEARCH_URL + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format( json.dumps(query) )
             print(url)
             r = requests.get( url )
             return HttpResponse( r.text, content_type='application/json' )

@@ -8,27 +8,26 @@ from django.http import HttpResponse
 @login_required
 def annotation_created(request):
     if request.method == 'POST':
-        docUrl = 'http://www.neonion.org/documents/' + request.POST['docUrn']
-        annotationUri = '' #annotation['id']
         annotation = json.loads(request.POST['annotation'])
         rdf = annotation['rdf']
 
         sparql = SPARQLWrapper(settings.ENDPOINT_UPDATE)
         sparql.method = 'POST'
-        
-        # insert resource is mentioned in document statement
-        query = u'INSERT DATA {{ GRAPH <http://neonion.org/> {{ <{}> <{}> <{}> . }} }}'.format(docUrl, r'http://purl.org/dc/terms/references', rdf['about'])
-        sparql.setQuery(query)
-        sparql.query()
 
-        # # insert annotation refers to resource statement
-        # query = u'INSERT DATA {{ GRAPH <http://neonion.org/> {{ "{}" <{}> <{}> . }} }}'.format(annotationUri, r'http://purl.org/dc/terms/hasPart', rdf['about'])
-        # sparql.setQuery(query)
-        #sparql.query()
-
-        # # insert annotation type
-        # query = u'INSERT DATA {{ GRAPH <http://neonion.org/> {{ "{}" <{}> <{}> . }} }}'.format(annotationUri, r'http://purl.org/dc/terms/type', rdf['typeof'])
-        # sparql.setQuery(query)
-        #sparql.query()
+        if rdf['typeof'] == 'http://www.wikidata.org/wiki/Q5':
+            # insert statements about a person
+            sparql.setQuery(statement_about_person(annotation))
+            sparql.query()
+        elif rdf['typeof'] == 'http://www.wikidata.org/wiki/Q31855':
+            pass
 
     return HttpResponse('')
+
+
+def statement_about_person(annotation):
+    rdf = annotation['rdf']
+    query = u'''INSERT DATA {{
+    <{}> <rdf:type> <foaf:Person>;
+    <foaf:name> "{}". }}'''.format(rdf['about'], rdf['label'])
+
+    return query

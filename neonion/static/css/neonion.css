@@ -370,3 +370,13 @@ a:active {
   .annotator-nav li#help-link { right: 1em; position: absolute; bottom:auto;}
   #annotator_menu{ display: none; }
 }
+
+/* OCR classes */
+.ocr_par {
+    margin-bottom: 0em;
+}
+
+.ocr_page {
+    text-align: justify;
+    margin-bottom: 1em;
+}

@@ -413,7 +413,7 @@
         defaultCompositor: function () {
             return {
                 // add compositor for persons
-                "https://www.wikidata.org/wiki/Q5": {
+                "http://www.wikidata.org/wiki/Q5": {
                     label: Annotator.Plugin.Neonion.prototype.literals['en'].person,
                     omitAdder: false,
                     allowCreation: true,
@@ -430,7 +430,7 @@
                     ]
                 },
                 // add compositor for institutes
-                "https://www.wikidata.org/wiki/Q31855": {
+                "http://www.wikidata.org/wiki/Q31855": {
                     label: Annotator.Plugin.Neonion.prototype.literals['en'].institute,
                     omitAdder: false,
                     allowCreation: false,

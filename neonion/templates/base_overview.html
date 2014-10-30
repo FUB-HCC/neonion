@@ -61,31 +61,38 @@
                 $('.nav a').each(function(){$(this).removeClass('nav-active')});$(this).addClass('nav-active');}
             );
 
-            documentList.sort( compare_Documents ).reverse().forEach( function( entry ) {
-                /* set label for first column (only once for each type) */
-                var label = '';
-                if( !todayLabelSet && entry.createdAt >= today ){
-                    label = 'Today';
-                    todayLabelSet = true;
-                }
-                if( !earlierLabelSet && entry.createdAt < today ){
-                    label = 'Earlier';
-                    earlierLabelSet = true;
-                }
-                /* create element for document list and append it */
-                var uri = entry.urn.split("/")
-                var id = uri[uri.length-1]
-                var element = $('<tr></tr>')
-                    .append( $('<td class="small"></td>').text( label ) ) // add label (today or earlier)
-                    .append($('<td class="element-cell"></td>')
-                        .append($('<a href="/annotator/' + id + '">' + entry.title + '</a>'))
-                        .append($('<div class="document-list-buttons"></div>')
-                            .append('<span class="fa fa-info-circle fa-fw" title="info"></span>')
-                            .append('<span class="fa fa-trash-o fa-fw" title="delete"></span>')
-                        )
+            if (documentList.length > 0) {
+                documentList.sort(compare_Documents)
+                .reverse()
+                .forEach(function (entry) {
+                    /* set label for first column (only once for each type) */
+                    var label = '';
+                    if (!todayLabelSet && entry.createdAt >= today) {
+                        label = 'Today';
+                        todayLabelSet = true;
+                    }
+                    if (!earlierLabelSet && entry.createdAt < today) {
+                        label = 'Earlier';
+                        earlierLabelSet = true;
+                    }
+                    /* create element for document list and append it */
+                    var uri = entry.urn.split("/")
+                    var id = uri[uri.length - 1]
+                    var element = $('<tr></tr>')
+                            .append($('<td class="small"></td>').text(label)) // add label (today or earlier)
+                            .append($('<td class="element-cell"></td>')
+                                    .append($('<a href="/annotator/' + id + '">' + entry.title + '</a>'))
+                                    .append($('<div class="document-list-buttons"></div>')
+                                            .append('<span class="fa fa-info-circle fa-fw" title="info"></span>')
+                                            .append('<span class="fa fa-trash-o fa-fw" title="delete"></span>')
+                            )
                     );
-                $('#document-table').append( element );
-            });
+                    $('#document-table').append(element);
+                });
+            }
+            else {
+                $('#document-table').html('Workspace it empty');
+            }
         });
     }
     

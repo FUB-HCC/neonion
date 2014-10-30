@@ -7,13 +7,16 @@ class DocumentManager(models.Manager):
 
 
 class Document(models.Model):
-    urn = models.CharField( 'urn', unique=True, db_index=True, max_length=200 )
-    title = models.CharField( 'name', max_length=500 )
-    content = models.TextField( 'content' )
-    created = models.DateTimeField( auto_now_add=True )
-    updated = models.DateTimeField( auto_now=True )
+    urn = models.CharField('urn', unique=True, db_index=True, max_length=200)
+    title = models.CharField('name', max_length=500)
+    content = models.TextField('content')
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     # assign manager
     objects = DocumentManager()
 
     def __unicode__(self):
         return self.urn
+
+    class Meta:
+        ordering = ('title',)

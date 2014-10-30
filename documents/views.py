@@ -9,12 +9,16 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from documents.models import Document
 from requests.exceptions import ConnectionError, RequestException
+from neonion.models import Workspace
 
 
 @login_required
 def list(request):
+    workspace = Workspace.objects.get_workspace(owner=request.user)
+    #workspace.delete()
+
     documents = []
-    for doc in Document.objects.all():
+    for doc in workspace.documents.all():
         documents.append({ 
             "urn": doc.urn,
             "title": doc.title,
@@ -23,13 +27,16 @@ def list(request):
 
     return HttpResponse(json.dumps(documents), content_type="application/json")
 
-@login_required
-def get(request, docUrn):
-    pass
 
 @login_required
-def meta(request, docUrn):
+def get(request, doc_urn):
     pass
+
+
+@login_required
+def meta(request, doc_urn):
+    pass
+
 
 @login_required
 def query(request, search_string):
@@ -37,7 +44,7 @@ def query(request, search_string):
 
 
 @login_required
-def euler_list(request):
+def euler_list(request):    
     doc_list = []
     doc_list.append({ "name": "Tätigkeitsbericht der MPG 1964-1965", "urn" : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1964-1965" })
     doc_list.append({ "name": "Tätigkeitsbericht der MPG 1958-1960", "urn" : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1958-1960" })
@@ -60,39 +67,52 @@ def euler_list(request):
 
     return HttpResponse(json.dumps(doc_list), content_type="application/json")
 
+
 @login_required
-def euler_import(request, docUrn):
-    doc_rows = []
-    pn = 1
-    while True:
-        try:
-            cms_url = settings.EULER_URL + u'/hocr?document={0}&pn={1}'.format(docUrn, pn)
-            print(cms_url)
-            pn += 1
-            response = requests.get(cms_url)
-            if response.status_code == 200:
-                doc_rows.append(response.text)
-            else:
+def euler_import(request, doc_urn):
+    doc_title = " ".join(doc_urn.split("_"))
+
+    # import document if it not exist otherwise skip import from euler
+    if not Document.objects.filter(urn=doc_urn).exists():
+        # import document from euler
+        doc_rows = []
+        pn = 1
+        while True:
+            try:
+                cms_url = settings.EULER_URL + u'/hocr?document={0}&pn={1}'.format(doc_urn, pn)
+                print(cms_url)
+                pn += 1
+                response = requests.get(cms_url)
+                if response.status_code == 200:
+                    doc_rows.append(response.text)
+                else:
+                    break
+            except (ConnectionError, RequestException) as err:
                 break
-        except (ConnectionError, RequestException) as err:
-            break
-    
-    # strip markup
-    doc_rows = map(postprocess_content, doc_rows)
-    doc_title = " ".join(docUrn.split("_"))
 
-    new_document = Document.objects.create_document(docUrn, doc_title, ''.join(doc_rows))
+        # strip markup
+        doc_rows = map(postprocess_content, doc_rows)
+        document = Document.objects.create_document(doc_urn, doc_title, ''.join(doc_rows))
+    else:
+        document = Document.objects.get(urn=doc_urn)
 
-    return HttpResponse(json.dumps({"urn": docUrn, "title": doc_title}), content_type="application/json")
+    # import document into workspace
+    workspace = Workspace.objects.get_workspace(owner=request.user)
+    workspace.documents.add(document)
+
+    return HttpResponse(json.dumps({"urn": doc_urn, "title": doc_title}), content_type="application/json")
+
 
 def postprocess_content(row):
     row = re.sub(r'\n', '', row)
     row = re.sub(r'<\/*span[^>]*?>', '', row)
     return row
 
+
 @login_required
-def euler_meta(request, docUrn):
+def euler_meta(request, doc_urn):
     pass
+
 
 @login_required
 def euler_query(request, search_string):

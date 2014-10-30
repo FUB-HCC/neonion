@@ -48,8 +48,8 @@
     $(document).ready(function() {
         $( "#document-import-list" ).selectable();
 
-        $("#document-import").click(function() {
-            $("#document-import").attr("disabled", true);
+        $("#btn-import").click(function() {
+            $("#btn-import").attr("disabled", true);
             importSelectedDocuments();
         });
 
@@ -88,6 +88,9 @@
                 console.log(data);
                 importNextDocument();
             });
+        }
+        else {
+            window.location = "{% url 'neonion.views.home' %}";
         }
     }
 

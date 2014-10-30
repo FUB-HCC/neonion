@@ -11,15 +11,18 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from pyelasticsearch import ElasticSearch
 from documents.models import Document
+from django.shortcuts import get_object_or_404
+
 
 # Create your views here.
 @login_required
 def home(request):
     return render_to_response('base_overview.html', {}, context_instance=RequestContext(request))
 
+
 @login_required
 def annotator(request, doc_urn):
-    doc = Document.objects.get(urn=doc_urn)
+    doc = get_object_or_404(Document, urn=doc_urn)
 
     data = {
         'urn': doc_urn,
@@ -30,9 +33,11 @@ def annotator(request, doc_urn):
     }
     return render_to_response('base_annotator.html', data, context_instance = RequestContext(request))
 
+
 @login_required
 def import_document(request):
     return render_to_response('base_import.html', {}, context_instance=RequestContext(request))
+
 
 @login_required
 def elasticsearch(request, index):
@@ -52,6 +57,7 @@ def elasticsearch(request, index):
             print(url)
             r = requests.get(url)
             return HttpResponse(r.text, content_type='application/json')
+
 
 @login_required
 def elasticsearchCreate(request, index):

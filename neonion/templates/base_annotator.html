@@ -151,9 +151,12 @@
     }
 
     function notifyEndpoint(annotation) {
+        // clone annotation for stringify operation
+        var copy = $.extend(true, {}, annotation);
+        delete copy.highlights;
         console.log(annotation);
         $.post("{% url 'endpoint.views.annotation_created' %}", { 
-            annotation : JSON.stringify(annotation),
+            annotation : JSON.stringify(copy),
             docUrn : docUrn,
             csrfmiddlewaretoken : $("input[name=csrfmiddlewaretoken]").val() 
         });

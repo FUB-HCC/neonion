@@ -11,13 +11,13 @@ def annotation_created(request):
         annotation = json.loads(request.POST['annotation'])
         rdf = annotation['rdf']
         print(settings.ENDPOINT_UPDATE)
-        sparql = SPARQLWrapper(settings.ENDPOINT_UPDATE)
-        sparql.method = 'POST'
 
         if rdf['typeof'] == 'http://www.wikidata.org/wiki/Q5':
             # insert statements about a person
-            sparql.setQuery(statement_about_person(annotation))
-            try :
+            try:
+                sparql = SPARQLWrapper(settings.ENDPOINT_UPDATE)
+                sparql.method = 'POST'
+                sparql.setQuery(statement_about_person(annotation))
                 sparql.query()
             except SPARQLExceptions as e:
                 print(e)

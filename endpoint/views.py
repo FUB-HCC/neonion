@@ -15,7 +15,8 @@ def annotation_created(request):
         if rdf['typeof'] == 'http://www.wikidata.org/wiki/Q5':
             # insert statements about a person
             try:
-                sparql = SPARQLWrapper(settings.ENDPOINT_UPDATE)
+                # http://stackoverflow.com/questions/14160437/insert-delete-update-query-using-sparqlwrapper
+                sparql = SPARQLWrapper(settings.ENDPOINT, settings.ENDPOINT_UPDATE)
                 sparql.method = 'POST'
                 sparql.setQuery(statement_about_person(annotation))
                 sparql.query()

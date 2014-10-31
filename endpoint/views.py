@@ -2,7 +2,7 @@ import json
 
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from SPARQLWrapper import SPARQLWrapper
+from SPARQLWrapper import SPARQLWrapper, SPARQLExceptions
 from django.http import HttpResponse
 
 @login_required
@@ -17,7 +17,10 @@ def annotation_created(request):
         if rdf['typeof'] == 'http://www.wikidata.org/wiki/Q5':
             # insert statements about a person
             sparql.setQuery(statement_about_person(annotation))
-            sparql.query()
+            try :
+                sparql.query()
+            except SPARQLExceptions as e:
+                print(e)
         elif rdf['typeof'] == 'http://www.wikidata.org/wiki/Q31855':
             pass
 

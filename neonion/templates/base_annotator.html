@@ -22,8 +22,8 @@
                 <li><span class="fa fa-bar-chart-o fa-fw deactivated" title="Analyze"></span></li>
                 <li>&nbsp;</li>
                 <ul id="annotationSets">
-                    <li><span class="fa fa-users fa-fw active" title="Persons" annotationSet="https://www.wikidata.org/wiki/Q5"></span></li>
-                    <li><span class="fa fa-university fa-fw active" title="Institutions" annotationSet="https://www.wikidata.org/wiki/Q31855"> </span></li>
+                    <li><span class="fa fa-users fa-fw active" title="Persons" annotationSet="http://www.wikidata.org/wiki/Q5"></span></li>
+                    <li><span class="fa fa-university fa-fw active" title="Institutions" annotationSet="http://www.wikidata.org/wiki/Q31855"> </span></li>
                     <li><span class="fa fa-book fa-fw" title="References" annotationSet="r"></span></li>
                 </ul>
                 <li id="help-link"><span class="fa fa-question fa-fw" title="Help"></span></li>
@@ -70,19 +70,19 @@
     $(document).ready(function() {
         var annotator = setupAnnotator();
 
-        $( '#enableFullscreen' ).click(function(){
+        $('#enableFullscreen').click(function(){
             enableFullscreen( document.getElementById( 'annotationArea' ) );
         });
 
-        $( '#annotationSets li span' ).each( function(){
-            $( this ).click( function(){
-                $( this ).toggleClass( 'active' );
+        $('#annotationSets li span').each(function(){
+            $(this).click( function(){
+                $(this).toggleClass('active');
                 var active = checkAnnotationSetSelection();
                 annotator.plugins.Neonion.setVisibleAnnotationSets(active);
             });
         });
 
-        $( '#scoll_to_latest_annotation' ).click(function(){
+        $('#scoll_to_latest_annotation').click(function(){
             var annotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation(annotator.plugins.Neonion.getUser().email);
             if (annotation) {
                 var target = $(annotation.highlights[0]);

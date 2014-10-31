@@ -99,7 +99,6 @@
             return false;
         });
 
-        //$('#annotator_menu :checkbox').click(function() {
         $("#annotator_menu").on("click", "input[type=checkbox]", function() {
             var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations($(this).val());
             if ($(this).is(':checked')) {  
@@ -152,7 +151,7 @@
     }
 
     function notifyEndpoint(annotation) {
-        //console.log(annotation);
+        console.log(annotation);
         $.post("{% url 'endpoint.views.annotation_created' %}", { 
             annotation : JSON.stringify(annotation),
             docUrn : docUrn,

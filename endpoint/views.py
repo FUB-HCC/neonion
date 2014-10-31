@@ -10,7 +10,7 @@ def annotation_created(request):
     if request.method == 'POST':
         annotation = json.loads(request.POST['annotation'])
         rdf = annotation['rdf']
-
+        print(settings.ENDPOINT_UPDATE)
         sparql = SPARQLWrapper(settings.ENDPOINT_UPDATE)
         sparql.method = 'POST'
 
@@ -25,9 +25,10 @@ def annotation_created(request):
 
 
 def statement_about_person(annotation):
+    print(annotation)
     rdf = annotation['rdf']
     query = u'''INSERT DATA {{
     <{}> <rdf:type> <foaf:Person>;
-    <foaf:name> "{}". }}'''.format(rdf['about'], rdf['label'])
+    <foaf:name> "{}". }}'''.format(rdf['about'], annotation['quote'])
 
     return query

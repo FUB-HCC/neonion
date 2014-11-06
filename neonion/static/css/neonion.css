@@ -105,6 +105,11 @@ body{
 
 
 /* Fullscreen */
+
+#annotationArea{
+    overflow: auto;
+}
+
 :-webkit-full-screen {
   background-color: white;
   width: 50%;

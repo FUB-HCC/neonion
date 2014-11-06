@@ -32,7 +32,7 @@ def annotator(request, doc_urn):
         'endpoint_url': '/endpoint/',
         'store_url': settings.ANNOTATION_STORE_URL,
     }
-    return render_to_response('base_annotator.html', data, context_instance = RequestContext(request))
+    return render_to_response('base_annotator.html', data, context_instance=RequestContext(request))
 
 
 @login_required
@@ -54,7 +54,7 @@ def elasticsearch(request, index):
                     }
                 }
             }
-            url = settings.ELASTICSEARCH_URL + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format( json.dumps(query) )
+            url = settings.ELASTICSEARCH_URL + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format(json.dumps(query))
             print(url)
             r = requests.get(url)
             return JsonResponse(r.json())

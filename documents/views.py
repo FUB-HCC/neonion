@@ -1,19 +1,19 @@
 # coding=utf-8
 
-import json
 import re
 import requests
 import os
+import json
 
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from documents.models import Document
-from requests.exceptions import ConnectionError, RequestException
 from neonion.models import Workspace
 from bs4 import BeautifulSoup
-
+from django.shortcuts import get_object_or_404, redirect
+from django.core.files.base import ContentFile
 
 @login_required
 def list(request):
@@ -30,16 +30,29 @@ def list(request):
 
     return JsonResponse(documents, safe=False)
 
-
 @login_required
-def get(request, doc_urn):
-    pass
+def upload(request):
+    if request.method == 'POST':
+        for f in request.FILES:
+            file = ContentFile(request.FILES[f].read())
+            j = json.loads(file.read())
+
+            if not Document.objects.filter(urn=j['urn']).exists():
+                Document.objects.create_document(j['urn'], j['title'], j['content'])
+        return redirect('/')
+    else:
+        return HttpResponseForbidden
 
 
 @login_required
 def meta(request, doc_urn):
     pass
 
+
+@login_required
+def to_json(request, doc_urn):
+    document = get_object_or_404(Document, urn=doc_urn)
+    return JsonResponse({"urn": document.urn, "title": document.title, "content": document.content})
 
 @login_required
 def query(request, search_string):
@@ -91,7 +104,8 @@ def euler_import(request, doc_urn):
                     doc_pages.append(response.text)
                 else:
                     break
-            except (ConnectionError, RequestException):
+            except Exception as e:
+                print(e)
                 break
 
         if len(doc_pages) > 0:

@@ -27,7 +27,12 @@
         <div class="units-row end dialog-foot">
 {#            <button class="btn btn-small btn-outline mid cancel-btn">Cancel</button>#}
             <button class="btn btn-small btn-outline mid" id="btn-import">Import</button>
-            <div id="document-cache" style="display:none"></div>
+            <form method="post" action="{% url 'documents.views.upload' %}" enctype="multipart/form-data" style="display:none">
+                {% csrf_token %}
+                <input id="file-upload" name="file-upload" type="file" />
+                <input type="submit" />
+            </form>
+
         </div>
     </div>
 </div>
@@ -47,6 +52,7 @@
         $("#btn-import").click(function() {
             $("#btn-import").attr("disabled", true);
             importSelectedDocuments();
+            return false;
         });
 
         refreshDocuments();

@@ -5,7 +5,6 @@ urlpatterns = patterns('',
     url(r'^get/(?P<doc_urn>.+)$', 'documents.views.get'),
     url(r'^meta/(?P<doc_urn>.+)$', 'documents.views.meta'),
     url(r'^query/(?P<search_string>.+)$', 'documents.views.query'),
-    url(r'^upload$', 'documents.views.upload'),
 
     url(r'^euler/import/(?P<doc_urn>.+)$', 'documents.views.euler_import'),
     url(r'^euler/list/$', 'documents.views.euler_list'),

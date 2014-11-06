@@ -8,6 +8,7 @@ import os
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from documents.models import Document
 from requests.exceptions import ConnectionError, RequestException
 from neonion.models import Workspace
@@ -27,11 +28,8 @@ def list(request):
             "createdAt": str(doc.created)
         })
 
-    return HttpResponse(json.dumps(documents), content_type="application/json")
+    return JsonResponse(documents, safe=False)
 
-@login_required
-def upload(request):
-    pass
 
 @login_required
 def get(request, doc_urn):
@@ -71,7 +69,7 @@ def euler_list(request):
     doc_list.append({"name": "Tätigkeitsbericht der MPG 1946-51 Teil 2", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil2"})
     doc_list.append({"name": "Tätigkeitsbericht der MPG 1946-51 Teil 3", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil3"})
 
-    return HttpResponse(json.dumps(doc_list), content_type="application/json")
+    return JsonResponse(doc_list, safe=False)
 
 
 @login_required
@@ -109,7 +107,7 @@ def euler_import(request, doc_urn):
         workspace = Workspace.objects.get_workspace(owner=request.user)
         workspace.documents.add(document)
 
-    return HttpResponse(json.dumps({"urn": doc_urn, "title": doc_title}), content_type="application/json")
+    return JsonResponse({"urn": doc_urn, "title": doc_title})
 
 
 def postprocess_content(row):

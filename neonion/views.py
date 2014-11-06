@@ -11,6 +11,7 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from pyelasticsearch import ElasticSearch
 from documents.models import Document
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
 
@@ -56,7 +57,7 @@ def elasticsearch(request, index):
             url = settings.ELASTICSEARCH_URL + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format( json.dumps(query) )
             print(url)
             r = requests.get(url)
-            return HttpResponse(r.text, content_type='application/json')
+            return JsonResponse(r.json())
         else:
             return HttpResponseBadRequest()
     else:

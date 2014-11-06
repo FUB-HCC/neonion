@@ -1,12 +1,10 @@
-import json
-
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as django_login, authenticate, logout as django_logout
 from accounts.forms import AuthenticationForm, RegistrationForm
 from accounts.models import User
-from django.http import HttpResponse
+from django.http import JsonResponse
 
 
 def login(request):
@@ -39,13 +37,13 @@ def register(request):
         if form.is_valid():
             user = form.save()
             success = True
-            #return redirect('/')
     else:
         form = RegistrationForm()
 
     return render_to_response('accounts/register.html', {
         'form': form, 'success': success
     }, context_instance=RequestContext(request))
+
 
 @login_required
 def profile(request, user):
@@ -61,6 +59,7 @@ def profile(request, user):
     #     form = RegistrationForm()
     return render_to_response('accounts/profile.html', context_instance=RequestContext(request) )
 
+
 @login_required
 def me(request):
     user = {
@@ -68,7 +67,8 @@ def me(request):
         'name':  request.user.name,
         'surname': request.user.surname,
     }
-    return HttpResponse(json.dumps(user), content_type="application/json")
+    return JsonResponse(user)
+
 
 def logout(request):
     """
@@ -76,6 +76,7 @@ def logout(request):
     """
     django_logout(request)
     return redirect('/')
+
 
 @login_required
 def list(request):

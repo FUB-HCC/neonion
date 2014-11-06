@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^accounts/', include('accounts.urls')),
     url(r'^documents/', include('documents.urls')),
     url(r'^endpoint/', include('endpoint.urls')),
+    url(r'^annotations/', include('annotations.urls')),
 
     # Elasticsearch proxy
     url(r'^es/(?P<index>\w+)$', 'neonion.views.elasticsearch'),

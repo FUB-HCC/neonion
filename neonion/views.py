@@ -4,7 +4,7 @@ import json
 import random
 import requests
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -41,7 +41,7 @@ def import_document(request):
 
 @login_required
 def elasticsearch(request, index):
-    if request.GET:
+    if request.method == 'GET':
         if 'q' in request.GET:
             size = 10
             query = {
@@ -57,6 +57,10 @@ def elasticsearch(request, index):
             print(url)
             r = requests.get(url)
             return HttpResponse(r.text, content_type='application/json')
+        else:
+            return HttpResponseBadRequest()
+    else:
+        return HttpResponseForbidden()
 
 
 @login_required
@@ -76,3 +80,5 @@ def elasticsearchCreate(request, index):
         es.refresh(index)
 
         return HttpResponse(json.dumps(data), content_type="application/json")
+    else:
+        return HttpResponseForbidden()

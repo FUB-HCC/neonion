@@ -3,13 +3,15 @@
 import json
 import re
 import requests
+import os
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from documents.models import Document
 from requests.exceptions import ConnectionError, RequestException
 from neonion.models import Workspace
+from bs4 import BeautifulSoup
 
 
 @login_required
@@ -27,6 +29,9 @@ def list(request):
 
     return HttpResponse(json.dumps(documents), content_type="application/json")
 
+@login_required
+def upload(request):
+    pass
 
 @login_required
 def get(request, doc_urn):
@@ -46,24 +51,25 @@ def query(request, search_string):
 @login_required
 def euler_list(request):    
     doc_list = []
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1964-1965", "urn" : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1964-1965" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1958-1960", "urn" : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1958-1960" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1972-1973", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1972-1973" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1968-1969", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1968-1969" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1966-1967", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1966-1967" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1964-1965", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1964-1965" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1962-1963", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1962-1963" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1961-1962", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1961-1962" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1960-1961", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1960-1961" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1958-1960", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1958-1960" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1956-1958", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1956-1958" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1954-1956", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1954-1956" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1952-1954 Teil1", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil1" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1952-1954 Teil2", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil2" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1951-1952", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1951-1952" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1946-51 Teil1", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil1" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1946-51 Teil2", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil2" })
-    doc_list.append({ "name": "Tätigkeitsbericht der MPG 1946-51 Teil3", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil3" })
+    doc_list.append({"name": "Jahrbuch der MPG 1974", "urn" : "Jahrbuch_der_MPG-1974" })
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1964-1965", "urn" : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1964-1965"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1958-1960", "urn" : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1958-1960"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1972-1973", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1972-1973"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1968-1969", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1968-1969"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1966-1967", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1966-1967"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1964-1965", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1964-1965"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1962-1963", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1962-1963"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1961-1962", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1961-1962"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1960-1961", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1960-1961"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1958-1960", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1958-1960"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1956-1958", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1956-1958"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1954-1956", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1954-1956"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1952-1954 Teil 1", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil1"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1952-1954 Teil 2", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil2"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1951-1952", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1951-1952"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1946-51 Teil 1", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil1"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1946-51 Teil 2", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil2"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1946-51 Teil 3", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil3"})
 
     return HttpResponse(json.dumps(doc_list), content_type="application/json")
 
@@ -75,7 +81,7 @@ def euler_import(request, doc_urn):
     # import document if it not exist otherwise skip import from euler
     if not Document.objects.filter(urn=doc_urn).exists():
         # import document from euler
-        doc_rows = []
+        doc_pages = []
         pn = 1
         while True:
             try:
@@ -84,21 +90,24 @@ def euler_import(request, doc_urn):
                 pn += 1
                 response = requests.get(cms_url)
                 if response.status_code == 200:
-                    doc_rows.append(response.text)
+                    doc_pages.append(response.text)
                 else:
                     break
-            except (ConnectionError, RequestException) as err:
+            except (ConnectionError, RequestException):
                 break
 
-        # strip markup
-        doc_rows = map(postprocess_content, doc_rows)
-        document = Document.objects.create_document(doc_urn, doc_title, ''.join(doc_rows))
+        if len(doc_pages) > 0:
+            # strip markup
+            doc_pages = map(postprocess_content, doc_pages)
+            document = Document.objects.create_document(doc_urn, doc_title, ''.join(doc_pages))
     else:
         document = Document.objects.get(urn=doc_urn)
+        document.delete()
 
     # import document into workspace
-    workspace = Workspace.objects.get_workspace(owner=request.user)
-    workspace.documents.add(document)
+    if document:
+        workspace = Workspace.objects.get_workspace(owner=request.user)
+        workspace.documents.add(document)
 
     return HttpResponse(json.dumps({"urn": doc_urn, "title": doc_title}), content_type="application/json")
 
@@ -107,6 +116,25 @@ def postprocess_content(row):
     row = re.sub(r'\n', '', row)
     row = re.sub(r'<\/*span[^>]*?>', '', row)
     return row
+
+
+# this method fakes the communication to euler
+def euler_hocr(request):
+    if request.method == 'GET':
+        page_number = int(request.GET['pn']) - 1
+        local_path = "/Users/administrator/Desktop/jahrbuch74/hocr/hocr/"
+        files = os.listdir(local_path)
+        if page_number < len(files):
+            file = open(local_path + files[page_number])
+            soup = BeautifulSoup(file.read())
+
+            page_html = "".join([str(x) for x in soup.body.contents])
+            return HttpResponse("<div class='pageContent'>" + page_html + "</div>",
+                                content_type="text/plain; charset=utf-8")
+        else:
+            return Http404()
+    else:
+        return HttpResponseForbidden()
 
 
 @login_required

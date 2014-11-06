@@ -217,17 +217,14 @@
                 // get search term
                 var searchTerm = $(this).find("#resource-search").val();
                 var list = $(this).parent().find("#resource-list");
-                if (compositor[selectedType]) {
+                if (compositor[selectedType] && compositor[selectedType].hasOwnProperty("search")) {
                     compositor[selectedType].search(searchTerm, function (items) {
                         // store last result set in jQuery data collection
                         $(element).data("results", items);
                         // update score
                         Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence(items);
-                        // add unknown person resource
-                        if (compositor[selectedType].unknownResource) {
-                            items.unshift(compositor[selectedType].unknownResource);
-                        }
-
+                        // add resource uri itself
+                        items.unshift({uri : selectedType, label : Annotator.Plugin.Neonion.prototype.literals['en'].unknown + " " + compositor[selectedType].label});
                         // clear list and min-height css property
                         list.css("min-height", "");
                         list.empty();
@@ -322,9 +319,9 @@
             });
 
             $(createField).children((":first")).replaceWith(
-                    "<button id='create-toggle' class='btn annotator-btn' >" +
-                    Annotator.Plugin.Neonion.prototype.literals['en'].create +
-                    "</button><form id='create-form'>fhjkfhfkjgdhfkjghfk</form>"
+                "<button id='create-toggle' class='btn annotator-btn' >" +
+                Annotator.Plugin.Neonion.prototype.literals['en'].create +
+                "</button><form id='create-form'>fhjkfhfkjgdhfkjghfk</form>"
             );
 
             $(createField).find("#create-toggle").click(function () {
@@ -377,13 +374,11 @@
         literals: {
             en: {
                 search: "Search",
-                searchText: "Search text",
+                searchText: "Search term",
                 create: "Create",
                 person: "Person",
-                unknownPerson: "Unknown person",
                 institute: "Institute",
-                unknownInstitute: "Unknown institute",
-                unknown: "Unknown",
+                unknown: "Not identified",
                 unknownResource: "Unknown resource",
                 creator: "Creator"
             },
@@ -392,9 +387,7 @@
                 searchText: "Suchtext",
                 create: "Anlegen",
                 person: "Person",
-                unknownPerson: "Unbekannte Person",
                 institute: "Institut",
-                unknownInstitute: "Unbekanntes Institut",
                 unknown: "Unbekannt",
                 unknownResource: "Unbekannte Ressource",
                 creator: "Erfasser"
@@ -413,11 +406,10 @@
         defaultCompositor: function () {
             return {
                 // add compositor for persons
-                "http://www.wikidata.org/wiki/Q5": {
+                "foaf:Person": {
                     label: Annotator.Plugin.Neonion.prototype.literals['en'].person,
                     omitAdder: false,
                     allowCreation: true,
-                    unknownResource: { uri: "http://neonion.org/resource/Unknown_Person", label: this.literals['en'].unknownPerson },
                     create: Annotator.Plugin.Neonion.prototype.create.createPerson,
                     search: Annotator.Plugin.Neonion.prototype.search.searchPerson,
                     formatter: Annotator.Plugin.Neonion.prototype.formatter.formatPerson,
@@ -430,11 +422,10 @@
                     ]
                 },
                 // add compositor for institutes
-                "http://www.wikidata.org/wiki/Q31855": {
+                "aiiso:Institution": {
                     label: Annotator.Plugin.Neonion.prototype.literals['en'].institute,
                     omitAdder: false,
                     allowCreation: false,
-                    unknownResource: { uri: "http://neonion.org/resource/Unknown_Institute", label: this.literals['en'].unknownInstitute },
                     create: Annotator.Plugin.Neonion.prototype.create.createInstitute,
                     search: Annotator.Plugin.Neonion.prototype.search.searchInstitute,
                     formatter: Annotator.Plugin.Neonion.prototype.formatter.formatInstitute,
@@ -650,9 +641,7 @@
                     url: '/es/create/persons',
                     data: { "data": JSON.stringify(data), csrfmiddlewaretoken: Annotator.Plugin.Neonion.prototype.getCookie('csrftoken') },
                     success: function (data, jqXHR) {
-                        if (callback) {
-                            callback(data);
-                        }
+                        if (callback) { callback(data); }
                     }
                 });
             },
@@ -662,9 +651,7 @@
                     url: '/es/create/institutes',
                     data: { "data": JSON.stringify(data), csrfmiddlewaretoken: Annotator.Plugin.Neonion.prototype.getCookie('csrftoken') },
                     success: function (data, jqXHR) {
-                        if (callback) {
-                            callback(data);
-                        }
+                        if (callback) { callback(data); }
                     }
                 });
             }

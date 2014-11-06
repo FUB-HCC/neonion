@@ -3,7 +3,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from SPARQLWrapper import SPARQLWrapper
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 
 @login_required
 def annotation_created(request):
@@ -12,7 +12,7 @@ def annotation_created(request):
         rdf = annotation['rdf']
         print(settings.ENDPOINT_UPDATE)
 
-        if rdf['typeof'] == 'http://www.wikidata.org/wiki/Q5':
+        if rdf['typeof'] == 'foaf:Person':
             # insert statements about a person
             try:
                 # http://stackoverflow.com/questions/14160437/insert-delete-update-query-using-sparqlwrapper
@@ -22,10 +22,12 @@ def annotation_created(request):
                 sparql.query()
             except Exception as e:
                 print(e)
-        elif rdf['typeof'] == 'http://www.wikidata.org/wiki/Q31855':
+        elif rdf['typeof'] == 'aiiso:Institution':
             pass
 
-    return HttpResponse('')
+        return HttpResponse('')
+    else:
+        return HttpResponseForbidden()
 
 
 def statement_about_person(annotation):

@@ -4,7 +4,7 @@ import json
 import random
 import requests
 
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
+from django.http import HttpResponseForbidden, HttpResponseBadRequest
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -80,6 +80,6 @@ def elasticsearchCreate(request, index):
             es.index(index, "institute", data)
         es.refresh(index)
 
-        return HttpResponse(json.dumps(data), content_type="application/json")
+        return JsonResponse(data)
     else:
         return HttpResponseForbidden()

@@ -78,13 +78,13 @@ def euler_import(request, doc_urn):
 
     # import document if it not exist otherwise skip import from euler
     if not Document.objects.filter(urn=doc_urn).exists():
+        print("not exist")
         # import document from euler
         doc_pages = []
         pn = 1
         while True:
             try:
                 cms_url = settings.EULER_URL + u'/hocr?document={0}&pn={1}'.format(doc_urn, pn)
-                print(cms_url)
                 pn += 1
                 response = requests.get(cms_url)
                 if response.status_code == 200:
@@ -100,7 +100,6 @@ def euler_import(request, doc_urn):
             document = Document.objects.create_document(doc_urn, doc_title, ''.join(doc_pages))
     else:
         document = Document.objects.get(urn=doc_urn)
-        document.delete()
 
     # import document into workspace
     if document:

@@ -25,11 +25,10 @@
     <div class="import-dialog" id="dialog-import">
         <ul id="document-import-list"></ul>
         <div class="units-row end dialog-foot">
-{#            <button class="btn btn-small btn-outline mid cancel-btn">Cancel</button>#}
             <button class="btn btn-small btn-outline mid" id="btn-import">Import</button>
             <form method="post" action="{% url 'documents.views.upload' %}" enctype="multipart/form-data" style="display:none">
                 {% csrf_token %}
-                <input id="file-upload" name="file-upload" type="file" />
+                <input id="file-upload" name="file-upload" type="file" multiple>
                 <input type="submit" />
             </form>
 

@@ -30,13 +30,15 @@ def list(request):
 
     return JsonResponse(documents, safe=False)
 
+
 @login_required
 def upload(request):
     if request.method == 'POST':
         for f in request.FILES:
             file = ContentFile(request.FILES[f].read())
-            j = json.loads(file.read())
+            # type json
 
+            j = json.loads(file.read())
             if not Document.objects.filter(urn=j['urn']).exists():
                 Document.objects.create_document(j['urn'], j['title'], j['content'])
         return redirect('/')
@@ -62,25 +64,25 @@ def query(request, search_string):
 @login_required
 def euler_list(request):    
     doc_list = []
-    doc_list.append({"name": "Jahrbuch der MPG 1974", "urn" : "Jahrbuch_der_MPG-1974" })
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1964-1965", "urn" : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1964-1965"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1958-1960", "urn" : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1958-1960"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1972-1973", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1972-1973"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1968-1969", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1968-1969"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1966-1967", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1966-1967"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1964-1965", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1964-1965"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1962-1963", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1962-1963"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1961-1962", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1961-1962"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1960-1961", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1960-1961"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1958-1960", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1958-1960"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1956-1958", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1956-1958"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1954-1956", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1954-1956"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1952-1954 Teil 1", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil1"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1952-1954 Teil 2", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil2"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1951-1952", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1951-1952"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1946-51 Teil 1", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil1"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1946-51 Teil 2", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil2"})
-    doc_list.append({"name": "Tätigkeitsbericht der MPG 1946-51 Teil 3", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil3"})
+    doc_list.append({"name": "Jahrbuch der MPG 1974", "urn": "Jahrbuch_der_MPG-1974"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1964-1965", "urn": "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1964-1965"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1958-1960", "urn": "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1958-1960"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1972-1973", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1972-1973"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1968-1969", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1968-1969"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1966-1967", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1966-1967"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1964-1965", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1964-1965"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1962-1963", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1962-1963"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1961-1962", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1961-1962"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1960-1961", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1960-1961"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1958-1960", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1958-1960"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1956-1958", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1956-1958"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1954-1956", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1954-1956"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1952-1954 Teil 1", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil1"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1952-1954 Teil 2", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil2"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1951-1952", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1951-1952"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1946-51 Teil 1", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil1"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1946-51 Teil 2", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil2"})
+    doc_list.append({"name": "Tätigkeitsbericht der MPG 1946-51 Teil 3", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil3"})
 
     return JsonResponse(doc_list, safe=False)
 

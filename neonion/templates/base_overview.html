@@ -10,6 +10,7 @@
             <ul>
                 <li><a href="{% url 'neonion.views.home' %}" class="nav-active"><span class="fa fa-home fa-fw"></span>My Neonion</a></li>
                 <li><a href="{% url 'neonion.views.import_document' %}"><span class="fa fa-upload fa-fw"></span>Import</a></li>
+                <li><a href="{% url 'neonion.views.load_settings' %}"><span class="fa fa-cog fa-fw"></span>Settings</a></li>
                 <li><a href="{% url 'accounts.views.logout' %}"><span class="fa fa-sign-out fa-fw"></span>Logout</a></li>
                 <li id="help-link"><span><span class="fa fa-question fa-fw"></span>Help</span></li>
             </ul>
@@ -22,8 +23,6 @@
     <div class="unit-80">
         <table id="document-table" class="table-simple"><tr><td><span class="fa fa-spinner fa-spin"></span> Loading...</td></tr></table>
     </div>
-
-
 {% endblock %}
 
 

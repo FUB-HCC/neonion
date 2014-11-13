@@ -14,6 +14,7 @@ from neonion.models import Workspace
 from bs4 import BeautifulSoup
 from django.shortcuts import get_object_or_404, redirect
 from django.core.files.base import ContentFile
+from operator import itemgetter
 
 @login_required
 def list(request):
@@ -56,6 +57,7 @@ def to_json(request, doc_urn):
     document = get_object_or_404(Document, urn=doc_urn)
     return JsonResponse({"urn": document.urn, "title": document.title, "content": document.content})
 
+
 @login_required
 def query(request, search_string):
     pass
@@ -84,7 +86,7 @@ def euler_list(request):
     doc_list.append({"name": "Tätigkeitsbericht der MPG 1946-51 Teil 2", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil2"})
     doc_list.append({"name": "Tätigkeitsbericht der MPG 1946-51 Teil 3", "urn": "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil3"})
 
-    return JsonResponse(doc_list, safe=False)
+    return JsonResponse(sorted(doc_list, key=itemgetter('name')), safe=False)
 
 
 @login_required

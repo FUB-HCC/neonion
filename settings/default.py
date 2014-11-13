@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'accounts',
     'endpoint',
     'annotations',
+    'annotationsets',
 )
 
 AUTH_USER_MODEL = 'accounts.User'

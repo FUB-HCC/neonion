@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import User
 from documents.models import Document
+from annotationsets.models import AnnotationSet
 
 
 class WorkspaceManager(models.Manager):
@@ -17,6 +18,7 @@ class WorkspaceManager(models.Manager):
 class Workspace(models.Model):
     owner = models.OneToOneField(User, unique=True)
     documents = models.ManyToManyField(Document, blank=True, null=True)
+    annotation_sets = models.ManyToManyField(AnnotationSet, blank=True, null=True)
 
     # assign manager
     objects = WorkspaceManager()

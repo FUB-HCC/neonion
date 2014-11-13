@@ -5,6 +5,7 @@ from django.conf import settings
 from SPARQLWrapper import SPARQLWrapper
 from django.http import HttpResponse, HttpResponseForbidden
 
+
 @login_required
 def annotation_created(request):
     if request.method == 'POST':

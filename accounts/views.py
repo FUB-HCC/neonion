@@ -22,7 +22,7 @@ def login(request):
     else:
         form = AuthenticationForm()
 
-    return render_to_response('accounts/login.html', {
+    return render_to_response('login.html', {
         'form': form,
     }, context_instance=RequestContext(request))
 
@@ -40,7 +40,7 @@ def register(request):
     else:
         form = RegistrationForm()
 
-    return render_to_response('accounts/register.html', {
+    return render_to_response('register.html', {
         'form': form, 'success': success
     }, context_instance=RequestContext(request))
 
@@ -57,7 +57,7 @@ def profile(request, user):
     #         return redirect('/')
     # else:
     #     form = RegistrationForm()
-    return render_to_response('accounts/profile.html', context_instance=RequestContext(request) )
+    return render_to_response('profile.html', context_instance=RequestContext(request) )
 
 
 @login_required
@@ -89,7 +89,7 @@ def list(request):
             'isAdmin': user.is_admin,
         })
     
-    return render_to_response('accounts/list_user.html', {
+    return render_to_response('list_user.html', {
         'users': users
     }, context_instance=RequestContext(request))
 

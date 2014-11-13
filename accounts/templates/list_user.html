@@ -1,0 +1,43 @@
+{% extends "base_accounts.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Login{% endblock %}
+
+{% block nav %}
+
+{% endblock %}
+
+{% block registration %}
+<div class="big" style="margin-top:1em;margin-bottom:1em;">Registered Users</div>
+<table>
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Account</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+         <tr>
+            <td>
+                <p>{{ user.username }}</p>
+            </td>
+            <td>
+                {% if user.isAdmin %}
+                    <a class="btn btn-small" href="{% url 'accounts.views.edit_user' userID=user.username %}?admin=0">Make user</a>
+                {% else %}
+                    <a class="btn btn-green btn-small" href="{% url 'accounts.views.edit_user' userID=user.username %}?admin=1">Make admin</a>
+                    {% if user.isActive %}
+                        <a class="btn btn-small" href="{% url 'accounts.views.edit_user' userID=user.username %}?active=0">Deactivate</a>
+                        {% else %}
+                        <a class="btn btn-green btn-small" href="{% url 'accounts.views.edit_user' userID=user.username %}?active=1">Activate</a>
+                    {% endif %}
+                    <a class="btn btn-red btn-small" href="{% url 'accounts.views.delete_user' userID=user.username %}">Delete</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -21,8 +21,13 @@
                 <li><span class="fa fa-expand fa-fw" id="enableFullscreen" title="Fullscreen"></span></li>
                 <li>&nbsp;</li>
                 <ul id="annotationSets">
-                    <li><span class="fa fa-users fa-fw active" title="Persons" annotationSet="http://www.wikidata.org/wiki/Q5"></span></li>
-                    <li><span class="fa fa-university fa-fw active" title="Institutions" annotationSet="http://www.wikidata.org/wiki/Q31855"> </span></li>
+                    {% for set in annotation_sets %}
+                        {% if set.uri == 'foaf:Person' %}
+                        <li><span class="fa fa-users fa-fw active" title="{{ set.label }}" annotationSet="{{ set.uri }}"></span></li>
+                        {% elif set.uri == 'aiiso:Institution' %}
+                        <li><span class="fa fa-university fa-fw active" title="{{ set.label }}" annotationSet="{{ set.uri }}"> </span></li>
+                        {% endif %}
+                    {% endfor %}
                 </ul>
                 <li id="help-link"><span class="fa fa-question fa-fw" title="Help"></span></li>
             </ul>
@@ -113,10 +118,43 @@
     });
 
     function setupAnnotator () {
+        var sets = {};
+        {% for set in annotation_sets %}
+            {% if set.uri == 'foaf:Person' %}
+                sets["{{ set.uri }}"] = {
+                    label: "{{ set.label }}",
+                    omitAdder: false,
+                    allowCreation: {{ set.allow_creation|yesno:"true,false" }},
+                    create: Annotator.Plugin.Neonion.prototype.create.createPerson,
+                    search: Annotator.Plugin.Neonion.prototype.search.searchPerson,
+                    formatter: Annotator.Plugin.Neonion.prototype.formatter.formatPerson,
+                    decorator: Annotator.Plugin.Neonion.prototype.decorator.decoratePerson,
+                    fields: [
+                        { name: 'label', label: 'Full name', type: 'text', required: true },
+                        { name: 'descr', label: 'Occupation', type: 'text' },
+                        { name: 'birth', label: 'Date of birth', type: 'date' },
+                        { name: 'death', label: 'Date of death', type: 'date' }
+                    ]
+                };
+                {% elif set.uri == 'aiiso:Institution' %}
+                // add compositor for institutes
+                sets["{{ set.uri }}"] = {
+                    label: "{{ set.label }}",
+                    omitAdder: false,
+                    allowCreation: {{ set.allow_creation|yesno:"true,false" }},
+                    create: Annotator.Plugin.Neonion.prototype.create.createInstitute,
+                    search: Annotator.Plugin.Neonion.prototype.search.searchInstitute,
+                    formatter: Annotator.Plugin.Neonion.prototype.formatter.formatInstitute,
+                    decorator: Annotator.Plugin.Neonion.prototype.decorator.decorateInstitute
+                };
+            {% endif %}
+        {% endfor %}
+
         $("#documentText").annotator()
         .annotator('addPlugin', 'Neonion', {
             whoamiUrl: "{% url 'accounts.views.me' %}",
-            endpointUrl : "{{ endpoint_url }}"
+            endpointUrl : "{{ endpoint_url }}",
+            annotationSets: sets
         })
         .annotator('addPlugin', 'Store', {
             // The endpoint of the store on your server.

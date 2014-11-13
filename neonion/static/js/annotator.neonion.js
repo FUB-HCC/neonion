@@ -102,8 +102,13 @@
         this.overrideAdder = function () {
             var adder = $(this.annotator.adder[0]);
 
-            // create compositor with default annotation sets
-            this.setCompositor(options.compositor || this.defaultCompositor());
+            // create compositor from provided annotation sets
+            if (options.hasOwnProperty("annotationSets")) {
+                this.setCompositor(options["annotationSets"]);
+            }
+            else {
+               this.setCompositor([]);
+            }
             // collect default visible annotation sets
             for (var uri in compositor) {
                 if (compositor.hasOwnProperty(uri) && !compositor[uri].omitAdder) {

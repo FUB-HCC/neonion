@@ -77,7 +77,7 @@ def import_document(request):
 
 
 @login_required
-def elasticsearch(request, type):
+def elasticsearch(request, index):
     if request.method == 'GET':
         if 'q' in request.GET:
             size = 10
@@ -91,7 +91,7 @@ def elasticsearch(request, type):
                 }
             }
             # index = 'wikidata' # TODO
-            url = settings.ELASTICSEARCH_URL + '/wikidata/' + type + '/_search?size='+str(size)+'&pretty=true&source={}'.format(json.dumps(query))
+            url = settings.ELASTICSEARCH_URL + '/wikidata/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format(json.dumps(query))
             print(url)
             r = requests.get(url)
             return JsonResponse(r.json())

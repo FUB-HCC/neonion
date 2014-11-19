@@ -90,6 +90,7 @@ def elasticsearch(request, index):
                     }
                 }
             }
+            index = 'wikidata' # TODO refactor
             url = settings.ELASTICSEARCH_URL + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format(json.dumps(query))
             print(url)
             r = requests.get(url)

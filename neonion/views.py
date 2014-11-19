@@ -90,8 +90,8 @@ def elasticsearch(request, index):
                     }
                 }
             }
-            # index = 'wikidata' # TODO
-            url = settings.ELASTICSEARCH_URL + '/wikidata/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format(json.dumps(query))
+            index = 'wikidata' # TODO
+            url = settings.ELASTICSEARCH_URL + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format(json.dumps(query))
             print(url)
             r = requests.get(url)
             return JsonResponse(r.json())

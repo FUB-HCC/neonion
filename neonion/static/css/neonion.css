@@ -107,7 +107,7 @@ body{
 /* Fullscreen */
 
 #annotationArea{
-    overflow: auto;
+    /*overflow: auto;*/
 }
 
 :-webkit-full-screen {

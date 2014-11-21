@@ -614,7 +614,7 @@
 
         search: {
             searchPerson: function (name, callback) {
-                var url = '/es/persons?q=' + name;
+                var url = '/es/person?q=' + name;
                 $.getJSON(url, function (data) {
                     if (callback) {
                         callback(Annotator.Plugin.Neonion.prototype.search.esNormalizeData(data));
@@ -622,7 +622,7 @@
                 });
             },
             searchInstitute: function (name, callback) {
-                var url = '/es/institutes?q=' + name;
+                var url = '/es/institute?q=' + name;
                 $.getJSON(url, function (data) {
                     if (callback) {
                         callback(Annotator.Plugin.Neonion.prototype.search.esNormalizeData(data));

@@ -83,10 +83,19 @@ def elasticsearch(request, index):
             size = 10
             query = {
                 'query': {
-                    'fuzzy_like_this': {
-                        'like_text': request.GET.get('q'),
-                        'fields': ['label','alias'],
-                        'fuzziness': 0.1,
+                    'filtered': {
+                        'query': {
+                            'fuzzy_like_this': {
+                                'like_text': request.GET.get('q'),
+                                'fields': ['label', 'alias'],
+                                'fuzziness': 0.1,
+                            }
+                        },
+                        'filter': {
+                            'type': {
+                                'value': index
+                            }
+                        }
                     }
                 }
             }

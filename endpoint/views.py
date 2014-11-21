@@ -7,9 +7,29 @@ from django.conf import settings
 from SPARQLWrapper import SPARQLWrapper
 from django.http import HttpResponse, HttpResponseForbidden
 
+
 @login_required
 def query(request):
-    data = {}
+    data = {
+        'query': 'SELECT * { ?s ?p <foaf:Person>}',
+        'result': []
+    }
+
+    if request.method == 'POST':
+        if'query-field' in request.POST:
+            data['query'] = request.POST['query-field']
+
+        try:
+            # execute query
+            sparql = SPARQLWrapper(settings.ENDPOINT, settings.ENDPOINT_UPDATE)
+            sparql.setQuery(data['query'])
+            sparql.setReturnFormat('json')
+            data['result'] = sparql.query().convert()
+            print(data['result'])
+        except Exception as e:
+            data['result'] = []
+            print(e)
+
     return render_to_response('base_query.html', data, context_instance=RequestContext(request))
 
 

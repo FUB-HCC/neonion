@@ -9,8 +9,10 @@
         <form action="{% url 'endpoint.views.query' %}" method="post">
             {% csrf_token %}
             <div class="big" style="margin-top:1em;margin-bottom:1em;">Query form</div>
-            <textarea id="query-field" class="width-100" />
-            <button class="btn btn-small btn-outline mid" id="btn-import">Submit</button>
+            <textarea name="query-field" class="width-100" rows="20">{{ query }}</textarea>
+            <button class="btn btn-small btn-outline mid">Submit</button>
         </form>
+
+
     </div>
 {% endblock %}

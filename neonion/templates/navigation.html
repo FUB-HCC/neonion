@@ -7,11 +7,26 @@
         {% url 'neonion.views.load_settings' as url_settings %}
         {% url 'accounts.views.logout' as url_logout %}
 
-        <li><a href="{{ url_home }}" class="{% active request url_home %}"><span class="fa fa-home fa-fw"></span>My Neonion</a></li>
-        <li><a href="{{ url_import }}" class="{% active request url_import %}"><span class="fa fa-upload fa-fw"></span>Import</a></li>
-        <li><a href="{{ url_settings }}" class="{% active request url_settings %}"><span class="fa fa-cog fa-fw"></span>Settings</a></li>
-        <li><a href="{{ url_logout }}" class="{% active request url_logout %}"><span class="fa fa-sign-out fa-fw"></span>Logout</a></li>
-        <li id="help-link"><span><span class="fa fa-question fa-fw"></span>Help</span></li>
+        <li>
+            <a href="{{ url_home }}" class="{% active request url_home %}">
+                <span class="fa fa-home fa-fw"></span>My Neonion
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_import }}" class="{% active request url_import %}">
+                <span class="fa fa-upload fa-fw"></span>Import
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_settings }}" class="{% active request url_settings %}">
+                <span class="fa fa-cog fa-fw"></span>Settings
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_logout }}" class="{% active request url_logout %}">
+                <span class="fa fa-sign-out fa-fw"></span>Logout
+            </a>
+        </li>
         {% if request.user.is_superuser %}
 
         {% endif %}
@@ -19,8 +34,19 @@
         {% url 'accounts.views.login' as url_login %}
         {% url 'accounts.views.register' as url_register %}
 
-        <li><a href="{{ url_login }}" class="{% active request url_login %}"><span class="fa fa-sign-in fa-fw"></span>Login</a></li>
-        <li><a href="{{ url_register }}" class="{% active request url_register %}"><span class="fa fa-plus-square-o fa-fw"></span>Register</a></li>
+        <li>
+            <a href="{{ url_login }}" class="{% active request url_login %}">
+                <span class="fa fa-sign-in fa-fw"></span>Login
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_register }}" class="{% active request url_register %}">
+                <span class="fa fa-plus-square-o fa-fw"></span>Register
+            </a>
+        </li>
     {% endif %}
+        <li id="help-link">
+            <span><span class="fa fa-question fa-fw"></span>Help</span>
+        </li>
     </ul>
 </nav>

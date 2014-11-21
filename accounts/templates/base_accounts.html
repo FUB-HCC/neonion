@@ -2,12 +2,7 @@
 
 {% load staticfiles %}
 
-{% block top_right %}{% endblock %}
-
-{% block bottom_right %}
-    <div class="unit-80">
-        <div class="units-row">
-        {% block registration %}
-        {% endblock %}
-    </div>
+{% block content %}
+    {% block registration %}
+    {% endblock %}
 {% endblock %}

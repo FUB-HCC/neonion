@@ -2,18 +2,25 @@
 
 {% load staticfiles %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Sign In{% endblock %}
+{% block page_id %}signin{% endblock %}
 
 {% block registration %}
-<div class="big" style="margin-top:1em;margin-bottom:1em;">Login</div>
-
-<div class="units-row" style="margin-left:5em;">
-    <form class="width-50" action="" method="post">
+<p>Please Sign In before using neonion.</p>
+    <form action="" method="post">
         {% csrf_token %}
-        <p><label class="sticky">{{ form.email.label }}{{ form.email }}</label></p>
-        <p><label class="sticky">{{ form.password.label }}{{ form.password }}</label></p>
-        <button class="btn btn-small btn-outline">Sign in</button>
-{#        <span class="small right">Forgot password? <a href="#">click here</a></span><br>#}
+        <div class="form-group">
+            <label>{{ form.email.label }}</label>
+            {{ form.email }}
+        </div>
+        <div class="form-group">
+            <label>{{ form.password.label }}</label>
+            {{ form.password }}
+        </div>
+        <div class="form-buttons">
+            <button class="button pull-right">Sign in</button>
+            <a href="/" class="button button-secondary button-wide pull-right">Forgot password?</a>
+        </div> 
     </form>
     {% for error in form.non_field_errors %}
     <p class="label label-outline label-red">{{ error|escape }}</p>

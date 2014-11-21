@@ -3,10 +3,11 @@
 {% load staticfiles %}
 
 {% block title %}Profile{% endblock %}
+{% block page_id %}profile{% endblock %}
 
 {% block top_right %}{% endblock %}
 
-{% block bottom_right %}
+{% block content %}
     <form class="width-80" action="" method="post">
         <p><label>Name<br/><input type="text" value="{{ user.name }}"></label></p>
         <p><label>Surname<br/><input type="text" value="{{ user.surname }}"></label></p>

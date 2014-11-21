@@ -1,0 +1,32 @@
+// Inverted colors and smaller navigation and bigger content area
+#page-annotator {
+  background: $white;
+
+  .sidebar {
+    background: $gallery;
+    width: 2*$column + $column-gap;
+  }
+
+  .main {
+    margin-left: 2*$column + $column-gap;
+    width: 22*$column + 22*$column-gap;
+
+    .header {
+      @extend .hidden;
+    }
+
+    .content {
+      padding-top: $baseline;
+      margin-left: 2*$column + 3*$column-gap;
+      width: 11*$column + 10*$column-gap;
+    }
+  }
+
+  p {
+    margin: 0 0 $baseline 0;
+  }
+}
+
+#documentTitle {
+  @extend h1;
+}

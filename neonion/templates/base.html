@@ -44,7 +44,11 @@
 
 {% block bottom %}
     <div class="units-row">
-        {% block bottom_left %}{% endblock %}
+        {% block bottom_left %}
+            <div class="unit-20">
+                {% include "navigation.html" %}
+            </div>
+        {% endblock %}
         {% block bottom_right %}{% endblock %}
     </div>
 {% endblock %}

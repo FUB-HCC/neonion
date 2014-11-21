@@ -1,0 +1,51 @@
+<nav class="nav">
+    <ul>
+    {% if request.user.is_authenticated %}
+        {% url 'neonion.views.home' as url_home %}
+        {% url 'neonion.views.import_document' as url_import %}
+        {% url 'neonion.views.load_settings' as url_settings %}
+        {% url 'accounts.views.logout' as url_logout %}
+
+        <li>
+            <a href="{{ url_home }}" {% if request.path == url_home %}class="nav-active"{% endif %}>
+                <span class="fa fa-home fa-fw"></span>My Neonion
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_import }}" {% if request.path == url_import %}class="nav-active"{% endif %}>
+                <span class="fa fa-upload fa-fw"></span>Import
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_settings }}" {% if request.path == url_settings %}class="nav-active"{% endif %}>
+                <span class="fa fa-cog fa-fw"></span>Settings
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_logout }}" {% if request.path == url_logout %}class="nav-active"{% endif %}>
+                <span class="fa fa-sign-out fa-fw"></span>Logout
+            </a>
+        </li>
+        {% if request.user.is_superuser %}
+
+        {% endif %}
+    {% else %}
+        {% url 'accounts.views.login' as url_login %}
+        {% url 'accounts.views.register' as url_register %}
+
+        <li>
+            <a href="{{ url_login }}" {% if request.path == url_login %}class="nav-active"{% endif %}>
+                <span class="fa fa-sign-in fa-fw"></span>Login
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_register }}" {% if request.path == url_register %}class="nav-active"{% endif %}>
+                <span class="fa fa-plus-square-o fa-fw"></span>Register
+            </a>
+        </li>
+    {% endif %}
+        <li id="help-link">
+            <span><span class="fa fa-question fa-fw"></span>Help</span>
+        </li>
+    </ul>
+</nav>

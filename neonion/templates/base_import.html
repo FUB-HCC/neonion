@@ -6,19 +6,6 @@
 
 {% block top_right %}{% endblock %}
 
-{% block bottom_left %}
-    <div class="unit-20">
-        <nav class="nav">
-            <ul>
-                <li><a href="{% url 'neonion.views.home' %}"><span class="fa fa-home fa-fw"></span>My Neonion</a></li>
-                <li><a href="#" id="show_import_dialog" class="nav-active"><span class="fa fa-upload fa-fw"></span>Import</a></li>
-                <li><a href="{% url 'accounts.views.logout' %}"><span class="fa fa-sign-out fa-fw"></span>Logout</a></li>
-                <li id="help-link"><span><span class="fa fa-question fa-fw"></span>Help</span></li>
-            </ul>
-        </nav>
-    </div>
-{% endblock %}
-
 {% block bottom_right %}
 <div class="unit-80" style="padding-top: 1em;">
     <p style="">Please select the files you want to import to your working space.</p>

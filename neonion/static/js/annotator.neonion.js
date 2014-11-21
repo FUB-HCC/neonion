@@ -408,7 +408,7 @@
             }
         },
 
-        defaultCompositor: function () {
+        /*defaultCompositor: function () {
             return {
                 // add compositor for persons
                 "foaf:Person": {
@@ -437,7 +437,7 @@
                     decorator: Annotator.Plugin.Neonion.prototype.decorator.decorateInstitute
                 }
             };
-        },
+        },*/
 
         getAnnotationHighlights: function () {
             return $(".annotator-hl:not(.annotator-hl-temporary),." + Annotator.Plugin.Neonion.prototype.classes.hide);

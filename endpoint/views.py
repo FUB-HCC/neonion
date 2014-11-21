@@ -1,9 +1,16 @@
 import json
 
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from SPARQLWrapper import SPARQLWrapper
 from django.http import HttpResponse, HttpResponseForbidden
+
+@login_required
+def query(request):
+    data = {}
+    return render_to_response('base_query.html', data, context_instance=RequestContext(request))
 
 
 @login_required

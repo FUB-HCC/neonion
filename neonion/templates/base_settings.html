@@ -5,31 +5,31 @@
 {% block title %}Settings{% endblock %}
 
 {% block bottom_right %}
-      <div class="unit-80">
+    <div class="unit-80">
         <form action="{% url 'neonion.views.load_settings' %}" method="post">
             {% csrf_token %}
             <div class="big" style="margin-top:1em;margin-bottom:1em;">Manage AnnotationSets</div>
             <table>
                 <thead>
                     <tr>
-                        <th>Active</th>
-                        <th>AnnotationSet</th>
-                        <th>URI</th>
+                    <th>Active</th>
+                    <th>AnnotationSet</th>
+                    <th>URI</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for set in annotation_sets %}
-                     <tr>
+                    <tr>
                         <td>
                             <input type="checkbox" name="as" value="{{ set.uri }}" {% if set.active %} checked {% endif %}>
                         </td>
-                        <td><p>{{ set.label }}</p></td>
-                        <td><p>{{ set.uri }}</p></td>
+                    <td><p>{{ set.label }}</p></td>
+                    <td><p>{{ set.uri }}</p></td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             <button class="btn btn-small btn-outline mid" id="btn-import">Save</button>
-        <form>
+        </form>
     </div>
 {% endblock %}

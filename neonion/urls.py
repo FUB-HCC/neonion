@@ -5,7 +5,6 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', 'neonion.views.home'),
-    url(r'^annotator/$', 'neonion.views.home'),
     url(r'^import/$', 'neonion.views.import_document'),
     url(r'^settings/$', 'neonion.views.load_settings'),
 

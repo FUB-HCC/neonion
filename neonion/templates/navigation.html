@@ -1,4 +1,3 @@
-{% load neonion_tags %}
 <nav class="nav">
     <ul>
     {% if request.user.is_authenticated %}
@@ -8,22 +7,22 @@
         {% url 'accounts.views.logout' as url_logout %}
 
         <li>
-            <a href="{{ url_home }}" class="{% active request url_home %}">
+            <a href="{{ url_home }}" {% if request.path == url_home %}class="nav-active"{% endif %}>
                 <span class="fa fa-home fa-fw"></span>My Neonion
             </a>
         </li>
         <li>
-            <a href="{{ url_import }}" class="{% active request url_import %}">
+            <a href="{{ url_import }}" {% if request.path == url_import %}class="nav-active"{% endif %}>
                 <span class="fa fa-upload fa-fw"></span>Import
             </a>
         </li>
         <li>
-            <a href="{{ url_settings }}" class="{% active request url_settings %}">
+            <a href="{{ url_settings }}" {% if request.path == url_settings %}class="nav-active"{% endif %}>
                 <span class="fa fa-cog fa-fw"></span>Settings
             </a>
         </li>
         <li>
-            <a href="{{ url_logout }}" class="{% active request url_logout %}">
+            <a href="{{ url_logout }}" {% if request.path == url_logout %}class="nav-active"{% endif %}>
                 <span class="fa fa-sign-out fa-fw"></span>Logout
             </a>
         </li>
@@ -35,12 +34,12 @@
         {% url 'accounts.views.register' as url_register %}
 
         <li>
-            <a href="{{ url_login }}" class="{% active request url_login %}">
+            <a href="{{ url_login }}" {% if request.path == url_login %}class="nav-active"{% endif %}>
                 <span class="fa fa-sign-in fa-fw"></span>Login
             </a>
         </li>
         <li>
-            <a href="{{ url_register }}" class="{% active request url_register %}">
+            <a href="{{ url_register }}" {% if request.path == url_register %}class="nav-active"{% endif %}>
                 <span class="fa fa-plus-square-o fa-fw"></span>Register
             </a>
         </li>

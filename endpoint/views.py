@@ -5,32 +5,41 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from SPARQLWrapper import SPARQLWrapper
-from django.http import HttpResponse, HttpResponseForbidden
-
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 
 @login_required
 def query(request):
-    data = {
-        'query': 'SELECT * { ?s ?p <foaf:Person>}',
-        'result': []
-    }
+    sparql_query = ''
+    sparql_output= 'json'
 
     if request.method == 'POST':
-        if'query-field' in request.POST:
-            data['query'] = request.POST['query-field']
+        if 'query' in request.POST: sparql_query = request.POST['query']
+        if 'output' in request.POST: sparql_output = request.POST['output']
+    elif request.method == 'GET':
+        if 'query' in request.GET: sparql_query = request.GET['query']
+        if 'output' in request.GET: sparql_output= request.GET['output']
 
-        try:
-            # execute query
-            sparql = SPARQLWrapper(settings.ENDPOINT, settings.ENDPOINT_UPDATE)
-            sparql.setQuery(data['query'])
-            sparql.setReturnFormat('json')
-            data['result'] = sparql.query().convert()
-            print(data['result'])
-        except Exception as e:
-            data['result'] = []
-            print(e)
+    print(sparql_query)
+    try:
+        # execute query
+        sparql = SPARQLWrapper(settings.ENDPOINT, settings.ENDPOINT_UPDATE)
+        sparql.setQuery(sparql_query)
+        sparql.setReturnFormat(sparql_output)
+        return JsonResponse(sparql.query().convert())
+    except Exception as e:
+        return HttpResponseForbidden()
 
-    return render_to_response('base_query.html', data, context_instance=RequestContext(request))
+
+@login_required
+def query_form(request):
+    if request.method == 'POST' and 'query-field' in request.POST:
+        sparql_query = request.POST['query-field']
+    elif request.method == 'GET' and 'query-field' in request.GET:
+        sparql_query = request.GET['query-field']
+    else:
+        sparql_query = 'SELECT * {\n   ?s ?p ?o\n}\nLIMIT 50'
+
+    return render_to_response('base_query.html', {'query': sparql_query, 'endpoint': settings.ENDPOINT}, context_instance=RequestContext(request))
 
 
 @login_required

@@ -6,13 +6,42 @@
 
 {% block bottom_right %}
     <div class="unit-80">
-        <form action="{% url 'endpoint.views.query' %}" method="post">
+        <div class="big" style="margin-top:1em;margin-bottom:1em;">Query form</div>
+        <form action="{% url 'endpoint.views.query_form' %}" method="post">
             {% csrf_token %}
-            <div class="big" style="margin-top:1em;margin-bottom:1em;">Query form</div>
-            <textarea name="query-field" class="width-100" rows="20">{{ query }}</textarea>
-            <button class="btn btn-small btn-outline mid">Submit</button>
+            <pre id="query-prefixes"></pre>
+            <textarea id="query-field" name="query-field" class="width-100" rows="15">{{ query }}</textarea>
+            <button id="submit-query" class="btn btn-small btn-outline mid">Submit</button>
         </form>
-
-
+        <div id="query-result"></div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript" src="{% static 'js/sgvizler.min.js' %}"></script>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+
+<script language="javascript">
+    "use strict";
+
+    $(document).ready(function() {
+        var prefixes = sgvizler.namespacePrefixesSPARQL().replace(/>/g, "&gt;").replace(/</g, "&lt;");
+
+        $("#query-prefixes").html(prefixes);
+
+        $("#submit-query").click(function() {
+            var q = new sgvizler.Query();
+            q.query($("#query-field").val()).
+            endpointURL("{%  url 'endpoint.views.query' %}").
+            endpointOutputFormat("json").
+            chartFunction("google.visualization.Table").
+            draw("query-result");
+
+            return false;
+        });
+
+    });
+</script>
+
 {% endblock %}

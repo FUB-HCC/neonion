@@ -1,105 +1,26 @@
-import os, requests, json, gzip
-from bs4 import BeautifulSoup
+from argparse import ArgumentParser
+
+from os import listdir,path, makedirs
+from gzip import open as gzopen
+from json import loads,dumps
 from datetime import datetime
-from pyelasticsearch import ElasticSearch
-# import dataset
-
-# /web/neonion.imp.fu-berlin.de/neonion/neonion/maintenance/venv27/bin/python /web/neonion.imp.fu-berlin.de/neonion/neonion/maintenance/main.py
-
-
-# dumps_folder = 'dumps'
-# extract_folder = 'extracted_data'
-
-dumps_folder = '/web/neonion.imp.fu-berlin.de/neonion/neonion/maintenance/dumps'
-extract_folder = '/web/neonion.imp.fu-berlin.de/neonion/neonion/maintenance/extracted_data'
-
-
-# DOWNLOAD
-def download_file(url, outputfolder):
-    print( 'download actual dump' )
-    print( 80 * '=' )
-    filename = url.split('/')[-1]
-    local_filename = os.path.join(outputfolder, filename)
-
-    r = requests.get(url, stream=True)
-    download_size = int(r.headers['Content-Length'])
-
-    # check if file is already downloaded
-    if os.path.isfile(local_filename):
-        local_size = os.path.getsize(local_filename)
-        if local_size == download_size:
-            print('skip: ' + filename)
-            print( 80 * '=' + '\n' )
-            return local_filename
-
-    print( '{} ({} Bytes)'.format(url, format(int(r.headers['Content-Length']), ',d')) )
-    with open(local_filename, 'wb') as f:
-        size_to_log = 250 * 1048576  # x MB
-        downloaded = 0
-        last_time = datetime.now()
-        for chunk in r.iter_content(chunk_size=1024):
-            if chunk:  # filter out keep-alive new chunks
-                downloaded += 1024
-                if downloaded % (size_to_log) == 0:
-                    actual_time = datetime.now()
-                    delta = actual_time - last_time
-                    print(
-                        '{done} MB ({done_percent:.{digits}f}%, {speed:.{digits}f} KB/s)'
-                        .format(
-                            done=downloaded / (1048576),
-                            done_percent=100 * float(downloaded) / download_size,
-                            speed=(size_to_log / (delta.seconds + delta.microseconds / 1E6)) / 1024,
-                            digits=2,
-                        )
-                    )
-                    last_time = actual_time
-                f.write(chunk)
-                f.flush()
-    print( 80 * '=' + '\n' )
-    return local_filename
-
 
 def latest_dump_from_folder(folder):
-    files = os.listdir(folder)
+    files = listdir(folder)
     return sorted(list(files))[-1]  # map( strip_file_extension, files )
 
-
-url = 'https://dumps.wikimedia.org/other/wikidata/{}'
-
-
-def download_wd_dump(outputfolder):
-    if not os.path.exists(outputfolder):
-        print( 80 * '=' )
-        print( 'create outputfolder')
-        print( 80 * '=' + '\n' )
-
-        os.makedirs(outputfolder)
-
-    resp = requests.get(url.format(''))
-    soup = BeautifulSoup(resp.text)
-    all_dumps = set()
-    for a in soup.find_all('a'):
-        href = a.attrs['href'].strip()
-        if not href == '../':
-            all_dumps.add(href)
-
-    latest_dump = sorted(all_dumps)[-1]
-    download_file(url.format(latest_dump), outputfolder)
-
-
-# EXTRACT
 def get_wikidata_items(filename):
     count = 0
-    for line in gzip.open(filename):
+    for line in gzopen(filename):
         count += 1
         line = line.strip()
         wd = {}
         try:
-            wd = json.loads(line[0:-2])
+            wd = loads(line[0:-2])
         except:
             # print( '-2', line[0:-2] )
             try:
-                wd = json.loads(line[0:-1])
+                wd = loads(line[0:-1])
             except:
                 # if len( line > 2 ):
                 print( 'something went wrong parsing this line:' )
@@ -107,22 +28,21 @@ def get_wikidata_items(filename):
                 continue
         yield wd
 
-
 def extract_from_wd_dump(inputfolder, outputfolder):
     print('extract_from_wd_dump')
 
     latest_dump = latest_dump_from_folder(inputfolder)
 
-    if not os.path.exists(outputfolder):
+    if not path.exists(outputfolder):
         print( 80 * '=' )
         print( 'create outputfolder')
         print( 80 * '=' + '\n' )
-        os.makedirs(outputfolder)
+        makedirs(outputfolder)
 
-    persons_filename = os.path.join(outputfolder, 'persons.json')
+    persons_filename = path.join(outputfolder, 'persons.json')
     person_file = open(persons_filename, 'w')
 
-    institutes_filename = os.path.join(outputfolder, 'institutes.json')
+    institutes_filename = path.join(outputfolder, 'institutes.json')
     institute_file = open(institutes_filename, 'w')
 
     # person_statement_count = dict()
@@ -149,7 +69,7 @@ def extract_from_wd_dump(inputfolder, outputfolder):
     human = 0
     nr_of_mpis = 0
 
-    for wd_item in get_wikidata_items(os.path.join(inputfolder, latest_dump)):
+    for wd_item in get_wikidata_items(path.join(inputfolder, latest_dump)):
         is_human = False
         is_mpi = False
         item = {}
@@ -191,7 +111,7 @@ def extract_from_wd_dump(inputfolder, outputfolder):
                         # # count statements
                         # for claim in wd_item['claims']:
                         # if claim not in person_statement_count:
-                        # person_statement_count[claim] = dict()
+                        #         person_statement_count[claim] = dict()
                         #         person_statement_count[claim]['count'] = 0
                         #         try:
                         #             person_statement_count[claim]['label'] = db['properties'].find_one(entity=claim)['label']
@@ -287,7 +207,7 @@ def extract_from_wd_dump(inputfolder, outputfolder):
             item['gnd'] = gnd
             item['viaf'] = viaf
             item['aliases'] = list(aliases)
-            person_file.write(json.dumps(item) + '\n')
+            person_file.write(dumps(item) + '\n')
 
         elif is_mpi:
             item['id'] = wd_item['id']
@@ -297,7 +217,7 @@ def extract_from_wd_dump(inputfolder, outputfolder):
             item['aliases'] = list(aliases)
             item['historic_names'] = historic_names
             print( item )
-            institute_file.write(json.dumps(item) + '\n')
+            institute_file.write(dumps(item) + '\n')
 
         done += 1
         if done % 250000 == 0:
@@ -317,74 +237,10 @@ def extract_from_wd_dump(inputfolder, outputfolder):
             # person_statement_count_file.close()
 
 
-# IMPORT
-def import_json_into_es(inputfolder):
-    institutes_filename = os.path.join(inputfolder, 'institutes.json')
-    persons_filename = os.path.join(inputfolder, 'persons.json')
-
-    es = ElasticSearch('http://localhost:9200/')
-
-    done = 0
-    institutes = []
-
-    try:
-        es.delete_index('wikidata')
-    except:
-        pass
-
-    es.create_index('wikidata')
-
-    for line in open(institutes_filename):
-        line = line.strip()
-        institute = json.loads(line)
-        institute['uri'] = 'http://wikidata.org/wiki/' + institute['id']
-
-        institutes.append(institute)
-        done += 1
-
-        if ( done % 5000 == 0 ):
-            es.bulk_index('wikidata', 'institute', institutes, id_field='id')
-            institutes = []
-
-        if done % 10000 == 0:
-            print(  datetime.now().strftime("%H:%M:%S"), format(done, ',d'))
-
-    if len(institutes) > 0:
-        es.bulk_index('wikidata', 'institute', institutes, id_field='id')
-    print(  datetime.now().strftime("%H:%M:%S"), format(done, ',d'))
-
-    done = 0
-    persons = []
-
-    # try:    es.delete_index('persons')
-    # except: pass
-    # es.create_index( 'persons' )
-    for line in open(persons_filename):
-        line = line.strip()
-        person = json.loads(line)
-        person['uri'] = 'http://wikidata.org/wiki/' + person['id']
-
-        persons.append(person)
-        done += 1
-
-        if ( done % 5000 == 0 ):
-            es.bulk_index('wikidata', 'person', persons, id_field='id')
-            persons = []
-
-        if done % 10000 == 0:
-            print(  datetime.now().strftime("%H:%M:%S"), format(done, ',d'))
-
-    if len(persons) > 0:
-        es.bulk_index('wikidata', 'person', persons, id_field='id')
-    print(  datetime.now().strftime("%H:%M:%S"), format(done, ',d'))
-
-
 if __name__ == '__main__':
-    download_wd_dump(dumps_folder)
-    extract_from_wd_dump(dumps_folder, extract_folder)
-    import_json_into_es(extract_folder)
-else:
-    print('usage:')
-    print('    main.download_wd_dump( dumps_folder )      # downloads the latest wikidata dump file')
-    print('    main.extract_from_wd_dump( dumps_folder, extract_folder )  # extracts person and institute data from latest dump' )
-    print('    main.import_json_into_es( extract_folder )   # imports person and institute data into local elastcisearch (deletes and recreates index)' )
+    parser = ArgumentParser()
+    parser.add_argument("-i", "--inputfolder", default='dumps', help="folder where the wikidata dumps are stored")
+    parser.add_argument("-o", "--outputfolder", default='extracted_data', help="folder where the json output will be stored")
+    args = parser.parse_args()
+
+    extract_from_wd_dump(args.inputfolder, args.outputfolder)

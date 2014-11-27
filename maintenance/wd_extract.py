@@ -55,7 +55,7 @@ def extract_from_wd_dump(inputfolder, outputfolder, logger):
     human = 0
     nr_of_mpis = 0
 
-    for wd_item in get_wikidata_items(path.join(inputfolder, latest_dump)):
+    for wd_item in get_wikidata_items(path.join(inputfolder, latest_dump),logger):
         is_human = False
         is_mpi = False
         item = {}

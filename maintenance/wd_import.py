@@ -1,11 +1,12 @@
 from argparse import ArgumentParser
-
+import logging
 from json import loads
 from datetime import datetime
 from os import path
 from pyelasticsearch import ElasticSearch
 
-def import_json_into_es(inputfolder):
+
+def import_json_into_es(inputfolder, logger):
     institutes_filename = path.join(inputfolder, 'institutes.json')
     persons_filename = path.join(inputfolder, 'persons.json')
 
@@ -17,8 +18,9 @@ def import_json_into_es(inputfolder):
     try:
         es.delete_index('wikidata')
         es.create_index('wikidata')
+        logger.info('rebuild index [wikidata]')
     except:
-        print('cant delete wikidata index')
+        logger.warning('cant delete wikidata index')
 
     for line in open(institutes_filename):
         line = line.strip()
@@ -33,11 +35,11 @@ def import_json_into_es(inputfolder):
             institutes = []
 
         if done % 10000 == 0:
-            print(  datetime.now().strftime("%H:%M:%S"), format(done, ',d'))
+            logger.info('institutes imported: {}'.format(format(done, ',d')))
 
     if len(institutes) > 0:
         es.bulk_index('wikidata', 'institute', institutes, id_field='id')
-    print(  datetime.now().strftime("%H:%M:%S"), format(done, ',d'))
+    logger.info('institutes imported: {}'.format(format(done, ',d')))
 
     done = 0
     persons = []
@@ -55,11 +57,11 @@ def import_json_into_es(inputfolder):
             persons = []
 
         if done % 10000 == 0:
-            print(  datetime.now().strftime("%H:%M:%S"), format(done, ',d'))
+            logger.info('persons imported: {}'.format(format(done, ',d')))
 
     if len(persons) > 0:
         es.bulk_index('wikidata', 'person', persons, id_field='id')
-    print(  datetime.now().strftime("%H:%M:%S"), format(done, ',d'))
+    logger.info('persons imported: {}'.format(format(done, ',d')))
 
 
 if __name__ == '__main__':
@@ -67,4 +69,18 @@ if __name__ == '__main__':
     parser.add_argument("-f", "--folder", default='dumps', help="folder where the json output is stored")
     args = parser.parse_args()
 
-    import_json_into_es(args.folder)
+    # set up logging to file
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                        datefmt='%m-%d %H:%M',
+                        filename='wikidata_import.log',
+                        filemode='a')
+
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s',"%H:%M:%S")
+    console.setFormatter(formatter)
+    logging.getLogger('').addHandler(console)
+
+
+    import_json_into_es(args.folder,logging.getLogger('import'))

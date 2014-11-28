@@ -1,0 +1,26 @@
+// Row of Buttons below a form
+.form-buttons {
+  @include clearfix;
+  margin-top: $baseline;
+  
+  .button {
+    margin-left: $column-gap;
+  }
+}
+
+input[type="text"], input[type="password"], input[type="email"] {
+  background-color: $white;
+  border: 1px solid $silver;
+  font-size: $base-font-size;
+  line-height: $baseline;
+  padding: ($half-baseline - 1px) $column-gap;
+  width: 100%;
+}
+
+form {
+  label {
+    display: inline-block;
+    text-transform: uppercase;
+    margin: $half-baseline 0;
+  }
+}

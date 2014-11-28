@@ -1,0 +1,32 @@
+.button {
+  border: 1px solid $silver;
+  background-color: $silver;
+  color: $black;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 20px;
+  padding: ($half-baseline - 1px) ($column-gap - 1px);
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  width: 3*$column + 2*$column-gap;
+
+  &:hover {
+    background-color: $manatee;
+  }
+}
+
+.button-secondary {
+  background-color: transparent;
+  color: $dove-gray;
+
+  &:hover {
+    background-color: transparent;
+    border-color: $manatee;
+    color: $black;
+  }
+}
+
+.button-wide {
+  width: 5*$column + 4*$column-gap;
+}

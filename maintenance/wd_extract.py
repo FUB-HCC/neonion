@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-
+import logging
 from os import listdir,path, makedirs
 from gzip import open as gzopen
 from json import loads,dumps
@@ -9,7 +9,7 @@ def latest_dump_from_folder(folder):
     files = listdir(folder)
     return sorted(list(files))[-1]  # map( strip_file_extension, files )
 
-def get_wikidata_items(filename):
+def get_wikidata_items(filename,logger):
     count = 0
     for line in gzopen(filename):
         count += 1
@@ -23,20 +23,17 @@ def get_wikidata_items(filename):
                 wd = loads(line[0:-1])
             except:
                 # if len( line > 2 ):
-                print( 'something went wrong parsing this line:' )
-                print( '-1', line[0:-1] )
+                logger.warning( 'something went wrong parsing this line:' )
                 continue
         yield wd
 
-def extract_from_wd_dump(inputfolder, outputfolder):
-    print('extract_from_wd_dump')
+def extract_from_wd_dump(inputfolder, outputfolder, logger):
+    logger.info('start extraction from wd dump')
 
     latest_dump = latest_dump_from_folder(inputfolder)
 
     if not path.exists(outputfolder):
-        print( 80 * '=' )
-        print( 'create outputfolder')
-        print( 80 * '=' + '\n' )
+        logger.info( 'create outputfolder')
         makedirs(outputfolder)
 
     persons_filename = path.join(outputfolder, 'persons.json')
@@ -50,26 +47,15 @@ def extract_from_wd_dump(inputfolder, outputfolder):
     # person_statement_count_file = open( person_statement_count_filename, 'w' )
     # db = dataset.connect('sqlite:///' + os.path.join(outputfolder, 'properties_20141009.db'))
     # for property in db['properties']:
-    # print( property['entity'],property['label']  )
-    # print( 80*'=' )
-    # print( db['properties'].find_one(entity="P410")['label'] )
+    # logger.debug( property['entity'],property['label']  )
+    # logger.debug( db['properties'].find_one(entity="P410")['label'] )
     # return
-
-
-    print( 80 * '=' )
-    print( 'inputfolder:         {}'.format(inputfolder) )
-    print( 'outputfolder:        {}'.format(outputfolder) )
-    print( 80 * '=' )
-    print( 'latest_dump:         {}'.format(latest_dump) )
-    print( 'persons_filename:    {}'.format(persons_filename) )
-    print( 'institutes_filename: {}'.format(institutes_filename) )
-    print( 80 * '=' + '\n' )
 
     done = 0
     human = 0
     nr_of_mpis = 0
 
-    for wd_item in get_wikidata_items(path.join(inputfolder, latest_dump)):
+    for wd_item in get_wikidata_items(path.join(inputfolder, latest_dump),logger):
         is_human = False
         is_mpi = False
         item = {}
@@ -104,7 +90,6 @@ def extract_from_wd_dump(inputfolder, outputfolder):
                         for claim in wd_item['claims']['P527']:
                             if claim['mainsnak']['snaktype'] == 'value':
                                 if claim['mainsnak']['datavalue']['value']['numeric-id'] == 15916302:
-                                    print( '!!!MPG' )
                                     is_mpi = True
 
                     if is_human:
@@ -186,7 +171,7 @@ def extract_from_wd_dump(inputfolder, outputfolder):
 
                         # historic names
                         if 'P1448' in wd_item['claims']:
-                            # print( json.dumps( claim, indent=2 ) )
+                            # logger.info( json.dumps( claim, indent=2 ) )
                             for claim in wd_item['claims']['P1448']:
                                 hist_name = dict()
                                 hist_name['name'] = claim['mainsnak']['datavalue']['value']['text']
@@ -216,7 +201,6 @@ def extract_from_wd_dump(inputfolder, outputfolder):
             item['gnd'] = gnd
             item['aliases'] = list(aliases)
             item['historic_names'] = historic_names
-            print( item )
             institute_file.write(dumps(item) + '\n')
 
         done += 1
@@ -224,12 +208,12 @@ def extract_from_wd_dump(inputfolder, outputfolder):
             # person_statement_count_file = open(person_statement_count_filename, 'w')
             # person_statement_count_file.write(json.dumps(person_statement_count, indent=4))
             # person_statement_count_file.close()
-            print(  '{} total: {} human: {} mpis: {}'.format(
-                datetime.now().strftime('%H:%M:%S'),
-                format(done, ',d'),
-                format(human, ',d'),
-                format(nr_of_mpis, ',d'),
-            )
+            logger.info(  '{} total: {} human: {} mpis: {}'.format(
+                    datetime.now().strftime('%H:%M:%S'),
+                    format(done, ',d'),
+                    format(human, ',d'),
+                    format(nr_of_mpis, ',d'),
+                )
             )
 
             # person_statement_count_file = open(person_statement_count_filename, 'w')
@@ -243,4 +227,18 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--outputfolder", default='extracted_data', help="folder where the json output will be stored")
     args = parser.parse_args()
 
-    extract_from_wd_dump(args.inputfolder, args.outputfolder)
+    # set up logging to file
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                        datefmt='%m-%d %H:%M',
+                        filename='wikidata_extract.log',
+                        filemode='a')
+
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s',"%H:%M:%S")
+    console.setFormatter(formatter)
+    logging.getLogger('').addHandler(console)
+
+
+    extract_from_wd_dump(args.inputfolder, args.outputfolder,logging.getLogger('extract'))

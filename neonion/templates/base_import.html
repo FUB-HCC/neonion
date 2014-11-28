@@ -3,24 +3,23 @@
 {% load staticfiles %}
 
 {% block title %}Import{% endblock %}
+{% block page_id %}import{% endblock %}
 
-{% block top_right %}{% endblock %}
-
-{% block bottom_right %}
-<div class="unit-80" style="padding-top: 1em;">
-    <p style="">Please select the files you want to import to your working space.</p>
-    <div class="import-dialog" id="dialog-import">
-        <ul id="document-import-list"></ul>
-        <div class="units-row end dialog-foot">
-            <button class="btn btn-small btn-outline mid" id="btn-import">Import</button>
-            <form method="post" action="{% url 'documents.views.upload' %}" enctype="multipart/form-data" style="display:none">
-                {% csrf_token %}
-                <input id="file-upload" name="file-upload" type="file" multiple>
-                <input type="submit" />
-            </form>
-
-        </div>
+{% block content %}
+<div>
+    <p>Please select the files you want to import to your working space.</p>
+    <div class="scroll-container">
+        <ul id="document-import-list" class="document-list"></ul>
     </div>
+    <div class="form-buttons">
+      <button id="btn-import" class="button pull-right">Import</button>
+      <a href="/" class="button button-secondary pull-right">Cancel</a>
+    </div> 
+    <form method="post" action="{% url 'documents.views.upload' %}" enctype="multipart/form-data" style="display:none">
+        {% csrf_token %}
+        <input id="file-upload" name="file-upload" type="file" multiple>
+        <input type="submit" />
+    </form>
 </div>
 {% endblock %}
 
@@ -52,7 +51,7 @@
             // create document import list
             $.each(data, function(index, value) {
                 // var item = new Option( value.urn, value.name );
-                var item = $('<li></li>').attr( 'id', value.urn ).text( value.name ).attr('class','ui-widget-content');
+                var item = $('<li></li>').attr( 'id', value.urn ).text( value.name );
                 $('#document-import-list').append( item );
             });
         });

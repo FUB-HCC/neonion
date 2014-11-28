@@ -1,0 +1,45 @@
+// Vertikales Menü
+
+.nav-vertical {
+
+  padding-top: $half-baseline;
+
+  ul {
+    @include list-reset;
+  }
+
+  li {
+    a {
+      border-left: $column-gap/2 solid $white; 
+      color: $manatee;
+      display: block;
+      font-size: 20px;
+      padding: $half-baseline ($column - $column-gap/2); 
+      text-decoration: none;
+
+      .fa-fw { text-align: left; }
+    }
+
+    a:hover {
+      color: $black;
+    }
+
+    &.active {
+      a {
+        background: $gallery;
+        border-color: $tangerine;
+        color: $black;
+      }
+    }
+  }
+}
+
+#page-annotator {
+  .nav-vertical {
+    padding-top: 4.5*$baseline;
+
+    li a {
+      border-color: $gallery;
+    }
+  }
+}

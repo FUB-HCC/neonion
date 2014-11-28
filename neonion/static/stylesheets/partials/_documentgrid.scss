@@ -1,0 +1,63 @@
+.document-grid {
+  @include list-reset;
+
+  li {
+    display: block;
+    a {
+      background-color: $white;
+      border: 1px solid $silver;
+      color: $dove-gray;
+      float: left; 
+      height: 7*$baseline;
+      margin-left: $column-gap;
+      margin-bottom: $baseline;
+      text-decoration: none;
+      width: 3*$column + 2*$column-gap;
+
+      div {
+        display: block;
+        margin: $half-baseline $column-gap/2;
+        text-align: center;
+      }
+
+      span {
+        color: $tangerine;
+        display: block;
+        font-size: 42px;
+        line-height: 3*$baseline;
+      }
+
+      &:hover {
+        border-color: $manatee;
+        color: $black;
+      }
+    }
+  }
+}
+
+.scroll-container {
+  height: 15*$baseline;
+  overflow-y: scroll;
+}
+
+.document-list {
+  @include list-reset;
+
+  li {
+    padding: ($half-baseline - 1px) $column-gap;
+    background-color: $white;
+    color: $dove-gray;
+    border: 1px solid $silver;
+    cursor: pointer;
+
+    &:hover {
+      color: $black;
+      border-color: $manatee; 
+    }
+
+    &.ui-selected {
+      background-color: $azure;
+      color: $white;
+    }
+  }
+}

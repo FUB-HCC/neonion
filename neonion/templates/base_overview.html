@@ -3,11 +3,13 @@
 {% load staticfiles %}
 
 {% block title %}Übersicht{% endblock %}
+{% block page_id %}workspace{% endblock %}
 
-{% block bottom_right %}
-    <div class="unit-80">
-        <table id="document-table" class="table-simple"><tr><td><span class="fa fa-spinner fa-spin"></span> Loading...</td></tr></table>
-    </div>
+{% block content %}
+  <ul id="document-table" class="document-grid">
+  <li><span class="fa fa-spinner fa-spin"></span> Loading...</li>
+  </ul>
+
 {% endblock %}
 
 
@@ -39,11 +41,11 @@
             var earlierLabelSet = false;
             $('#document-table').html('');
 
-            $('.nav a').on('click', function() {
-                $('.nav a').each(function(){$(this).removeClass('nav-active')});$(this).addClass('nav-active');}
-            );
+            var importElem = $('<li><a href="/import/"><div><span class="fa fa-file-text-o"></span>Import to Workspace</div></a></li>');
 
             if (documentList.length > 0) {
+                $('#document-table').append(importElem);
+
                 documentList.sort(compare_Documents)
                 .reverse()
                 .forEach(function (entry) {
@@ -60,18 +62,13 @@
                     /* create element for document list and append it */
                     var uri = entry.urn.split("/")
                     var id = uri[uri.length - 1]
-                    var element = $('<tr></tr>')
-                            .append($('<td class="small"></td>').text(label)) // add label (today or earlier)
-                            .append($('<td class="element-cell"></td>')
-                                    .append($('<a href="/annotator/' + id + '">' + entry.title + '</a>'))
-                                    .append($('<div class="document-list-buttons"></div>')
-                            )
-                    );
+                    var element = $('<li></li>')
+                          .append($('<a href="/annotator/' + id + '"><div>' + entry.title + '</div></a>'));
                     $('#document-table').append(element);
                 });
             }
             else {
-                $('#document-table').html('Workspace it empty');
+                $('#document-table').append(importElem);
             }
         });
     }

@@ -1,6 +1,8 @@
 from django.shortcuts import render_to_response, redirect
+from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_GET
 from django.contrib.auth import login as django_login, authenticate, logout as django_logout
 from accounts.forms import AuthenticationForm, RegistrationForm
 from accounts.models import User
@@ -57,7 +59,7 @@ def profile(request, user):
     #         return redirect('/')
     # else:
     #     form = RegistrationForm()
-    return render_to_response('profile.html', context_instance=RequestContext(request) )
+    return render_to_response('profile.html', context_instance=RequestContext(request))
 
 
 @login_required
@@ -79,22 +81,6 @@ def logout(request):
 
 
 @login_required
-def list(request):
-    # get user enumeration
-    users = []
-    for user in User.objects.all():
-        users.append({ 
-            'username': user.email,
-            'isActive': user.is_active,
-            'isAdmin': user.is_admin,
-        })
-    
-    return render_to_response('list_user.html', {
-        'users': users
-    }, context_instance=RequestContext(request))
-
-
-@login_required
 def delete_user(request, userID):
     user = User.objects.filter(email=userID)[0]
     if not user.is_admin:
@@ -104,8 +90,9 @@ def delete_user(request, userID):
 
 
 @login_required
+@require_GET
 def edit_user(request, userID):
-    if request.method == 'GET':
+    if User.objects.filter(email=userID).exists():
         user = User.objects.filter(email=userID)[0]
         if 'active' in request.GET:
             user.is_active = bool(int(request.GET['active']))
@@ -114,4 +101,4 @@ def edit_user(request, userID):
         
         user.save()
 
-    return redirect('accounts.views.list')
+    return redirect(reverse('user_list'))

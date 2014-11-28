@@ -4,17 +4,19 @@ import json
 import random
 import requests
 
-from django.http import HttpResponseForbidden, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST, require_GET
 from pyelasticsearch import ElasticSearch
 from documents.models import Document
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from annotationsets.models import AnnotationSet
 from neonion.models import Workspace
+
 
 # Create your views here.
 @login_required
@@ -77,55 +79,51 @@ def import_document(request):
 
 
 @login_required
-def elasticsearch(request, index):
-    if request.method == 'GET':
-        if 'q' in request.GET:
-            size = 10
-            query = {
-                'query': {
-                    'filtered': {
-                        'query': {
-                            'fuzzy_like_this': {
-                                'like_text': request.GET.get('q'),
-                                'fields': ['label', 'alias'],
-                                'fuzziness': 0.1,
-                            }
-                        },
-                        'filter': {
-                            'type': {
-                                'value': index
-                            }
+@require_GET
+def resource_search(request, index):
+    if 'q' in request.GET:
+        size = 10
+        query = {
+            'query': {
+                'filtered': {
+                    'query': {
+                        'fuzzy_like_this': {
+                            'like_text': request.GET.get('q'),
+                            'fields': ['label', 'alias'],
+                            'fuzziness': 0.1,
+                        }
+                    },
+                    'filter': {
+                        'type': {
+                            'value': index
                         }
                     }
                 }
             }
-            index = 'wikidata' # TODO
-            url = settings.ELASTICSEARCH_URL + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format(json.dumps(query))
-            print(url)
-            r = requests.get(url)
-            return JsonResponse(r.json())
-        else:
-            return HttpResponseBadRequest()
+        }
+        index = 'wikidata' # TODO
+        url = settings.ELASTICSEARCH_URL + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format(json.dumps(query))
+        print(url)
+        r = requests.get(url)
+        return JsonResponse(r.json())
     else:
-        return HttpResponseForbidden()
+        return HttpResponseBadRequest()
 
 
 @login_required
-def elasticsearchCreate(request, index):
-    if request.method == 'POST':
-        data = json.loads(request.POST['data'])
-        data['new'] = True
-        # random identifier
-        data['uri'] = ''.join(random.choice('0123456789ABCDEF') for i in range(32))
+@require_POST
+def resource_create(request, index):
+    data = json.loads(request.POST['data'])
+    data['new'] = True
+    # random identifier
+    data['uri'] = ''.join(random.choice('0123456789ABCDEF') for i in range(32))
 
-        # store data in elasticsearch
-        es = ElasticSearch(settings.ELASTICSEARCH_URL)
-        if index == 'persons':
-            es.index(index, "person", data)
-        elif index == 'institutes':
-            es.index(index, "institute", data)
-        es.refresh(index)
+    # store data in elasticsearch
+    es = ElasticSearch(settings.ELASTICSEARCH_URL)
+    if index == 'persons':
+        es.index(index, "person", data)
+    elif index == 'institutes':
+        es.index(index, "institute", data)
+    es.refresh(index)
 
-        return JsonResponse(data)
-    else:
-        return HttpResponseForbidden()
+    return JsonResponse(data)

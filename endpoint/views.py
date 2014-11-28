@@ -3,11 +3,14 @@ import json
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods, require_POST
 from django.conf import settings
 from SPARQLWrapper import SPARQLWrapper
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 
+
 @login_required
+@require_http_methods(["GET", "POST"])
 def query(request):
     sparql_query = ''
     sparql_output= 'json'
@@ -43,28 +46,26 @@ def query_form(request):
 
 
 @login_required
+@require_POST
 def annotation_created(request):
-    if request.method == 'POST':
-        annotation = json.loads(request.POST['annotation'])
-        rdf = annotation['rdf']
-        print(settings.ENDPOINT_UPDATE)
+    annotation = json.loads(request.POST['annotation'])
+    rdf = annotation['rdf']
+    print(settings.ENDPOINT_UPDATE)
 
-        if rdf['typeof'] == 'foaf:Person':
-            # insert statements about a person
-            try:
-                # http://stackoverflow.com/questions/14160437/insert-delete-update-query-using-sparqlwrapper
-                sparql = SPARQLWrapper(settings.ENDPOINT, settings.ENDPOINT_UPDATE)
-                sparql.method = 'POST'
-                sparql.setQuery(statement_about_person(annotation))
-                sparql.query()
-            except Exception as e:
-                print(e)
-        elif rdf['typeof'] == 'aiiso:Institution':
-            pass
+    if rdf['typeof'] == 'foaf:Person':
+        # insert statements about a person
+        try:
+            # http://stackoverflow.com/questions/14160437/insert-delete-update-query-using-sparqlwrapper
+            sparql = SPARQLWrapper(settings.ENDPOINT, settings.ENDPOINT_UPDATE)
+            sparql.method = 'POST'
+            sparql.setQuery(statement_about_person(annotation))
+            sparql.query()
+        except Exception as e:
+            print(e)
+    elif rdf['typeof'] == 'aiiso:Institution':
+        pass
 
-        return HttpResponse('')
-    else:
-        return HttpResponseForbidden()
+    return HttpResponse('')
 
 
 def statement_about_person(annotation):

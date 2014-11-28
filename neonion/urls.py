@@ -18,6 +18,6 @@ urlpatterns = patterns('',
     url(r'^annotationsets/', include('annotationsets.urls')),
 
     # Elasticsearch proxy
-    url(r'^es/(?P<index>\w+)$', 'neonion.views.elasticsearch'),
-    url(r'^es/create/(?P<index>\w+)$', 'neonion.views.elasticsearchCreate'),
+    url(r'^es/(?P<index>\w+)$', 'neonion.views.resource_search'),
+    url(r'^es/create/(?P<index>\w+)$', 'neonion.views.resource_create'),
 )

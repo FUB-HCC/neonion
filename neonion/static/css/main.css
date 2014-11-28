@@ -2876,7 +2876,9 @@ input[type="text"], input[type="password"], input[type="email"] {
   border: 1px solid #cdcdcd;
   font-size: 16px;
   line-height: 26px;
-  padding: 12px 16px;
+  padding: 12px 16px; }
+
+input, textarea {
   width: 100%; }
 
 form label {

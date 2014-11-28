@@ -14,6 +14,9 @@ input[type="text"], input[type="password"], input[type="email"] {
   font-size: $base-font-size;
   line-height: $baseline;
   padding: ($half-baseline - 1px) $column-gap;
+}
+
+input, textarea {
   width: 100%;
 }
 

@@ -3,11 +3,13 @@
 import requests
 import re
 
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 
 
-class ContentSystem:
-    __metaclass__ = ABCMeta
+class ContentSystem(object):
+
+    def __init__(self):
+        pass
 
     @abstractmethod
     def list(self):
@@ -29,6 +31,7 @@ class ContentSystem:
 class Euler(ContentSystem):
     def __init__(self, cms_url):
         self.url = cms_url
+        super(Euler, self).__init__()
 
     def list(self):
         doc_list = []

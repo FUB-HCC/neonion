@@ -1,0 +1,16 @@
+[
+{
+    "fields": {
+        "surname": "Admin",
+        "name": "Admin",
+        "is_active": true,
+        "joined": "2014-09-10T13:19:08.400Z",
+        "last_login": "2014-11-27T13:26:59.598Z",
+        "is_admin": true,
+        "password": "pbkdf2_sha256$12000$33GxZYjjRpUN$O0pLj95321p2atuOxouUHcX0qkt98Kp90pECx6gWlI4=",
+        "email": "neonion-admin@neonion.org"
+    },
+    "model": "accounts.user",
+    "pk": 1
+}
+]

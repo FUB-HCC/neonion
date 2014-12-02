@@ -6,38 +6,59 @@
         {% url 'neonion.views.load_settings' as url_settings %}
         {% url 'accounts.views.logout' as url_logout %}
 
+        {# My neonion #}
         <li {% if request.path == url_home %}class="active"{% endif %}>
             <a href="{{ url_home }}">
-                <span class="fa fa-home fa-fw"></span>My Neonion
+                <span class="fa fa-home fa-fw"></span>My neonion
             </a>
         </li>
+        {# Import #}
         <li {% if request.path == url_import %}class="active"{% endif %}>
             <a href="{{ url_import }}">
                 <span class="fa fa-upload fa-fw"></span>Import
             </a>
         </li>
+        {# Settings #}
         <li {% if request.path == url_settings %}class="active"{% endif %}>
             <a href="{{ url_settings }}">
                 <span class="fa fa-cog fa-fw"></span>Settings
             </a>
         </li>
+        {# Admin section #}
+        {% if request.user.is_admin %}
+            {% url 'endpoint.views.query_form' as url_query %}
+            {% url 'user_list' as url_user_list %}
+
+            {# Query form #}
+            <li {% if request.path == url_query %}class="active"{% endif %}>
+                <a href="{{ url_query }}">
+                    <span class="fa fa-cube fa-fw"></span>Query
+                </a>
+            </li>
+            {# Registered users #}
+            <li {% if request.path == url_user_list %}class="active"{% endif %}>
+                <a href="{{ url_user_list }}">
+                    <span class="fa fa-users fa-fw"></span>Users
+                </a>
+            </li>
+        {% endif %}
+
+        {# Logout #}
         <li {% if request.path == url_logout %}class="active"{% endif %}>
             <a href="{{ url_logout }}">
                 <span class="fa fa-sign-out fa-fw"></span>Logout
             </a>
         </li>
-        {% if request.user.is_superuser %}
-
-        {% endif %}
     {% else %}
         {% url 'accounts.views.login' as url_login %}
         {% url 'accounts.views.register' as url_register %}
-
+        {# Login #}
         <li {% if request.path == url_login %}class="active"{% endif %}>
             <a href="{{ url_login }}">
                 <span class="fa fa-sign-in fa-fw"></span>Sign In
             </a>
         </li>
+        {# Register #}
         <li {% if request.path == url_register %}class="active"{% endif %}>
             <a href="{{ url_register }}">
                 <span class="fa fa-plus-square-o fa-fw"></span>Sign Up

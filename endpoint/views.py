@@ -40,7 +40,11 @@ def query_form(request):
     elif request.method == 'GET' and 'query-field' in request.GET:
         sparql_query = request.GET['query-field']
     else:
-        sparql_query = 'SELECT * {\n   ?s ?p ?o\n}\nLIMIT 50'
+        sparql_query = """SELECT * {
+        \t?s <rdf:type> <foaf:Person> .
+        \t?s <foaf:name> ?n
+        }
+        LIMIT 50"""
 
     return render_to_response('base_query.html', {'query': sparql_query, 'endpoint': settings.ENDPOINT}, context_instance=RequestContext(request))
 

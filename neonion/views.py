@@ -82,6 +82,7 @@ def import_document(request):
 @require_GET
 def resource_search(request, index):
     if 'q' in request.GET:
+        # TODO call WikiData.search method
         size = 10
         query = {
             'query': {

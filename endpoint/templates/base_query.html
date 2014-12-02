@@ -6,9 +6,9 @@
 
 {% block content %}
     <div class="unit-80">
-        <div class="big" style="margin-top:1em;margin-bottom:1em;">Query form</div>
         <form action="{% url 'endpoint.views.query_form' %}" method="post">
             {% csrf_token %}
+            <div>Query form</div>
             <pre id="query-prefixes"></pre>
             <textarea id="query-field" name="query-field" class="width-100" rows="15">{{ query }}</textarea>
             <button id="submit-query" class="btn btn-small btn-outline mid">Submit</button>

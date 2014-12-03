@@ -3,43 +3,30 @@
 {% load staticfiles %}
 
 {% block title %}Import{% endblock %}
+{% block page_id %}import{% endblock %}
 
-{% block top_right %}{% endblock %}
-
-{% block bottom_left %}
-    <div class="unit-20">
-        <nav class="nav">
-            <ul>
-                <li><a href="/annotator"><span class="fa fa-home fa-fw"></span>My Neonion</a></li>
-                <li><a href="#" id="show_import_dialog" class="nav-active"><span class="fa fa-upload fa-fw"></span>Import</a></li>
-                <li><span><span class="fa fa-pencil-square-o fa-fw"></span>Annotate</span></li>
-                <li><span><span class="fa fa-bar-chart-o fa-fw"></span>Analyze</span></li>
-                <!-- <li><a href="/accounts/profile"><span class="fa fa-child fa-fw"></span>Profile</a></li> -->
-                <!-- <li><span><span class="fa fa-cogs fa-fw"></span>Settings</span></li> -->
-                <li><a href="/accounts/logout"><span class="fa fa-sign-out fa-fw"></span>Logout</a></li>
-                <li id="help-link"><span><span class="fa fa-question fa-fw"></span>Help</span></li>
-            </ul>
-        </nav>
+{% block content %}
+<div>
+    <p>Please select the files you want to import to your working space.</p>
+    <div class="scroll-container">
+        <ul id="document-import-list" class="document-list"></ul>
     </div>
-{% endblock %}
-
-{% block bottom_right %}
-<div class="unit-80" style="padding-top: 1em;">
-    <p style="">Please select the files you want to import to your working space.</p>
-    <div class="import-dialog" id="dialog-import">
-        <ul id="document-import-list"></ul>
-        <div class="units-row end dialog-foot">
-            <button class="btn btn-small btn-outline mid cancel-btn">Cancel</button>
-            <button class="btn btn-small btn-outline mid" onclick="importSelectedDocuments()">Import</button>
-            <div id="document-cache" style="display:none"></div>
-        </div>
-    </div>
+    <div class="form-buttons">
+      <button id="btn-import" class="button pull-right">Import</button>
+      <a href="/" class="button button-secondary pull-right">Cancel</a>
+    </div> 
+    <form method="post" action="{% url 'documents.views.upload' %}" enctype="multipart/form-data" style="display:none">
+        {% csrf_token %}
+        <input id="file-upload" name="file-upload" type="file" multiple>
+        <input type="submit" />
+    </form>
 </div>
 {% endblock %}
 
 {% block scripts %}
 
 <script language="javascript">
+    "use strict";
 
     var selectedDocs = [];
     var docList = [];
@@ -47,32 +34,36 @@
     $(document).ready(function() {
         $( "#document-import-list" ).selectable();
 
-        $("#document-import").click(function() {
-            $("#document-import").attr("disabled", true);
-            importDocuemt();
+        $("#btn-import").click(function() {
+            $("#btn-import").attr("disabled", true);
+            importSelectedDocuments();
+            return false;
         });
 
         refreshDocuments();
     });
 
     function refreshDocuments() {
-        $.getJSON("/documents/list", function(data) {
+        $.getJSON("{% url 'documents.views.euler_list' %}", function(data) {
             docList = data;
             // clear list
             $("#document-import-list").html('');
-            // create docuement import list
+            // create document import list
             $.each(data, function(index, value) {
                 // var item = new Option( value.urn, value.name );
-                var item = $('<li></li>').attr( 'id', value.urn ).text( value.name ).attr('class','ui-widget-content');
+                var item = $('<li></li>').attr( 'id', value.urn ).text( value.name );
                 $('#document-import-list').append( item );
             });
         });
     }
 
     function importSelectedDocuments(){
-        $( '.ui-selected' ).each(function() {
+        $("#btn-import").prop('disabled', true);
+
+        $('.ui-selected').each(function() {
             selectedDocs.push( this.id );
         });
+
         importNextDocument();
     }
 
@@ -80,40 +71,14 @@
         if (selectedDocs.length > 0) {
             var urn = selectedDocs.shift();
             console.log("Import document " + urn);
-            $.get("/document/get/" + urn, function(data) {
-                importDocuemt(urn, data);
+            $.getJSON("/documents/euler/import/" + urn, function(data) {
+                console.log(data);
                 importNextDocument();
             });
         }
-    }
-
-    function importDocuemt(docUrn, content) {
-        var title = docUrn;
-        // get proper title
-        docList.forEach(function(element, index, array) {
-            if (element.urn == docUrn) {
-                title = element.name;
-            }
-        });
-
-        // assemble POST data
-        var entityData = {
-            uri : null ,
-            title : title,
-            content : content,
-            type : config.scms.uri.elementText,
-            dataCreated : 0, lastModified : 0,
-        };
-
-        jQuery.ajax({
-            url: config.scms.server + config.scms.service.create,
-            type: 'POST',
-            data : { "data" : JSON.stringify(entityData), fmt : "JSON", csrfmiddlewaretoken : getCookie('csrftoken') }
-        }).success(function(data, textStatus, jqXHR) {
-
-        }).error(function(jqXHR, textStatus, errorThrown) {
-            console.log(errorThrown);
-        });
+        else {
+            window.location = "{% url 'neonion.views.home' %}";
+        }
     }
 
     function getCookie(name) {

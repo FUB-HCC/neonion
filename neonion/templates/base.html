@@ -6,57 +6,43 @@
 
     <title>Neonion - {% block title %}{% endblock %}</title>
     {% load staticfiles %}
-    {% block stylesheets %}{% endblock %}
-    <link rel="stylesheet" href="{% static 'css/kube.css' %}" type="text/css" media="screen" />
-    <link rel="stylesheet" href="{% static 'css/neonion.css' %}" type="text/css" media="screen" />
-    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}" type="text/css" media="screen" />
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
 </head>
-<body>
+<body id="page-{% block page_id %}general{% endblock %}">
 
-{% block top %}
-    <div class="bg bg-20"></div>
-    <div class="units-row end" id="headline">
-
-        <div class="unit-20">
-            {% block top_left %}
-            <div class="units-row">
-                <h1 class="neonion-logo">
-                    <span class="ul_1">n</span>
-                    <span>e</span>
-                    <span class="ul_3">
-                        <span class="orange ul_2">o</span>
-                        <span class="ul_1">n</span>
-                    </span>
-                    <span>i</span>
-                    <span class="ul_3">
-                        <span class="orange ul_2">o</span>
-                        <span class="ul_1">n</span>
-                    </span>
-                </h1>
-            </div>
-            {% endblock %}
+{% block left %}
+    <div class="sidebar">
+        <div class="logo-wrapper">
+            <div class="logo"></div>
         </div>
-
-        {% block top_right %}{% endblock %}
+        {% include "navigation.html" %}
     </div>
 {% endblock %}
 
-{% block bottom %}
-    <div class="units-row">
-        {% block bottom_left %}{% endblock %}
-        {% block bottom_right %}{% endblock %}
+{% block right %}
+    <div class="main">
+      <div class="header">&nbsp;</div>
+      <div class="content">
+      {% block content %}{% endblock %}
+      </div>
     </div>
 {% endblock %}
 
-{% block content %}{% endblock %}
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="{% static 'js/neonion.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/sprintf.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/moment.js' %}"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
 
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+
+    <!-- Include the hashgrid script -->
+    <script type="text/javascript" src="{% static 'js/hashgrid.js' %}"></script>
+
+    <!-- Kick hashgrid into action -->
+    <script type="text/javascript">
+      var grid = new hashgrid({ numberOfGrids: 2 });
+    </script>
 
     {% block scripts %}{% endblock %}
 </body>

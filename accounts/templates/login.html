@@ -1,0 +1,28 @@
+{% extends "base_accounts.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Sign In{% endblock %}
+{% block page_id %}signin{% endblock %}
+
+{% block registration %}
+<p>Please Sign In before using neonion.</p>
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>{{ form.email.label }}</label>
+            {{ form.email }}
+        </div>
+        <div class="form-group">
+            <label>{{ form.password.label }}</label>
+            {{ form.password }}
+        </div>
+        <div class="form-buttons">
+            <button class="button pull-right">Sign in</button>
+            <a href="/" class="button button-secondary button-wide pull-right">Forgot password?</a>
+        </div> 
+    </form>
+    {% for error in form.non_field_errors %}
+    <p class="label label-outline label-red">{{ error|escape }}</p>
+    {% endfor %}
+{% endblock %}

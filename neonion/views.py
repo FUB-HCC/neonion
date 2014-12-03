@@ -1,16 +1,21 @@
 # coding=utf-8
 
-from django.core.urlresolvers import reverse
-from django.conf import settings
-from django.shortcuts import render_to_response
-from django.template import RequestContext, Context
-from django.contrib.auth.decorators import login_required
-from pyelasticsearch import ElasticSearch
-
 import json
 import random
 import requests
-from django.http import HttpResponse
+
+from django.http import HttpResponseBadRequest
+from django.conf import settings
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST, require_GET
+from pyelasticsearch import ElasticSearch
+from documents.models import Document
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from annotationsets.models import AnnotationSet
+from neonion.models import Workspace
 
 
 # Create your views here.
@@ -18,81 +23,108 @@ from django.http import HttpResponse
 def home(request):
     return render_to_response('base_overview.html', {}, context_instance=RequestContext(request))
 
-@login_required
-def annotator(request, doc_id):
-    loomp_url = 'http://localhost:8080/content/get?uri={}'.format( "http://loomp.org/data/" + doc_id )
-    r = requests.get( loomp_url )
-    doc = json.loads(r.text)
 
-    data = {}
-    data['doc_id'] = doc_id
-    data['doc_title'] = doc['title']
-    data['doc_content'] = doc['content']
-    data['me_url'] = reverse('accounts:accounts.views.me')
-    data['store_url'] = settings.ANNOTATION_STORE_URL
-    
-    return render_to_response('base_annotator.html', Context(data), context_instance = RequestContext(request))
+@login_required
+def annotator(request, doc_urn):
+    doc = get_object_or_404(Document, urn=doc_urn)
+    workspace = Workspace.objects.get_workspace(owner=request.user)
+
+    data = {
+        'urn': doc_urn,
+        'title': doc.title,
+        'content': doc.content,
+        'endpoint_url': '/endpoint/',
+        'store_url': settings.ANNOTATION_STORE_URL,
+        'annotation_sets': workspace.annotation_sets.all()
+    }
+    return render_to_response('base_annotator.html', data, context_instance=RequestContext(request))
+
+
+@login_required
+def load_settings(request):
+    workspace = Workspace.objects.get_workspace(owner=request.user)
+
+    # update active annotation sets in current workspace
+    if request.method == 'POST':
+        # better move to update settings view???
+        if 'as' in request.POST:
+            active_sets = request.POST.getlist('as')
+        else:
+            active_sets = []
+
+        for annotation_set in AnnotationSet.objects.all():
+            if annotation_set.uri in active_sets:
+                workspace.annotation_sets.add(annotation_set)
+            else:
+                workspace.annotation_sets.remove(annotation_set)
+
+    annotation_sets = []
+    for annotation_set in AnnotationSet.objects.all():
+        annotation_sets.append({
+            'uri': annotation_set.uri,
+            'label': annotation_set.label,
+            'allow_creation': annotation_set.allow_creation,
+            'active': workspace.annotation_sets.all().filter(uri=annotation_set.uri).exists()
+        })
+
+    data = {
+        'annotation_sets': annotation_sets
+    }
+    return render_to_response('base_settings.html', data, context_instance=RequestContext(request))
+
 
 @login_required
 def import_document(request):
-    return render_to_response('base_import.html', { }, context_instance=RequestContext(request))
+    return render_to_response('base_import.html', {}, context_instance=RequestContext(request))
+
 
 @login_required
-def elasticsearch(request, index):
-    if request.GET:
-        if 'q' in request.GET:
-            query = request.GET.get('q')
-            size = 10
-            url = settings.ELASTICSEARCH_URL + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={"query":{"fuzzy_like_this":{"fields":["label","alias"],"like_text":"' + query + '"}}}'
-            print(url)
-            r = requests.get( url )
-            return HttpResponse( r.text, content_type='application/json' )
+@require_GET
+def resource_search(request, index):
+    if 'q' in request.GET:
+        # TODO call WikiData.search method
+        size = 10
+        query = {
+            'query': {
+                'filtered': {
+                    'query': {
+                        'fuzzy_like_this': {
+                            'like_text': request.GET.get('q'),
+                            'fields': ['label', 'alias'],
+                            'fuzziness': 0.1,
+                        }
+                    },
+                    'filter': {
+                        'type': {
+                            'value': index
+                        }
+                    }
+                }
+            }
+        }
+        index = 'wikidata' # TODO
+        url = settings.ELASTICSEARCH_URL + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format(json.dumps(query))
+        print(url)
+        r = requests.get(url)
+        return JsonResponse(r.json())
+    else:
+        return HttpResponseBadRequest()
+
 
 @login_required
-def elasticsearchCreate(request, index):
-    if request.method == 'GET':
-        data = dict(map(lambda (k,v): (k, ''.join(v)), request.GET.iterlists()))
-        data['new'] = True
-        # random identifer
-        data['uri'] = ''.join(random.choice('0123456789ABCDEF') for i in range(32))
-     
-        # store data in elasticsearch
-        es = ElasticSearch(settings.ELASTICSEARCH_URL)
-        if index == 'persons':
-            es.index(index, "person", data)
-        elif index == 'institutes':
-            es.index(index, "institute", data)
-        es.refresh(index)
+@require_POST
+def resource_create(request, index):
+    data = json.loads(request.POST['data'])
+    data['new'] = True
+    # random identifier
+    data['uri'] = ''.join(random.choice('0123456789ABCDEF') for i in range(32))
 
-        return HttpResponse(json.dumps(data), content_type="application/json")
+    # store data in elasticsearch
+    es = ElasticSearch(settings.ELASTICSEARCH_URL)
+    if index == 'persons':
+        es.index(index, "person", data)
+    elif index == 'institutes':
+        es.index(index, "institute", data)
+    es.refresh(index)
 
-@login_required
-def loomp_get(request):
-    if request.GET:
-        if 'uri' in request.GET:
-            loomp_url = 'http://localhost:8080/content/get?uri={}'.format( request.GET.get('uri') )
-            r = requests.get( loomp_url )
-            return HttpResponse( r.text, content_type='application/json' )
-        else:
-            pass
-
-@login_required
-def loomp_getAll(request):
-    if request.GET:
-        if 'type' in request.GET:
-            loomp_url = 'http://localhost:8080/content/getAll?type={}'.format( request.GET.get('type') )
-            r = requests.get( loomp_url )
-            print(r.url)
-            return HttpResponse( r.text, content_type='application/json' )
-        else:
-            pass
-
-@login_required
-def loomp_save(request):
-    if request.POST:
-        if 'data' in request.POST:
-            loomp_url = 'http://localhost:8080/content/save'
-            r = requests.post( loomp_url, data = { 'data' : request.POST.get('data'), 'fmt': 'JSON' } )
-            return HttpResponse( r.text, content_type='application/json' )
-        else:
-            pass
+    return JsonResponse(data)

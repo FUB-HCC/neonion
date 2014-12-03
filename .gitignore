@@ -6,3 +6,5 @@ db.*
 db.sqlite3
 staticfiles
 __pycache__
+*.css.map
+.sass-cache/

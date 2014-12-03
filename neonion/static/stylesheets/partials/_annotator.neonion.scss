@@ -1,0 +1,58 @@
+.btn,
+input[type="submit"].btn {
+  display: inline-block;
+  vertical-align: top;
+  font-family: "Helvetica Neue", Helvetica, Tahoma, sans-serif;
+  font-size: 1em;
+  font-weight: 400;
+  line-height: 1.65em;
+  text-align: left;
+  text-decoration: none;
+  color: #222222;
+  -webkit-appearance: none;
+  outline: none;
+  margin: 0;
+  border: none;
+  border-radius: 2px;
+  box-shadow: none;
+  cursor: pointer;
+  background: #e0e3e5;
+  padding: 0.55em 2.5em;
+}
+
+.annotator-widget #resource-form {
+  padding: 5px;
+  border-top: 1px solid #000;
+}
+
+.annotator-widget #resource-form #resource-search {
+  border: 1px solid #000;
+  border-radius: 4px;
+  width: 50%;
+  padding: 3px 2px 3px 3px;
+}
+
+.annotator-overlay {
+  position: absolute;
+  background-color: #fff;
+  padding: 10px;
+  top: 100px;
+  left: 50px;
+  border: 1px solid black;
+  border-radius: 5px;
+  max-width: 400;
+  z-index: 1200;
+}
+
+.annotator-widget .annotator-item #create-toggle {
+  width: 100%;
+}
+
+.annotator-widget .annotator-item #create-form {
+  padding : 5px;
+}
+.annotator-widget .annotator-item #create-form input {
+  border : 1px solid #dcdcdc;
+  border-radius : 5px;
+  padding : 3px 5px 3px 5px;
+}

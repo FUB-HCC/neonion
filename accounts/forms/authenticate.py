@@ -6,22 +6,29 @@ class AuthenticationForm(forms.Form):
     """
     Login form
     """
-    email = forms.EmailField(widget=forms.EmailInput(attrs={
-                                                        'placeholder':'john.doe@example.com',
-                                                        'class': 'width-100',
-                                                    }), label="Email")
-    password = forms.CharField(widget=forms.PasswordInput(attrs={
-                                                            'placeholder':'********',
-                                                            'class': 'width-100 last_input'
-                                                        }), label="Password")
+    email = forms.EmailField(widget=forms.EmailInput(
+        attrs={
+            'placeholder':'john.doe@example.com',
+            'class': 'width-100',
+        }),
+        label="Email")
+
+    password = forms.CharField(widget=forms.PasswordInput(
+        attrs={
+            'placeholder':'********',
+            'class': 'width-100 last_input'
+        }),
+        label="Password")
 
     def clean(self):
-        print( self.cleaned_data )
+        #print( self.cleaned_data )
         email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
         user = authenticate(email=email, password=password)
-        if not user or not user.is_active:
+        if not user:
             raise forms.ValidationError("Sorry, that login was invalid. Please try again.")
+        elif not user.is_active:
+            raise forms.ValidationError("An administrator must approve this request before you can login.") 
         return self.cleaned_data
 
     class Meta:

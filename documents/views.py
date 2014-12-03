@@ -1,69 +1,114 @@
 # coding=utf-8
 
-from django.conf import settings
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-from django.contrib.auth.decorators import login_required
-
+import os
 import json
-import re
-import requests
-from requests.exceptions import ConnectionError, RequestException
-from django.http import HttpResponse
+
+from django.http import HttpResponse, Http404
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_GET, require_POST
+from django.http import JsonResponse
+from documents.models import Document
+from neonion.models import Workspace
+from bs4 import BeautifulSoup
+from django.shortcuts import get_object_or_404, redirect
+from django.core.files.base import ContentFile
+from operator import itemgetter
+from common.cms import Euler
+
 
 @login_required
 def list(request):
-    response_data = []
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1964-1965", "urn" : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1964-1965" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1958-1960", "urn" : "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1958-1960" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1972-1973", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1972-1973" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1968-1969", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1968-1969" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1966-1967", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1966-1967" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1964-1965", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1964-1965" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1962-1963", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1962-1963" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1961-1962", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1961-1962" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1960-1961", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1960-1961" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1958-1960", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1958-1960" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1956-1958", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1956-1958" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1954-1956", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1954-1956" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1952-1954 Teil1", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil1" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1952-1954 Teil2", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1952-1954_Teil2" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1951-1952", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1951-1952" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1946-51 Teil1", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil1" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1946-51 Teil2", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil2" })
-    response_data.append({ "name": "Tätigkeitsbericht der MPG 1946-51 Teil3", "urn" : "Tätigkeitsberichte_der_MPG___MPG_Tätigkeitsbericht_1946-51_Teil3" })
-    return HttpResponse(json.dumps(response_data), content_type="application/json")
+    workspace = Workspace.objects.get_workspace(owner=request.user)
+    #workspace.delete()
+
+    documents = []
+    for doc in workspace.documents.all():
+        documents.append({ 
+            "urn": doc.urn,
+            "title": doc.title,
+            "createdAt": str(doc.created)
+        })
+
+    return JsonResponse(documents, safe=False)
+
 
 @login_required
-def get(request, doc_id):
-    response_data = []
-    pn = 1
-    while True:
-        try:
-            cms_url = settings.EULER_URL + u'/hocr?document={0}&pn={1}'.format(doc_id, pn)
-            print(cms_url)
-            pn += 1
-            response = requests.get(cms_url)
-            if (response.status_code == 200):
-                response_data.append(response.text)
-            #else:
-            break
-        except (ConnectionError, RequestException) as err:
-            break
-    
-    # strip markup
-    response_data = map(postprocessContent, response_data)
-    return HttpResponse(''.join(response_data), content_type="text/plain")
+@require_POST
+def upload(request):
+    for f in request.FILES:
+        file = ContentFile(request.FILES[f].read())
+        # type json
 
-def postprocessContent(row):
-      row = re.sub(r'\n', '', row)
-      row = re.sub(r'<\/*span[^>]*?>', '', row)
-      return row
+        j = json.loads(file.read())
+        if not Document.objects.filter(urn=j['urn']).exists():
+            Document.objects.create_document(j['urn'], j['title'], j['content'])
+
+    return redirect('/')
+
 
 @login_required
-def meta(request, doc_id):
+def meta(request, doc_urn):
     pass
+
+
+@login_required
+def to_json(request, doc_urn):
+    document = get_object_or_404(Document, urn=doc_urn)
+    return JsonResponse({"urn": document.urn, "title": document.title, "content": document.content})
+
 
 @login_required
 def query(request, search_string):
+    pass
+
+
+@login_required
+def euler_list(request):
+    cms = Euler(settings.EULER_URL)
+    return JsonResponse(sorted(cms.list(), key=itemgetter('name')), safe=False)
+
+
+@login_required
+def euler_import(request, doc_urn):
+    # import document if it not exists otherwise skip import
+    if not Document.objects.filter(urn=doc_urn).exists():
+        cms = Euler(settings.EULER_URL)
+        new_document = cms.get_document(doc_urn)
+        document = Document.objects.create_document(doc_urn, new_document['title'], new_document['content'])
+    else:
+        document = Document.objects.get(urn=doc_urn)
+
+    # import document into workspace
+    if document:
+        workspace = Workspace.objects.get_workspace(owner=request.user)
+        workspace.documents.add(document)
+
+    return JsonResponse({"urn": doc_urn, "title": document.title})
+
+
+# this method fakes the communication to euler
+@require_GET
+def euler_hocr(request):
+    page_number = int(request.GET['pn']) - 1
+    local_path = "/Users/administrator/Desktop/jahrbuch74/hocr/hocr/"
+    files = os.listdir(local_path)
+    if page_number < len(files):
+        file = open(local_path + files[page_number])
+        soup = BeautifulSoup(file.read())
+
+        page_html = "".join([str(x) for x in soup.body.contents])
+        return HttpResponse("<div class='pageContent'>" + page_html + "</div>",
+                            content_type="text/plain; charset=utf-8")
+    else:
+        return Http404()
+
+
+@login_required
+def euler_meta(request, doc_urn):
+    pass
+
+
+@login_required
+def euler_query(request, search_string):
     pass

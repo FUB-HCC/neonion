@@ -1,15 +1,17 @@
-from django.shortcuts import render, render_to_response, redirect
+from django.shortcuts import render_to_response, redirect
+from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_GET
 from django.contrib.auth import login as django_login, authenticate, logout as django_logout
 from accounts.forms import AuthenticationForm, RegistrationForm
+from accounts.models import User
+from django.http import JsonResponse
 
-import json
-from django.http import HttpResponse
 
 def login(request):
     """
-    Log in view
+    Login view
     """
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -21,27 +23,32 @@ def login(request):
                     return redirect('/')
     else:
         form = AuthenticationForm()
-    return render_to_response('accounts/login.html', {
+
+    return render_to_response('login.html', {
         'form': form,
     }, context_instance=RequestContext(request))
+
 
 def register(request):
     """
     User registration view.
     """
+    success = False
     if request.method == 'POST':
         form = RegistrationForm(data=request.POST)
         if form.is_valid():
             user = form.save()
-            return redirect('/')
+            success = True
     else:
         form = RegistrationForm()
-    return render_to_response('accounts/register.html', {
-        'form': form,
+
+    return render_to_response('register.html', {
+        'form': form, 'success': success
     }, context_instance=RequestContext(request))
 
+
 @login_required
-def profile(request):
+def profile(request, user):
     """
     profile view.
     """
@@ -52,17 +59,17 @@ def profile(request):
     #         return redirect('/')
     # else:
     #     form = RegistrationForm()
-    return render_to_response('accounts/profile.html', context_instance=RequestContext(request) )
+    return render_to_response('profile.html', context_instance=RequestContext(request))
+
 
 @login_required
 def me(request):
     user = {
-       'email': request.user.email,
-       'name':  request.user.name,
-       'surname': request.user.surname,
+        'email': request.user.email,
+        'name':  request.user.name,
+        'surname': request.user.surname,
     }
-    return HttpResponse(json.dumps(user), content_type="application/json")
-
+    return JsonResponse(user)
 
 
 def logout(request):
@@ -71,3 +78,27 @@ def logout(request):
     """
     django_logout(request)
     return redirect('/')
+
+
+@login_required
+def delete_user(request, userID):
+    user = User.objects.filter(email=userID)[0]
+    if not user.is_admin:
+        user.delete()
+
+    return redirect('accounts.views.list')
+
+
+@login_required
+@require_GET
+def edit_user(request, userID):
+    if User.objects.filter(email=userID).exists():
+        user = User.objects.filter(email=userID)[0]
+        if 'active' in request.GET:
+            user.is_active = bool(int(request.GET['active']))
+        if 'admin' in request.GET:
+            user.is_admin = bool(int(request.GET['admin']))
+        
+        user.save()
+
+    return redirect(reverse('user_list'))

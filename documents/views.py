@@ -4,6 +4,7 @@ import os
 import json
 
 from django.http import HttpResponse, Http404
+from documents.urls import DocumentSerializer
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
@@ -15,22 +16,17 @@ from django.shortcuts import get_object_or_404, redirect
 from django.core.files.base import ContentFile
 from operator import itemgetter
 from common.cms import Euler
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 @login_required
+@api_view(['GET'])
 def list(request):
     workspace = Workspace.objects.get_workspace(owner=request.user)
-    #workspace.delete()
-
-    documents = []
-    for doc in workspace.documents.all():
-        documents.append({ 
-            "urn": doc.urn,
-            "title": doc.title,
-            "createdAt": str(doc.created)
-        })
-
-    return JsonResponse(documents, safe=False)
+    documents = workspace.documents.all()
+    serializer = DocumentSerializer(documents, many=True)
+    return Response(serializer.data)
 
 
 @login_required

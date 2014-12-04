@@ -109,6 +109,7 @@
             else {
                this.setCompositor([]);
             }
+
             // collect default visible annotation sets
             for (var uri in compositor) {
                 if (compositor.hasOwnProperty(uri) && !compositor[uri].omitAdder) {

@@ -3,6 +3,7 @@ import wd_download
 import wd_extract
 import wd_import
 import logging
+from os import path
 
 
 if __name__ == '__main__':
@@ -10,12 +11,12 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                         datefmt='%m-%d %H:%M',
-                        filename='maintenance.log',
+                        filename=path.join(config.root_folder, 'maintenance.log'),
                         filemode='a')
 
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s',"%H:%M:%S")
+    formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s', "%H:%M:%S")
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 

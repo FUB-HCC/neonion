@@ -32,7 +32,7 @@
     function loadDocumentList() {
         var documentList = [];
         // load document list
-        $.getJSON({% url 'documents.views.list' %}, function(response) {
+        $.getJSON("{% url 'documents.views.list' %}", function(response) {
             response.forEach(function(entry) {
                 documentList.push( entry );
             });

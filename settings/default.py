@@ -102,14 +102,14 @@ USE_TZ = True
 
 # Static asset configuration
 import os
-PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
+# go one folder up from current directory (settings)
+PROJECT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
 STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_PATH, 'static'),
-)
-
+# STATICFILES_DIRS = (
+#     os.path.join(PROJECT_PATH, 'staticfiles'),
+# )
 # STATIC_URL = '/static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 

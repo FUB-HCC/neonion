@@ -21,15 +21,6 @@ from rest_framework.response import Response
 
 
 @login_required
-@api_view(['GET'])
-def list(request):
-    workspace = Workspace.objects.get_workspace(owner=request.user)
-    documents = workspace.documents.all()
-    serializer = DocumentSerializer(documents, many=True)
-    return Response(serializer.data)
-
-
-@login_required
 @require_POST
 def upload(request):
     for f in request.FILES:

@@ -22,7 +22,7 @@ class User(AbstractBaseUser):
     name = models.CharField('persons name', max_length=256)
     surname = models.CharField('persons surname', max_length=256)
     joined = models.DateTimeField(auto_now_add=True)
-    # is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'

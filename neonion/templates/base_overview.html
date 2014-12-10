@@ -32,8 +32,8 @@
     function loadDocumentList() {
         var documentList = [];
         // load document list
-        $.getJSON("{% url 'my_document_list' %}", function(response) {
-            response.forEach(function(entry) {
+        $.getJSON("{% url 'api.views.personal_workspace' %}", function(response) {
+            response.documents.forEach(function(entry) {
                 documentList.push( entry );
             });
             var today = moment().startOf("day");

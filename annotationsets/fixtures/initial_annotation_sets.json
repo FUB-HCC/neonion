@@ -1,16 +1,14 @@
 [
     {
         "model": "annotationsets.annotationset",
-        "pk": 1,
         "fields": {
             "uri": "foaf:Person",
             "label": "Person",
-            "allow_creation": true
+            "allow_creation": false
         }
     },
     {
         "model": "annotationsets.annotationset",
-        "pk": 2,
         "fields": {
             "uri": "aiiso:Institution",
             "label": "Institute",

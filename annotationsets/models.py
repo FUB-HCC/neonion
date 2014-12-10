@@ -7,7 +7,7 @@ class AnnotationSetManager(models.Manager):
 
 
 class AnnotationSet(models.Model):
-    uri = models.CharField('uri', unique=True, db_index=True, max_length=200)
+    uri = models.CharField('uri', primary_key=True, max_length=200)
     label = models.CharField('label', max_length=500)
     allow_creation = models.BooleanField('allowCreation', default=False)
     # assign manager

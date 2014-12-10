@@ -1,29 +1,10 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import patterns, url
 from django.views.generic import ListView
 from accounts.models import User
 from django.contrib.auth.decorators import login_required
-from rest_framework import routers, serializers, viewsets
-
-
-# Serializers define the API representation.
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ('email', 'name', 'surname', 'joined')
-
-
-# ViewSets define the view behavior.
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-# Routers provide an easy way of automatically determining the URL conf.
-router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
-
 
 urlpatterns = patterns('',
-    url(r'^', include(router.urls)),
+
     url(r'^me/?$', 'accounts.views.me'),
     url(r'^register/?$', 'accounts.views.register'),
     url(r'^login/?$', 'accounts.views.login'),

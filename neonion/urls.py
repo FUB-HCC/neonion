@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
-
 from django.contrib import admin
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -11,11 +11,11 @@ urlpatterns = patterns('',
     url(r'^annotator/(?P<doc_urn>.+)/$', 'neonion.views.annotator'),
     
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^api/', include('api.urls')),
     url(r'^accounts/', include('accounts.urls')),
     url(r'^documents/', include('documents.urls')),
     url(r'^endpoint/', include('endpoint.urls')),
-    url(r'^annotations/', include('annotations.urls')),
-    url(r'^annotationsets/', include('annotationsets.urls')),
+    url(r'^store/', include('store.urls')),
 
     # Elasticsearch proxy
     url(r'^es/(?P<index>\w+)$', 'neonion.views.resource_search'),

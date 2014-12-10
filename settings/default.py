@@ -46,10 +46,11 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'neonion',
+    'api',
     'documents',
     'accounts',
     'endpoint',
-    'annotations',
+    'store',
     'annotationsets',
 )
 
@@ -70,7 +71,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'neonion.urls'
 
-WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = 'wsgi_dev.application'
 
 
 # Database
@@ -125,9 +126,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",
 )
 
+
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
     # 'DEFAULT_PERMISSION_CLASSES': [
     #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     # ]

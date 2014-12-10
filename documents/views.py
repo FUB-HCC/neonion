@@ -4,7 +4,6 @@ import os
 import json
 
 from django.http import HttpResponse, Http404
-from documents.urls import DocumentSerializer
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
@@ -12,12 +11,10 @@ from django.http import JsonResponse
 from documents.models import Document
 from neonion.models import Workspace
 from bs4 import BeautifulSoup
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import redirect
 from django.core.files.base import ContentFile
 from operator import itemgetter
-from common.cms import Euler
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from common.euler import Euler
 
 
 @login_required
@@ -37,12 +34,6 @@ def upload(request):
 @login_required
 def meta(request, doc_urn):
     pass
-
-
-@login_required
-def to_json(request, doc_urn):
-    document = get_object_or_404(Document, urn=doc_urn)
-    return JsonResponse({"urn": document.urn, "title": document.title, "content": document.content})
 
 
 @login_required

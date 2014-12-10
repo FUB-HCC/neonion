@@ -1,6 +1,5 @@
-from django.conf import settings
-from django.contrib.auth.models import check_password
 from accounts.models import User
+
 
 class EmailAuthBackend(object):
     """

@@ -39,10 +39,22 @@ class DocumentSerializer(serializers.ModelSerializer):
         fields = ('urn', 'title', 'created', 'updated')
 
 
+# Serializers define the API representation.
+class DetailedDocumentSerializer(DocumentSerializer):
+    class Meta:
+        model = Document
+        fields = ('urn', 'title', 'content', 'created', 'updated')
+
+
 # ViewSets for document.
 class DocumentViewSet(viewsets.ModelViewSet):
     queryset = Document.objects.all()
-    serializer_class = DocumentSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return DetailedDocumentSerializer
+        else:
+            return DocumentSerializer
 
 
 # Serializers define the API representation.
@@ -71,5 +83,5 @@ router.register(r'annotationsets', AnnotationSetViewSet)
 
 urlpatterns = patterns('',
     url(r'^', include(router.urls)),
-    url(r'^workspace', 'api.views.personal_workspace'),
+    url(r'^workspace/$', 'api.views.personal_workspace'),
 )

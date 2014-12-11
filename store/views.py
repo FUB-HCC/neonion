@@ -4,62 +4,58 @@ from django.http import HttpResponseBadRequest
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from django.views.decorators.http import require_POST, require_GET
+from django.views.decorators.http import require_http_methods
 
 
 @login_required
-@require_GET
+@require_http_methods(["GET"])
 def root(request):
-    if request.method == 'GET':
-        response = requests.get(settings.ANNOTATION_STORE_URL + '/')
-        return JsonResponse(response.json(), safe=False)
-    else:
-        return HttpResponseBadRequest
+    response = requests.get(settings.ANNOTATION_STORE_URL + '/')
+    return JsonResponse(response.json(), safe=False)
 
 
 @login_required
-@require_GET
-def index(request):
+@require_http_methods(["GET", "POST"])
+def annotations(request):
     if request.method == 'GET':
         response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations')
         return JsonResponse(response.json(), safe=False)
+    elif request.method == 'POST':
+        # TODO data parameter
+        response = requests.post(settings.ANNOTATION_STORE_URL + '/annotations')
+        return JsonResponse(response.json(), safe=False)
     else:
         return HttpResponseBadRequest
 
 
 @login_required
-@require_GET
-def read(request, id):
+@require_http_methods(["GET", "PUT", "DELETE"])
+def annotation(request, id):
     if request.method == 'GET':
         response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations/' + id)
         return JsonResponse(response.json(), safe=False)
+    elif request.method == 'PUT':
+        # TODO data parameter
+        response = requests.put(settings.ANNOTATION_STORE_URL + '/annotations/' + id)
+        return JsonResponse(response.json(), safe=False)
+    elif request.method == 'DELETE':
+        response = requests.delete(settings.ANNOTATION_STORE_URL + '/annotations/' + id)
+        return JsonResponse(response.json(), safe=False)
     else:
         return HttpResponseBadRequest
 
 
 @login_required
-@require_GET
+@require_http_methods(["GET"])
 def filter_annotations(request):
-    response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations')
-    annotations = response.json()
-    filtered_annotations = [
-        element for element in annotations
-        if 'creator' in element and
-        'email' in element['creator'] and
-        element['creator']['email'] == request.user.email
-    ]
-    return JsonResponse(filtered_annotations, safe=False)
+    response = requests.get(settings.ANNOTATION_STORE_URL + '/search?creator.email=' + request.user.email)
+    return JsonResponse(response.json(), safe=False)
 
 
 @login_required
+@require_http_methods(["GET"])
 def search(request):
-    if request.method == 'GET':
-        response = requests.get(settings.ANNOTATION_STORE_URL + '/search?')
-        return JsonResponse(response.json(), safe=False)
-    else:
-        pass
-
-
-def list_my_annotations(request):
-    response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations')
+    print(request.GET.urlencode())
+    response = requests.get(settings.ANNOTATION_STORE_URL + '/search?' + request.GET.urlencode())
     return JsonResponse(response.json(), safe=False)
+

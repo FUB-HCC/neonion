@@ -20,7 +20,7 @@ def query(request):
         if 'output' in request.POST: sparql_output = request.POST['output']
     elif request.method == 'GET':
         if 'query' in request.GET: sparql_query = request.GET['query']
-        if 'output' in request.GET: sparql_output= request.GET['output']
+        if 'output' in request.GET: sparql_output = request.GET['output']
 
     print(sparql_query)
     try:
@@ -34,6 +34,7 @@ def query(request):
 
 
 @login_required
+@require_http_methods(["GET", "POST"])
 def query_form(request):
     if request.method == 'POST' and 'query-field' in request.POST:
         sparql_query = request.POST['query-field']

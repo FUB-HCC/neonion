@@ -12,7 +12,8 @@ body {
   background-color: #eeeeee;
   font-size: 16px;
   line-height: 26px;
-  font-family: 'Open Sans', sans-serif; }
+  font-family: 'Lato', sans-serif;
+  font-weight: 300; }
 
 p {
   margin: 13px 0; }
@@ -39,6 +40,9 @@ p {
 
 #page-signin .main, #page-signup .main {
   width: 540px; }
+
+#page-annotator #annotationArea {
+  font-weight: 400; }
 
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 /**
@@ -2771,7 +2775,7 @@ input[type="submit"].btn {
     border-left: 8px solid #ffffff;
     color: #8e8e93;
     display: block;
-    font-size: 16px;
+    font-size: 20px;
     padding: 13px 30px;
     text-decoration: none; }
     .nav-vertical li a .fa-fw {

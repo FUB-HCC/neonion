@@ -1,16 +1,30 @@
 [
-{
-    "fields": {
-        "surname": "Admin",
-        "name": "Admin",
-        "is_active": true,
-        "joined": "2014-09-10T13:19:08.400Z",
-        "last_login": "2014-11-27T13:26:59.598Z",
-        "is_admin": true,
-        "password": "pbkdf2_sha256$12000$33GxZYjjRpUN$O0pLj95321p2atuOxouUHcX0qkt98Kp90pECx6gWlI4=",
-        "email": "neonion-admin@neonion.org"
-    },
-    "model": "accounts.user",
-    "pk": 1
-}
+     {
+      "fields":{
+         "surname":"User",
+         "name":"Admin",
+         "is_active":true,
+         "joined":"2014-12-08T14:03:16.631Z",
+         "last_login":"2014-12-08T14:03:16.421Z",
+         "is_admin":true,
+         "password":"pbkdf2_sha256$12000$ypKClsjbQTHO$MHcFx6o+V28KOF9Q6WKEKK/KRgF1dEvJOpkvXQYqj7A=",
+         "email":"neonion-admin@fu-berlin.de"
+      },
+      "model":"accounts.user",
+      "pk":1
+   },
+   {
+      "fields":{
+         "surname":"User",
+         "name":"Test",
+         "is_active":true,
+         "joined":"2014-12-08T14:02:55.704Z",
+         "last_login":"2014-12-08T14:02:55.565Z",
+         "is_admin":false,
+         "password":"pbkdf2_sha256$12000$KIRtoQPWMpeI$I4qAgaz6lz1ryun6YXe7trzAQQIwWQpGl84/O9Dzvp0=",
+         "email":"neonion-test@fu-berlin.de"
+      },
+      "model":"accounts.user",
+      "pk":2
+   }
 ]

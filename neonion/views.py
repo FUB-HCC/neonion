@@ -83,15 +83,33 @@ def import_document(request):
 def resource_search(request, index):
     if 'q' in request.GET:
         # TODO call WikiData.search method
-        size = 10
+        size = 5
         query = {
             'query': {
                 'filtered': {
                     'query': {
-                        'fuzzy_like_this': {
-                            'like_text': request.GET.get('q'),
-                            'fields': ['label', 'alias'],
-                            'fuzziness': 0.1,
+                        'bool': {
+                            'should': [
+                                {
+                                    'wildcard': {
+                                        'label': '*{}*'.format(request.GET.get('q'))
+                                    }
+                                },
+                                {
+                                    'wildcard': {
+                                        'aliases': '*{}*'.format(request.GET.get('q'))
+                                    }
+                                },
+                                {
+                                    'more_like_this': {
+                                        'fields': ['label', 'aliases'],
+                                        'like_text': request.GET.get('q'),
+                                        'min_term_freq': 1,
+                                        'min_doc_freq': 1,
+                                        'max_query_terms': 12
+                                    }
+                                }
+                            ]
                         }
                     },
                     'filter': {

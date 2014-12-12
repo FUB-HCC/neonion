@@ -11,26 +11,10 @@ from django.http import JsonResponse
 from documents.models import Document
 from neonion.models import Workspace
 from bs4 import BeautifulSoup
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import redirect
 from django.core.files.base import ContentFile
 from operator import itemgetter
-from common.cms import Euler
-
-
-@login_required
-def list(request):
-    workspace = Workspace.objects.get_workspace(owner=request.user)
-    #workspace.delete()
-
-    documents = []
-    for doc in workspace.documents.all():
-        documents.append({ 
-            "urn": doc.urn,
-            "title": doc.title,
-            "createdAt": str(doc.created)
-        })
-
-    return JsonResponse(documents, safe=False)
+from common.euler import Euler
 
 
 @login_required
@@ -50,12 +34,6 @@ def upload(request):
 @login_required
 def meta(request, doc_urn):
     pass
-
-
-@login_required
-def to_json(request, doc_urn):
-    document = get_object_or_404(Document, urn=doc_urn)
-    return JsonResponse({"urn": document.urn, "title": document.title, "content": document.content})
 
 
 @login_required

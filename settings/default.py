@@ -44,11 +44,13 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'neonion',
+    'api',
     'documents',
     'accounts',
     'endpoint',
-    'annotations',
+    'store',
     'annotationsets',
 )
 
@@ -69,7 +71,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'neonion.urls'
 
-WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = 'wsgi_dev.application'
 
 
 # Database
@@ -102,14 +104,14 @@ USE_TZ = True
 
 # Static asset configuration
 import os
-PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
+# go one folder up from current directory (settings)
+PROJECT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
 STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_PATH, 'static'),
-)
-
+# STATICFILES_DIRS = (
+#     os.path.join(PROJECT_PATH, 'staticfiles'),
+# )
 # STATIC_URL = '/static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
@@ -123,3 +125,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
 )
+
+
+REST_FRAMEWORK = {
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    # ]
+}

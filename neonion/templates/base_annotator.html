@@ -38,7 +38,6 @@
 <script language="javascript">
     "use strict";
 
-    var docUrn = "{{ urn }}";
     var userColors = {};
 
     function makeColor(colorNum, colors){
@@ -49,16 +48,9 @@
     $(document).ready(function() {
         var annotator = setupAnnotator();
 
+        /*
         $('#enableFullscreen').click(function(){
             enableFullscreen( document.getElementById( 'annotationArea' ) );
-        });
-
-        $('#annotationSets li span').each(function(){
-            $(this).click( function(){
-                $(this).toggleClass('active');
-                var active = checkAnnotationSetSelection();
-                annotator.plugins.Neonion.setVisibleAnnotationSets(active);
-            });
         });
 
         $('#scoll_to_latest_annotation').click(function(){
@@ -91,6 +83,7 @@
                 });
             }
         });
+        */
     });
 
     function setupAnnotator () {
@@ -136,8 +129,8 @@
             // The endpoint of the store on your server.
             prefix : "{{ store_url }}",
             // Attach the uri of the current page to all annotations to allow search.
-            annotationData: { 'uri' : docUrn },
-            loadFromSearch: { 'uri' : docUrn }
+            annotationData: { 'uri' : "{{ urn }}" },
+            loadFromSearch: { 'uri' : "{{ urn }}" }
         });
 
         var annotator = $("#documentText").data("annotator")
@@ -169,7 +162,7 @@
         console.log(annotation);
         $.post("{% url 'endpoint.views.annotation_created' %}", { 
             annotation : JSON.stringify(copy),
-            docUrn : docUrn,
+            docUrn : "{{ urn }}",
             csrfmiddlewaretoken : $("input[name=csrfmiddlewaretoken]").val() 
         });
     }
@@ -224,7 +217,7 @@
             $('#annotator_contributors').append(listItem);
         });
     }
-
+    /*
     function checkAnnotationSetSelection() {
         var activeAnnotationSets = [];
         $( '#annotationSets li span' ).each( function(){
@@ -247,6 +240,6 @@
             element.msRequestFullscreen();
         }
     }
-
+    */
 </script>
 {% endblock %}

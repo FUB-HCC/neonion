@@ -5,8 +5,8 @@ from django.contrib.auth.models import BaseUserManager
 
 class NeonionUserManager(BaseUserManager):
     def create_user(self, email, password=None, **kwargs):
-        user = self.model( email=email, **kwargs )
-        user.set_password( password )
+        user = self.model(email=email, **kwargs)
+        user.set_password(password)
         user.save()
         return user
 
@@ -26,6 +26,12 @@ class User(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
+
+    def get_full_name(self):
+        return self.name + ' ' + self.surname
+
+    def get_short_name(self):
+        pass
 
     def __unicode__(self):
         return self.email

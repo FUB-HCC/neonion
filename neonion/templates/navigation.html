@@ -27,7 +27,7 @@
         {# Admin section #}
         {% if request.user.is_admin %}
             {% url 'endpoint.views.query_form' as url_query %}
-            {% url 'user_list' as url_user_list %}
+            {% url 'users.list' as url_user_list %}
 
             {# Query form #}
             <li {% if request.path == url_query %}class="active"{% endif %}>

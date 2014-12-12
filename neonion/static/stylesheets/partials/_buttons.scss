@@ -4,9 +4,8 @@
   color: $black;
   cursor: pointer;
   display: inline-block;
-  font-size: 20px;
+  font-size: $base-font-size;
   padding: ($half-baseline - 1px) ($column-gap - 1px);
-  text-transform: uppercase;
   text-decoration: none;
   text-align: center;
   width: 3*$column + 2*$column-gap;

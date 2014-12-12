@@ -10,6 +10,7 @@ $column: 38px;
 The width and height properties (and min/max properties) includes content,
 padding and border, but not the margin 
 */
+
 * {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -20,7 +21,8 @@ body {
   background-color: $gallery;
   font-size: $base-font-size;
   line-height: $baseline;
-  font-family: 'Open Sans', sans-serif; 
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
 }
 
 p {
@@ -61,4 +63,8 @@ p {
   .main {
     width: 10*$column + 10*$column-gap;
   }
+}
+
+#page-annotator #annotationArea {
+  font-weight: 400;
 }

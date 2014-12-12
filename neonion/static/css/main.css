@@ -2861,9 +2861,8 @@ input[type="submit"].btn {
   color: #000000;
   cursor: pointer;
   display: inline-block;
-  font-size: 20px;
+  font-size: 16px;
   padding: 12px 15px;
-  text-transform: uppercase;
   text-decoration: none;
   text-align: center;
   width: 146px; }

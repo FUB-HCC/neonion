@@ -631,6 +631,7 @@
                 });
             },
             esNormalizeData: function (data) {
+                //console.log(data);
                 var array = [];
                 if (data.hasOwnProperty("hits")) {
                     data.hits.hits.forEach(function (value, index, arr) {

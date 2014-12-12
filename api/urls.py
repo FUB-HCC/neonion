@@ -3,7 +3,7 @@ from rest_framework import routers, serializers, viewsets
 from accounts.models import User
 from documents.models import Document
 from neonion.models import Workspace
-from annotationsets.models import AnnotationSet
+from annotationsets.models import AnnotationSet, ConceptSource
 
 
 # Serializers define the API representation.
@@ -20,16 +20,16 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 # Serializers define the API representation.
-class AnnotationSetSerializer(serializers.ModelSerializer):
+class ConceptSourceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = AnnotationSet
-        fields = ('uri', 'label', 'allow_creation')
+        model = ConceptSource
+        fields = ('linked_concept_uri', 'provider', 'class_name')
 
 
 # ViewSets for annotation sets.
-class AnnotationSetViewSet(viewsets.ModelViewSet):
-    queryset = AnnotationSet.objects.all()
-    serializer_class = AnnotationSetSerializer
+class ConceptSourceViewSet(viewsets.ModelViewSet):
+    queryset = ConceptSource.objects.all()
+    serializer_class = ConceptSourceSerializer
 
 
 # Serializers define the API representation.
@@ -58,6 +58,21 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
 
 # Serializers define the API representation.
+class AnnotationSetSerializer(serializers.ModelSerializer):
+    sources = ConceptSourceSerializer(many=True)
+
+    class Meta:
+        model = AnnotationSet
+        fields = ('uri', 'label', 'allow_creation', 'sources')
+
+
+# ViewSets for annotation sets.
+class AnnotationSetViewSet(viewsets.ModelViewSet):
+    queryset = AnnotationSet.objects.all()
+    serializer_class = AnnotationSetSerializer
+
+
+# Serializers define the API representation.
 class WorkspaceSerializer(serializers.HyperlinkedModelSerializer):
     owner = UserSerializer()
     documents = DocumentSerializer(many=True)
@@ -80,6 +95,7 @@ router.register(r'users', UserViewSet)
 router.register(r'documents', DocumentViewSet)
 router.register(r'workspaces', WorkspaceViewSet)
 router.register(r'annotationsets', AnnotationSetViewSet)
+router.register(r'conceptsources', ConceptSourceViewSet)
 
 urlpatterns = patterns('',
     url(r'^', include(router.urls)),

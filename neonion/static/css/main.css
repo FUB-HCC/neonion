@@ -2856,7 +2856,7 @@ input[type="submit"].btn {
   .clearfix:after {
     clear: both; }
 
-.hidden, #page-annotator .main .header {
+.hidden {
   display: none; }
 
 .button {
@@ -2923,8 +2923,16 @@ h1, #documentTitle {
   #page-annotator .main {
     margin-left: 92px;
     width: 1188px; }
+    #page-annotator .main .header {
+      background: #eeeeee;
+      border-bottom: 26px solid #ffffff;
+      height: 104px;
+      margin-left: 124px;
+      position: fixed;
+      width: 1064px;
+      z-index: 100; }
     #page-annotator .main .content {
-      padding-top: 26px;
+      padding-top: 104px;
       margin-left: 124px;
       width: 578px; }
   #page-annotator p {

@@ -12,11 +12,17 @@
     width: 22*$column + 22*$column-gap;
 
     .header {
-      @extend .hidden;
+      background: $gallery;
+      border-bottom: $baseline solid $white;
+      height: 4*$baseline;
+      margin-left:  2*$column + 3*$column-gap;
+      position: fixed;
+      width: 20*$column + 19*$column-gap;
+      z-index: 100;
     }
 
     .content {
-      padding-top: $baseline;
+      padding-top: 3*$baseline + $baseline;
       margin-left: 2*$column + 3*$column-gap;
       width: 11*$column + 10*$column-gap;
     }

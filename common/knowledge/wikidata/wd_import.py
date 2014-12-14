@@ -78,9 +78,8 @@ if __name__ == '__main__':
 
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s',"%H:%M:%S")
+    formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s', "%H:%M:%S")
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
-
-    import_json_into_es(args.folder,logging.getLogger('import'))
+    import_json_into_es(args.folder, logging.getLogger('import'))

@@ -1,0 +1,22 @@
+table {
+  width: 100%;
+}
+
+th {
+  padding: $half-baseline 0;
+  text-align: left;
+  border-bottom: 1px solid $silver;
+}
+
+td {
+  padding-right: $baseline;
+  text-align: left;
+  border-bottom: 1px solid $silver;
+}
+
+th:first-child,
+td:first-child {
+  padding-left: 0; }
+th:last-child,
+td:last-child {
+  padding-right: 0; }

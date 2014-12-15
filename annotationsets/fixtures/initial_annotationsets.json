@@ -21,7 +21,7 @@
          "provider":"Wikidata"
       },
       "model":"annotationsets.conceptsource",
-      "pk":"http://www.wikidata.org/wiki/Q1664720"
+      "pk":"http://www.wikidata.org/entity/Q15916302"
    },
    {  
       "fields":{  
@@ -29,12 +29,12 @@
          "provider":"Wikidata"
       },
       "model":"annotationsets.conceptsource",
-      "pk":"http://www.wikidata.org/wiki/Q5"
+      "pk":"http://www.wikidata.org/entity/Q5"
    },
    {
       "fields":{
          "sources":[
-            "http://www.wikidata.org/wiki/Q5",
+            "http://www.wikidata.org/entity/Q5",
             "http://dbpedia.org/ontology/person"
          ],
          "allow_creation":false,
@@ -46,7 +46,7 @@
    {  
       "fields":{  
          "sources":[
-            "http://www.wikidata.org/wiki/Q1664720",
+            "http://www.wikidata.org/entity/Q15916302",
             "http://dbpedia.org/ontology/institution"
          ],
          "allow_creation":false,

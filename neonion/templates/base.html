@@ -7,7 +7,7 @@
     <title>Neonion - {% block title %}{% endblock %}</title>
     {% load staticfiles %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}" type="text/css" media="screen" />
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
 </head>
 <body id="page-{% block page_id %}general{% endblock %}">
@@ -23,7 +23,7 @@
 
 {% block right %}
     <div class="main">
-      <div class="header">&nbsp;</div>
+      <div class="header">{% block header %}{% endblock %}</div>
       <div class="content">
       {% block content %}{% endblock %}
       </div>

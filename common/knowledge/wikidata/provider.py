@@ -45,7 +45,9 @@ class Wikidata(Provider):
         return 'wikidata'
 
     def dump(self, types={'person': 'http://www.wikidata.org/entity/Q5',
-                          'institute': 'http://www.wikidata.org/entity/Q15916302'}):
+                          'institute': 'http://www.wikidata.org/entity/Q15916302',
+                          # 'ship': 'http://www.wikidata.org/entity/Q660668'
+                         }):
 
         wd_download.download_wd_dump(
             self.dumps_folder,
@@ -58,6 +60,7 @@ class Wikidata(Provider):
             logging.getLogger('extract'))
 
         wd_import.import_json_into_es(
+            types,
             self.extract_folder,
             logging.getLogger('import'))
 

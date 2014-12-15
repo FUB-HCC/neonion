@@ -3,7 +3,6 @@ import logging
 from os import listdir, path, makedirs
 from gzip import open as gzopen
 from json import loads, dumps
-from datetime import datetime
 
 
 def latest_dump_from_folder(folder):
@@ -34,31 +33,30 @@ def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
 
     latest_dump = latest_dump_from_folder(inputfolder)
 
-    # convert type dictionary from {'http://wikidata.org/entity/Q123': 'name'} to {1234: 'name'}
+    # convert type dictionary
     wd_types = dict()
     for key in types.keys():
         value = int(types[key].split('/')[-1][1:])
-        wd_types[value] = key
-    logger.info('types: {}'.format(wd_types))
-    # logger.info('\'Q5\' in wd_types: {}'.format('Q5' in wd_types))
-
+        wd_types[value] = {'type': key,
+                           'filename':path.join(outputfolder, '{}.json'.format(key)),
+                           'number': 0}
 
 
     if not path.exists(outputfolder):
         logger.info('create outputfolder')
         makedirs(outputfolder)
 
-    persons_filename = path.join(outputfolder, 'persons.json')
-    person_file = open(persons_filename, 'w')
-
-    institutes_filename = path.join(outputfolder, 'institutes.json')
-    institute_file = open(institutes_filename, 'w')
+    # open outputfiles
+    for type in wd_types:
+        wd_types[type]['file'] = open(wd_types[type]['filename'], 'w')
 
     done = 0
     human = 0
     nr_of_mpis = 0
 
     for wd_item in get_wikidata_items(path.join(inputfolder, latest_dump), logger):
+
+        type = None
 
         is_human = False
         is_mpi = False
@@ -86,7 +84,9 @@ def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
                         if claim['mainsnak']['snaktype'] == 'value':
 
                             if claim['mainsnak']['datavalue']['value']['numeric-id'] in wd_types:
-                                # type = wd_types[claim['mainsnak']['datavalue']['value']['numeric-id']]
+
+                                type = claim['mainsnak']['datavalue']['value']['numeric-id']
+                                wd_types[type]['number'] += 1
 
                                 if 'labels' in wd_item:
                                     if 'de' in wd_item['labels']:
@@ -168,37 +168,37 @@ def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
                                 historic_names.append(hist_name)
 
         if is_human:
-            item['id'] = wd_item['id']
-            item['label'] = label
-            item['descr'] = descr
-            item['birth'] = birth
-            item['gnd'] = gnd
-            item['viaf'] = viaf
+            item['birth']   = birth
+            item['gnd']     = gnd
+            item['viaf']    = viaf
             item['aliases'] = list(aliases)
-            person_file.write(dumps(item) + '\n')
 
         elif is_mpi:
-            item['id'] = wd_item['id']
+            item['gnd']            = gnd
+            item['aliases']        = list(aliases)
+            item['historic_names'] = historic_names
+
+
+        # write to file
+        if not type is None:
+            item['id']    = wd_item['id']
             item['label'] = label
             item['descr'] = descr
-            item['gnd'] = gnd
-            item['aliases'] = list(aliases)
-            item['historic_names'] = historic_names
-            institute_file.write(dumps(item) + '\n')
+
+            wd_types[type]['file'].write(dumps(item) + '\n')
 
         done += 1
-        # if done % 1000 == 0:
+        # if done % 100000 == 0:
+        #     logger.info('done: {}'.format(done))
+        #     for key in wd_types:
+        #         logger.info('{}: {}'.format(wd_types[key]['type'], format(wd_types[key]['number']), ',d'))
         #     logger.warning('end testing')
         #     return
 
         if done % 250000 == 0:
-            logger.info('{} total: {} human: {} mpis: {}'.format(
-                datetime.now().strftime('%H:%M:%S'),
-                format(done, ',d'),
-                format(human, ',d'),
-                format(nr_of_mpis, ',d'),
-            )
-            )
+            logger.info('done: {}'.format(done))
+            for key in wd_types:
+                logger.info('{}: {}'.format(wd_types[key]['type'], format(wd_types[key]['number']), ',d'))
 
 
 if __name__ == '__main__':

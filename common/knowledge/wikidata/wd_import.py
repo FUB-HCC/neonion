@@ -1,19 +1,13 @@
 from argparse import ArgumentParser
 import logging
 from json import loads
-from datetime import datetime
 from os import path
 from pyelasticsearch import ElasticSearch
 
 
-def import_json_into_es(inputfolder, logger):
-    institutes_filename = path.join(inputfolder, 'institutes.json')
-    persons_filename = path.join(inputfolder, 'persons.json')
+def import_json_into_es(types, inputfolder, logger):
 
     es = ElasticSearch('http://localhost:9200/')
-
-    done = 0
-    institutes = []
 
     try:
         es.delete_index('wikidata')
@@ -22,46 +16,40 @@ def import_json_into_es(inputfolder, logger):
     except:
         logger.warning('cant delete wikidata index')
 
-    for line in open(institutes_filename):
-        line = line.strip()
-        institute = loads(line)
-        institute['uri'] = 'http://wikidata.org/wiki/' + institute['id']
 
-        institutes.append(institute)
-        done += 1
+    # convert type dictionary
+    wd_types = dict()
+    for key in types.keys():
+        value = int(types[key].split('/')[-1][1:])
+        wd_types[value] = {'type': key,
+                           'filename': path.join(inputfolder, '{}.json'.format(key))}
 
-        if ( done % 5000 == 0 ):
-            es.bulk_index('wikidata', 'institute', institutes, id_field='id')
-            institutes = []
 
-        if done % 10000 == 0:
-            logger.info('institutes imported: {}'.format(format(done, ',d')))
+    # import each given type
+    for key in wd_types:
+        logger.info(wd_types[key])
 
-    if len(institutes) > 0:
-        es.bulk_index('wikidata', 'institute', institutes, id_field='id')
-    logger.info('institutes imported: {}'.format(format(done, ',d')))
+        done = 0
+        items = []
 
-    done = 0
-    persons = []
+        for line in open(wd_types[key]['filename']):
+            line = line.strip()
+            item = loads(line)
+            item['uri'] = 'http://wikidata.org/wiki/' + item['id']
 
-    for line in open(persons_filename):
-        line = line.strip()
-        person = loads(line)
-        person['uri'] = 'http://wikidata.org/wiki/' + person['id']
+            items.append(item)
+            done += 1
 
-        persons.append(person)
-        done += 1
+            if ( done % 5000 == 0 ):
+                es.bulk_index('wikidata', wd_types[key]['type'], items, id_field='id')
+                items = []
 
-        if ( done % 5000 == 0 ):
-            es.bulk_index('wikidata', 'person', persons, id_field='id')
-            persons = []
+            if done % 10000 == 0:
+                logger.info('imported {}: {}'.format(wd_types[key]['type'],format(done, ',d')))
 
-        if done % 10000 == 0:
-            logger.info('persons imported: {}'.format(format(done, ',d')))
-
-    if len(persons) > 0:
-        es.bulk_index('wikidata', 'person', persons, id_field='id')
-    logger.info('persons imported: {}'.format(format(done, ',d')))
+        if len(items) > 0:
+            es.bulk_index('wikidata', wd_types[key]['type'], items, id_field='id')
+        logger.info('imported {}: {}'.format(wd_types[key]['type'],format(done, ',d')))
 
 
 if __name__ == '__main__':

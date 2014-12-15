@@ -3277,6 +3277,11 @@ h1, #documentTitle {
   line-height: 52px;
   margin: 0 0 26px 0; }
 
+h3 {
+  font-size: 18px;
+  line-height: 26px;
+  margin: 13px 0; }
+
 #page-annotator {
   background: #ffffff; }
   #page-annotator .sidebar {
@@ -3309,6 +3314,27 @@ h1, #documentTitle {
 
 .message-info {
   color: #008df3; }
+
+table {
+  width: 100%; }
+
+th {
+  padding: 13px 0;
+  text-align: left;
+  border-bottom: 1px solid #cdcdcd; }
+
+td {
+  padding-right: 26px;
+  text-align: left;
+  border-bottom: 1px solid #cdcdcd; }
+
+th:first-child,
+td:first-child {
+  padding-left: 0; }
+
+th:last-child,
+td:last-child {
+  padding-right: 0; }
 
 /**
  * Grid

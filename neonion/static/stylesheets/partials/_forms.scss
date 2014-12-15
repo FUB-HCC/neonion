@@ -8,22 +8,61 @@
   }
 }
 
+// Floating Labels
+.form-group{
+  margin-top: $half-baseline + $baseline;
+  position: relative;
+
+  label {
+    color: $manatee;
+    cursor: text;
+    left: 0;
+    margin: $half-baseline 0;
+    position: absolute;
+    top: 0;
+  }
+
+  &.error {
+    input {
+      border-bottom-color: $red;
+    }
+
+    .errorlist {
+      position: absolute;
+      @include list-reset;
+      font-size: 14px;
+      color: $red;
+    }
+  }
+}
+
 input[type="text"], input[type="password"], input[type="email"] {
-  background-color: $white;
-  border: 1px solid $silver;
+  background-color: transparent;
+  border: 0px;
+  border-bottom: 2px solid $silver;
   font-size: $base-font-size;
   line-height: $baseline;
-  padding: ($half-baseline - 1px) $column-gap;
+  padding: ($half-baseline - 1px) 0;
+
+  &:focus {
+    border-bottom-color: $dove-gray;
+    outline: 0;
+  }
+
+  &:valid + label,
+  &:focus + label {
+    cursor: default;
+    font-size: 14px;
+    top: - $baseline;
+  }
+}
+
+// remove ugly yellow color
+input:-webkit-autofill {
+  // http://labs.enonic.com/articles/remove-forced-yellow-input-background-in-chrome
+  -webkit-box-shadow: 0 0 0px 1000px $gallery inset;
 }
 
 input, textarea {
   width: 100%;
-}
-
-form {
-  label {
-    display: inline-block;
-    text-transform: uppercase;
-    margin: $half-baseline 0;
-  }
 }

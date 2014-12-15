@@ -6,19 +6,9 @@ class AuthenticationForm(forms.Form):
     """
     Login form
     """
-    email = forms.EmailField(widget=forms.EmailInput(
-        attrs={
-            'placeholder':'john.doe@example.com',
-            'class': 'width-100',
-        }),
-        label="Email")
+    email = forms.EmailField(label='Email', max_length=80, widget=forms.TextInput(attrs={'class': 'h5-email', 'data-h5-errorid': 'invalid_email', 'required':''}))
 
-    password = forms.CharField(widget=forms.PasswordInput(
-        attrs={
-            'placeholder':'********',
-            'class': 'width-100 last_input'
-        }),
-        label="Password")
+    password = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'required':''}))
 
     def clean(self):
         #print( self.cleaned_data )

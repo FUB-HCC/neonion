@@ -2895,20 +2895,46 @@ input[type="submit"].btn {
   .form-buttons .button {
     margin-left: 16px; }
 
+.form-group {
+  margin-top: 39px;
+  position: relative; }
+  .form-group label {
+    color: #8e8e93;
+    cursor: text;
+    left: 0;
+    margin: 13px 0;
+    position: absolute;
+    top: 0; }
+  .form-group.error input {
+    border-bottom-color: #ff3235; }
+  .form-group.error .errorlist {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 14px;
+    color: #ff3235; }
+
 input[type="text"], input[type="password"], input[type="email"] {
-  background-color: #ffffff;
-  border: 1px solid #cdcdcd;
+  background-color: transparent;
+  border: 0px;
+  border-bottom: 2px solid #cdcdcd;
   font-size: 16px;
   line-height: 26px;
-  padding: 12px 16px; }
+  padding: 12px 0; }
+  input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
+    border-bottom-color: #717171;
+    outline: 0; }
+  input[type="text"]:valid + label, input[type="text"]:focus + label, input[type="password"]:valid + label, input[type="password"]:focus + label, input[type="email"]:valid + label, input[type="email"]:focus + label {
+    cursor: default;
+    font-size: 14px;
+    top: -26px; }
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px #eeeeee inset; }
 
 input, textarea {
   width: 100%; }
-
-form label {
-  display: inline-block;
-  text-transform: uppercase;
-  margin: 13px 0; }
 
 h1, #documentTitle {
   font-size: 26px;
@@ -2937,6 +2963,16 @@ h1, #documentTitle {
       width: 578px; }
   #page-annotator p {
     margin: 0 0 26px 0; }
+
+.message {
+  font-weight: 400;
+  padding-top: 26px; }
+
+.message-error {
+  color: #ff3235; }
+
+.message-info {
+  color: #008df3; }
 
 /**
  * Grid

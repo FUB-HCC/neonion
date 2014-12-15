@@ -20,6 +20,8 @@ from common.euler import Euler
 @login_required
 @require_POST
 def upload(request):
+
+    print "Test"
     for f in request.FILES:
         file = ContentFile(request.FILES[f].read())
         # type json

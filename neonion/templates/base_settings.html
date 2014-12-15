@@ -14,19 +14,30 @@
             <table>
                 <thead>
                     <tr>
-                    <th>Active</th>
-                    <th>AnnotationSet</th>
-                    <th>URI</th>
+                        <th>Active</th>
+                        <th>AnnotationSet</th>
+                        <th>URI</th>
+                        <th>Linked concepts</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for set in annotation_sets %}
+                    {% for k,v in annotation_sets.items %}
                     <tr>
                         <td>
-                            <input type="checkbox" name="as" value="{{ set.uri }}" {% if set.active %} checked {% endif %}>
+                            <input type="checkbox" name="as" value="{{ k.uri }}" {% if v %} checked {% endif %}>
                         </td>
-                    <td><p>{{ set.label }}</p></td>
-                    <td><p>{{ set.uri }}</p></td>
+                    <td><p>{{ k.label }}</p></td>
+                    <td><p>{{ k.uri }}</p></td>
+                    <td>
+                        <table>
+                            {% for link in k.sources.all %}
+                            <tr>
+                                <td><b>{{ link.provider }}</b></td>
+                                <td>{{ link.linked_concept_uri }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -58,14 +58,9 @@ def load_settings(request):
             else:
                 workspace.annotation_sets.remove(annotation_set)
 
-    annotation_sets = []
+    annotation_sets = {}
     for annotation_set in AnnotationSet.objects.all():
-        annotation_sets.append({
-            'uri': annotation_set.uri,
-            'label': annotation_set.label,
-            'allow_creation': annotation_set.allow_creation,
-            'active': workspace.annotation_sets.all().filter(uri=annotation_set.uri).exists()
-        })
+        annotation_sets[annotation_set] = workspace.annotation_sets.all().filter(uri=annotation_set.uri).exists()
 
     data = {
         'annotation_sets': annotation_sets

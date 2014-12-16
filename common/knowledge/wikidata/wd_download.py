@@ -6,6 +6,7 @@ from os import path, makedirs
 from bs4 import BeautifulSoup
 from datetime import datetime
 
+
 def download_file(url, outputfolder, logger):
     logger.info('download actual dump')
     filename = url.split('/')[-1]
@@ -23,7 +24,8 @@ def download_file(url, outputfolder, logger):
 
     logger.info('{} ({} Bytes)'.format(url, format(int(r.headers['Content-Length']), ',d')))
     with open(local_filename, 'wb') as f:
-        size_to_log = 250 * 1048576  # x MB
+        # size_to_log = 250 * 1048576  # x MB
+        size_to_log = 1 * 1048576  # x MB
         downloaded = 0
         last_time = datetime.now()
         for chunk in r.iter_content(chunk_size=1024):
@@ -47,9 +49,10 @@ def download_file(url, outputfolder, logger):
     logger.info('finished downloading')
     return local_filename
 
-def download_wd_dump(outputfolder,logger):
+
+def download_wd_dump(outputfolder, logger):
     if not path.exists(outputfolder):
-        logger.info( 'create outputfolder')
+        logger.info('create outputfolder')
         makedirs(outputfolder)
 
     resp = get(config.wd_url.format(''))
@@ -63,9 +66,11 @@ def download_wd_dump(outputfolder,logger):
     latest_dump = sorted(all_dumps)[-1]
     download_file(config.wd_url.format(latest_dump), outputfolder, logger)
 
+
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument("-f", "--folder", default='dumps', help="folder where the wikidata dumps are getting downloaded to")
+    parser.add_argument("-f", "--folder", default='dumps',
+                        help="folder where the wikidata dumps are getting downloaded to")
     args = parser.parse_args()
 
     # set up logging to file
@@ -77,9 +82,8 @@ if __name__ == '__main__':
 
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s',"%H:%M:%S")
+    formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s', "%H:%M:%S")
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
-
-    download_wd_dump(args.folder,logging.getLogger('download'))
+    download_wd_dump(args.folder, logging.getLogger('download'))

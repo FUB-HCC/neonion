@@ -70,7 +70,13 @@ def load_settings(request):
 
 @login_required
 def import_document(request):
-    return render_to_response('base_import.html', {}, context_instance=RequestContext(request))
+    data = {}
+    if hasattr(settings, 'CONTENT_SYSTEM_CLASS'):
+        data['use_file_upload'] = False
+    else:
+        data['use_file_upload'] = True
+
+    return render_to_response('base_import.html', data, context_instance=RequestContext(request))
 
 
 @login_required

@@ -101,4 +101,4 @@ def edit_user(request, userID):
         
         user.save()
 
-    return redirect(reverse('user_list'))
+    return redirect(reverse('users.list'))

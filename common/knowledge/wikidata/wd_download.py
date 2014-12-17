@@ -22,16 +22,17 @@ def download_file(url, outputfolder, logger):
             logger.info('skip: ' + filename)
             return local_filename
 
-    logger.info('{} ({} Bytes)'.format(url, format(int(r.headers['Content-Length']), ',d')))
+    logger.info('{} ({:,d} Bytes)'.format(url, download_size))
     with open(local_filename, 'wb') as f:
-        # size_to_log = 250 * 1048576  # x MB
-        size_to_log = 1 * 1048576  # x MB
+        size_to_log = download_size / 20  # 5% steps
+        # size_to_log = 500 * 1048576  # x MB
+        # size_to_log = 1 * 1048576  # x MB
         downloaded = 0
         last_time = datetime.now()
         for chunk in r.iter_content(chunk_size=1024):
             if chunk:  # filter out keep-alive new chunks
                 downloaded += 1024
-                if downloaded % (size_to_log) == 0:
+                if downloaded % (size_to_log) < 1024:
                     actual_time = datetime.now()
                     delta = actual_time - last_time
                     logger.info(

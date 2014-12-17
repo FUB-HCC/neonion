@@ -38,25 +38,22 @@ def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
     for key in types.keys():
         value = int(types[key].split('/')[-1][1:])
         wd_types[value] = {'type': key,
-                           'filename':path.join(outputfolder, '{}.json'.format(key)),
+                           'filename': path.join(outputfolder, '{}.json'.format(key)),
                            'number': 0}
-
 
     if not path.exists(outputfolder):
         logger.info('create outputfolder')
         makedirs(outputfolder)
 
     # open outputfiles
-    for type in wd_types:
-        wd_types[type]['file'] = open(wd_types[type]['filename'], 'w')
+    for wd_type in wd_types:
+        wd_types[wd_type]['file'] = open(wd_types[wd_type]['filename'], 'w')
 
     done = 0
-    human = 0
-    nr_of_mpis = 0
 
     for wd_item in get_wikidata_items(path.join(inputfolder, latest_dump), logger):
 
-        type = None
+        wd_type = None
 
         is_human = False
         is_mpi = False
@@ -85,8 +82,8 @@ def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
 
                             if claim['mainsnak']['datavalue']['value']['numeric-id'] in wd_types:
 
-                                type = claim['mainsnak']['datavalue']['value']['numeric-id']
-                                wd_types[type]['number'] += 1
+                                wd_type = claim['mainsnak']['datavalue']['value']['numeric-id']
+                                wd_types[wd_type]['number'] += 1
 
                                 if 'labels' in wd_item:
                                     if 'de' in wd_item['labels']:
@@ -111,11 +108,9 @@ def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
 
                             if claim['mainsnak']['datavalue']['value']['numeric-id'] == 5:
                                 is_human = True
-                                human += 1
 
                             elif claim['mainsnak']['datavalue']['value']['numeric-id'] == 15916302:
                                 is_mpi = True
-                                nr_of_mpis += 1
 
                     # Max-Planck-Gesellschaft
                     if 'P527' in wd_item['claims']:  # has part
@@ -168,43 +163,43 @@ def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
                                 historic_names.append(hist_name)
 
         if is_human:
-            item['birth']   = birth
-            item['gnd']     = gnd
-            item['viaf']    = viaf
+            item['birth'] = birth
+            item['gnd'] = gnd
+            item['viaf'] = viaf
             item['aliases'] = list(aliases)
 
         elif is_mpi:
-            item['gnd']            = gnd
-            item['aliases']        = list(aliases)
+            item['gnd'] = gnd
+            item['aliases'] = list(aliases)
             item['historic_names'] = historic_names
 
-
         # write to file
-        if not type is None:
-            item['id']    = wd_item['id']
+        if not wd_type is None:
+            item['id'] = wd_item['id']
             item['label'] = label
             item['descr'] = descr
 
-            wd_types[type]['file'].write(dumps(item) + '\n')
+            wd_types[wd_type]['file'].write(dumps(item) + '\n')
 
         done += 1
         # if done % 100000 == 0:
-        #     logger.info('done: {}'.format(done))
+        # logger.info('done: {}'.format(done))
         #     for key in wd_types:
         #         logger.info('{}: {}'.format(wd_types[key]['type'], format(wd_types[key]['number']), ',d'))
         #     logger.warning('end testing')
         #     return
 
         if done % 250000 == 0:
-            logger.info('done: {}'.format(done))
+            logger.info('done: {:,d}'.format(done))
             for key in wd_types:
-                logger.info('{}: {}'.format(wd_types[key]['type'], format(wd_types[key]['number']), ',d'))
+                logger.info('{}: {:,d}'.format(wd_types[key]['type'], wd_types[key]['number']))
 
 
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("-i", "--inputfolder", default='dumps', help="folder where the wikidata dumps are stored")
-    parser.add_argument("-o", "--outputfolder", default='extracted_data',help="folder where the json output will be stored")
+    parser.add_argument("-o", "--outputfolder", default='extracted_data',
+                        help="folder where the json output will be stored")
     args = parser.parse_args()
 
     # set up logging to file
@@ -220,4 +215,7 @@ if __name__ == '__main__':
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
-    extract_from_wd_dump(args.inputfolder, args.outputfolder, logging.getLogger('extract'))
+    extract_from_wd_dump({'person': 'http://www.wikidata.org/entity/Q5',
+                          'institute': 'http://www.wikidata.org/entity/Q15916302',
+                          # 'ship': 'http://www.wikidata.org/entity/Q660668'
+                         }, args.inputfolder, args.outputfolder, logging.getLogger('extract'))

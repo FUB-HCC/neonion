@@ -86,7 +86,7 @@ def delete_user(request, userID):
     if not user.is_admin:
         user.delete()
 
-    return redirect('accounts.views.list')
+    return redirect(reverse('users.list'))
 
 
 @login_required

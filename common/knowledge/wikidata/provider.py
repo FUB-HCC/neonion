@@ -72,3 +72,7 @@ class Wikidata(Provider):
 
     def delete(self, uri):
         pass
+
+# from common.knowledge.wikidata.provider import Wikidata
+# wd = Wikidata('foo.bar', '/web/neonion.imp.fu-berlin.de/wd_test')
+# wd.dump()

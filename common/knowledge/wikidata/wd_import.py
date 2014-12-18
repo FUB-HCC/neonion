@@ -23,7 +23,7 @@ def import_json_into_es(types, inputfolder, logger):
     for key in types.keys():
         value = int(types[key].split('/')[-1][1:])
         wd_types[value] = {'type': key,
-                           'filename': path.join(inputfolder, '{}.json'.format(key))}
+                           'filename': path.join(inputfolder, '{}.json.bz2'.format(key))}
 
 
     # import each given type
@@ -45,11 +45,11 @@ def import_json_into_es(types, inputfolder, logger):
                 es.bulk_index('wikidata', wd_types[key]['type'], items, id_field='id')
                 items = []
 
-            if done % len(wd_types) / 10 == 0: # log 10% steps
-                logger.info('imported {}: {:,d} ({:,d})'.format(wd_types[key]['type'],done, 100*len(wd_types)/done ))
+            # if done % len(wd_types) / 10 == 0: # log 10% steps
+            #     logger.info('imported {}: {:,d} ({:,d})'.format(wd_types[key]['type'],done, 100*len(wd_types)/done ))
 
-            # if done % 10000 == 0:
-            #     logger.info('imported {}: {}'.format(wd_types[key]['type'],format(done, ',d')))
+            if done % 10000 == 0:
+                logger.info('imported {}: {}'.format(wd_types[key]['type'],format(done, ',d')))
 
         if len(items) > 0:
             es.bulk_index('wikidata', wd_types[key]['type'], items, id_field='id')
@@ -74,4 +74,4 @@ if __name__ == '__main__':
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
-    import_json_into_es(args.folder, logging.getLogger('import'))
+    import_json_into_es({'person': 'http://www.wikidata.org/entity/Q5'},args.folder, logging.getLogger('import'))

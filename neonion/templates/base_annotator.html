@@ -126,23 +126,22 @@
             annotationSets: sets
         })
         .annotator('addPlugin', 'Store', {
-            // The endpoint of the store on your server.
-            prefix : "{{ store_url }}",
-            // Attach the uri of the current page to all annotations to allow search.
-            annotationData: { 'uri' : "{{ urn }}" },
-            loadFromSearch: { 'uri' : "{{ urn }}" }
+            prefix : '{{ store_url }}',
+            annotationData: { 'uri' : '{{ urn }}' },
+            // filter annotations by creator
+            loadFromSearch: { 'uri' : '{{ urn }}', 'creator.email' : '{{ request.user.email }}' }
         });
 
         var annotator = $("#documentText").data("annotator")
         .subscribe("annotationCreated", function(annotation) { 
             notifyEndpoint(annotation);
-            annotationChanged(annotation); 
-        })
-        .subscribe("annotationUpdated", annotationChanged)
-        .subscribe("annotationDeleted", refreshContributors);
+            //annotationChanged(annotation);
+        });
+        //.subscribe("annotationUpdated", annotationChanged)
+        //.subscribe("annotationDeleted", refreshContributors);
         
         // TODO raise refresh list when store plugin has finished async request
-        window.setTimeout(function() {
+        /*window.setTimeout(function() {
             refreshContributors();
             var users = Annotator.Plugin.Neonion.prototype.getContributors();  
             users.forEach(function(user) {
@@ -151,7 +150,7 @@
                     colorizeAnnotation(ann);
                 }); 
             });
-        }, 1000);
+        }, 1000);*/
         return annotator; 
     }
 
@@ -217,17 +216,8 @@
             $('#annotator_contributors').append(listItem);
         });
     }
-    /*
-    function checkAnnotationSetSelection() {
-        var activeAnnotationSets = [];
-        $( '#annotationSets li span' ).each( function(){
-            if( $( this ).hasClass('active') ){
-                activeAnnotationSets.push( $( this ).attr( 'annotationSet' ) );
-            }
-        });
-        return activeAnnotationSets;
-    }
 
+    /*
     // Find the right method, call on correct element
     function enableFullscreen(element) {
         if(element.requestFullscreen) {

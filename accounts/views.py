@@ -86,7 +86,7 @@ def delete_user(request, userID):
     if not user.is_admin:
         user.delete()
 
-    return redirect('accounts.views.list')
+    return redirect(reverse('users.list'))
 
 
 @login_required
@@ -101,4 +101,4 @@ def edit_user(request, userID):
         
         user.save()
 
-    return redirect(reverse('user_list'))
+    return redirect(reverse('users.list'))

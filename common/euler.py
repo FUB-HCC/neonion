@@ -4,15 +4,29 @@ import requests
 import re
 
 from common.cms import ContentSystem
+from django.conf import settings
 
 
 class Euler(ContentSystem):
-    def __init__(self, cms_url):
-        self.url = cms_url
+    def __init__(self):
         super(Euler, self).__init__()
+        self.url = settings.EULER_URL
 
     def list(self):
         doc_list = []
+
+        # remove later
+        doc_list.append({"name": "[NER] korrigiert (AB)", "urn": "ner_korrigiert_AB"})
+        doc_list.append({"name": "[NER] nichtkorrigiert (AB)", "urn": "ner_nichtkorrigiert_AB"})
+        doc_list.append({"name": "[NER] korrigiert (LB)", "urn": "ner_korrigiert_LB"})
+        doc_list.append({"name": "[NER] nichtkorrigiert (LB)", "urn": "ner_nichtkorrigiert_LB"})
+        doc_list.append({"name": "[NER] korrigiert (AS)", "urn": "ner_korrigiert_AS"})
+        doc_list.append({"name": "[NER] nichtkorrigiert (AS)", "urn": "ner_nichtkorrigiert_AS"})
+        doc_list.append({"name": "[NER] korrigiert (TK)", "urn": "ner_korrigiert_TK"})
+        doc_list.append({"name": "[NER] nichtkorrigiert (TK)", "urn": "ner_nichtkorrigiert_TK"})
+        doc_list.append({"name": "[NER] korrigiert (CLMB)", "urn": "ner_korrigiert_CLMB"})
+        doc_list.append({"name": "[NER] nichtkorrigiert (CLMB)", "urn": "ner_nichtkorrigiert_CLMB"})
+
         doc_list.append({"name": "Jahrbuch der MPG 1974", "urn": "Jahrbuch_der_MPG-1974"})
         doc_list.append({"name": "Tätigkeitsbericht der MPG 1964-1965",
                          "urn": "Tätigkeitsberichte_der_MPG___Tätigkeitsbericht_der_MPG_1964-1965"})

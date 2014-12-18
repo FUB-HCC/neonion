@@ -1,5 +1,3 @@
-# coding=utf-8
-
 import os
 import json
 
@@ -14,23 +12,7 @@ from bs4 import BeautifulSoup
 from django.shortcuts import redirect
 from django.core.files.base import ContentFile
 from operator import itemgetter
-from common.euler import Euler
-
-
-@login_required
-@require_POST
-def upload(request):
-
-    print "Test"
-    for f in request.FILES:
-        file = ContentFile(request.FILES[f].read())
-        # type json
-
-        j = json.loads(file.read())
-        if not Document.objects.filter(urn=j['urn']).exists():
-            Document.objects.create_document(j['urn'], j['title'], j['content'])
-
-    return redirect('/')
+from os.path import splitext, basename
 
 
 @login_required
@@ -44,16 +26,63 @@ def query(request, search_string):
 
 
 @login_required
-def euler_list(request):
-    cms = Euler(settings.EULER_URL)
+def cms_list(request):
+    # instantiate CMS provider
+    modulepath, classname = settings.CONTENT_SYSTEM_CLASS.rsplit('.', 1)
+    module = __import__(modulepath, fromlist=[classname])
+    cms = getattr(module, classname)()
+
     return JsonResponse(sorted(cms.list(), key=itemgetter('name')), safe=False)
 
 
 @login_required
-def euler_import(request, doc_urn):
+@require_POST
+def upload_file(request):
+    for f in request.FILES:
+        create_new_doc = False
+
+        if request.FILES[f].content_type == 'application/json':
+            uploaded_file = ContentFile(request.FILES[f].read())
+            j = json.loads(uploaded_file.read())
+            doc_urn = j['urn']
+            doc_title = j['title']
+            doc_content = j['content']
+
+            create_new_doc = True
+        elif request.FILES[f].content_type == 'text/plain':
+            doc_title = str('_'.join(splitext(basename(request.FILES[f].name))[0].split()))
+            doc_urn = doc_title.encode('string_escape', 'ignore')
+
+            # read plain text content
+            content = []
+            for chunk in request.FILES[f].chunks():
+                content.append(chunk)
+            doc_content = ''.join(content)
+
+            create_new_doc = True
+
+        if create_new_doc:
+            if not Document.objects.filter(urn=doc_urn).exists():
+                document = Document.objects.create_document(doc_urn, doc_title, doc_content)
+            else:
+                document = Document.objects.get(urn=doc_urn)
+
+            # import document into workspace
+            workspace = Workspace.objects.get_workspace(owner=request.user)
+            workspace.documents.add(document)
+
+    return redirect('/')
+
+
+@login_required
+def cms_import(request, doc_urn):
     # import document if it not exists otherwise skip import
     if not Document.objects.filter(urn=doc_urn).exists():
-        cms = Euler(settings.EULER_URL)
+        # instantiate CMS provider
+        modulepath, classname = settings.CONTENT_SYSTEM_CLASS.rsplit('.', 1)
+        module = __import__(modulepath, fromlist=[classname])
+        cms = getattr(module, classname)()
+
         new_document = cms.get_document(doc_urn)
         document = Document.objects.create_document(doc_urn, new_document['title'], new_document['content'])
     else:
@@ -82,13 +111,3 @@ def euler_hocr(request):
                             content_type="text/plain; charset=utf-8")
     else:
         return Http404()
-
-
-@login_required
-def euler_meta(request, doc_urn):
-    pass
-
-
-@login_required
-def euler_query(request, search_string):
-    pass

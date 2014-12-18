@@ -102,3 +102,8 @@ cd neonion
 python manage.py syncdb
 python manage.py runserver 0.0.0.0:8000
 ```
+
+### Import person data from wikidata into your knowledge base
+```
+python /PATH/TO/NEONION/common/knowledge/wikidata/wd_import.py --folder /PATH/TO/NEONION/elasticsearch/wikidata
+```

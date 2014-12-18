@@ -3255,6 +3255,7 @@ input[type="submit"].btn {
     left: 0;
     margin: 13px 0;
     position: absolute;
+    pointer-events: none;
     top: 0; }
   .form-group.error input {
     border-bottom-color: #ff3235; }

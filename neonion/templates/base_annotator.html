@@ -94,7 +94,7 @@
                     sets["{{ set.uri }}"] = {
                         label: "{{ set.label }}",
                         omitAdder: false,
-                        allowCreation: {{ set.allow_creation|yesno: "true,false" }},
+                        allowCreation: {{ set.allow_creation|yesno:"true,false" }},
                         create: Annotator.Plugin.Neonion.prototype.create.createPerson,
                         search: Annotator.Plugin.Neonion.prototype.search.searchPerson,
                         formatter: Annotator.Plugin.Neonion.prototype.formatter.formatPerson,

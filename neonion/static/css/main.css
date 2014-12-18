@@ -44,6 +44,9 @@ p {
 #page-annotator #annotationArea {
   font-weight: 400; }
 
+#page-userlist .button {
+  margin-right: 16px; }
+
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 /**
  * 1. Set default font family to sans-serif.
@@ -3195,6 +3198,11 @@ input[type="submit"].btn {
 .hidden {
   display: none; }
 
+.list-reset {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+
 .button {
   border: 1px solid #cdcdcd;
   background-color: #cdcdcd;
@@ -3202,7 +3210,7 @@ input[type="submit"].btn {
   cursor: pointer;
   display: inline-block;
   font-size: 16px;
-  padding: 12px 15px;
+  padding: 5.5px 15px;
   text-decoration: none;
   text-align: center;
   width: 146px; }
@@ -3217,8 +3225,15 @@ input[type="submit"].btn {
     border-color: #8e8e93;
     color: #000000; }
 
+.button-big {
+  padding: 12px 15px; }
+
+.button-small {
+  padding: 0 15px;
+  border: 0; }
+
 .button-wide {
-  width: 254px; }
+  width: 200px; }
 
 .form-buttons {
   *zoom: 1;
@@ -3272,6 +3287,9 @@ input:-webkit-autofill {
 input, textarea {
   width: 100%; }
 
+textarea {
+  padding: 0 8px; }
+
 h1, #documentTitle {
   font-size: 26px;
   line-height: 52px;
@@ -3280,7 +3298,10 @@ h1, #documentTitle {
 h3 {
   font-size: 18px;
   line-height: 26px;
-  margin: 13px 0; }
+  margin: 13px 0 26px 0; }
+
+pre {
+  margin: 0 0 26px 0; }
 
 #page-annotator {
   background: #ffffff; }
@@ -3319,22 +3340,15 @@ table {
   width: 100%; }
 
 th {
-  padding: 13px 0;
-  text-align: left;
-  border-bottom: 1px solid #cdcdcd; }
+  padding: 0 26px 12px 0; }
 
 td {
-  padding-right: 26px;
+  padding: 13px 26px 12px 0; }
+
+th, td {
   text-align: left;
-  border-bottom: 1px solid #cdcdcd; }
-
-th:first-child,
-td:first-child {
-  padding-left: 0; }
-
-th:last-child,
-td:last-child {
-  padding-right: 0; }
+  border-bottom: 1px solid #cdcdcd;
+  vertical-align: top; }
 
 /**
  * Grid

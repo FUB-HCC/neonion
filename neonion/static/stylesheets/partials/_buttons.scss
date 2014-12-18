@@ -5,7 +5,7 @@
   cursor: pointer;
   display: inline-block;
   font-size: $base-font-size;
-  padding: ($half-baseline - 1px) ($column-gap - 1px);
+  padding: ($half-baseline/2 - 1px) ($column-gap - 1px);
   text-decoration: none;
   text-align: center;
   width: 3*$column + 2*$column-gap;
@@ -26,6 +26,15 @@
   }
 }
 
+.button-big {
+  padding: ($half-baseline - 1px) ($column-gap - 1px);
+}
+
+.button-small {
+  padding: 0 ($column-gap - 1px);
+  border: 0;
+}
+
 .button-wide {
-  width: 5*$column + 4*$column-gap;
+  width: 4*$column + 3*$column-gap;
 }

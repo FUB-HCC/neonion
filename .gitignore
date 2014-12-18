@@ -8,3 +8,4 @@ staticfiles
 __pycache__
 *.css.map
 .sass-cache/
+*.log

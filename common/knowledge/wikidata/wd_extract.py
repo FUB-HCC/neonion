@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 import logging
 from os import listdir, path, makedirs
 from gzip import open as gzopen
+from bz2 import BZ2File
 from json import loads, dumps
 
 
@@ -38,7 +39,7 @@ def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
     for key in types.keys():
         value = int(types[key].split('/')[-1][1:])
         wd_types[value] = {'type': key,
-                           'filename': path.join(outputfolder, '{}.json'.format(key)),
+                           'filename': path.join(outputfolder, '{}.json.bz2'.format(key)),
                            'number': 0}
 
     if not path.exists(outputfolder):
@@ -47,7 +48,7 @@ def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
 
     # open outputfiles
     for wd_type in wd_types:
-        wd_types[wd_type]['file'] = open(wd_types[wd_type]['filename'], 'w')
+        wd_types[wd_type]['file'] = BZ2File(wd_types[wd_type]['filename'], 'wb')
 
     done = 0
 

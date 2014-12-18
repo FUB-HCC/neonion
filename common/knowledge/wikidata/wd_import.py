@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 import logging
 from json import loads
 from os import path
+from bz2 import BZ2File
 from pyelasticsearch import ElasticSearch
 
 
@@ -32,7 +33,7 @@ def import_json_into_es(types, inputfolder, logger):
         done = 0
         items = []
 
-        for line in open(wd_types[key]['filename']):
+        for line in BZ2File(wd_types[key]['filename'],'rb'):
             line = line.strip()
             item = loads(line)
             item['uri'] = 'http://wikidata.org/wiki/' + item['id']

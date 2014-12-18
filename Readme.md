@@ -10,9 +10,9 @@ git clone git@github.com:FUB-HCC/neonion.git
 
 ## Install Dependencies
 
-### Python
+### Python 2.7
 ```
-sudo apt-get install python python3 python-virtualenv python-dev python3-dev libpq-dev
+sudo apt-get install python python-virtualenv python-dev libpq-dev
 ```
 
 ### Annotator Store
@@ -27,7 +27,7 @@ sudo apt-get update
 sudo apt-get install oracle-java7-installer
 ```
 
-### Elasticsearch
+### Elasticsearch 1.3
 ```
 wget -qO - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add -
 sudo echo "deb http://packages.elasticsearch.org/elasticsearch/1.3/debian stable main" >> /etc/apt/sources.list
@@ -35,12 +35,12 @@ sudo apt-get update
 sudo apt-get install elasticsearch
 ```
 
-### Tomcat
+### Tomcat 7
 ```
 sudo apt-get install tomcat7 tomcat7-admin
 ```
 
-### Sesame
+### Sesame 2.7.13
 Download SDK file from http://sourceforge.net/projects/sesame/files/Sesame%202/
 
 ```
@@ -95,7 +95,7 @@ cp annotator.cfg.example annotator.cfg
 python run.py
 ```
 
-## start neonion (in a separate shell)
+### start neonion (in a separate shell)
 ```
 source venv2.7/bin/activate
 cd neonion

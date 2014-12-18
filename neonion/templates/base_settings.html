@@ -8,9 +8,9 @@
 
 {% block content %}
       <div>
+        <h3>Manage AnnotationSets</h3>
         <form action="{% url 'neonion.views.load_settings' %}" method="post">
             {% csrf_token %}
-            <h3>Manage AnnotationSets</h3>
             <table>
                 <thead>
                     <tr>
@@ -26,17 +26,15 @@
                         <td>
                             <input type="checkbox" name="as" value="{{ k.uri }}" {% if v %} checked {% endif %}>
                         </td>
-                    <td><p>{{ k.label }}</p></td>
-                    <td><p>{{ k.uri }}</p></td>
+                    <td>{{ k.label }}</td>
+                    <td>{{ k.uri }}</td>
                     <td>
-                        <table>
+                             <ul class="list-reset">
                             {% for link in k.sources.all %}
-                            <tr>
-                                <td><b>{{ link.provider }}</b></td>
-                                <td>{{ link.linked_concept_uri }}</td>
-                            </tr>
+                                <li><b>{{ link.provider }}</b> - {{ link.linked_concept_uri }}</li>
                             {% endfor %}
-                        </table>
+                            </ul>
+   
                     </td>
                     </tr>
                     {% endfor %}

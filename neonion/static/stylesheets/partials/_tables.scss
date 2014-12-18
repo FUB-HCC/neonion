@@ -2,21 +2,9 @@ table {
   width: 100%;
 }
 
-th {
-  padding: $half-baseline 0;
+th, td {
+  padding: $half-baseline $baseline ($half-baseline - 1) 0;
   text-align: left;
   border-bottom: 1px solid $silver;
+  vertical-align: top;
 }
-
-td {
-  padding-right: $baseline;
-  text-align: left;
-  border-bottom: 1px solid $silver;
-}
-
-th:first-child,
-td:first-child {
-  padding-left: 0; }
-th:last-child,
-td:last-child {
-  padding-right: 0; }

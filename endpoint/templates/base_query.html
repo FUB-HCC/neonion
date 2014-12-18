@@ -5,16 +5,16 @@
 {% block title %}Query{% endblock %}
 
 {% block content %}
-    <div class="unit-80">
-        <form action="{% url 'endpoint.views.query_form' %}" method="post">
-            {% csrf_token %}
-            <div>Query form</div>
-            <pre id="query-prefixes"></pre>
-            <textarea id="query-field" name="query-field" class="width-100" rows="15">{{ query }}</textarea>
-            <button id="submit-query" class="btn btn-small btn-outline mid">Submit</button>
-        </form>
-        <div id="query-result"></div>
-    </div>
+    <h3>Query form</h3>
+    <form action="{% url 'endpoint.views.query_form' %}" method="post">
+        {% csrf_token %}
+        <pre id="query-prefixes"></pre>
+        <textarea id="query-field" name="query-field" rows="10">{{ query }}</textarea>
+        <div class="form-buttons">
+          <button id="submit-query" class="button pull-right">Submit</button>
+        </div>
+    </form>
+    <div id="query-result"></div>
 {% endblock %}
 
 {% block scripts %}

@@ -66,3 +66,7 @@ input:-webkit-autofill {
 input, textarea {
   width: 100%;
 }
+
+textarea {
+  padding: 0 $column-gap/2;
+}

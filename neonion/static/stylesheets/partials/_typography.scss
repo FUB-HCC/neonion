@@ -11,5 +11,9 @@ h2 {
 h3 {
   font-size: 18px;
   line-height: $baseline;
-  margin: $half-baseline 0;
+  margin: $half-baseline 0 $baseline 0;
+}
+
+pre {
+  margin: 0 0 $baseline 0;
 }

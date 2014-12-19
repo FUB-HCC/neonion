@@ -3270,12 +3270,12 @@ input[type="submit"].btn {
 input[type="text"], input[type="password"], input[type="email"] {
   background-color: transparent;
   border: 0px;
-  border-bottom: 2px solid #cdcdcd;
+  border-bottom: 2px solid #717171;
   font-size: 16px;
   line-height: 26px;
   padding: 12px 0; }
   input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
-    border-bottom-color: #717171;
+    border-bottom-color: #008df3;
     outline: 0; }
   input[type="text"]:valid + label, input[type="text"]:focus + label, input[type="password"]:valid + label, input[type="password"]:focus + label, input[type="email"]:valid + label, input[type="email"]:focus + label {
     cursor: default;

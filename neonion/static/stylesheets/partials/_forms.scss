@@ -40,13 +40,13 @@
 input[type="text"], input[type="password"], input[type="email"] {
   background-color: transparent;
   border: 0px;
-  border-bottom: 2px solid $silver;
+  border-bottom: 2px solid $dove-gray;
   font-size: $base-font-size;
   line-height: $baseline;
   padding: ($half-baseline - 1px) 0;
 
   &:focus {
-    border-bottom-color: $dove-gray;
+    border-bottom-color: $azure;
     outline: 0;
   }
 

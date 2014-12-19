@@ -6,5 +6,6 @@ ELASTICSEARCH_URL = "http://localhost:9200"
 EULER_URL = 'http://euler.mpiwg-berlin.mpg.de:8000'
 ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/neonion'
 ENDPOINT_UPDATE = 'http://localhost:8080/openrdf-sesame/repositories/neonion/statements'
+DEFAULT_USER_ACTIVE_STATE = True
 
-CONTENT_SYSTEM_CLASS = 'common.euler.Euler'
+#CONTENT_SYSTEM_CLASS = 'common.euler.Euler'

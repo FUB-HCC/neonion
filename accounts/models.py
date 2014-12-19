@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
+from django.conf import settings
 
 
 class NeonionUserManager(BaseUserManager):
@@ -22,8 +23,8 @@ class User(AbstractBaseUser):
     name = models.CharField('persons name', max_length=256)
     surname = models.CharField('persons surname', max_length=256)
     joined = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=settings.DEFAULT_USER_ACTIVE_STATE)
+    is_admin = models.BooleanField(default=True)
 
     USERNAME_FIELD = 'email'
 

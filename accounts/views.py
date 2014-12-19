@@ -34,16 +34,18 @@ def register(request):
     User registration view.
     """
     success = False
+    show_activation_info = False
     if request.method == 'POST':
         form = RegistrationForm(data=request.POST)
         if form.is_valid():
             user = form.save()
             success = True
+            show_activation_info = not user.is_active
     else:
         form = RegistrationForm()
 
     return render_to_response('register.html', {
-        'form': form, 'success': success
+        'form': form, 'success': success, 'show_activation_info': show_activation_info
     }, context_instance=RequestContext(request))
 
 

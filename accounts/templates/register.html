@@ -8,7 +8,11 @@
 {% block header %}
 <div class="content">
     {% if success %}
-        <div class="message message-info">You have successfully registered. An administrator must approve this request before you can login.</div>
+        {% if show_activation_info %}
+            <div class="message message-info">You have successfully registered. An administrator must approve this request before you can login.</div>
+        {% else %}
+            <div class="message message-info">You have successfully registered.</div>
+        {% endif %}
     {% endif %}
 </div>
 {% endblock %}

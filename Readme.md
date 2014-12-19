@@ -67,7 +67,6 @@ Please change this default-settings according to your setup.
   <user username="tomcat" password="tomcat" roles="manager-gui"/>
   <user username="both" password="tomcat" roles="tomcat,role1"/>
   <user username="role1" password="tomcat" roles="role1"/>
- 
 </tomcat-users>
 ```
 

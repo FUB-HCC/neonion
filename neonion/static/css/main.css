@@ -3148,6 +3148,8 @@ input[type="submit"].btn {
       text-decoration: none;
       width: 146px; }
       .document-grid li a div {
+        text-overflow: ellipsis;
+        overflow: hidden;
         display: block;
         margin: 13px 8px;
         text-align: center; }

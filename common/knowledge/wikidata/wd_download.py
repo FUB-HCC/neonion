@@ -8,6 +8,13 @@ from datetime import datetime
 
 
 def download_file(url, outputfolder, logger):
+    """
+    helper file to download any file to specified folder
+    :param url: url of the file
+    :param outputfolder: folder to save the file to
+    :param logger:
+    :return:
+    """
     logger.info('download actual dump')
     filename = url.split('/')[-1]
     local_filename = path.join(outputfolder, filename)
@@ -25,8 +32,6 @@ def download_file(url, outputfolder, logger):
     logger.info('{} ({:,d} Bytes)'.format(url, download_size))
     with open(local_filename, 'wb') as f:
         size_to_log = download_size / 20  # 5% steps
-        # size_to_log = 500 * 1048576  # x MB
-        # size_to_log = 1 * 1048576  # x MB
         downloaded = 0
         last_time = datetime.now()
         for chunk in r.iter_content(chunk_size=1024):
@@ -52,11 +57,17 @@ def download_file(url, outputfolder, logger):
 
 
 def download_wd_dump(outputfolder, logger):
+    """
+    downloads the latest wikidata json dump
+    :param outputfolder:
+    :param logger:
+    :return:
+    """
     if not path.exists(outputfolder):
         logger.info('create outputfolder')
         makedirs(outputfolder)
 
-    resp = get(config.wd_url.format(''))
+    resp = get(config.WIKIDATA_DUMPS_URL.format(''))
     soup = BeautifulSoup(resp.text)
     all_dumps = set()
     for a in soup.find_all('a'):
@@ -65,7 +76,7 @@ def download_wd_dump(outputfolder, logger):
             all_dumps.add(href)
 
     latest_dump = sorted(all_dumps)[-1]
-    download_file(config.wd_url.format(latest_dump), outputfolder, logger)
+    download_file(config.WIKIDATA_DUMPS_URL.format(latest_dump), outputfolder, logger)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+import config
 import logging
 from json import loads
 from os import path
@@ -7,8 +8,15 @@ from pyelasticsearch import ElasticSearch
 
 
 def import_json_into_es(types, inputfolder, logger):
+    """
+    imports entitied from the *name.json.bz2* files (one entity per line) into local elasticsearch
+    :param types: json string like {'person': 'http://www.wikidata.org/entity/Q5', 'name': 'Wikidata-URI'}
+    :param inputfolder:
+    :param logger:
+    :return:
+    """
 
-    es = ElasticSearch('http://localhost:9200/')
+    es = ElasticSearch(config.ELASTICSEARCH_URL)
 
     try:
         es.delete_index('wikidata')

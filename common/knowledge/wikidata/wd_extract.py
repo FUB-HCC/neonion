@@ -7,11 +7,22 @@ from json import loads, dumps
 
 
 def latest_dump_from_folder(folder):
+    """
+    returns path of the latest wikidata json dump
+    :param folder: folder where the dumps are located
+    :return:
+    """
     files = listdir(folder)
     return sorted(list(files))[-1]
 
 
 def get_wikidata_items(filename, logger):
+    """
+    generator that yields each wikidata item as an object
+    :param filename: wikidata dump file
+    :param logger
+    :return:
+    """
     count = 0
     for line in gzopen(filename):
         count += 1
@@ -30,6 +41,15 @@ def get_wikidata_items(filename, logger):
 
 
 def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
+    """
+    extract the given types from the latest wikidata dump and save as bzip2 compressed files
+    -- one json object for every entity per line
+    :param types: json string like {'person': 'http://www.wikidata.org/entity/Q5', 'name': 'Wikidata-URI'}
+    :param inputfolder:
+    :param outputfolder:
+    :param logger:
+    :return:
+    """
     logger.info('start extraction from wd dump')
 
     latest_dump = latest_dump_from_folder(inputfolder)
@@ -113,7 +133,8 @@ def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
                             elif claim['mainsnak']['datavalue']['value']['numeric-id'] == 15916302:
                                 is_mpi = True
 
-                    # Max-Planck-Gesellschaft
+                    # add Max-Planck-Gesellschaft to 'institutes'
+                    # TODO: refactor
                     if 'P527' in wd_item['claims']:  # has part
                         for claim in wd_item['claims']['P527']:
                             if claim['mainsnak']['snaktype'] == 'value':
@@ -183,12 +204,6 @@ def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
             wd_types[wd_type]['file'].write(dumps(item) + '\n')
 
         done += 1
-        # if done % 100000 == 0:
-        # logger.info('done: {}'.format(done))
-        #     for key in wd_types:
-        #         logger.info('{}: {}'.format(wd_types[key]['type'], format(wd_types[key]['number']), ',d'))
-        #     logger.warning('end testing')
-        #     return
 
         if done % 250000 == 0:
             logger.info('done: {:,d}'.format(done))
@@ -217,6 +232,6 @@ if __name__ == '__main__':
     logging.getLogger('').addHandler(console)
 
     extract_from_wd_dump({'person': 'http://www.wikidata.org/entity/Q5',
-                          'institute': 'http://www.wikidata.org/entity/Q15916302',
-                          # 'ship': 'http://www.wikidata.org/entity/Q660668'
+                          # 'institute': 'http://www.wikidata.org/entity/Q15916302',
+                          # 'ship': 'http://www.wikidata.org/entity/Q660668',
                          }, args.inputfolder, args.outputfolder, logging.getLogger('extract'))

@@ -1,2 +1,2 @@
-wd_url = 'https://dumps.wikimedia.org/other/wikidata/{}'
-
+WIKIDATA_DUMPS_URL = 'https://dumps.wikimedia.org/other/wikidata/{}'
+ELASTICSEARCH_URL = 'http://localhost:9200/'

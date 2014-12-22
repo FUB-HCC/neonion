@@ -57,7 +57,7 @@ p {
   }
 }
 
-
+// put into seperate file soon
 #page-signin, #page-signup {
   .main {
     width: 10*$column + 10*$column-gap;
@@ -66,4 +66,8 @@ p {
 
 #page-annotator #annotationArea {
   font-weight: 400;
+}
+
+#page-userlist {
+  .button { margin-right: $column-gap; }
 }

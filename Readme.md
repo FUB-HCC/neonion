@@ -104,6 +104,7 @@ python manage.py runserver 0.0.0.0:8000
 
 ### Load default accounts
 By default there are two predefined accounts 'neonion-admin@fu-berlin.de' and 'neonion-test@fu-berlin.de'. Both have the default password 'neonion' but different rights.
+
 ```
 python manage.py loaddata initial_accounts
 ```

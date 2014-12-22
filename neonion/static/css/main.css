@@ -44,6 +44,9 @@ p {
 #page-annotator #annotationArea {
   font-weight: 400; }
 
+#page-userlist .button {
+  margin-right: 16px; }
+
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 /**
  * 1. Set default font family to sans-serif.
@@ -3145,6 +3148,8 @@ input[type="submit"].btn {
       text-decoration: none;
       width: 146px; }
       .document-grid li a div {
+        text-overflow: ellipsis;
+        overflow: hidden;
         display: block;
         margin: 13px 8px;
         text-align: center; }
@@ -3195,6 +3200,11 @@ input[type="submit"].btn {
 .hidden {
   display: none; }
 
+.list-reset {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+
 .button {
   border: 1px solid #cdcdcd;
   background-color: #cdcdcd;
@@ -3202,7 +3212,7 @@ input[type="submit"].btn {
   cursor: pointer;
   display: inline-block;
   font-size: 16px;
-  padding: 12px 15px;
+  padding: 5.5px 15px;
   text-decoration: none;
   text-align: center;
   width: 146px; }
@@ -3217,8 +3227,15 @@ input[type="submit"].btn {
     border-color: #8e8e93;
     color: #000000; }
 
+.button-big {
+  padding: 12px 15px; }
+
+.button-small {
+  padding: 0 15px;
+  border: 0; }
+
 .button-wide {
-  width: 254px; }
+  width: 200px; }
 
 .form-buttons {
   *zoom: 1;
@@ -3240,6 +3257,7 @@ input[type="submit"].btn {
     left: 0;
     margin: 13px 0;
     position: absolute;
+    pointer-events: none;
     top: 0; }
   .form-group.error input {
     border-bottom-color: #ff3235; }
@@ -3254,12 +3272,12 @@ input[type="submit"].btn {
 input[type="text"], input[type="password"], input[type="email"] {
   background-color: transparent;
   border: 0px;
-  border-bottom: 2px solid #cdcdcd;
+  border-bottom: 2px solid #717171;
   font-size: 16px;
   line-height: 26px;
   padding: 12px 0; }
   input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
-    border-bottom-color: #717171;
+    border-bottom-color: #008df3;
     outline: 0; }
   input[type="text"]:valid + label, input[type="text"]:focus + label, input[type="password"]:valid + label, input[type="password"]:focus + label, input[type="email"]:valid + label, input[type="email"]:focus + label {
     cursor: default;
@@ -3272,6 +3290,9 @@ input:-webkit-autofill {
 input, textarea {
   width: 100%; }
 
+textarea {
+  padding: 0 8px; }
+
 h1, #documentTitle {
   font-size: 26px;
   line-height: 52px;
@@ -3280,7 +3301,10 @@ h1, #documentTitle {
 h3 {
   font-size: 18px;
   line-height: 26px;
-  margin: 13px 0; }
+  margin: 13px 0 26px 0; }
+
+pre {
+  margin: 0 0 26px 0; }
 
 #page-annotator {
   background: #ffffff; }
@@ -3319,78 +3343,14 @@ table {
   width: 100%; }
 
 th {
-  padding: 13px 0;
-  text-align: left;
-  border-bottom: 1px solid #cdcdcd; }
+  padding: 0 26px 12px 0; }
 
 td {
-  padding-right: 26px;
+  padding: 13px 26px 12px 0; }
+
+th, td {
   text-align: left;
-  border-bottom: 1px solid #cdcdcd; }
-
-th:first-child,
-td:first-child {
-  padding-left: 0; }
-
-th:last-child,
-td:last-child {
-  padding-right: 0; }
-
-/**
- * Grid
- */
-#grid {
-  /* Dimensions - same width as your grid with gutters */
-  width: 1296px;
-  position: absolute;
-  top: 0;
-  left: 0; }
-
-/**
- * Vertical grid lines
- *
- * Set the column width taking the borders into consideration,
- * and use margins to set column gutters.
- */
-#grid div.vert {
-  width: 39px;
-  border: solid darkturquoise;
-  border-width: 0 1px;
-  margin-right: 15px; }
-
-#grid div.vert.first-line {
-  margin-left: 0px; }
-
-/**
- * Horizontal grid lines, defined by your base line height
- *
- * Remember, the CSS properties that define the box model:
- * visible height = height + borders + margins + padding
- */
-#grid div.horiz {
-  /* 26px line height */
-  height: 26px;
-  border-bottom: 1px dotted darkgray;
-  margin: 0;
-  padding: 0; }
-
-/**
-* Classes for multiple grids
-*
-* When using more than one grid, remember to set the numberOfGrids 
-* option in the hashgrid.js file.
-* Linien von oben nach unten
-*/
-#grid.grid-1 div.vert {
-  /* Vertical grid line colour for grid 1 */
-  border-color: darkturquoise; }
-
-#grid.grid-2 {
-  /* Adjustments */
-  width: 100px; }
-
-#grid.grid-2 div.vert {
-  /* Vertical grid line colour for grid 2 */
-  border-color: crimson; }
+  border-bottom: 1px solid #cdcdcd;
+  vertical-align: top; }
 
 /*# sourceMappingURL=main.css.map */

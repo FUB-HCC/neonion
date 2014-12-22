@@ -1,3 +1,4 @@
+<h3>Import files</h3>
 <form method="post" action="{% url 'documents.views.upload_file' %}" enctype="multipart/form-data">
     {% csrf_token %}
     <input id="file-upload" name="file-upload" type="file" multiple>

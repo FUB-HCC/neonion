@@ -79,14 +79,14 @@ sudo /etc/init.d/tomcat7 start
 To deploy Sesame to your tomcat go to http://localhost:8080/manager/html and upload the files *openrdf-sesame.war* and *openrdf-workbench.war'*.
 
 
-### create virtualenv and install python requirements
+### Create virtualenv and install python requirements
 ```
 virtualenv -p /usr/bin/python2.7 venv2.7
 source venv2.7/bin/activate
 pip install -r neonion/requirements.txt
 ```
 
-### start Annotator Store (in a separate shell)
+### Start Annotator Store (in a separate shell)
 ```
 source venv2.7/bin/activate
 cd annotator-store
@@ -94,7 +94,7 @@ cp annotator.cfg.example annotator.cfg
 python run.py
 ```
 
-### start neonion (in a separate shell)
+### Start neonion (in a separate shell)
 ```
 source venv2.7/bin/activate
 cd neonion
@@ -102,7 +102,21 @@ python manage.py syncdb
 python manage.py runserver 0.0.0.0:8000
 ```
 
+### Load default accounts
+By default there are two predefined accounts 'neonion-admin@fu-berlin.de' and 'neonion-test@fu-berlin.de'. Both have the default password 'neonion' but different rights.
+```
+python manage.py loaddata initial_accounts
+```
+
+### Load default annotation set for annotating persons
+```
+python manage.py loadadata initial_annotationsts
+```
+
 ### Import person data from wikidata into your knowledge base
 ```
 python /PATH/TO/NEONION/common/knowledge/wikidata/wd_import.py --folder /PATH/TO/NEONION/elasticsearch/wikidata
 ```
+
+### License
+TODO

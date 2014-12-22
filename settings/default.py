@@ -44,11 +44,14 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'neonion',
+    'api',
+    'plugins',
     'documents',
     'accounts',
     'endpoint',
-    'annotations',
+    'store',
     'annotationsets',
 )
 
@@ -69,7 +72,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'neonion.urls'
 
-WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = 'wsgi_dev.application'
 
 
 # Database
@@ -94,7 +97,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -123,3 +125,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
 )
+
+
+REST_FRAMEWORK = {
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    # ]
+}

@@ -7,31 +7,69 @@
 
 
 {% block content %}
-      <div class="unit-80">
+      <div>
+        <h3>Manage AnnotationSets</h3>
         <form action="{% url 'neonion.views.load_settings' %}" method="post">
             {% csrf_token %}
-            <div>Manage AnnotationSets</div>
             <table>
                 <thead>
                     <tr>
-                    <th>Active</th>
-                    <th>AnnotationSet</th>
-                    <th>URI</th>
+                        <th>Active</th>
+                        <th>AnnotationSet</th>
+                        <th>URI</th>
+                        <th>Linked concepts</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for set in annotation_sets %}
+                    {% for k,v in annotation_sets.items %}
                     <tr>
                         <td>
-                            <input type="checkbox" name="as" value="{{ set.uri }}" {% if set.active %} checked {% endif %}>
+                            <input type="checkbox" name="as" value="{{ k.uri }}" {% if v %} checked {% endif %}>
                         </td>
-                    <td><p>{{ set.label }}</p></td>
-                    <td><p>{{ set.uri }}</p></td>
+                    <td>{{ k.label }}</td>
+                    <td>{{ k.uri }}</td>
+                    <td>
+                             <ul class="list-reset">
+                            {% for link in k.sources.all %}
+                                <li><b>{{ link.provider }}</b> - {{ link.linked_concept_uri }}</li>
+                            {% endfor %}
+                            </ul>
+   
+                    </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            <button class="btn btn-small btn-outline mid" id="btn-import">Save</button>
+            <div class="form-buttons"><button class="button button-primary pull-right" id="btn-import">Save</button></div>
         </form>
+      <h3>My Annotations</h3>
+      <table id="tbl-annotations">
+          <thead>
+            <tr>
+                <th>Document</th>
+                <th>Date</th>
+            </tr>
+          </thead>
+      </table>
     </div>
+{% endblock %}
+
+{% block scripts %}
+<script language="javascript">
+    "use strict";
+
+    $(document).ready(function() {
+        // better replace this part by angular js
+        $.getJSON("{% url 'store.views.filter_annotations' %}", function(response) {
+            $.each(response.rows, function(index, value){
+                $("#tbl-annotations").append(
+                    "<tr><td><a href='/annotator/" + value['uri'] + "'>" + value['uri'] + "</a></td>" +
+                    "<td>" + value['created'] + "</td>" +
+                    "</tr>"
+                );
+            });
+        });
+    });
+
+</script>
 {% endblock %}

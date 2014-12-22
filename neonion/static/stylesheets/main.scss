@@ -6,6 +6,7 @@
 @import "vendor/normalize";
 @import "vendor/annotator.min";
 @import "vendor/font-awesome.min";
+@import "vendor/simptip";
 
 
 // Partials
@@ -17,9 +18,5 @@
 @import "partials/forms";
 @import "partials/typography";
 @import "partials/annotator";
-
-
-
-// TODO: delete in production!
-// only for development, not for production
-@import "vendor/hashgrid"; 
+@import "partials/messages";
+@import "partials/tables";

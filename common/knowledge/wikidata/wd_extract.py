@@ -1,15 +1,28 @@
 from argparse import ArgumentParser
 import logging
-from os import listdir,path, makedirs
+from os import listdir, path, makedirs
 from gzip import open as gzopen
-from json import loads,dumps
-from datetime import datetime
+from bz2 import BZ2File
+from json import loads, dumps
+
 
 def latest_dump_from_folder(folder):
+    """
+    returns path of the latest wikidata json dump
+    :param folder: folder where the dumps are located
+    :return:
+    """
     files = listdir(folder)
-    return sorted(list(files))[-1]  # map( strip_file_extension, files )
+    return sorted(list(files))[-1]
 
-def get_wikidata_items(filename,logger):
+
+def get_wikidata_items(filename, logger):
+    """
+    generator that yields each wikidata item as an object
+    :param filename: wikidata dump file
+    :param logger
+    :return:
+    """
     count = 0
     for line in gzopen(filename):
         count += 1
@@ -18,44 +31,51 @@ def get_wikidata_items(filename,logger):
         try:
             wd = loads(line[0:-2])
         except:
-            # print( '-2', line[0:-2] )
             try:
                 wd = loads(line[0:-1])
             except:
-                # if len( line > 2 ):
-                logger.warning( 'something went wrong parsing this line:' )
-                continue
+                if len(line) > 2:  # first and last line are no valid json-objects
+                    logger.warning('something went wrong parsing this line:\n{}'.format(line))
+                    continue
         yield wd
 
-def extract_from_wd_dump(inputfolder, outputfolder, logger):
+
+def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
+    """
+    extract the given types from the latest wikidata dump and save as bzip2 compressed files
+    -- one json object for every entity per line
+    :param types: json string like {'person': 'http://www.wikidata.org/entity/Q5', 'name': 'Wikidata-URI'}
+    :param inputfolder:
+    :param outputfolder:
+    :param logger:
+    :return:
+    """
     logger.info('start extraction from wd dump')
 
     latest_dump = latest_dump_from_folder(inputfolder)
 
+    # convert type dictionary
+    wd_types = dict()
+    for key in types.keys():
+        value = int(types[key].split('/')[-1][1:])
+        wd_types[value] = {'type': key,
+                           'filename': path.join(outputfolder, '{}.json.bz2'.format(key)),
+                           'number': 0}
+
     if not path.exists(outputfolder):
-        logger.info( 'create outputfolder')
+        logger.info('create outputfolder')
         makedirs(outputfolder)
 
-    persons_filename = path.join(outputfolder, 'persons.json')
-    person_file = open(persons_filename, 'w')
-
-    institutes_filename = path.join(outputfolder, 'institutes.json')
-    institute_file = open(institutes_filename, 'w')
-
-    # person_statement_count = dict()
-    # person_statement_count_filename = os.path.join(outputfolder, 'person_statement_count.json')
-    # person_statement_count_file = open( person_statement_count_filename, 'w' )
-    # db = dataset.connect('sqlite:///' + os.path.join(outputfolder, 'properties_20141009.db'))
-    # for property in db['properties']:
-    # logger.debug( property['entity'],property['label']  )
-    # logger.debug( db['properties'].find_one(entity="P410")['label'] )
-    # return
+    # open outputfiles
+    for wd_type in wd_types:
+        wd_types[wd_type]['file'] = BZ2File(wd_types[wd_type]['filename'], 'wb')
 
     done = 0
-    human = 0
-    nr_of_mpis = 0
 
-    for wd_item in get_wikidata_items(path.join(inputfolder, latest_dump),logger):
+    for wd_item in get_wikidata_items(path.join(inputfolder, latest_dump), logger):
+
+        wd_type = None
+
         is_human = False
         is_mpi = False
         item = {}
@@ -68,24 +88,53 @@ def extract_from_wd_dump(inputfolder, outputfolder, logger):
         gnd = []
         viaf = []
 
-        if wd_item['type'] == 'item':
+        if 'type' in wd_item and wd_item['type'] == 'item':
+
             if not 'labels' in wd_item:
                 pass
-                # items_without_any_label_file.write( wd_item['id']+'\n' )
-                # items_without_any_label_file.flush()
 
             if 'claims' in wd_item:
+
                 if 'P31' in wd_item['claims']:
+
                     for claim in wd_item['claims']['P31']:  # instance of
+
                         if claim['mainsnak']['snaktype'] == 'value':
+
+                            if claim['mainsnak']['datavalue']['value']['numeric-id'] in wd_types:
+
+                                wd_type = claim['mainsnak']['datavalue']['value']['numeric-id']
+                                wd_types[wd_type]['number'] += 1
+
+                                if 'labels' in wd_item:
+                                    if 'de' in wd_item['labels']:
+                                        label = wd_item['labels']['de']['value']
+                                    elif 'en' in wd_item['labels']:
+                                        label = wd_item['labels']['en']['value']
+                                    else:
+                                        label = next(iter(wd_item['labels'].values()))['value']
+
+                                if 'descriptions' in wd_item:
+                                    if 'de' in wd_item['descriptions']:
+                                        descr = wd_item['descriptions']['de']['value']
+                                    elif 'en' in wd_item['descriptions']:
+                                        descr = wd_item['descriptions']['en']['value']
+
+                                if 'aliases' in wd_item:
+                                    # for lang in wd_item['aliases']:
+                                    for lang in ['de', 'en']:
+                                        if lang in wd_item['aliases']:
+                                            for alias in wd_item['aliases'][lang]:
+                                                aliases.add(alias['value'])
+
                             if claim['mainsnak']['datavalue']['value']['numeric-id'] == 5:
                                 is_human = True
-                                human += 1
+
                             elif claim['mainsnak']['datavalue']['value']['numeric-id'] == 15916302:
                                 is_mpi = True
-                                nr_of_mpis += 1
 
-                    # Max-Planck-Gesellschaft
+                    # add Max-Planck-Gesellschaft to 'institutes'
+                    # TODO: refactor
                     if 'P527' in wd_item['claims']:  # has part
                         for claim in wd_item['claims']['P527']:
                             if claim['mainsnak']['snaktype'] == 'value':
@@ -93,38 +142,6 @@ def extract_from_wd_dump(inputfolder, outputfolder, logger):
                                     is_mpi = True
 
                     if is_human:
-                        # # count statements
-                        # for claim in wd_item['claims']:
-                        # if claim not in person_statement_count:
-                        #         person_statement_count[claim] = dict()
-                        #         person_statement_count[claim]['count'] = 0
-                        #         try:
-                        #             person_statement_count[claim]['label'] = db['properties'].find_one(entity=claim)['label']
-                        #         except:
-                        #             person_statement_count[claim]['label'] = ''
-                        #             # pass
-                        #     person_statement_count[claim]['count'] += 1
-
-                        if 'labels' in wd_item:
-                            if 'de' in wd_item['labels']:
-                                label = wd_item['labels']['de']['value']
-                            elif 'en' in wd_item['labels']:
-                                label = wd_item['labels']['en']['value']
-                            else:
-                                label = next(iter(wd_item['labels'].values()))['value']
-
-                        if 'descriptions' in wd_item:
-                            if 'de' in wd_item['descriptions']:
-                                descr = wd_item['descriptions']['de']['value']
-                            elif 'en' in wd_item['descriptions']:
-                                descr = wd_item['descriptions']['en']['value']
-
-                        if 'aliases' in wd_item:
-                            # for lang in wd_item['aliases']:
-                            for lang in ['de', 'en']:
-                                if lang in wd_item['aliases']:
-                                    for alias in wd_item['aliases'][lang]:
-                                        aliases.add(alias['value'])
 
                         # birthdate
                         if 'P569' in wd_item['claims']:
@@ -145,26 +162,6 @@ def extract_from_wd_dump(inputfolder, outputfolder, logger):
                                     viaf.append(claim['mainsnak']['datavalue']['value'])
 
                     elif is_mpi:
-                        if 'labels' in wd_item:
-                            if 'de' in wd_item['labels']:
-                                label = wd_item['labels']['de']['value']
-                            elif 'en' in wd_item['labels']:
-                                label = wd_item['labels']['en']['value']
-                            else:
-                                label = next(iter(wd_item['labels'].values()))['value']
-
-                        if 'descriptions' in wd_item:
-                            if 'de' in wd_item['descriptions']:
-                                descr = wd_item['descriptions']['de']['value']
-                            elif 'en' in wd_item['descriptions']:
-                                descr = wd_item['descriptions']['en']['value']
-
-                        if 'aliases' in wd_item:
-                            # for lang in wd_item['aliases']:
-                            for lang in ['de', 'en']:
-                                if lang in wd_item['aliases']:
-                                    for alias in wd_item['aliases'][lang]:
-                                        aliases.add(alias['value'])
 
                         # GND
                         if 'P227' in wd_item['claims']:
@@ -188,46 +185,37 @@ def extract_from_wd_dump(inputfolder, outputfolder, logger):
                                 historic_names.append(hist_name)
 
         if is_human:
-            item['id'] = wd_item['id']
-            item['label'] = label
-            item['descr'] = descr
             item['birth'] = birth
             item['gnd'] = gnd
             item['viaf'] = viaf
             item['aliases'] = list(aliases)
-            person_file.write(dumps(item) + '\n')
 
         elif is_mpi:
-            item['id'] = wd_item['id']
-            item['label'] = label
-            item['descr'] = descr
             item['gnd'] = gnd
             item['aliases'] = list(aliases)
             item['historic_names'] = historic_names
-            institute_file.write(dumps(item) + '\n')
+
+        # write to file
+        if not wd_type is None:
+            item['id'] = wd_item['id']
+            item['label'] = label
+            item['descr'] = descr
+
+            wd_types[wd_type]['file'].write(dumps(item) + '\n')
 
         done += 1
-        if done % 250000 == 0:
-            # person_statement_count_file = open(person_statement_count_filename, 'w')
-            # person_statement_count_file.write(json.dumps(person_statement_count, indent=4))
-            # person_statement_count_file.close()
-            logger.info(  '{} total: {} human: {} mpis: {}'.format(
-                    datetime.now().strftime('%H:%M:%S'),
-                    format(done, ',d'),
-                    format(human, ',d'),
-                    format(nr_of_mpis, ',d'),
-                )
-            )
 
-            # person_statement_count_file = open(person_statement_count_filename, 'w')
-            # person_statement_count_file.write(json.dumps(person_statement_count, indent=4))
-            # person_statement_count_file.close()
+        if done % 250000 == 0:
+            logger.info('done: {:,d}'.format(done))
+            for key in wd_types:
+                logger.info('{}: {:,d}'.format(wd_types[key]['type'], wd_types[key]['number']))
 
 
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("-i", "--inputfolder", default='dumps', help="folder where the wikidata dumps are stored")
-    parser.add_argument("-o", "--outputfolder", default='extracted_data', help="folder where the json output will be stored")
+    parser.add_argument("-o", "--outputfolder", default='extracted_data',
+                        help="folder where the json output will be stored")
     args = parser.parse_args()
 
     # set up logging to file
@@ -239,9 +227,11 @@ if __name__ == '__main__':
 
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s',"%H:%M:%S")
+    formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s', "%H:%M:%S")
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
-
-    extract_from_wd_dump(args.inputfolder, args.outputfolder,logging.getLogger('extract'))
+    extract_from_wd_dump({'person': 'http://www.wikidata.org/entity/Q5',
+                          # 'institute': 'http://www.wikidata.org/entity/Q15916302',
+                          # 'ship': 'http://www.wikidata.org/entity/Q660668',
+                         }, args.inputfolder, args.outputfolder, logging.getLogger('extract'))

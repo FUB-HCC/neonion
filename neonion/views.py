@@ -58,14 +58,9 @@ def load_settings(request):
             else:
                 workspace.annotation_sets.remove(annotation_set)
 
-    annotation_sets = []
+    annotation_sets = {}
     for annotation_set in AnnotationSet.objects.all():
-        annotation_sets.append({
-            'uri': annotation_set.uri,
-            'label': annotation_set.label,
-            'allow_creation': annotation_set.allow_creation,
-            'active': workspace.annotation_sets.all().filter(uri=annotation_set.uri).exists()
-        })
+        annotation_sets[annotation_set] = workspace.annotation_sets.all().filter(uri=annotation_set.uri).exists()
 
     data = {
         'annotation_sets': annotation_sets
@@ -75,7 +70,13 @@ def load_settings(request):
 
 @login_required
 def import_document(request):
-    return render_to_response('base_import.html', {}, context_instance=RequestContext(request))
+    data = {}
+    if hasattr(settings, 'CONTENT_SYSTEM_CLASS'):
+        data['use_file_upload'] = False
+    else:
+        data['use_file_upload'] = True
+
+    return render_to_response('base_import.html', data, context_instance=RequestContext(request))
 
 
 @login_required
@@ -83,15 +84,33 @@ def import_document(request):
 def resource_search(request, index):
     if 'q' in request.GET:
         # TODO call WikiData.search method
-        size = 10
+        size = 5
         query = {
             'query': {
                 'filtered': {
                     'query': {
-                        'fuzzy_like_this': {
-                            'like_text': request.GET.get('q'),
-                            'fields': ['label', 'alias'],
-                            'fuzziness': 0.1,
+                        'bool': {
+                            'should': [
+                                {
+                                    'wildcard': {
+                                        'label': '*{}*'.format(request.GET.get('q'))
+                                    }
+                                },
+                                {
+                                    'wildcard': {
+                                        'aliases': '*{}*'.format(request.GET.get('q'))
+                                    }
+                                },
+                                {
+                                    'more_like_this': {
+                                        'fields': ['label', 'aliases'],
+                                        'like_text': request.GET.get('q'),
+                                        'min_term_freq': 1,
+                                        'min_doc_freq': 1,
+                                        'max_query_terms': 12
+                                    }
+                                }
+                            ]
                         }
                     },
                     'filter': {

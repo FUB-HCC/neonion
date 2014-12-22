@@ -20,7 +20,7 @@ def query(request):
         if 'output' in request.POST: sparql_output = request.POST['output']
     elif request.method == 'GET':
         if 'query' in request.GET: sparql_query = request.GET['query']
-        if 'output' in request.GET: sparql_output= request.GET['output']
+        if 'output' in request.GET: sparql_output = request.GET['output']
 
     print(sparql_query)
     try:
@@ -34,17 +34,17 @@ def query(request):
 
 
 @login_required
+@require_http_methods(["GET", "POST"])
 def query_form(request):
     if request.method == 'POST' and 'query-field' in request.POST:
         sparql_query = request.POST['query-field']
     elif request.method == 'GET' and 'query-field' in request.GET:
         sparql_query = request.GET['query-field']
     else:
-        sparql_query = """SELECT * {
-        \t?s <rdf:type> <foaf:Person> .
-        \t?s <foaf:name> ?n
-        }
-        LIMIT 50"""
+        sparql_query = "SELECT * {\n" \
+            "\t?s <rdf:type> <foaf:Person> .\n" \
+            "\t?s <foaf:name> ?n\n" \
+            "}\nLIMIT 50"
 
     return render_to_response('base_query.html', {'query': sparql_query, 'endpoint': settings.ENDPOINT}, context_instance=RequestContext(request))
 

@@ -12,241 +12,229 @@
 {% endblock %}
 
 {% block content %}
-    {% csrf_token %}
+{% csrf_token %}
+<div>
+    <div id="annotator_menu" style="display:none;position:fixed;">
+        <ul id="annotator_contributors" class="forms-list"></ul>
+        <a href="#" id="scoll_to_latest_annotation"><i class="fa fa-arrow-circle-down"></i> scroll to last
+            annotation</a>
+    </div>
     <div>
-        <div id="annotator_menu" style="display:none;position:fixed;">
-           <ul id="annotator_contributors" class="forms-list"></ul>
-            <a href="#" id="scoll_to_latest_annotation"><i class="fa fa-arrow-circle-down"></i> scroll to last annotation</a>
-        </div>
-        <div>
-            <div id="annotationArea" class="panel panel-default" >
-                <div id="documentTitle" class="panel-heading big">{{ title }}</div>
-                <div id="documentText" class="panel-body"> {% autoescape off %}{{ content }}{% endautoescape %}</div>
-            </div>
+        <div id="annotationArea" class="panel panel-default">
+            <div id="documentTitle" class="panel-heading big">{{ title }}</div>
+            <div id="documentText" class="panel-body"> {% autoescape off %}{{ content }}{% endautoescape %}</div>
         </div>
     </div>
+</div>
 {% endblock %}
 
 
 {% block scripts %}
-<script type="text/javascript" src="{% static 'js/annotator.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/annotator.neonion.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/annotator.store.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/annotator.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/annotator.neonion.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/annotator.store.min.js' %}"></script>
 
-<script type="text/javascript" src="{% static 'js/jquery-ui-1.11.1.custom.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-ui-1.11.1.custom.min.js' %}"></script>
 
-<script language="javascript">
-    "use strict";
+    <script language="javascript">
+        "use strict";
 
-    var docUrn = "{{ urn }}";
-    var userColors = {};
+        var userColors = {};
 
-    function makeColor(colorNum, colors){
-        if (colors < 1) colors = 1; // defaults to one color - avoid divide by zero
-        return ( colorNum * (360 / colors) ) % 360;
-    }
+        function makeColor(colorNum, colors) {
+            if (colors < 1) colors = 1; // defaults to one color - avoid divide by zero
+            return ( colorNum * (360 / colors) ) % 360;
+        }
 
-    $(document).ready(function() {
-        var annotator = setupAnnotator();
+        $(document).ready(function () {
+            var annotator = setupAnnotator();
 
-        $('#enableFullscreen').click(function(){
-            enableFullscreen( document.getElementById( 'annotationArea' ) );
+            /*
+             $('#enableFullscreen').click(function(){
+             enableFullscreen( document.getElementById( 'annotationArea' ) );
+             });
+
+             $('#scoll_to_latest_annotation').click(function(){
+             var annotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation(annotator.plugins.Neonion.getUser().email);
+             if (annotation) {
+             var target = $(annotation.highlights[0]);
+             $('html, body').stop().animate(
+             { 'scrollTop': target.offset().top - 50 },
+             1000,
+             'easeInOutQuart'
+             );
+             // blink for more attention
+             for(var i = 0; i < 2; i++) {
+             $(target).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
+             }
+             }
+             return false;
+             });
+
+             $("#annotator_menu").on("click", "input[type=checkbox]", function() {
+             var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations($(this).val());
+             if ($(this).is(':checked')) {
+             annotations.forEach(function(item) {
+             Annotator.Plugin.Neonion.prototype.showAnnotation(item);
+             colorizeAnnotation(item);
+             });
+             } else {
+             annotations.forEach(function(item) {
+             Annotator.Plugin.Neonion.prototype.hideAnnotation(item);
+             });
+             }
+             });
+             */
         });
 
-        $('#annotationSets li span').each(function(){
-            $(this).click( function(){
-                $(this).toggleClass('active');
-                var active = checkAnnotationSetSelection();
-                annotator.plugins.Neonion.setVisibleAnnotationSets(active);
-            });
-        });
-
-        $('#scoll_to_latest_annotation').click(function(){
-            var annotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation(annotator.plugins.Neonion.getUser().email);
-            if (annotation) {
-                var target = $(annotation.highlights[0]);
-                $('html, body').stop().animate(
-                  { 'scrollTop': target.offset().top - 50 },
-                  1000,
-                  'easeInOutQuart'
-                );
-                // blink for more attention 
-                for(var i = 0; i < 2; i++) {
-                    $(target).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
-                }
-            }
-            return false;
-        });
-
-        $("#annotator_menu").on("click", "input[type=checkbox]", function() {
-            var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations($(this).val());
-            if ($(this).is(':checked')) {  
-                annotations.forEach(function(item) {
-                    Annotator.Plugin.Neonion.prototype.showAnnotation(item);
-                    colorizeAnnotation(item);
-                });
-            } else {
-                annotations.forEach(function(item) {
-                    Annotator.Plugin.Neonion.prototype.hideAnnotation(item);
-                });
-            }
-        });
-    });
-
-    function setupAnnotator () {
-        var sets = {};
-        {% for set in annotation_sets %}
-            {% if set.uri == 'foaf:Person' %}
-                sets["{{ set.uri }}"] = {
-                    label: "{{ set.label }}",
-                    omitAdder: false,
-                    allowCreation: {{ set.allow_creation|yesno:"true,false" }},
-                    create: Annotator.Plugin.Neonion.prototype.create.createPerson,
-                    search: Annotator.Plugin.Neonion.prototype.search.searchPerson,
-                    formatter: Annotator.Plugin.Neonion.prototype.formatter.formatPerson,
-                    decorator: Annotator.Plugin.Neonion.prototype.decorator.decoratePerson,
-                    fields: [
-                        { name: 'label', label: 'Full name', type: 'text', required: true },
-                        { name: 'descr', label: 'Occupation', type: 'text' },
-                        { name: 'birth', label: 'Date of birth', type: 'date' },
-                        { name: 'death', label: 'Date of death', type: 'date' }
-                    ]
-                };
+        function setupAnnotator() {
+            var sets = {};
+            {% for set in annotation_sets %}
+                {% if set.uri == 'foaf:Person' %}
+                    sets["{{ set.uri }}"] = {
+                        label: "{{ set.label }}",
+                        omitAdder: false,
+                        allowCreation: {{ set.allow_creation|yesno:"true,false" }},
+                        create: Annotator.Plugin.Neonion.prototype.create.createPerson,
+                        search: Annotator.Plugin.Neonion.prototype.search.searchPerson,
+                        formatter: Annotator.Plugin.Neonion.prototype.formatter.formatPerson,
+                        decorator: Annotator.Plugin.Neonion.prototype.decorator.decoratePerson,
+                        fields: [
+                            {name: 'label', label: 'Full name', type: 'text', required: true},
+                            {name: 'descr', label: 'Occupation', type: 'text'},
+                            {name: 'birth', label: 'Date of birth', type: 'date'},
+                            {name: 'death', label: 'Date of death', type: 'date'}
+                        ]
+                    };
                 {% elif set.uri == 'aiiso:Institution' %}
-                // add compositor for institutes
-                sets["{{ set.uri }}"] = {
-                    label: "{{ set.label }}",
-                    omitAdder: false,
-                    allowCreation: {{ set.allow_creation|yesno:"true,false" }},
-                    create: Annotator.Plugin.Neonion.prototype.create.createInstitute,
-                    search: Annotator.Plugin.Neonion.prototype.search.searchInstitute,
-                    formatter: Annotator.Plugin.Neonion.prototype.formatter.formatInstitute,
-                    decorator: Annotator.Plugin.Neonion.prototype.decorator.decorateInstitute
-                };
-            {% endif %}
-        {% endfor %}
+                    // add compositor for institutes
+                    sets["{{ set.uri }}"] = {
+                        label: "{{ set.label }}",
+                        omitAdder: false,
+                        allowCreation: {{ set.allow_creation|yesno:"true,false" }},
+                        create: Annotator.Plugin.Neonion.prototype.create.createInstitute,
+                        search: Annotator.Plugin.Neonion.prototype.search.searchInstitute,
+                        formatter: Annotator.Plugin.Neonion.prototype.formatter.formatInstitute,
+                        decorator: Annotator.Plugin.Neonion.prototype.decorator.decorateInstitute
+                    };
+                {% endif %}
+            {% endfor %}
 
-        $("#documentText").annotator()
-        .annotator('addPlugin', 'Neonion', {
-            whoamiUrl: "{% url 'accounts.views.me' %}",
-            endpointUrl : "{{ endpoint_url }}",
-            annotationSets: sets
-        })
-        .annotator('addPlugin', 'Store', {
-            // The endpoint of the store on your server.
-            prefix : "{{ store_url }}",
-            // Attach the uri of the current page to all annotations to allow search.
-            annotationData: { 'uri' : docUrn },
-            loadFromSearch: { 'uri' : docUrn }
-        });
+            $("#documentText").annotator()
+                    .annotator('addPlugin', 'Neonion', {
+                        whoamiUrl: "{% url 'accounts.views.me' %}",
+                        endpointUrl: "{{ endpoint_url }}",
+                        annotationSets: sets
+                    })
+                    .annotator('addPlugin', 'Store', {
+                        prefix: '{{ store_url }}',
+                        annotationData: {'uri': '{{ urn }}'},
+                        // filter annotations by creator
+                        loadFromSearch: {
+                            'uri': '{{ urn }}',
+                            'creator.email': '{{ request.user.email }}',
+                            'limit': 999999
+                        }
+                    });
 
-        var annotator = $("#documentText").data("annotator")
-        .subscribe("annotationCreated", function(annotation) { 
-            notifyEndpoint(annotation);
-            annotationChanged(annotation); 
-        })
-        .subscribe("annotationUpdated", annotationChanged)
-        .subscribe("annotationDeleted", refreshContributors);
-        
-        // TODO raise refresh list when store plugin has finished async request
-        window.setTimeout(function() {
+            var annotator = $("#documentText").data("annotator")
+                    .subscribe("annotationCreated", function (annotation) {
+                        notifyEndpoint(annotation);
+                        //annotationChanged(annotation);
+                    });
+            //.subscribe("annotationUpdated", annotationChanged)
+            //.subscribe("annotationDeleted", refreshContributors);
+
+            // TODO raise refresh list when store plugin has finished async request
+            /*window.setTimeout(function() {
+             refreshContributors();
+             var users = Annotator.Plugin.Neonion.prototype.getContributors();
+             users.forEach(function(user) {
+             var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations(user);
+             annotations.forEach(function(ann){
+             colorizeAnnotation(ann);
+             });
+             });
+             }, 1000);*/
+            return annotator;
+        }
+
+        function notifyEndpoint(annotation) {
+            // clone annotation for stringify operation
+            var copy = $.extend(true, {}, annotation);
+            delete copy.highlights;
+            console.log(annotation);
+            $.post("{% url 'endpoint.views.annotation_created' %}", {
+                annotation: JSON.stringify(copy),
+                docUrn: "{{ urn }}",
+                csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()
+            });
+        }
+
+        function annotationChanged(annotation) {
             refreshContributors();
-            var users = Annotator.Plugin.Neonion.prototype.getContributors();  
-            users.forEach(function(user) {
-                var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations(user);
-                annotations.forEach(function(ann){ 
-                    colorizeAnnotation(ann);
-                }); 
+            colorizeAnnotation(annotation);
+        }
+
+        function colorizeAnnotation(annotation) {
+            if (annotation.creator) {
+                var color = userColors[annotation.creator.email];
+                annotation.highlights.forEach(function (highlight) {
+                    $(highlight).css("backgroundColor", color);
+                });
+            }
+        }
+
+        function refreshContributors() {
+            var users = Annotator.Plugin.Neonion.prototype.getContributors();
+            var items = [];
+
+            users.forEach(function (user) {
+                var lastAnnotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation(user);
+                var isoUpated = lastAnnotation.updated ? lastAnnotation.updated : new Date().toISOString();
+                items.push({
+                    user: user, // creator of annotation
+                    updated: isoUpated // date when annotation was updated
+                });
             });
-        }, 1000);
-        return annotator; 
-    }
+            // sort according last activity
+            items.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByUpdated);
+            items.reverse();
 
-    function notifyEndpoint(annotation) {
-        // clone annotation for stringify operation
-        var copy = $.extend(true, {}, annotation);
-        delete copy.highlights;
-        console.log(annotation);
-        $.post("{% url 'endpoint.views.annotation_created' %}", { 
-            annotation : JSON.stringify(copy),
-            docUrn : docUrn,
-            csrfmiddlewaretoken : $("input[name=csrfmiddlewaretoken]").val() 
-        });
-    }
-
-    function annotationChanged (annotation) {
-        refreshContributors();
-        colorizeAnnotation(annotation);
-    }
-
-    function colorizeAnnotation(annotation) {
-        if (annotation.creator) {
-            var color = userColors[annotation.creator.email];
-            annotation.highlights.forEach(function(highlight){
-                $(highlight).css("backgroundColor", color);
+            var i = 0;
+            var totalcolors = users.length;
+            $('#annotator_contributors').html('');
+            items.forEach(function (item) {
+                var input = $("<input>").attr({
+                    id: item.user,
+                    value: item.user,
+                    type: "checkbox",
+                    checked: true
+                });
+                var listItem = $("<li>");
+                if (!userColors[item.user]) {
+                    userColors[item.user] = "hsla( " + makeColor(i++, totalcolors) + ", 100%, 50%, 0.3 )"
+                }
+                listItem.css("backgroundColor", userColors[item.user]);
+                listItem.append(input);
+                listItem.append("<label for='" + item.user + "'>" + item.user + " (" + moment(item.updated).fromNow(true) + ")" + "</label>");
+                $('#annotator_contributors').append(listItem);
             });
         }
-    }
 
-    function refreshContributors() {
-        var users = Annotator.Plugin.Neonion.prototype.getContributors();   
-        var items = [];
-
-        users.forEach(function(user) {
-            var lastAnnotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation(user); 
-            var isoUpated = lastAnnotation.updated ? lastAnnotation.updated : new Date().toISOString();
-            items.push({ 
-                user: user, // creator of annotation
-                updated : isoUpated // date when annotation was updated
-            });
-        });
-        // sort according last activity
-        items.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByUpdated);
-        items.reverse();
-
-        var i = 0;
-        var totalcolors = users.length;
-        $('#annotator_contributors').html('');
-        items.forEach(function(item) {
-            var input = $("<input>").attr({
-                id : item.user,
-                value : item.user,
-                type : "checkbox",
-                checked : true
-            });                
-            var listItem = $("<li>");
-            if (!userColors[item.user]) {
-               userColors[item.user] = "hsla( " + makeColor(i++, totalcolors) + ", 100%, 50%, 0.3 )" 
-            }
-            listItem.css("backgroundColor", userColors[item.user]);
-            listItem.append(input);
-            listItem.append("<label for='" + item.user + "'>" + item.user + " (" + moment(item.updated).fromNow(true) + ")" + "</label>");
-            $('#annotator_contributors').append(listItem);
-        });
-    }
-
-    function checkAnnotationSetSelection() {
-        var activeAnnotationSets = [];
-        $( '#annotationSets li span' ).each( function(){
-            if( $( this ).hasClass('active') ){
-                activeAnnotationSets.push( $( this ).attr( 'annotationSet' ) );
-            }
-        });
-        return activeAnnotationSets;
-    }
-
-    // Find the right method, call on correct element
-    function enableFullscreen(element) {
-        if(element.requestFullscreen) {
-            element.requestFullscreen();
-        } else if(element.mozRequestFullScreen) {
-            element.mozRequestFullScreen();
-        } else if(element.webkitRequestFullscreen) {
-            element.webkitRequestFullscreen();
-        } else if(element.msRequestFullscreen) {
-            element.msRequestFullscreen();
-        }
-    }
-
-</script>
+        /*
+         // Find the right method, call on correct element
+         function enableFullscreen(element) {
+         if(element.requestFullscreen) {
+         element.requestFullscreen();
+         } else if(element.mozRequestFullScreen) {
+         element.mozRequestFullScreen();
+         } else if(element.webkitRequestFullscreen) {
+         element.webkitRequestFullscreen();
+         } else if(element.msRequestFullscreen) {
+         element.msRequestFullscreen();
+         }
+         }
+         */
+    </script>
 {% endblock %}

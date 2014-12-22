@@ -1,0 +1,21 @@
+[
+   {  
+      "fields":{  
+         "class_name":"common.knowledge.wikidata.Wikidata",
+         "provider":"Wikidata"
+      },
+      "model":"annotationsets.conceptsource",
+      "pk":"http://www.wikidata.org/entity/Q5"
+   },
+   {
+      "fields":{
+         "sources":[
+            "http://www.wikidata.org/entity/Q5"
+         ],
+         "allow_creation":false,
+         "label":"Person"
+      },
+      "model":"annotationsets.annotationset",
+      "pk":"foaf:Person"
+   }
+]

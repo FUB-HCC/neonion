@@ -109,6 +109,7 @@
             else {
                this.setCompositor([]);
             }
+
             // collect default visible annotation sets
             for (var uri in compositor) {
                 if (compositor.hasOwnProperty(uri) && !compositor[uri].omitAdder) {
@@ -630,6 +631,7 @@
                 });
             },
             esNormalizeData: function (data) {
+                //console.log(data);
                 var array = [];
                 if (data.hasOwnProperty("hits")) {
                     data.hits.hits.forEach(function (value, index, arr) {

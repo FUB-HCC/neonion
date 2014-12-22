@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'neonion',
     'api',
+    'plugins',
     'documents',
     'accounts',
     'endpoint',

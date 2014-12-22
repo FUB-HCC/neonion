@@ -13,7 +13,7 @@ from django.shortcuts import redirect
 from django.core.files.base import ContentFile
 from operator import itemgetter
 from os.path import splitext, basename
-
+from common.cms import instantiate_provider
 
 @login_required
 def meta(request, doc_urn):
@@ -27,11 +27,7 @@ def query(request, search_string):
 
 @login_required
 def cms_list(request):
-    # instantiate CMS provider
-    modulepath, classname = settings.CONTENT_SYSTEM_CLASS.rsplit('.', 1)
-    module = __import__(modulepath, fromlist=[classname])
-    cms = getattr(module, classname)()
-
+    cms = instantiate_provider(settings.CONTENT_SYSTEM_CLASS)
     return JsonResponse(sorted(cms.list(), key=itemgetter('name')), safe=False)
 
 
@@ -78,10 +74,7 @@ def upload_file(request):
 def cms_import(request, doc_urn):
     # import document if it not exists otherwise skip import
     if not Document.objects.filter(urn=doc_urn).exists():
-        # instantiate CMS provider
-        modulepath, classname = settings.CONTENT_SYSTEM_CLASS.rsplit('.', 1)
-        module = __import__(modulepath, fromlist=[classname])
-        cms = getattr(module, classname)()
+        cms = instantiate_provider(settings.CONTENT_SYSTEM_CLASS)
 
         new_document = cms.get_document(doc_urn)
         document = Document.objects.create_document(doc_urn, new_document['title'], new_document['content'])

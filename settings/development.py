@@ -8,4 +8,5 @@ ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/neonion'
 ENDPOINT_UPDATE = 'http://localhost:8080/openrdf-sesame/repositories/neonion/statements'
 DEFAULT_USER_ACTIVE_STATE = True
 
-#CONTENT_SYSTEM_CLASS = 'common.euler.Euler'
+# Path to a class which inherits from common.cms.Contentsystem
+CONTENT_SYSTEM_CLASS = 'plugins.mpi.euler.Euler' 

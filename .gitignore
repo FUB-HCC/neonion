@@ -9,3 +9,5 @@ __pycache__
 *.css.map
 .sass-cache/
 *.log
+/plugins/*/*
+!plugins/__init__.py

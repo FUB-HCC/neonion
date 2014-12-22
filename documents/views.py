@@ -46,9 +46,10 @@ def upload_file(request):
 
             create_new_doc = True
         elif request.FILES[f].content_type == 'text/plain':
-            doc_title = str('_'.join(splitext(basename(request.FILES[f].name))[0].split()))
-            doc_urn = doc_title.encode('string_escape', 'ignore')
-
+            file_name = request.FILES[f].name.encode('utf-8')
+            doc_title = str(' '.join(splitext(basename(file_name))[0].split()))
+            doc_urn = str('_'.join(splitext(basename(file_name))[0].split()))
+            print(doc_title + "   " + doc_urn)
             # read plain text content
             content = []
             for chunk in request.FILES[f].chunks():
@@ -87,20 +88,3 @@ def cms_import(request, doc_urn):
         workspace.documents.add(document)
 
     return JsonResponse({"urn": doc_urn, "title": document.title})
-
-
-# this method fakes the communication to euler
-@require_GET
-def euler_hocr(request):
-    page_number = int(request.GET['pn']) - 1
-    local_path = "/Users/administrator/Desktop/jahrbuch74/hocr/hocr/"
-    files = os.listdir(local_path)
-    if page_number < len(files):
-        file = open(local_path + files[page_number])
-        soup = BeautifulSoup(file.read())
-
-        page_html = "".join([str(x) for x in soup.body.contents])
-        return HttpResponse("<div class='pageContent'>" + page_html + "</div>",
-                            content_type="text/plain; charset=utf-8")
-    else:
-        return Http404()

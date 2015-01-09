@@ -3140,7 +3140,7 @@ input[type="submit"].btn {
     .document-grid li a {
       background-color: #ffffff;
       border: 1px solid #cdcdcd;
-      color: #717171;
+      color: #434346;
       float: left;
       height: 182px;
       margin-left: 16px;
@@ -3221,7 +3221,7 @@ input[type="submit"].btn {
 
 .button-secondary {
   background-color: transparent;
-  color: #717171; }
+  color: #434346; }
   .button-secondary:hover {
     background-color: transparent;
     border-color: #8e8e93;

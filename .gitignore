@@ -11,3 +11,4 @@ __pycache__
 *.log
 /plugins/*/*
 !plugins/__init__.py
+*.*~

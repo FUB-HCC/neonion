@@ -1,3 +1,5 @@
+import config
+
 from argparse import ArgumentParser
 import logging
 from os import listdir, path, makedirs
@@ -38,6 +40,17 @@ def get_wikidata_items(filename, logger):
                     logger.warning('something went wrong parsing this line:\n{}'.format(line))
                     continue
         yield wd
+
+
+def extractValueFromMultilanguageField(wd_item, key, languages=config.LANGUAGES):
+    # check if the available labels contain any of the languages from config.py
+    if not any(x in wd_item[key] for x in config.LANGUAGES):
+        # if not, take the first found label
+        return next(iter(wd_item[key].values()))['value']
+    else:
+        for lang in config.LANGUAGES:
+            if lang in wd_item[key]:
+                return wd_item[key][lang]['value']
 
 
 def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
@@ -107,22 +120,25 @@ def extract_from_wd_dump(types, inputfolder, outputfolder, logger):
                                 wd_types[wd_type]['number'] += 1
 
                                 if 'labels' in wd_item:
-                                    if 'de' in wd_item['labels']:
-                                        label = wd_item['labels']['de']['value']
-                                    elif 'en' in wd_item['labels']:
-                                        label = wd_item['labels']['en']['value']
-                                    else:
-                                        label = next(iter(wd_item['labels'].values()))['value']
+                                    label = extractValueFromMultilanguageField(wd_item, 'labels')
+                                    # if 'de' in wd_item['labels']:
+                                    #     label = wd_item['labels']['de']['value']
+                                    # elif 'en' in wd_item['labels']:
+                                    #     label = wd_item['labels']['en']['value']
+                                    # else:
+                                    #     label = next(iter(wd_item['labels'].values()))['value']
 
                                 if 'descriptions' in wd_item:
-                                    if 'de' in wd_item['descriptions']:
-                                        descr = wd_item['descriptions']['de']['value']
-                                    elif 'en' in wd_item['descriptions']:
-                                        descr = wd_item['descriptions']['en']['value']
+                                    descr = extractValueFromMultilanguageField(wd_item, 'descriptions')
+
+                                    # if 'de' in wd_item['descriptions']:
+                                    #     descr = wd_item['descriptions']['de']['value']
+                                    # elif 'en' in wd_item['descriptions']:
+                                    #     descr = wd_item['descriptions']['en']['value']
 
                                 if 'aliases' in wd_item:
                                     # for lang in wd_item['aliases']:
-                                    for lang in ['de', 'en']:
+                                    for lang in config.LANGUAGES:
                                         if lang in wd_item['aliases']:
                                             for alias in wd_item['aliases'][lang]:
                                                 aliases.add(alias['value'])

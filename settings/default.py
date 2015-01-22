@@ -29,7 +29,7 @@ TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'),
 )
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'templates', 'locale',),

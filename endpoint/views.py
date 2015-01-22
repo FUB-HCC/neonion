@@ -54,7 +54,7 @@ def query_form(request):
 def annotation_created(request):
     annotation = json.loads(request.POST['annotation'])
     rdf = annotation['rdf']
-    print(settings.ENDPOINT_UPDATE)
+    #print(settings.ENDPOINT_UPDATE)
 
     if rdf['typeof'] == 'foaf:Person':
         # insert statements about a person
@@ -73,7 +73,7 @@ def annotation_created(request):
 
 
 def statement_about_person(annotation):
-    print(annotation)
+    #print(annotation)
     rdf = annotation['rdf']
     query = u'''INSERT DATA {{
     <{}> <rdf:type> <foaf:Person>;

@@ -1,14 +1,12 @@
-import os
+import uuid
 import json
 
-from django.http import HttpResponse, Http404
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from documents.models import Document
 from neonion.models import Workspace
-from bs4 import BeautifulSoup
 from django.shortcuts import redirect
 from django.core.files.base import ContentFile
 from operator import itemgetter
@@ -48,7 +46,7 @@ def upload_file(request):
         elif request.FILES[f].content_type == 'text/plain':
             file_name = request.FILES[f].name.encode('utf-8')
             doc_title = str(' '.join(splitext(basename(file_name))[0].split()))
-            doc_urn = str('_'.join(splitext(basename(file_name))[0].split()))
+            doc_urn = uuid.uuid1().hex
             print(doc_title + "   " + doc_urn)
             # read plain text content
             content = []

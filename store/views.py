@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 
 
 @login_required
@@ -15,22 +16,26 @@ def root(request):
 
 
 @login_required
+@csrf_exempt
 @require_http_methods(["GET", "POST"])
 def annotations(request):
+    print(request.method)
     if request.method == 'GET':
         response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations')
         return JsonResponse(response.json(), safe=False)
     elif request.method == 'POST':
-        # TODO data parameter
-        response = requests.post(settings.ANNOTATION_STORE_URL + '/annotations')
-        return JsonResponse(response.json(), safe=False)
+        headers = {'content-type': 'application/json'}
+        response = requests.post(settings.ANNOTATION_STORE_URL + '/annotations', data=request.body, headers=headers)
+        return JsonResponse(response.json(), status=201, safe=False)
     else:
         return HttpResponseBadRequest
 
 
 @login_required
+@csrf_exempt
 @require_http_methods(["GET", "PUT", "DELETE"])
 def annotation(request, id):
+    print('alternative')
     if request.method == 'GET':
         response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations/' + id)
         return JsonResponse(response.json(), safe=False)
@@ -40,7 +45,7 @@ def annotation(request, id):
         return JsonResponse(response.json(), safe=False)
     elif request.method == 'DELETE':
         response = requests.delete(settings.ANNOTATION_STORE_URL + '/annotations/' + id)
-        return JsonResponse(response.json(), safe=False)
+        return JsonResponse(response.json(), safe=False, status=204)
     else:
         return HttpResponseBadRequest
 
@@ -55,7 +60,7 @@ def filter_annotations(request):
 @login_required
 @require_http_methods(["GET"])
 def search(request):
-    print(request.GET.urlencode())
+    ##print(request.GET.urlencode())
     response = requests.get(settings.ANNOTATION_STORE_URL + '/search?' + request.GET.urlencode())
     return JsonResponse(response.json(), safe=False)
 

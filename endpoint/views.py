@@ -54,9 +54,8 @@ def query_form(request):
 def annotation_created(request):
     annotation = json.loads(request.POST['annotation'])
     rdf = annotation['rdf']
-    #print(settings.ENDPOINT_UPDATE)
 
-    if rdf['typeof'] == 'foaf:Person':
+    if rdf['typeof'] == 'http://xmlns.com/foaf/0.1/Person':
         # insert statements about a person
         try:
             # http://stackoverflow.com/questions/14160437/insert-delete-update-query-using-sparqlwrapper
@@ -66,7 +65,7 @@ def annotation_created(request):
             sparql.query()
         except Exception as e:
             print(e)
-    elif rdf['typeof'] == 'aiiso:Institution':
+    elif rdf['typeof'] == 'http://purl.org/vocab/aiiso/schema#Institution':
         pass
 
     return HttpResponse('')

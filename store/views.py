@@ -33,7 +33,7 @@ def annotations(request):
 
 @login_required
 @csrf_exempt
-@require_http_methods(["GET", "PUT", "DELETE"])
+#@require_http_methods(["GET", "PUT", "DELETE"])
 def annotation(request, id):
     print('alternative')
     if request.method == 'GET':

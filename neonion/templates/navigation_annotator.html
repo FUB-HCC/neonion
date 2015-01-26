@@ -10,22 +10,22 @@
         </li>
     </ul>
 
-    <ul id="annotationSets" class="hidden">
-        {% for set in annotation_sets %}
-            {% if set.uri == 'foaf:Person' %}
-            <li>
-                <a><span class="fa fa-users fa-fw active" title="{{ set.label }}" annotationSet="{{ set.uri }}"></span></a>
-            </li>
-            {% elif set.uri == 'aiiso:Institution' %}
-            <li>
-                <a><span class="fa fa-university fa-fw active" title="{{ set.label }}" annotationSet="{{ set.uri }}"> </span></a>
-            </li>
-            {% endif %}
-        {% endfor %}
-        <li id="help-link">
-            <a><span class="fa fa-question fa-fw" title="Help"></span></a>
-        </li>
-    </ul>
+{#    <ul id="annotationSets" class="hidden">#}
+{#        {% for set in annotation_sets %}#}
+{#            {% if set.uri == 'foaf:Person' %}#}
+{#            <li>#}
+{#                <a><span class="fa fa-users fa-fw active" title="{{ set.label }}" annotationSet="{{ set.uri }}"></span></a>#}
+{#            </li>#}
+{#            {% elif set.uri == 'aiiso:Institution' %}#}
+{#            <li>#}
+{#                <a><span class="fa fa-university fa-fw active" title="{{ set.label }}" annotationSet="{{ set.uri }}"> </span></a>#}
+{#            </li>#}
+{#            {% endif %}#}
+{#        {% endfor %}#}
+{#        <li id="help-link">#}
+{#            <a><span class="fa fa-question fa-fw" title="Help"></span></a>#}
+{#        </li>#}
+{#    </ul>#}
         
     </ul>
 </nav>

@@ -13,21 +13,6 @@ from operator import itemgetter
 from os.path import splitext, basename
 from common.cms import instantiate_provider
 
-@login_required
-def meta(request, doc_urn):
-    pass
-
-
-@login_required
-def query(request, search_string):
-    pass
-
-
-@login_required
-def cms_list(request):
-    cms = instantiate_provider(settings.CONTENT_SYSTEM_CLASS)
-    return JsonResponse(sorted(cms.list(), key=itemgetter('name')), safe=False)
-
 
 @login_required
 @require_POST
@@ -67,6 +52,12 @@ def upload_file(request):
             workspace.documents.add(document)
 
     return redirect('/')
+
+
+@login_required
+def cms_list(request):
+    cms = instantiate_provider(settings.CONTENT_SYSTEM_CLASS)
+    return JsonResponse(sorted(cms.list(), key=itemgetter('name')), safe=False)
 
 
 @login_required

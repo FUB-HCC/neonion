@@ -6,72 +6,63 @@
 {% block page_id %}workspace{% endblock %}
 
 {% block content %}
-  <ul id="document-table" class="document-grid">
-  <li><span class="fa fa-spinner fa-spin"></span> Loading...</li>
-  </ul>
-
+    <ul id="document-table" class="document-grid" ng-controller="WorkspaceDocumentCtrl">
+        <li>
+            <a href="{% url 'neonion.views.import_document' %}"><div><span class="fa fa-file-text-o"></span>Import to Workspace</div></a>
+        </li>
+        {% verbatim %}
+        <li ng-repeat="document in documents | orderBy:'-created'">
+            <button class="fa fa-times" ng-click="removeDocument(document)"></button>
+            <a href="/annotator/{{document.urn}}">
+                <div>{{document.title}}</div>
+            </a>
+        </li>
+        {% endverbatim %}
+    </ul>
 {% endblock %}
 
 
 {% block scripts %}
-<script language="javascript">
-    "use strict";
-
-    $(document).ready(function() {
-        loadDocumentList();
-    });
-
-    function compare_Documents(a,b) {
-      if (a.createdAt < b.createdAt)
-         return -1;
-      if (a.createdAt > b.createdAt)
-        return 1;
-      return 0;
-    }
-
-    function loadDocumentList() {
-        var documentList = [];
-        // load document list
-        $.getJSON("{% url 'api.views.personal_workspace' %}", function(response) {
-            response.documents.forEach(function(entry) {
-                documentList.push( entry );
-            });
-            var today = moment().startOf("day");
-            var todayLabelSet = false;
-            var earlierLabelSet = false;
-            $('#document-table').html('');
-
-            var importElem = $('<li><a href="/import/"><div><span class="fa fa-file-text-o"></span>Import to Workspace</div></a></li>');
-
-            if (documentList.length > 0) {
-                $('#document-table').append(importElem);
-
-                documentList.sort(compare_Documents)
-                .reverse()
-                .forEach(function (entry) {
-                    /* set label for first column (only once for each type) */
-                    var label = '';
-                    if (!todayLabelSet && entry.createdAt >= today) {
-                        label = 'Today';
-                        todayLabelSet = true;
-                    }
-                    if (!earlierLabelSet && entry.createdAt < today) {
-                        label = 'Earlier';
-                        earlierLabelSet = true;
-                    }
-                    /* create element for document list and append it */
-                    var uri = entry.urn.split("/")
-                    var id = uri[uri.length - 1]
-                    var element = $('<li></li>')
-                          .append($('<a href="/annotator/' + id + '"><div>' + entry.title + '</div></a>'));
-                    $('#document-table').append(element);
-                });
-            }
-            else {
-                $('#document-table').append(importElem);
-            }
-        });
-    }
-    
-</script>
+{#<script language="javascript">#}
+{#    "use strict";#}
+{##}
+{#    $(document).ready(function() {#}
+{#        loadDocumentList();#}
+{#    });#}
+{##}
+{#    function sortDocuments(a, b) {#}
+{#      if (a.createdAt < b.createdAt)#}
+{#         return -1;#}
+{#      if (a.createdAt > b.createdAt)#}
+{#        return 1;#}
+{#      return 0;#}
+{#    }#}
+{##}
+{#    function loadDocumentList() {#}
+{#        var documentList = [];#}
+{#        // load document list#}
+{#        $.getJSON("{% url 'api.views.personal_workspace' %}", function(response) {#}
+{#            response.documents.forEach(function(entry) {#}
+{#                documentList.push(entry);#}
+{#            });#}
+{##}
+{#            var importElem = $('<li><a href="{% url 'neonion.views.import_document' %}"><div><span class="fa fa-file-text-o"></span>Import to Workspace</div></a></li>');#}
+{#            $('#document-table').html(importElem);#}
+{##}
+{#            if (documentList.length > 0) {#}
+{#                documentList.sort(sortDocuments)#}
+{#                .reverse()#}
+{#                .forEach(function (entry) {#}
+{#                    // create element for document list and append it #}
+{#                    var uri = entry.urn.split("/")#}
+{#                    var id = uri[uri.length - 1]#}
+{#                    var element = $('<li></li>')#}
+{#                          .append($('<a href="/annotator/' + id + '"><div>' + entry.title + '</div></a>'));#}
+{#                    $('#document-table').append(element);#}
+{#                });#}
+{#            }#}
+{#        });#}
+{#    }#}
+{#    #}
+{#</script>#}
 {% endblock %}

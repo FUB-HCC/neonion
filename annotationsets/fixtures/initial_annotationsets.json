@@ -41,7 +41,7 @@
          "label":"Person"
       },
       "model":"annotationsets.annotationset",
-      "pk":"foaf:Person"
+      "pk":"http://xmlns.com/foaf/0.1/Person"
    },
    {  
       "fields":{  
@@ -53,6 +53,6 @@
          "label":"Institute"
       },
       "model":"annotationsets.annotationset",
-      "pk":"aiiso:Institution"
+      "pk":"http://purl.org/vocab/aiiso/schema#Institution"
    }
 ]

@@ -1,16 +1,12 @@
 from django.conf.urls import patterns, url, include
-from rest_framework import routers, serializers, viewsets
+from rest_framework import routers, viewsets
 from accounts.models import User
 from documents.models import Document
 from neonion.models import Workspace
 from annotationsets.models import AnnotationSet, ConceptSource
-
-
-# Serializers define the API representation.
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('email', 'name', 'surname', 'joined')
+from api import views
+from api.serializers import UserSerializer, AnnotationSetSerializer, ConceptSourceSerializer, \
+    WorkspaceSerializer, DocumentSerializer, DetailedDocumentSerializer
 
 
 # ViewSets for users.
@@ -19,31 +15,10 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
-# Serializers define the API representation.
-class ConceptSourceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ConceptSource
-        fields = ('linked_concept_uri', 'provider', 'class_name')
-
-
 # ViewSets for annotation sets.
 class ConceptSourceViewSet(viewsets.ModelViewSet):
     queryset = ConceptSource.objects.all()
     serializer_class = ConceptSourceSerializer
-
-
-# Serializers define the API representation.
-class DocumentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Document
-        fields = ('urn', 'title', 'created', 'updated')
-
-
-# Serializers define the API representation.
-class DetailedDocumentSerializer(DocumentSerializer):
-    class Meta:
-        model = Document
-        fields = ('urn', 'title', 'content', 'created', 'updated')
 
 
 # ViewSets for document.
@@ -57,30 +32,11 @@ class DocumentViewSet(viewsets.ModelViewSet):
             return DocumentSerializer
 
 
-# Serializers define the API representation.
-class AnnotationSetSerializer(serializers.ModelSerializer):
-    sources = ConceptSourceSerializer(many=True)
-
-    class Meta:
-        model = AnnotationSet
-        fields = ('uri', 'label', 'allow_creation', 'sources')
-
-
 # ViewSets for annotation sets.
 class AnnotationSetViewSet(viewsets.ModelViewSet):
     queryset = AnnotationSet.objects.all()
     serializer_class = AnnotationSetSerializer
 
-
-# Serializers define the API representation.
-class WorkspaceSerializer(serializers.HyperlinkedModelSerializer):
-    owner = UserSerializer()
-    documents = DocumentSerializer(many=True)
-    annotation_sets = AnnotationSetSerializer(many=True)
-
-    class Meta:
-        model = Workspace
-        fields = ('owner', 'documents', 'annotation_sets')
 
 
 # ViewSets for document.
@@ -99,5 +55,6 @@ router.register(r'conceptsources', ConceptSourceViewSet)
 
 urlpatterns = patterns('',
     url(r'^', include(router.urls)),
-    url(r'^workspace/$', 'api.views.personal_workspace'),
+    url(r'^workspace/documents/$', views.WorkspaceDocumentList.as_view()),
+    url(r'^workspace/documents/(?P<pk>.+)/$', views.WorkspaceDocumentList.as_view()),
 )

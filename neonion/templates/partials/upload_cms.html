@@ -1,11 +1,14 @@
 <p>Please select the files you want to import to your working space.</p>
-<div class="scroll-container">
-    <ul id="document-import-list" class="document-list"></ul>
+<div ng-controller="ContentManagementCtrl" data-ng-init="init()">
+    <div class="scroll-container">
+        <ul id="document-import-list" class="document-list">
+            {% verbatim %}
+            <li ng-repeat="document in documents" id="{{ document.urn }}">{{ document.name }}</li>
+            {% endverbatim %}
+        </ul>
+    </div>
+    <div class="form-buttons">
+        <button ng-click="importDocuments()" class="button pull-right">Import</button>
+        <a href="/" class="button button-secondary pull-right">Cancel</a>
+    </div>
 </div>
-<div class="form-buttons">
-  <button id="btn-import" class="button pull-right">Import</button>
-  <a href="/" class="button button-secondary pull-right">Cancel</a>
-</div>
-
-{% load staticfiles %}
-<script language="javascript" src="{% static 'js/neonion.import_cms.js' %}" defer></script>

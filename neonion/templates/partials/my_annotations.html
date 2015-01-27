@@ -1,0 +1,18 @@
+<table ng-controller="AnnotationCtrl">
+    <thead>
+        <tr>
+            <th>Document</th>
+            <th>Quote</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="annotation in annotations | filter:{ $ : '{{ request.user.email }}' } | orderBy:'-created'">
+            {% verbatim %}
+            <td><a href='/annotator/{{ annotation.uri }}#{{ annotation.id }}'>{{ annotation.uri }}</a></td>
+            <td>{{ annotation.quote }}</td>
+            <td>{{ annotation.created | date :'medium' }}</td>
+            {% endverbatim %}
+        </tr>
+    </tbody>
+</table>

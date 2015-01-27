@@ -1,31 +1,19 @@
 <nav class="nav-vertical">
     <ul>
         <li>
-            <a class="simptip-position-right" href="{% url 'neonion.views.home' %}" data-tooltip="Home">
+            <a id="nav-home" class="simptip-position-right" href="{% url 'neonion.views.home' %}" data-tooltip="Home">
                 <span class="fa fa-home fa-fw"></span>
             </a>
         </li>
-        <li class="hidden">
-            <a><span class="fa fa-expand fa-fw" id="enableFullscreen" title="Fullscreen"></span></a>
+        <li>
+            <a id="nav-anotate" class="simptip-position-right" href="#" data-tooltip="Find concepts">
+                <span class="fa fa-magic fa-fw"></span>
+            </a>
         </li>
-    </ul>
-
-{#    <ul id="annotationSets" class="hidden">#}
-{#        {% for set in annotation_sets %}#}
-{#            {% if set.uri == 'foaf:Person' %}#}
-{#            <li>#}
-{#                <a><span class="fa fa-users fa-fw active" title="{{ set.label }}" annotationSet="{{ set.uri }}"></span></a>#}
-{#            </li>#}
-{#            {% elif set.uri == 'aiiso:Institution' %}#}
-{#            <li>#}
-{#                <a><span class="fa fa-university fa-fw active" title="{{ set.label }}" annotationSet="{{ set.uri }}"> </span></a>#}
-{#            </li>#}
-{#            {% endif %}#}
-{#        {% endfor %}#}
-{#        <li id="help-link">#}
-{#            <a><span class="fa fa-question fa-fw" title="Help"></span></a>#}
-{#        </li>#}
-{#    </ul>#}
-        
+        <li class="hidden">
+            <a id="nav-fullscreen" href="#" data-tooltip="Fullscreen">
+                <span class="fa fa-expand fa-fw"></span>
+            </a>
+        </li>
     </ul>
 </nav>

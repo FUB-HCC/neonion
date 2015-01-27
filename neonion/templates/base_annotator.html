@@ -12,7 +12,6 @@
 {% endblock %}
 
 {% block content %}
-{% csrf_token %}
 <div>
     <div id="annotator_menu" style="display:none;position:fixed;">
         <ul id="annotator_contributors" class="forms-list"></ul>
@@ -20,9 +19,11 @@
             annotation</a>
     </div>
     <div>
-        <div id="annotationArea" class="panel panel-default">
-            <div id="documentTitle" class="panel-heading big">{{ title }}</div>
-            <div id="documentText" class="panel-body"> {% autoescape off %}{{ content }}{% endautoescape %}</div>
+        <div id="document-frame" class="panel panel-default">
+            <div id="document-title" class="panel-heading big">{{ title }}</div>
+            <div id="document-body" class="panel-body">
+                <div id="document-text">{% autoescape off %}{{ content }}{% endautoescape %}</div>
+            </div>
         </div>
     </div>
 </div>
@@ -49,9 +50,16 @@
         $(document).ready(function () {
             var annotator = setupAnnotator();
 
+            $('#nav-anotate').click(function() {
+                $.getJSON("{{ ner_url }}/version", function(data) {
+                   console.log(data);
+                });
+                console.log($("#document-text").text());
+            });
+
             /*
-             $('#enableFullscreen').click(function(){
-             enableFullscreen( document.getElementById( 'annotationArea' ) );
+             $('#nav-fullscreen').click(function(){
+             enableFullscreen( document.getElementById( 'document-frame' ) );
              });
 
              $('#scoll_to_latest_annotation').click(function(){
@@ -120,7 +128,7 @@
                 {% endif %}
             {% endfor %}
 
-            $("#documentText").annotator()
+            $("#document-body").annotator()
                     .annotator('addPlugin', 'Neonion', {
                         whoamiUrl: "{% url 'accounts.views.me' %}",
                         endpointUrl: "{{ endpoint_url }}",
@@ -137,13 +145,11 @@
                         }
                     });
 
-            var annotator = $("#documentText").data("annotator")
+            var annotator = $("#document-body").data("annotator")
                     .subscribe("annotationCreated", function (annotation) {
                         notifyEndpoint(annotation);
                         //annotationChanged(annotation);
                     });
-            //.subscribe("annotationUpdated", annotationChanged)
-            //.subscribe("annotationDeleted", refreshContributors);
 
             // TODO raise refresh list when store plugin has finished async request
             /*window.setTimeout(function() {

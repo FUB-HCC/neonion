@@ -35,6 +35,7 @@ def annotator(request, doc_urn):
         'content': doc.content,
         'endpoint_url': '/endpoint/',
         'store_url': settings.ANNOTATION_STORE_URL,
+        'ner_url': settings.NER_SERVICE_URL,
         'annotation_sets': workspace.annotation_sets.all()
     }
     return render_to_response('base_annotator.html', data, context_instance=RequestContext(request))

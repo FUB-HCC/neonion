@@ -51,7 +51,6 @@ INSTALLED_APPS = (
     'documents',
     'accounts',
     'endpoint',
-    'store',
     'annotationsets',
 )
 

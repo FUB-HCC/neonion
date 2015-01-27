@@ -61,19 +61,22 @@ def cms_list(request):
 
 
 @login_required
-def cms_import(request, doc_urn):
-    # import document if it not exists otherwise skip import
-    if not Document.objects.filter(urn=doc_urn).exists():
-        cms = instantiate_provider(settings.CONTENT_SYSTEM_CLASS)
+@require_POST
+def cms_import(request):
+    data = json.loads(request.body)
+    for doc_urn in data['documents']:
+        # import document if it not exists otherwise skip import
+        if not Document.objects.filter(urn=doc_urn).exists():
+            cms = instantiate_provider(settings.CONTENT_SYSTEM_CLASS)
 
-        new_document = cms.get_document(doc_urn)
-        document = Document.objects.create_document(doc_urn, new_document['title'], new_document['content'])
-    else:
-        document = Document.objects.get(urn=doc_urn)
+            new_document = cms.get_document(doc_urn)
+            document = Document.objects.create_document(doc_urn, new_document['title'], new_document['content'])
+        else:
+            document = Document.objects.get(urn=doc_urn)
 
-    # import document into workspace
-    if document:
-        workspace = Workspace.objects.get_workspace(owner=request.user)
-        workspace.documents.add(document)
+        # import document into workspace
+        if document:
+            workspace = Workspace.objects.get_workspace(owner=request.user)
+            workspace.documents.add(document)
 
-    return JsonResponse({"urn": doc_urn, "title": document.title})
+    return JsonResponse({})

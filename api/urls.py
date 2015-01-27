@@ -55,6 +55,15 @@ router.register(r'conceptsources', ConceptSourceViewSet)
 
 urlpatterns = patterns('',
     url(r'^', include(router.urls)),
+
     url(r'^workspace/documents/$', views.WorkspaceDocumentList.as_view()),
     url(r'^workspace/documents/(?P<pk>.+)/$', views.WorkspaceDocumentList.as_view()),
+
+    # AnnotationStore proxy API
+    url(r'^store/$', 'api.views.store_root'),
+    url(r'^store/filter/$', 'api.views.store_filter_annotations'),
+    url(r'^store/search$', 'api.views.store_search'),
+    url(r'^store/annotations$', views.AnnotationListView.as_view()),
+    url(r'^store/annotations/(?P<pk>.+)$', views.AnnotationDetailView.as_view()),
+
 )

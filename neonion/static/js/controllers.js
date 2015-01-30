@@ -15,16 +15,7 @@ neonionApp.controller('WorkspaceDocumentCtrl', ['$scope', '$http', 'WorkspaceSer
     };
 }]);
 
-neonionApp.controller('AnnotationCtrl', ['$scope', '$http', function ($scope, $http) {
-    "use strict";
-
-    $http.get('/api/store/annotations').success(function(data) {
-        $scope.annotations = data;
-    });
-
-}]);
-
-neonionApp.controller('ContentManagementCtrl', ['$scope', '$http', 'DocumentService', function ($scope, $http, DocumentService) {
+neonionApp.controller('WorkspaceImportCtrl', ['$scope', '$http', 'DocumentService', function ($scope, $http, DocumentService) {
     "use strict";
 
     $http.get('/documents/cms/list').success(function(data) {
@@ -45,7 +36,36 @@ neonionApp.controller('ContentManagementCtrl', ['$scope', '$http', 'DocumentServ
 
 }]);
 
+neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scope, $http) {
+    "use strict";
+
+    $http.get('/api/store/annotations').success(function(data) {
+        $scope.annotations = data;
+    });
+
+}]);
+
+neonionApp.controller('NerModelCtrl', ['$scope', '$http', function ($scope, $http) {
+    "use strict";
+
+    $scope.models = [
+        {
+            identifier: 'Default',
+            stanfordModel: 'String',
+            predictorNumberOfComponents: 1,
+            predictorNumberOfIterations: 1,
+            predictorLossFunction: 'String',
+            predictorAlpha: 'Float',
+            numberOfHiddenLayerComponents: 'Integer',
+            predictorInitialize: 'String',
+            learnNetworkInitialize: 'String',
+            predictorLearn: true,
+            learnNetworkLearn: true
+        }];
+}]);
+
 neonionApp.config(['$httpProvider', function($httpProvider) { // provider-injector
+    "use strict";
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 }]);

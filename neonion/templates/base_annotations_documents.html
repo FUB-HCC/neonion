@@ -2,14 +2,14 @@
 
 {% load staticfiles %}
 
-{% block title %}Übersicht{% endblock %}
-{% block page_id %}workspace{% endblock %}
+{% block title %}Annotated Documents{% endblock %}
+{% block page_id %}annotatedDocuments{% endblock %}
 
 
 {% block content %}
-  <ul id="document-table" class="document-grid">
-  <li><span class="fa fa-spinner fa-spin"></span> Loading...</li>
-  </ul>
+    <ul id="document-table" class="document-grid">
+        <li><span class="fa fa-spinner fa-spin"></span> Loading...</li>
+    </ul>
 {% endblock %}
 
 
@@ -41,11 +41,7 @@
             var earlierLabelSet = false;
             $('#document-table').html('');
 
-            var importElem = $('<li><a href="/import/"><div><span class="fa fa-file-text-o"></span>Import to Workspace</div></a></li>');
-
             if (documentList.length > 0) {
-                $('#document-table').append(importElem);
-
                 documentList.sort(compare_Documents)
                 .reverse()
                 .forEach(function (entry) {
@@ -68,7 +64,7 @@
                 });
             }
             else {
-                $('#document-table').append(importElem);
+                
             }
         });
     }

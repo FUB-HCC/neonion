@@ -41,6 +41,23 @@ def annotator(request, doc_urn):
 
 
 @login_required
+def my_annotations(request):
+    workspace = Workspace.objects.get_workspace(owner=request.user)
+    
+    return render_to_response('base_my_annotations.html', {}, context_instance=RequestContext(request))
+
+
+@login_required
+def annotations_occurences(request):
+    return render_to_response('base_annotations_occurences.html', {}, context_instance=RequestContext(request))
+
+
+@login_required
+def annotations_documents(request):
+    return render_to_response('base_annotations_documents.html', {}, context_instance=RequestContext(request))
+
+
+@login_required
 def load_settings(request):
     workspace = Workspace.objects.get_workspace(owner=request.user)
 

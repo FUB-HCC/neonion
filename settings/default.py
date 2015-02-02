@@ -131,3 +131,8 @@ REST_FRAMEWORK = {
     #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     # ]
 }
+
+# neonion specific settings
+NEONION = {
+    'BASE_NAMESPACE':  'http://neonion.org/',
+}

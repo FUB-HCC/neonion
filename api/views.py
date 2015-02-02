@@ -10,6 +10,7 @@ from api.serializers import DocumentSerializer
 from rest_framework.response import Response
 from django.db import transaction
 from rest_framework.views import APIView
+from common import uri
 
 
 class WorkspaceDocumentList(APIView):
@@ -51,7 +52,7 @@ class AnnotationListView(APIView):
 
     def post(self, request, format=None):
         """Creates a new annotation"""
-        # TODO get or create Uri and attach it to annotation object
+        # TODO get or create URI according type of resource and attach it to the annotation object
         headers = {'content-type': 'application/json'}
         response = requests.post(settings.ANNOTATION_STORE_URL + '/annotations',
                                  data=request.body, headers=headers)
@@ -94,3 +95,12 @@ def store_search(request):
     ##print(request.GET.urlencode())
     response = requests.get(settings.ANNOTATION_STORE_URL + '/search?' + request.GET.urlencode())
     return JsonResponse(response.json(), safe=False)
+
+
+# TEST uri
+def generate_uri(request, type, name):
+    return JsonResponse({
+        'uri': uri.generate_uri(resource_type=type, name=name),
+        'label': name,
+        'type': type
+    })

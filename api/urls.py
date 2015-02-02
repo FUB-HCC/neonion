@@ -66,4 +66,7 @@ urlpatterns = patterns('',
     url(r'^store/annotations$', views.AnnotationListView.as_view()),
     url(r'^store/annotations/(?P<pk>.+)$', views.AnnotationDetailView.as_view()),
 
+    # TEST urls
+    url(r'^uri/(?P<type>\w+)/(?P<name>\w+)$', 'api.views.generate_uri'),
+
 )

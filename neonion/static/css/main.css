@@ -37,6 +37,10 @@ p {
     height: 117px; }
   .main .content {
     margin-left: 54px; }
+    .main .content div > h3 {
+      display: inline-block; }
+    .main .content div span {
+      margin-left: 30px; }
 
 #page-signin .main, #page-signup .main {
   width: 540px; }

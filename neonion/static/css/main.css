@@ -41,6 +41,8 @@ p {
       display: inline-block; }
     .main .content div span {
       margin-left: 30px; }
+    .main .content div .sorting {
+      float: right; }
 
 #page-signin .main, #page-signup .main {
   width: 540px; }

@@ -58,9 +58,14 @@ p {
     div > h3 {
       display: inline-block;
     }
-
-    div span {
-      margin-left: 30px;
+    
+    div {
+      span {
+        margin-left: 30px;
+      }
+      .sorting {
+        float: right;
+      }
     }
   }
 }

@@ -9,6 +9,14 @@
 {% block content %}
     <div>
         <h3>My Annotations</h3>
+        <span class="sorting">Sort By
+            <select>
+                <option>Name</option>
+                <option>Date</option>
+                <option>Occurences</option>
+                <option>Annotationset</option>
+            </select>   
+        </span>
         <form action="{% url 'neonion.views.my_annotations' %}" method="post">
             {% csrf_token %}
             

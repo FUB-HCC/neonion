@@ -13,7 +13,6 @@ from rest_framework.views import APIView
 
 
 class WorkspaceDocumentList(APIView):
-
     def get(self, request, format=None):
         workspace = Workspace.objects.get_workspace(owner=request.user)
         serializer = DocumentSerializer(workspace.documents.all(), many=True)
@@ -45,29 +44,35 @@ class WorkspaceDocumentList(APIView):
 
 
 class AnnotationListView(APIView):
-
     def get(self, request, format=None):
+        """Returns a list of all annotations"""
         response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations')
         return JsonResponse(response.json(), safe=False)
 
     def post(self, request, format=None):
+        """Creates a new annotation"""
+        # TODO get or create Uri and attach it to annotation object
         headers = {'content-type': 'application/json'}
-        response = requests.post(settings.ANNOTATION_STORE_URL + '/annotations', data=request.body, headers=headers)
+        response = requests.post(settings.ANNOTATION_STORE_URL + '/annotations',
+                                 data=request.body, headers=headers)
         return JsonResponse(response.json(), status=201, safe=False)
 
 
 class AnnotationDetailView(APIView):
-
     def get(self, request, pk, format=None):
+        """Returns the specified annotation object"""
         response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations/' + pk)
         return JsonResponse(response.json(), safe=False)
 
     def put(self, request, pk, format=None):
-        # TODO data parameter
-        response = requests.put(settings.ANNOTATION_STORE_URL + '/annotations/' + pk)
+        """Updates the specified annotation object"""
+        headers = {'content-type': 'application/json'}
+        response = requests.put(settings.ANNOTATION_STORE_URL + '/annotations/' + pk,
+                                data=request.body, headers=headers)
         return JsonResponse(response.json(), safe=False)
 
     def delete(self, request, pk, format=None):
+        """Deletes the specified annotation object"""
         response = requests.delete(settings.ANNOTATION_STORE_URL + '/annotations/' + pk)
         return JsonResponse(response.json(), safe=False, status=204)
 

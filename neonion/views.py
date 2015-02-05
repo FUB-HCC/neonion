@@ -43,7 +43,20 @@ def annotator(request, doc_urn):
 @login_required
 def my_annotations(request):
     workspace = Workspace.objects.get_workspace(owner=request.user)
-    
+
+    # update my_annotations in current workspace
+    if request.method == 'POST':
+        if 'as' in request.POST:
+            active_sets = request.POST.getlist('as')
+        else:
+            active_sets = []
+
+        for annotation_set in AnnotationSet.objects.all():
+            if annotation_set.uri in active_sets:
+                workspace.annotation_sets.add(annotation_set)
+            else:
+                workspace.annotation_sets.remove(annotation_set)
+
     return render_to_response('base_my_annotations.html', {}, context_instance=RequestContext(request))
 
 

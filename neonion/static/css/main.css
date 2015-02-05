@@ -3120,6 +3120,7 @@ input[type="submit"].btn {
       display: none; }
     .nav-vertical ul li:hover > ul {
       display: block;
+      font-size: 10px;
       padding-left: 2em;
       border-color: #ffffff; }
   .nav-vertical li a {

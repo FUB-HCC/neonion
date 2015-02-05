@@ -7,41 +7,43 @@
   ul {
     @include list-reset;
 
+    
     ul {
       display: none;
     }
 
     li:hover > ul {
       display: block;
+      font-size: 10px;
       padding-left: 2em;
       border-color: $white; 
     }
   }
 
   li {
+    a {
+      border-left: $column-gap/2 solid $white; 
+      color: $ship-gray;
+      display: block;
+      font-size: 20px;
+      padding: $half-baseline ($column - $column-gap/2); 
+      text-decoration: none;
+
+      .fa-fw { text-align: left; }
+    }
+
+    a:hover {
+      color: $black;
+    }
+
+    &.active {
       a {
-        border-left: $column-gap/2 solid $white; 
-        color: $ship-gray;
-        display: block;
-        font-size: 20px;
-        padding: $half-baseline ($column - $column-gap/2); 
-        text-decoration: none;
-
-        .fa-fw { text-align: left; }
-      }
-
-      a:hover {
+        background: $gallery;
+        border-color: $tangerine;
         color: $black;
       }
-
-      &.active {
-        a {
-          background: $gallery;
-          border-color: $tangerine;
-          color: $black;
-        }
-      }
-    }  
+    }
+  }
 }
 
 #page-annotator {

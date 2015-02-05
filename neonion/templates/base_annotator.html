@@ -49,28 +49,33 @@
             var annotator = setupAnnotator();
 
             $('#nav-anotate').click(function() {
-                //console.log($("#document-text").text());
-                // Test version
-                /*$.getJSON("{{ ner_url }}/version", function(data) {
-                   console.log(data);
-                });*/
-                // Post text to NER service
-                var model = "default";
-                var params = {
-                    textURI : "{{ urn }}",
-                    text : $("#document-text").text()
-                };
+                var span = $('#nav-anotate>span');
+                if (!span.hasClass('fa-spin')) {
+                    span.addClass('fa-spin');
 
-                $.ajax({
-                    type: "POST",
-                    url: "{{ ner_url }}/" + model + "/recognize",
-                    data: params,
-                    success: function(data) {
-                        console.log(data);
-                        // TODO process data
-                    },
-                    dataType: "json"
-                });
+                    // Post text to NER service
+                    var model = "standard";
+                    var params = {
+                        textURI: "{{ urn }}",
+                        text: $("#document-text").text()
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ ner_url }}/models/" + model + "/recognize",
+                        data: JSON.stringify(params),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            console.log(data);
+                            // TODO process data
+                            span.removeClass('fa-spin');
+                        },
+                        error: function () {
+                            span.removeClass('fa-spin');
+                        }
+                    });
+                }
             });
 
             /*
@@ -151,7 +156,7 @@
                         annotationSets: sets
                     })
                     .annotator('addPlugin', 'Store', {
-                        prefix: '{{ store_url }}',
+                        prefix: '/api/store',
                         annotationData: {'uri': '{{ urn }}'},
                         // filter annotations by creator
                         loadFromSearch: {
@@ -185,7 +190,6 @@
             // clone annotation for stringify operation
             var copy = $.extend(true, {}, annotation);
             delete copy.highlights;
-            console.log(annotation);
             $.post("{% url 'endpoint.views.annotation_created' %}", {
                 annotation: JSON.stringify(copy),
                 docUrn: "{{ urn }}",

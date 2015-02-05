@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from django.db import transaction
 from rest_framework.views import APIView
 from common import uri
-
+from rest_framework import permissions
 
 class WorkspaceDocumentList(APIView):
     def get(self, request, format=None):
@@ -45,6 +45,9 @@ class WorkspaceDocumentList(APIView):
 
 
 class AnnotationListView(APIView):
+    authentication_classes = ()
+    permission_classes = (permissions.AllowAny,)
+
     def get(self, request, format=None):
         """Returns a list of all annotations"""
         response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations')
@@ -60,6 +63,9 @@ class AnnotationListView(APIView):
 
 
 class AnnotationDetailView(APIView):
+    authentication_classes = ()
+    permission_classes = (permissions.AllowAny,)
+
     def get(self, request, pk, format=None):
         """Returns the specified annotation object"""
         response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations/' + pk)
@@ -74,8 +80,8 @@ class AnnotationDetailView(APIView):
 
     def delete(self, request, pk, format=None):
         """Deletes the specified annotation object"""
-        response = requests.delete(settings.ANNOTATION_STORE_URL + '/annotations/' + pk)
-        return JsonResponse(response.json(), safe=False, status=204)
+        requests.delete(settings.ANNOTATION_STORE_URL + '/annotations/' + pk)
+        return Response('', status=204)
 
 
 @api_view(["GET"])

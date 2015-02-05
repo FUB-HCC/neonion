@@ -1,5 +1,3 @@
-var neonionApp = angular.module('neonionApp', []);
-
 neonionApp.controller('WorkspaceDocumentCtrl', ['$scope', '$http', 'WorkspaceService', function ($scope, $http, WorkspaceService) {
     "use strict";
 
@@ -45,52 +43,21 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
 
 }]);
 
-neonionApp.controller('NerModelCtrl', ['$scope', '$http', function ($scope, $http) {
+neonionApp.controller('NamedEntityCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
     $scope.models = [
         {
-            identifier: 'Default',
-            stanfordModel: 'String',
-            predictorNumberOfComponents: 1,
-            predictorNumberOfIterations: 1,
-            predictorLossFunction: 'String',
-            predictorAlpha: 'Float',
-            numberOfHiddenLayerComponents: 'Integer',
-            predictorInitialize: 'String',
-            learnNetworkInitialize: 'String',
-            predictorLearn: true,
-            learnNetworkLearn: true
+            identifier: 'Standard',
+            stanfordModel: 'dewac_175m_600',
+            predictorNumberOfComponents: '?',
+            predictorNumberOfIterations: '(10^6) / n',
+            predictorLossFunction: 'log',
+            predictorAlpha: '?',
+            numberOfHiddenLayerComponents: 4,
+            predictorInitialize: 'Standard',
+            learnNetworkInitialize: 'Standard',
+            predictorLearn: false,
+            learnNetworkLearn: false
         }];
-}]);
-
-neonionApp.config(['$httpProvider', function($httpProvider) { // provider-injector
-    "use strict";
-    $httpProvider.defaults.xsrfCookieName = 'csrftoken';
-    $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
-}]);
-
-neonionApp.factory('WorkspaceService', ['$http', function($http) {
-    "use strict";
-    var factory = {};
-
-    factory.removeDocument = function(urn) {
-        $http.delete("api/workspace/documents/" + urn + "/", {}).success(function(data) {});
-    };
-
-    return factory;
-}]);
-
-neonionApp.factory('DocumentService', ['$http', function($http) {
-    "use strict";
-    var factory = {};
-
-    factory.importDocuments = function(arr) {
-        $http.post("/documents/cms/import", { documents : arr }).success(function(data) {
-            // return to home
-            window.location = "/";
-        });
-    };
-
-    return factory;
 }]);

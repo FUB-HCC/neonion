@@ -33,5 +33,21 @@
 
 
 {% block scripts %}
+<script language="javascript">
+    "use strict";
 
+    $(document).ready(function() {
+        // better replace this part by angular js
+        $.getJSON("{% url 'store.views.filter_annotations' %}", function(response) {
+            $.each(response.rows, function(index, value){
+                $("#tbl-annotations").append(
+                    "<tr><td><a href='/annotator/" + value['uri'] + "'>" + value['uri'] + "</a></td>" +
+                    "<td>" + value['created'] + "</td>" +
+                    "</tr>"
+                );
+            });
+        });
+    });
+
+</script>
 {% endblock %}

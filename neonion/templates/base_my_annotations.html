@@ -13,14 +13,13 @@
             <select>
                 <option>Name</option>
                 <option>Date</option>
+                <option>Concept</option>
                 <option>Occurences</option>
-                <option>Annotationset</option>
-            </select>   
+            </select>
         </span>
-        <form action="{% url 'neonion.views.my_annotations' %}" method="post">
-            {% csrf_token %}
-            
-        </form>
+        <ul id="annotation-table" class="document-grid">
+            <li><span class="fa fa-spinner fa-spin"></span> Loading...</li>
+        </ul>
     </div>
 {% endblock %}
 
@@ -30,7 +29,7 @@
     "use strict";
 
     $(document).ready(function() {
-        loadDocumentList();
+        loadAnnotationList();
     });
 
     function compare_Documents(a,b) {
@@ -41,20 +40,21 @@
       return 0;
     }
 
-    function loadDocumentList() {
-        var documentList = [];
-        // load document list
-        $.getJSON("{% url 'api.views.personal_workspace' %}", function(response) {
-            response.documents.forEach(function(entry) {
-                documentList.push( entry );
+    function loadAnnotationList() {
+        var annotationList = [];
+        // load annotation list
+        // better replace this part by angular js
+        $.getJSON("{% url 'store.views.filter_annotations' %}", function(response) {
+            response.rows.forEach(function(index, value) {
+                annotationList.push(index, value);
             });
             var today = moment().startOf("day");
             var todayLabelSet = false;
             var earlierLabelSet = false;
-            $('#document-table').html('');
+            $('#annotation-table').html('');
 
-            if (documentList.length > 0) {
-                documentList.sort(compare_Documents)
+            if (annotationList.length > 0) {
+                annotationList.sort(compare_Documents)
                 .reverse()
                 .forEach(function (entry) {
                     /* set label for first column (only once for each type) */
@@ -72,7 +72,7 @@
                     var id = uri[uri.length - 1]
                     var element = $('<li></li>')
                           .append($('<a href="/annotator/' + id + '"><div>' + entry.title + '</div></a>'));
-                    $('#document-table').append(element);
+                    $('#annotation-table').append(element);
                 });
             }
             else {
@@ -80,6 +80,6 @@
             }
         });
     }
-    
+
 </script>
 {% endblock %}

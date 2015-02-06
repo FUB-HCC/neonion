@@ -29,7 +29,7 @@ TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'),
 )
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'templates', 'locale',),
@@ -51,7 +51,6 @@ INSTALLED_APPS = (
     'documents',
     'accounts',
     'endpoint',
-    'store',
     'annotationsets',
 )
 
@@ -128,7 +127,15 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    # ]
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication'
+    ],
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
+
+# neonion specific settings
+NEONION = {
+    'BASE_NAMESPACE':  'http://neonion.org/',
 }

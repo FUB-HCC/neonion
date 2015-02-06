@@ -35,6 +35,7 @@ def annotator(request, doc_urn):
         'content': doc.content,
         'endpoint_url': '/endpoint/',
         'store_url': settings.ANNOTATION_STORE_URL,
+        'ner_url': settings.NER_SERVICE_URL,
         'annotation_sets': workspace.annotation_sets.all()
     }
     return render_to_response('base_annotator.html', data, context_instance=RequestContext(request))
@@ -114,6 +115,7 @@ def import_document(request):
 def resource_search(request, index):
     if 'q' in request.GET:
         # TODO call WikiData.search method
+        search_term = request.GET.get('q')
         size = 5
         query = {
             'query': {
@@ -123,18 +125,18 @@ def resource_search(request, index):
                             'should': [
                                 {
                                     'wildcard': {
-                                        'label': '*{}*'.format(request.GET.get('q'))
+                                        'label': u'*{}*'.format(search_term)
                                     }
                                 },
                                 {
                                     'wildcard': {
-                                        'aliases': '*{}*'.format(request.GET.get('q'))
+                                        'aliases': u'*{}*'.format(search_term)
                                     }
                                 },
                                 {
                                     'more_like_this': {
                                         'fields': ['label', 'aliases'],
-                                        'like_text': request.GET.get('q'),
+                                        'like_text': search_term,
                                         'min_term_freq': 1,
                                         'min_doc_freq': 1,
                                         'max_query_terms': 12
@@ -153,7 +155,7 @@ def resource_search(request, index):
         }
         index = 'wikidata' # TODO
         url = settings.ELASTICSEARCH_URL + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format(json.dumps(query))
-        print(url)
+        #print(url)
         r = requests.get(url)
         return JsonResponse(r.json())
     else:

@@ -5,10 +5,9 @@
 {% block title %}Settings{% endblock %}
 {% block page_id %}settings{% endblock %}
 
-
 {% block content %}
       <div>
-        <h3>Manage AnnotationSets</h3>
+        <h3>My AnnotationSets</h3>
         <form action="{% url 'neonion.views.load_settings' %}" method="post">
             {% csrf_token %}
             <table>
@@ -42,14 +41,11 @@
             </table>
             <div class="form-buttons"><button class="button button-primary pull-right" id="btn-import">Save</button></div>
         </form>
+
+        <h3>My Annotations</h3>
+        {% include 'partials/my_annotations.html' %}
+
+        <h3>NER Settings</h3>
+        {% include 'partials/ner_models.html' %}
     </div>
-{% endblock %}
-
-{% block scripts %}
-<script language="javascript">
-    "use strict";
-
-
-
-</script>
 {% endblock %}

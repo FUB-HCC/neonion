@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de" ng-app="neonionApp">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, maximum-scale=1, minimum-scale=1" />
@@ -11,7 +11,7 @@
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
 </head>
 <body id="page-{% block page_id %}general{% endblock %}">
-
+{% csrf_token %}
 {% block left %}
     <div class="sidebar">
         <div class="logo-wrapper">
@@ -32,8 +32,12 @@
     </div>
 {% endblock %}
 
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.10/angular.min.js"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'js/services.js' %}"></script>
+    <script src="{% static 'js/controllers.js' %}"></script>
+
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="{% static 'js/moment.js' %}"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
 
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />

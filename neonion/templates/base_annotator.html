@@ -12,7 +12,6 @@
 {% endblock %}
 
 {% block content %}
-{% csrf_token %}
 <div>
     <div id="annotator_menu" style="display:none;position:fixed;">
         <ul id="annotator_contributors" class="forms-list"></ul>
@@ -20,9 +19,11 @@
             annotation</a>
     </div>
     <div>
-        <div id="annotationArea" class="panel panel-default">
-            <div id="documentTitle" class="panel-heading big">{{ title }}</div>
-            <div id="documentText" class="panel-body"> {% autoescape off %}{{ content }}{% endautoescape %}</div>
+        <div id="document-frame" class="panel panel-default">
+            <div id="document-title" class="panel-heading big">{{ title }}</div>
+            <div id="document-body" class="panel-body">
+                <div id="document-text">{% autoescape off %}{{ content }}{% endautoescape %}</div>
+            </div>
         </div>
     </div>
 </div>
@@ -33,8 +34,6 @@
     <script type="text/javascript" src="{% static 'js/annotator.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/annotator.neonion.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/annotator.store.min.js' %}"></script>
-
-    <script type="text/javascript" src="{% static 'js/jquery-ui-1.11.1.custom.min.js' %}"></script>
 
     <script language="javascript">
         "use strict";
@@ -49,9 +48,39 @@
         $(document).ready(function () {
             var annotator = setupAnnotator();
 
+            $('#nav-anotate').click(function() {
+                var span = $('#nav-anotate>span');
+                if (!span.hasClass('fa-spin')) {
+                    span.addClass('fa-spin');
+
+                    // Post text to NER service
+                    var model = "standard";
+                    var params = {
+                        textURI: "{{ urn }}",
+                        text: $("#document-text").text()
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ ner_url }}/models/" + model + "/recognize",
+                        data: JSON.stringify(params),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            console.log(data);
+                            // TODO process data
+                            span.removeClass('fa-spin');
+                        },
+                        error: function () {
+                            span.removeClass('fa-spin');
+                        }
+                    });
+                }
+            });
+
             /*
-             $('#enableFullscreen').click(function(){
-             enableFullscreen( document.getElementById( 'annotationArea' ) );
+             $('#nav-fullscreen').click(function(){
+             enableFullscreen( document.getElementById( 'document-frame' ) );
              });
 
              $('#scoll_to_latest_annotation').click(function(){
@@ -120,14 +149,14 @@
                 {% endif %}
             {% endfor %}
 
-            $("#documentText").annotator()
+            $("#document-body").annotator()
                     .annotator('addPlugin', 'Neonion', {
                         whoamiUrl: "{% url 'accounts.views.me' %}",
                         endpointUrl: "{{ endpoint_url }}",
                         annotationSets: sets
                     })
                     .annotator('addPlugin', 'Store', {
-                        prefix: '{{ store_url }}',
+                        prefix: '/api/store',
                         annotationData: {'uri': '{{ urn }}'},
                         // filter annotations by creator
                         loadFromSearch: {
@@ -137,13 +166,11 @@
                         }
                     });
 
-            var annotator = $("#documentText").data("annotator")
+            var annotator = $("#document-body").data("annotator")
                     .subscribe("annotationCreated", function (annotation) {
                         notifyEndpoint(annotation);
                         //annotationChanged(annotation);
                     });
-            //.subscribe("annotationUpdated", annotationChanged)
-            //.subscribe("annotationDeleted", refreshContributors);
 
             // TODO raise refresh list when store plugin has finished async request
             /*window.setTimeout(function() {
@@ -163,7 +190,6 @@
             // clone annotation for stringify operation
             var copy = $.extend(true, {}, annotation);
             delete copy.highlights;
-            console.log(annotation);
             $.post("{% url 'endpoint.views.annotation_created' %}", {
                 annotation: JSON.stringify(copy),
                 docUrn: "{{ urn }}",

@@ -1,34 +1,17 @@
-import os
+import uuid
 import json
 
-from django.http import HttpResponse, Http404
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from documents.models import Document
 from neonion.models import Workspace
-from bs4 import BeautifulSoup
 from django.shortcuts import redirect
 from django.core.files.base import ContentFile
 from operator import itemgetter
 from os.path import splitext, basename
 from common.cms import instantiate_provider
-
-@login_required
-def meta(request, doc_urn):
-    pass
-
-
-@login_required
-def query(request, search_string):
-    pass
-
-
-@login_required
-def cms_list(request):
-    cms = instantiate_provider(settings.CONTENT_SYSTEM_CLASS)
-    return JsonResponse(sorted(cms.list(), key=itemgetter('name')), safe=False)
 
 
 @login_required
@@ -48,7 +31,7 @@ def upload_file(request):
         elif request.FILES[f].content_type == 'text/plain':
             file_name = request.FILES[f].name.encode('utf-8')
             doc_title = str(' '.join(splitext(basename(file_name))[0].split()))
-            doc_urn = str('_'.join(splitext(basename(file_name))[0].split()))
+            doc_urn = uuid.uuid1().hex
             print(doc_title + "   " + doc_urn)
             # read plain text content
             content = []
@@ -72,19 +55,28 @@ def upload_file(request):
 
 
 @login_required
-def cms_import(request, doc_urn):
-    # import document if it not exists otherwise skip import
-    if not Document.objects.filter(urn=doc_urn).exists():
-        cms = instantiate_provider(settings.CONTENT_SYSTEM_CLASS)
+def cms_list(request):
+    cms = instantiate_provider(settings.CONTENT_SYSTEM_CLASS)
+    return JsonResponse(sorted(cms.list(), key=itemgetter('name')), safe=False)
 
-        new_document = cms.get_document(doc_urn)
-        document = Document.objects.create_document(doc_urn, new_document['title'], new_document['content'])
-    else:
-        document = Document.objects.get(urn=doc_urn)
 
-    # import document into workspace
-    if document:
-        workspace = Workspace.objects.get_workspace(owner=request.user)
-        workspace.documents.add(document)
+@login_required
+@require_POST
+def cms_import(request):
+    data = json.loads(request.body)
+    for doc_urn in data['documents']:
+        # import document if it not exists otherwise skip import
+        if not Document.objects.filter(urn=doc_urn).exists():
+            cms = instantiate_provider(settings.CONTENT_SYSTEM_CLASS)
 
-    return JsonResponse({"urn": doc_urn, "title": document.title})
+            new_document = cms.get_document(doc_urn)
+            document = Document.objects.create_document(doc_urn, new_document['title'], new_document['content'])
+        else:
+            document = Document.objects.get(urn=doc_urn)
+
+        # import document into workspace
+        if document:
+            workspace = Workspace.objects.get_workspace(owner=request.user)
+            workspace.documents.add(document)
+
+    return JsonResponse({})

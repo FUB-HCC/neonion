@@ -17,81 +17,30 @@
                 <option>Occurences</option>
             </select>
         </span>
-        <ul id="annotation-table" class="document-grid">
-            <li><span class="fa fa-spinner fa-spin"></span> Loading...</li>
+        <ul id="annotation-table" class="document-grid" ng-controller="AnnotationStoreCtrl">
+            <li>
+                <a href="{% url 'neonion.views.my_annotations' %}">
+                    <div>
+
+                    </div>
+                </a>
+            </li>
+
+            {% verbatim %}
+            <li ng-repeat="annotation in annotations | filter:{ $ : '{{ request.user.email }}' } | orderBy:'-created'">
+                <button class="fa fa-times" ng-click="removeDocument(document)"></button>
+                <div>
+                    <a href="/annotator/{{ annotation.uri }}#{{ annotation.id }}">
+                        {{ annotation.uri }}
+                    </a>
+                </div>
+                <div>{{ annotation.quote }}</div>
+                <div> Occurences </div>
+                <div> in % Documents </div>
+                <div>{{ annotation.created | date :'medium' }}</div>
+
+            </li>
+            {% endverbatim %}
         </ul>
     </div>
-{% endblock %}
-
-
-{% block scripts %}
-<script language="javascript">
-    "use strict";
-
-    $(document).ready(function() {
-        loadAnnotationList();
-    });
-
-    function compare_Documents(a,b) {
-      if (a.createdAt < b.createdAt)
-         return -1;
-      if (a.createdAt > b.createdAt)
-        return 1;
-      return 0;
-    }
-
-    function loadAnnotationList() {
-        var annotationList = [];
-
-        // load annotation list
-        // better replace this part by angular js
-        $.getJSON("{% url 'store.views.filter_annotations' %}", function(response) {
-            $.each(response.rows, function(index, value) {
-
-                $("#annotation-table").append(
-                    /* create element for document list and append it */
-                    var uri = entry.urn.split("/")
-                    var id = uri[uri.length - 1]
-                    $('<li></li>')
-                            .append($('<a href="/annotator/' + value['quote'] + '"><div>' +  value['quote'] + '</div></a>'));
-                )
-            }
-            response.rows.forEach(function(index, value) {
-                annotationList.push(index, value);
-            });
-
-            var today = moment().startOf("day");
-            var todayLabelSet = false;
-            var earlierLabelSet = false;
-            $('#annotation-table').html('');
-
-            if (annotationList.length > 0) {
-                annotationList.sort(compare_Documents)
-                .reverse()
-                .forEach(function (entry) {
-                    /* set label for first column (only once for each type) */
-                    var label = '';
-                    if (!todayLabelSet && entry.createdAt >= today) {
-                        label = 'Today';
-                        todayLabelSet = true;
-                    }
-                    if (!earlierLabelSet && entry.createdAt < today) {
-                        label = 'Earlier';
-                        earlierLabelSet = true;
-                    }
-                    /* create element for document list and append it */
-                    var uri = entry.urn.split("/")
-                    var id = uri[uri.length - 1]
-                    var element = $('<li></li>')
-                          .append($('<a href="/annotator/' + id + '"><div>' + entry.title + '</div></a>'));
-                    $('#annotation-table').append(element);
-                });
-            }
-            else {
-
-            }
-        });
-    }
-
-</script>
 {% endblock %}

@@ -59,7 +59,7 @@
                         textURI: "{{ urn }}",
                         text: $("#document-text").text()
                     };
-
+                    console.log(params);
                     $.ajax({
                         type: "POST",
                         url: "{{ ner_url }}/models/" + model + "/recognize",

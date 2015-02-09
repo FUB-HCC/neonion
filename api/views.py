@@ -12,6 +12,7 @@ from django.db import transaction
 from rest_framework.views import APIView
 from common import uri
 from rest_framework import permissions
+from authentication import UnsafeSessionAuthentication
 
 class WorkspaceDocumentList(APIView):
     def get(self, request, format=None):
@@ -45,8 +46,10 @@ class WorkspaceDocumentList(APIView):
 
 
 class AnnotationListView(APIView):
-    authentication_classes = ()
+    # TODO: find solution for annotator.store plugin an CSRF Tokens othern than ignoring the absence of the token
+    authentication_classes = (UnsafeSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)
+
 
     def get(self, request, format=None):
         """Returns a list of all annotations"""
@@ -63,8 +66,10 @@ class AnnotationListView(APIView):
 
 
 class AnnotationDetailView(APIView):
-    authentication_classes = ()
+    # TODO: find solution for annotator.store plugin an CSRF Tokens other than ignoring the absence of the token
+    authentication_classes = (UnsafeSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)
+
 
     def get(self, request, pk, format=None):
         """Returns the specified annotation object"""

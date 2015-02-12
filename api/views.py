@@ -14,6 +14,7 @@ from common import uri
 from rest_framework import permissions
 from authentication import UnsafeSessionAuthentication
 
+
 class WorkspaceDocumentList(APIView):
     def get(self, request, format=None):
         workspace = Workspace.objects.get_workspace(owner=request.user)

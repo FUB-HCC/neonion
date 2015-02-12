@@ -1,0 +1,32 @@
+<table ng-controller="AnnotationSetCtrl">
+    <tbody ng-repeat="set in annotationsets">
+        {% verbatim %}
+        <tr>
+            <th>
+                <b data-tooltip="{{ set.uri }}">{{ set.label }}</b>
+            </th>
+            <th colspan="3">{{ set.comment }}</th>
+        </tr>
+        <tr>
+            <th>Concept</th>
+            <th>URI</th>
+            <th>Type</th>
+            <th>Linked Concepts</th>
+        </tr>
+        <tr ng-repeat="concept in set.concepts">
+            <td>{{ concept.label }}</td>
+            <td>{{ concept.uri }}</td>
+            <td>{{ concept.additional_type }}</td>
+            <td>
+                <table ng-show="{{ concept.linked_concepts.length > 0 }}">
+                    <tr ng-repeat="linked in concept.linked_concepts">
+                        <td>{{ linked.label }}</td>
+                        <td>{{ linked.linked_type }}</td>
+                    </tr>
+                </table>
+                <span ng-show="{{ concept.linked_concepts.length == 0 }}">None</span>
+            </td>
+        </tr>
+        {% endverbatim %}
+    </tbody>
+</table>

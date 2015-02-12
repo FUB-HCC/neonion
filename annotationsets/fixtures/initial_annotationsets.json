@@ -1,58 +1,48 @@
-[  
-   {  
-      "fields":{  
-         "class_name":"common.knowledge.dbpedia.DBpedia",
-         "provider":"DBpedia"
+[
+   {
+      "fields":{
+         "comment":"",
+         "linked_type":"http://wikidata.org/q5",
+         "provider_class":"common.knowledge.wikidata.provider",
+         "label":"Person@Wikidata"
       },
-      "model":"annotationsets.conceptsource",
-      "pk":"http://dbpedia.org/ontology/institution"
-   },
-   {  
-      "fields":{  
-         "class_name":"common.knowledge.dbpedia.DBpedia",
-         "provider":"DBpedia"
-      },
-      "model":"annotationsets.conceptsource",
-      "pk":"http://dbpedia.org/ontology/person"
-   },
-   {  
-      "fields":{  
-         "class_name":"common.knowledge.wikidata.Wikidata",
-         "provider":"Wikidata"
-      },
-      "model":"annotationsets.conceptsource",
-      "pk":"http://www.wikidata.org/entity/Q15916302"
-   },
-   {  
-      "fields":{  
-         "class_name":"common.knowledge.wikidata.Wikidata",
-         "provider":"Wikidata"
-      },
-      "model":"annotationsets.conceptsource",
-      "pk":"http://www.wikidata.org/entity/Q5"
+      "model":"annotationsets.linkedconcept",
+      "pk":"http://neonion.org/linkedconcept/wikidata/person"
    },
    {
       "fields":{
-         "sources":[
-            "http://www.wikidata.org/entity/Q5",
-            "http://dbpedia.org/ontology/person"
+         "comment":"",
+         "additional_type":"http://schema.org/person",
+         "linked_concepts":[
+            "http://neonion.org/linkedconcept/wikidata/person"
          ],
-         "allow_creation":false,
          "label":"Person"
       },
-      "model":"annotationsets.annotationset",
-      "pk":"http://xmlns.com/foaf/0.1/Person"
+      "model":"annotationsets.concept",
+      "pk":"http://neonion.org/concept/person"
    },
-   {  
-      "fields":{  
-         "sources":[
-            "http://www.wikidata.org/entity/Q15916302",
-            "http://dbpedia.org/ontology/institution"
+   {
+      "fields":{
+         "comment":"",
+         "additional_type":"http://schema.org/organization",
+         "linked_concepts":[
+
          ],
-         "allow_creation":false,
          "label":"Institute"
       },
+      "model":"annotationsets.concept",
+      "pk":"http://neonion.org/concept/institute"
+   },
+   {
+      "fields":{
+         "comment":"",
+         "concepts":[
+            "http://neonion.org/concept/person",
+            "http://neonion.org/concept/institute"
+         ],
+         "label":"Default"
+      },
       "model":"annotationsets.annotationset",
-      "pk":"http://purl.org/vocab/aiiso/schema#Institution"
+      "pk":"http://neonion.org/annotationset/default"
    }
 ]

@@ -4,7 +4,7 @@
 /*global Annotator:false */
 
 /**
- * @preserve Copyright 2014 HCC FU Berlin.
+ * @preserve Copyright 2015 HCC FU Berlin.
  * write licence text
  */
 (function () {
@@ -31,8 +31,7 @@
             compositor = {},
             selectedType = null,
             viewerFields = {},
-            editorFields = {},
-            visibleAnnotationSets = [];
+            editorFields = {}
 
         // properties
         this.setUser = function (userData) {
@@ -43,22 +42,10 @@
         };
         this.setCompositor = function (compositorData) {
             compositor = compositorData;
+            this.applyAnnotationSets(adder, compositor);
         };
         this.getCompositor = function () {
             return compositor;
-        };
-        this.setVisibleAnnotationSets = function (visible) {
-            visibleAnnotationSets = visible;
-            var uri;
-            for (uri in compositor) {
-                if (compositor.hasOwnProperty(uri)) {
-                    compositor[uri].omitAdder = (visible.indexOf(uri) === -1);
-                }
-            }
-            this.applyAnnotationSets(adder, this.getCompositor());
-        };
-        this.getVisibleAnnotationSets = function () {
-            return visibleAnnotationSets;
         };
 
         /**
@@ -73,6 +60,7 @@
                 search: this.initEditorEntitySearch(),
                 create: this.initEditorEntityCreation()
             };
+            this.setCompositor(this.getCompositor());
 
             // bind events to document
             $(document).bind({
@@ -104,31 +92,24 @@
 
             // create compositor from provided annotation sets
             if (options.hasOwnProperty("annotationSets")) {
-                this.setCompositor(options["annotationSets"]);
+                compositor = options["annotationSets"];
             }
             else {
-               this.setCompositor([]);
+               compositor = {};
             }
 
-            // collect default visible annotation sets
-            for (var uri in compositor) {
-                if (compositor.hasOwnProperty(uri) && !compositor[uri].omitAdder) {
-                    visibleAnnotationSets.push(uri);
-                }
-            }
-            // add additional adder buttons
-            this.applyAnnotationSets(adder, this.getCompositor());
             // catch submit event
             adder.on("click", "button", function () {
                 // set selected type
                 selectedType = $(this).val();
                 // show or hide entity creation field
-                if (compositor[selectedType] && compositor[selectedType].allowCreation) {
+                /*if (compositor[selectedType] && compositor[selectedType].allowCreation) {
                     $(editorFields.create).show();
                 }
                 else {
                     $(editorFields.create).hide();
-                }
+                }*/
+                $(editorFields.create).hide();
             });
             return adder;
         };
@@ -299,7 +280,7 @@
                 load: function (field, annotation) {
                     createForm.hide();
                     createForm.html('');
-                    if (compositor[selectedType] && compositor[selectedType].allowCreation) {
+                    if (compositor[selectedType]) {
                         if (compositor[selectedType].fields) {
                             compositor[selectedType].fields.forEach(function (element, index, array) {
                                 var field = "<label for='" + element.name + "''>" + element.label + "</label>";
@@ -403,42 +384,11 @@
         applyAnnotationSets: function (adder, compositor) {
             adder.html("");
             for (var uri in compositor) {
-                if (compositor.hasOwnProperty(uri) && !compositor[uri].omitAdder) {
+                if (compositor.hasOwnProperty(uri)) {
                     adder.append("<button class='btn' value='" + uri + "'>" + compositor[uri].label + "</button>");
                 }
             }
         },
-
-        /*defaultCompositor: function () {
-            return {
-                // add compositor for persons
-                "foaf:Person": {
-                    label: Annotator.Plugin.Neonion.prototype.literals['en'].person,
-                    omitAdder: false,
-                    allowCreation: true,
-                    create: Annotator.Plugin.Neonion.prototype.create.createPerson,
-                    search: Annotator.Plugin.Neonion.prototype.search.searchPerson,
-                    formatter: Annotator.Plugin.Neonion.prototype.formatter.formatPerson,
-                    decorator: Annotator.Plugin.Neonion.prototype.decorator.decoratePerson,
-                    fields: [
-                        { name: 'label', label: 'Full name', type: 'text', required: true },
-                        { name: 'descr', label: 'Occupation', type: 'text' },
-                        { name: 'birth', label: 'Date of birth', type: 'date' },
-                        { name: 'death', label: 'Date of death', type: 'date' }
-                    ]
-                },
-                // add compositor for institutes
-                "aiiso:Institution": {
-                    label: Annotator.Plugin.Neonion.prototype.literals['en'].institute,
-                    omitAdder: false,
-                    allowCreation: false,
-                    create: Annotator.Plugin.Neonion.prototype.create.createInstitute,
-                    search: Annotator.Plugin.Neonion.prototype.search.searchInstitute,
-                    formatter: Annotator.Plugin.Neonion.prototype.formatter.formatInstitute,
-                    decorator: Annotator.Plugin.Neonion.prototype.decorator.decorateInstitute
-                }
-            };
-        },*/
 
         getAnnotationHighlights: function () {
             return $(".annotator-hl:not(.annotator-hl-temporary),." + Annotator.Plugin.Neonion.prototype.classes.hide);

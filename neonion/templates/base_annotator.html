@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content %}
-<div>
+<div ng-controller="AnnotatorCtrl" data-ng-init="setupAnnotator('{{ urn }}', '{{ request.user.email }}')">
     <div id="annotator_menu" style="display:none;position:fixed;">
         <ul id="annotator_contributors" class="forms-list"></ul>
         <a href="#" id="scoll_to_latest_annotation"><i class="fa fa-arrow-circle-down"></i> scroll to last
@@ -29,7 +29,6 @@
 </div>
 {% endblock %}
 
-
 {% block scripts %}
     <script type="text/javascript" src="{% static 'js/annotator.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/annotator.neonion.js' %}"></script>
@@ -38,12 +37,12 @@
     <script language="javascript">
         "use strict";
 
-        var userColors = {};
+        /*var userColors = {};
 
         function makeColor(colorNum, colors) {
             if (colors < 1) colors = 1; // defaults to one color - avoid divide by zero
             return ( colorNum * (360 / colors) ) % 360;
-        }
+        }*/
 
         function processTokenSet(tokenList) {
             var mergedToken = [];
@@ -99,15 +98,13 @@
         }
 
         $(document).ready(function () {
-            var annotator = setupAnnotator();
-
             $('#nav-anotate').click(function() {
                 var span = $('#nav-anotate>span');
                 if (!span.hasClass('fa-spin')) {
                     span.addClass('fa-spin');
 
                     // Post text to NER service
-                    var model = "standard";
+                    var model = "default";
                     var params = {
                         textURI: "{{ urn }}",
                         text: $("#document-text").text()
@@ -168,77 +165,7 @@
              */
         });
 
-        function setupAnnotator() {
-            var sets = {};
-            {% for set in annotation_sets %}
-                {% if set.uri == 'foaf:Person' %}
-                    sets["{{ set.uri }}"] = {
-                        label: "{{ set.label }}",
-                        omitAdder: false,
-                        allowCreation: {{ set.allow_creation|yesno:"true,false" }},
-                        create: Annotator.Plugin.Neonion.prototype.create.createPerson,
-                        search: Annotator.Plugin.Neonion.prototype.search.searchPerson,
-                        formatter: Annotator.Plugin.Neonion.prototype.formatter.formatPerson,
-                        decorator: Annotator.Plugin.Neonion.prototype.decorator.decoratePerson,
-                        fields: [
-                            {name: 'label', label: 'Full name', type: 'text', required: true},
-                            {name: 'descr', label: 'Occupation', type: 'text'},
-                            {name: 'birth', label: 'Date of birth', type: 'date'},
-                            {name: 'death', label: 'Date of death', type: 'date'}
-                        ]
-                    };
-                {% elif set.uri == 'aiiso:Institution' %}
-                    // add compositor for institutes
-                    sets["{{ set.uri }}"] = {
-                        label: "{{ set.label }}",
-                        omitAdder: false,
-                        allowCreation: {{ set.allow_creation|yesno:"true,false" }},
-                        create: Annotator.Plugin.Neonion.prototype.create.createInstitute,
-                        search: Annotator.Plugin.Neonion.prototype.search.searchInstitute,
-                        formatter: Annotator.Plugin.Neonion.prototype.formatter.formatInstitute,
-                        decorator: Annotator.Plugin.Neonion.prototype.decorator.decorateInstitute
-                    };
-                {% endif %}
-            {% endfor %}
-
-            $("#document-body").annotator()
-                    .annotator('addPlugin', 'Neonion', {
-                        whoamiUrl: "{% url 'accounts.views.me' %}",
-                        endpointUrl: "{{ endpoint_url }}",
-                        annotationSets: sets
-                    })
-                    .annotator('addPlugin', 'Store', {
-                        prefix: '/api/store',
-                        annotationData: {'uri': '{{ urn }}'},
-                        // filter annotations by creator
-                        loadFromSearch: {
-                            'uri': '{{ urn }}',
-                            'creator.email': '{{ request.user.email }}',
-                            'limit': 999999
-                        }
-                    });
-
-            var annotator = $("#document-body").data("annotator")
-                    .subscribe("annotationCreated", function (annotation) {
-                        notifyEndpoint(annotation);
-                        //annotationChanged(annotation);
-                    });
-
-            // TODO raise refresh list when store plugin has finished async request
-            /*window.setTimeout(function() {
-             refreshContributors();
-             var users = Annotator.Plugin.Neonion.prototype.getContributors();
-             users.forEach(function(user) {
-             var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations(user);
-             annotations.forEach(function(ann){
-             colorizeAnnotation(ann);
-             });
-             });
-             }, 1000);*/
-            return annotator;
-        }
-
-        function notifyEndpoint(annotation) {
+        /*function notifyEndpoint(annotation) {
             // clone annotation for stringify operation
             var copy = $.extend(true, {}, annotation);
             delete copy.highlights;
@@ -298,7 +225,7 @@
                 listItem.append("<label for='" + item.user + "'>" + item.user + " (" + moment(item.updated).fromNow(true) + ")" + "</label>");
                 $('#annotator_contributors').append(listItem);
             });
-        }
+        }*/
 
         /*
          // Find the right method, call on correct element

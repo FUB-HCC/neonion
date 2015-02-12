@@ -3,9 +3,9 @@ from rest_framework import routers, viewsets
 from accounts.models import User
 from documents.models import Document
 from neonion.models import Workspace
-from annotationsets.models import AnnotationSet, ConceptSource
+from annotationsets.models import AnnotationSet
 from api import views
-from api.serializers import UserSerializer, AnnotationSetSerializer, ConceptSourceSerializer, \
+from api.serializers import UserSerializer, AnnotationSetSerializer, \
     WorkspaceSerializer, DocumentSerializer, DetailedDocumentSerializer
 
 
@@ -13,13 +13,6 @@ from api.serializers import UserSerializer, AnnotationSetSerializer, ConceptSour
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
-
-# ViewSets for annotation sets.
-class ConceptSourceViewSet(viewsets.ModelViewSet):
-    queryset = ConceptSource.objects.all()
-    serializer_class = ConceptSourceSerializer
-
 
 # ViewSets for document.
 class DocumentViewSet(viewsets.ModelViewSet):
@@ -51,7 +44,6 @@ router.register(r'users', UserViewSet)
 router.register(r'documents', DocumentViewSet)
 router.register(r'workspaces', WorkspaceViewSet)
 router.register(r'annotationsets', AnnotationSetViewSet)
-router.register(r'conceptsources', ConceptSourceViewSet)
 
 urlpatterns = patterns('',
     url(r'^', include(router.urls)),

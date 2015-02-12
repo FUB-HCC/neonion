@@ -11,7 +11,7 @@
             {% verbatim %}
             <td><a href='/annotator/{{ annotation.uri }}#{{ annotation.id }}'>{{ annotation.uri }}</a></td>
             <td>{{ annotation.quote }}</td>
-            <td>{{ annotation.created | date :'medium' }}</td>
+            <td>{{ annotation.created | date: "MM/dd/yyyy 'at' h:mma" }}</td>
             {% endverbatim %}
         </tr>
     </tbody>

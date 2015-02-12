@@ -7,40 +7,47 @@
 
 
 {% block content %}
+
     <div>
         <h3>My Annotations</h3>
         <span class="sorting">Sort By
-            <select>
+             <select>
                 <option>Name</option>
                 <option>Date</option>
                 <option>Concept</option>
                 <option>Occurences</option>
-            </select>
+             </select>
         </span>
-        <ul id="annotation-table" class="document-grid" ng-controller="AnnotationStoreCtrl">
-            <li>
-                <a href="{% url 'neonion.views.my_annotations' %}">
-                    <div>
-
-                    </div>
-                </a>
-            </li>
-
-            {% verbatim %}
-            <li ng-repeat="annotation in annotations | filter:{ $ : '{{ request.user.email }}' } | orderBy:'-created'">
-                <button class="fa fa-times" ng-click="removeDocument(document)"></button>
-                <div>
-                    <a href="/annotator/{{ annotation.uri }}#{{ annotation.id }}">
-                        {{ annotation.uri }}
-                    </a>
-                </div>
-                <div>{{ annotation.quote }}</div>
-                <div> Occurences </div>
-                <div> in % Documents </div>
-                <div>{{ annotation.created | date :'medium' }}</div>
-
-            </li>
-            {% endverbatim %}
-        </ul>
     </div>
+
+    <ul id="annotation-table" class="annotation-grid" ng-controller="AnnotationStoreCtrl">
+
+        {% verbatim %}
+        <li ng-repeat="annotation in annotations | orderBy:'-created'">
+            <div>
+                <div class="ann-header">
+                    <a href="/annotator/{{ annotation.uri }}#{{ annotation.id }}">
+                        {{ annotation.quote }}</a>
+                </div>
+                <div class="sub-info">
+                    <a href="/annotator/{{ annotation.uri }}#{{ annotation.id }}">
+                        {{ annotation.rdf.typeof }}</a>
+                </div>
+                <div></div>
+                <div>
+                    <a href="neonion.views.annotations_occurences">%Occurences</a>
+                </div>
+                <div>
+                    <a href="neonion.views.annotations_documents">in % Documents</a>
+                </div>
+                <div></div>
+                <div class="sub-info">
+                    {{ annotation.created | date : "MM/dd/yyyy 'at' h:mma" }}
+                </div>
+            </div>
+        </li>
+        {% endverbatim %}
+
+    </ul>
+
 {% endblock %}

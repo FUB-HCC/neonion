@@ -3117,11 +3117,6 @@ input[type="submit"].btn {
     list-style: none; }
     .nav-vertical ul ul {
       display: none; }
-    .nav-vertical ul li:hover > ul {
-      display: block;
-      font-size: 10px;
-      padding-left: 2em;
-      border-color: #ffffff; }
   .nav-vertical li a {
     border-left: 8px solid #ffffff;
     color: #434346;

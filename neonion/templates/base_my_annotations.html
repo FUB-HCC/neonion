@@ -15,7 +15,7 @@
                 <option>Name</option>
                 <option>Date</option>
                 <option>Concept</option>
-                <option>Occurences</option>
+                <option>Occurrences</option>
              </select>
         </span>
     </div>
@@ -33,7 +33,7 @@
                 </div>
                 <div></div>
                 <div>
-                    <a href="neonion.views.annotations_occurences">{{ occurrence.count }} Occurences</a>
+                    <a href="neonion.views.annotations_occurrences/{{ occurrence.ann }}">{{ occurrence.count }} Occurences</a>
                 </div>
                 <div>
                     <a href="neonion.views.annotations_documents">in {{ occurrence.docs.length }} Documents</a>

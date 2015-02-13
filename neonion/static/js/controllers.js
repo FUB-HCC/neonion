@@ -68,6 +68,40 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
     });
 }]);
 
+neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scope, $http) {
+    "use strict";
+
+    $http.get('/api/store/annotations').success(function(data) {
+        $scope.annotations = data;
+        var occurrences = {};
+
+        data.forEach(function(a) {
+            var annotation = a.quote;
+            // var type = a.typeof;
+            var date = a.created;
+            var key = a.quote;
+            var doc = a.uri;
+
+            if (!(key in occurrences)) {
+                occurrences[key] = {ann: annotation, count:  1, last: date, docs: new Array()};
+            } else {
+                occurrences[key].count++;
+                var parsedDate = Date.parse(date);
+                var parsedOld = Date.parse(occurrences[key].last);
+                if (parsedDate > parsedOld) {
+                    occurrences[key].last = date;
+                }
+            }
+            var dings = occurrences[key].docs;
+
+            if (((occurrences[key].docs).indexOf(doc)) == -1) {
+                occurrences[key].docs.push(doc);
+            }
+        });
+        $scope.occurrences = occurrences;
+    });
+}]);
+
 neonionApp.controller('NamedEntityCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 

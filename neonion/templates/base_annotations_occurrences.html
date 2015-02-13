@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}All Occurrences{% endblock %}
+{% block page_id %}allOccurrences{% endblock %}
+
+
+{% block content %}
+    <div>
+	    <h3>All Occurrences for:</h3>
+            <table>
+    	        <thead>
+    	            <tr>
+    	                <th>Context</th>
+    	                <th>Document</th>
+    	                <th>Date</th>
+    	            </tr>
+    	        </thead>
+                <tbody ng-controller="AnnotationStoreCtrl">
+                    <tr>
+                        <td>a</td>
+                        <td>b</td>
+                        <td>c</td>
+                    </tr>
+                </tbody>
+    	    </table>
+	</div>
+{% endblock %}

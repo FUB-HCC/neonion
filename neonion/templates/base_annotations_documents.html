@@ -27,57 +27,6 @@
 <script language="javascript">
     "use strict";
 
-    $(document).ready(function() {
-        loadDocumentList();
-    });
 
-    function compare_Documents(a,b) {
-      if (a.createdAt < b.createdAt)
-         return -1;
-      if (a.createdAt > b.createdAt)
-        return 1;
-      return 0;
-    }
-
-    function loadDocumentList() {
-        var documentList = [];
-        // load document list
-        $.getJSON("{% url 'api.views.personal_workspace' %}", function(response) {
-            response.documents.forEach(function(entry) {
-                documentList.push( entry );
-            });
-            var today = moment().startOf("day");
-            var todayLabelSet = false;
-            var earlierLabelSet = false;
-            $('#document-table').html('');
-
-            if (documentList.length > 0) {
-                documentList.sort(compare_Documents)
-                .reverse()
-                .forEach(function (entry) {
-                    /* set label for first column (only once for each type) */
-                    var label = '';
-                    if (!todayLabelSet && entry.createdAt >= today) {
-                        label = 'Today';
-                        todayLabelSet = true;
-                    }
-                    if (!earlierLabelSet && entry.createdAt < today) {
-                        label = 'Earlier';
-                        earlierLabelSet = true;
-                    }
-                    /* create element for document list and append it */
-                    var uri = entry.urn.split("/")
-                    var id = uri[uri.length - 1]
-                    var element = $('<li></li>')
-                          .append($('<a href="/annotator/' + id + '"><div>' + entry.title + '</div></a>'));
-                    $('#document-table').append(element);
-                });
-            }
-            else {
-                
-            }
-        });
-    }
-    
 </script>
 {% endblock %}

@@ -38,9 +38,9 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
     "use strict";
 
     $http.get('/api/store/annotations').success(function(data) {
+        console.log(data);
         $scope.annotations = data;
     });
-
 }]);
 
 neonionApp.controller('NamedEntityCtrl', ['$scope', '$http', function ($scope, $http) {

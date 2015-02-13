@@ -42,21 +42,27 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
         $scope.annotations = data;
 
         var occurrences = {};
-        data.forEach(function(a){
-            if (a.rdf != null) {
-                var key = a.quote + a.rdf.typeof;
-            } else {
-                var key = a.quote;
-            }
-            console.log(a);
 
-            if (!occurrences[key]) {
-                occurrences[key] = 1;
+        data.forEach(function(a) {
+
+            var annotation = a.quote;
+            // var type = a.typeof;
+            var date = a.created;
+            var key = a.quote;
+
+            if (!(key in occurrences)) {
+                occurrences[key] = {ann: annotation, count:  1, last: date};
+                console.log("annotation:" + annotation);
             } else {
-                occurrences[key]++;
+                occurrences[key].count++;
+                var parsedDate = Date.parse(date);
+                var parsedOld = Date.parse(occurrences[key].last);
+                if (parsedDate > parsedOld) {
+                    occurrences[key].last = date;
+                }
             }
         });
-        $scope.count = occurrences;
+        $scope.occurrences = occurrences;
         console.log(occurrences);
     });
 }]);

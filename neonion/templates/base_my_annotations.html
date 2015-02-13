@@ -23,24 +23,24 @@
     <ul id="annotation-table" class="annotation-grid" ng-controller="AnnotationStoreCtrl">
 
         {% verbatim %}
-        <li ng-repeat="annotation in annotations | orderBy:'-created'">
+        <li ng-repeat="occurrence in occurrences | orderBy:'-created'">
             <div>
                 <div class="ann-header">
-                    {{ annotation.quote }}
+                    {{ occurrence.ann }}
                 </div>
                 <div class="sub-info">
-                    is {{ annotation.rdf.typeof }}
+                    is Person {{ occurrence.typeof }}
                 </div>
                 <div></div>
                 <div>
-                    <a href="neonion.views.annotations_occurences">%Occurences</a>
+                    <a href="neonion.views.annotations_occurences">{{ occurrence.count }} Occurences</a>
                 </div>
                 <div>
                     <a href="neonion.views.annotations_documents">in % Documents</a>
                 </div>
                 <div></div>
                 <div class="sub-info">
-                    {{ annotation.created | date : "MM/dd/yyyy 'at' h:mma" }}
+                    {{ occurrence.last | date : "MM/dd/yyyy 'at' h:mma" }}
                 </div>
             </div>
         </li>

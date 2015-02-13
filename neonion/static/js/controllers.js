@@ -40,6 +40,24 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
     $http.get('/api/store/annotations').success(function(data) {
         console.log(data);
         $scope.annotations = data;
+
+        var occurrences = {};
+        data.forEach(function(a){
+            if (a.rdf != null) {
+                var key = a.quote + a.rdf.typeof;
+            } else {
+                var key = a.quote;
+            }
+            console.log(a);
+
+            if (!occurrences[key]) {
+                occurrences[key] = 1;
+            } else {
+                occurrences[key]++;
+            }
+        });
+        $scope.count = occurrences;
+        console.log(occurrences);
     });
 }]);
 

@@ -26,12 +26,10 @@
         <li ng-repeat="annotation in annotations | orderBy:'-created'">
             <div>
                 <div class="ann-header">
-                    <a href="/annotator/{{ annotation.uri }}#{{ annotation.id }}">
-                        {{ annotation.quote }}</a>
+                    {{ annotation.quote }}
                 </div>
                 <div class="sub-info">
-                    <a href="/annotator/{{ annotation.uri }}#{{ annotation.id }}">
-                        {{ annotation.rdf.typeof }}</a>
+                    is {{ annotation.rdf.typeof }}
                 </div>
                 <div></div>
                 <div>
@@ -51,3 +49,4 @@
     </ul>
 
 {% endblock %}
+

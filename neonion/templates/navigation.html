@@ -3,7 +3,7 @@
     {% if request.user.is_authenticated %}
         {% url 'neonion.views.home' as url_home %}
         {% url 'neonion.views.my_annotations' as url_my_annotations %}
-        {% url 'neonion.views.annotations_occurences' as url_annotations_occurences %}
+        {% url 'neonion.views.annotations_occurrences' as url_annotations_occurrences %}
         {% url 'neonion.views.annotations_documents' as url_annotations_documents %}
         {% url 'neonion.views.import_document' as url_import %}
         {% url 'neonion.views.load_settings' as url_settings %}
@@ -20,20 +20,6 @@
             <a href="{{ url_my_annotations }}">
                 <span class="fa fa-bookmark fa-fw"></span>My annotations
             </a>
-            <ul class="sub-menu">
-                {# All Occurences #}
-                <li {% if request.path == url_annotations_occurences %}class="active"{% endif %}>
-                    <a href="{{ url_annotations_occurences }}">
-                        All occurences
-                    </a>
-                </li>
-                {# Annotated Documents #}
-                <li {% if request.path == url_annotations_documents %}class="active"{% endif %}>
-                    <a href="{{ url_annotations_documents }}">
-                        Documents
-                    </a>
-                </li>
-            </ul>
         </li>
         {# Import #}
         <li {% if request.path == url_import %}class="active"{% endif %}>

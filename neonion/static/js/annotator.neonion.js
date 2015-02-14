@@ -57,6 +57,7 @@
             adder = this.overrideAdder();
             viewerFields = this.initViewerFields();
             editorFields = {
+                unknownEntity : this.initEditorUnknownEntity(),
                 search: this.initEditorEntitySearch(),
                 create: this.initEditorEntityCreation()
             };
@@ -149,9 +150,40 @@
             };
         };
 
+        this.initEditorUnknownEntity = function() {
+            var field = this.annotator.editor.addField({
+                load : function(field, annotation) {
+                    // add resource uri itself
+                    $(field).children((":first")).replaceWith(Annotator.Plugin.Neonion.prototype.createListItems([
+                    {
+                        uri : selectedType,
+                        label : Annotator.Plugin.Neonion.prototype.literals['en'].unknown + " " + compositor[selectedType].label
+                    }
+                    ], compositor[selectedType].formatter));
+                },
+                submit : function(field, annotation) {
+                    if (!annotation.hasOwnProperty("rdf")) {
+                        annotation.rdf = {};
+                    }
+                    // add user to annotation
+                    annotation.creator = user;
+
+                    // update annotation object
+                    annotation.rdf.typeof = selectedType;
+                    annotation.rdf.label = annotation.quote;
+                }
+            });
+
+            $(field).on("click", "button", function () {
+                $(".annotator-widget").submit();
+            });
+
+            return field;
+        }
+
         // creates the search field in editor
         this.initEditorEntitySearch = function () {
-            // add field containing the suggested ressources
+            // add field containing the suggested resources
             var field = this.annotator.editor.addField({
                 load: function (field, annotation) {
                     // restore type from annotation if provided
@@ -165,18 +197,10 @@
                     $(field).find("#resource-form").submit();
                 },
                 submit: function (field, annotation) {
-                    // add user to annotation
-                    annotation.creator = user;
-
                     if ($(element).data("resource")) {
                         var dataItem = $(element).data("resource");
-                        // update annotation object
-                        annotation.rdf = {
-                            typeof: selectedType,
-                            property: "rdfs:label",
-                            about: dataItem.uri + '',
-                            label: dataItem.label
-                        };
+                        annotation.rdf.sameAs = dataItem.uri + '';
+                        annotation.rdf.label = dataItem.label;
                         // remove from data
                         $(element).data("resource", null);
                     }
@@ -204,17 +228,17 @@
                 // get search term
                 var searchTerm = $(this).find("#resource-search").val();
                 var list = $(this).parent().find("#resource-list");
+
+                // clear list and min-height css property
+                list.css("min-height", "");
+                list.empty();
+
                 if (compositor[selectedType] && compositor[selectedType].hasOwnProperty("search")) {
                     compositor[selectedType].search(searchTerm, function (items) {
                         // store last result set in jQuery data collection
                         $(element).data("results", items);
                         // update score
                         Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence(items);
-                        // add resource uri itself
-                        items.unshift({uri : selectedType, label : Annotator.Plugin.Neonion.prototype.literals['en'].unknown + " " + compositor[selectedType].label});
-                        // clear list and min-height css property
-                        list.css("min-height", "");
-                        list.empty();
                         // create and add items
                         list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, compositor[selectedType].formatter));
                     });
@@ -298,9 +322,9 @@
                             // prefill first field
                             createForm.find("#" + compositor[selectedType].fields[0].name).val(annotation.quote);
                         }
-                        else {
+                        /*else {
                             console.error("No entity field description provided");
-                        }
+                        }*/
                     }
                 }
             });

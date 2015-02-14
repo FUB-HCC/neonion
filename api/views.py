@@ -1,4 +1,5 @@
 import requests
+import json
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -13,7 +14,7 @@ from rest_framework.views import APIView
 from common import uri
 from rest_framework import permissions
 from authentication import UnsafeSessionAuthentication
-
+from common.annotation import add_uri
 
 class WorkspaceDocumentList(APIView):
     def get(self, request, format=None):
@@ -59,10 +60,12 @@ class AnnotationListView(APIView):
 
     def post(self, request, format=None):
         """Creates a new annotation"""
+        annotation = json.loads(request.body)
+        add_uri(annotation)
         # TODO get or create URI according type of resource and attach it to the annotation object
         headers = {'content-type': 'application/json'}
         response = requests.post(settings.ANNOTATION_STORE_URL + '/annotations',
-                                 data=request.body, headers=headers)
+                                 data=json.dumps(annotation), headers=headers)
         return JsonResponse(response.json(), status=201, safe=False)
 
 

@@ -1,7 +1,7 @@
+from django.conf import settings
 
 
 class neonion:
-    NS = "http://vocab.neonion.org/model/"
-    ANNOTATION_SET = NS + "annotationset"
-    CONCEPT = NS + "concept"
-    LINKED_CONCEPT = NS + "linkedconcept"
+    ANNOTATION_SET = settings.NEONION['BASE_NAMESPACE'].rstrip('/') + "/model/annotationset"
+    CONCEPT = settings.NEONION['BASE_NAMESPACE'].rstrip('/') + "/model/concept"
+    LINKED_CONCEPT = settings.NEONION['BASE_NAMESPACE'].rstrip('/') + "/model/linkedconcept"

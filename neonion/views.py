@@ -14,8 +14,6 @@ from pyelasticsearch import ElasticSearch
 from documents.models import Document
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from annotationsets.models import AnnotationSet
-from neonion.models import Workspace
 
 
 # Create your views here.

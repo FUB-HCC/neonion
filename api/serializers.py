@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 class LinkedConceptSerializer(serializers.ModelSerializer):
     class Meta:
         model = LinkedConcept
-        fields = ('uri', 'label', 'comment', 'linked_type', 'provider_class')
+        fields = ('uri', 'label', 'comment', 'linked_type', 'type', 'provider_class')
 
 
 # Serializers define the API representation.
@@ -25,7 +25,7 @@ class ConceptSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Concept
-        fields = ('uri', 'label', 'comment', 'additional_type', 'linked_concepts')
+        fields = ('uri', 'label', 'comment', 'additional_type', 'type', 'linked_concepts')
 
 
 # Serializers define the API representation.

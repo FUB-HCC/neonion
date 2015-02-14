@@ -11,8 +11,9 @@ def generate_uri(resource_type, name=None):
         # generate uuid from provided name
         resource_id = uuid.uuid5(uuid.NAMESPACE_URL, str(name)).hex
 
+    concept_name = resource_type.rstrip('/').rsplit('/', 1)[1]
     return '{}/{}/{}'.format(
         settings.NEONION['BASE_NAMESPACE'].rstrip('/'),
-        resource_type,
+        concept_name,
         resource_id
     )

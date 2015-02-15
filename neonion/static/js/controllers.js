@@ -38,13 +38,13 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
     "use strict";
 
     $http.get('/api/store/annotations').success(function(data) {
-        $scope.annotations = data;
         var occurrences = {};
 
         data.forEach(function(a) {
             var annotation = a.quote;
             // var type = a.typeof;
             var date = a.created;
+            // erweitern wenn typeof nicht mehr zu Fehler führt
             var key = a.quote;
             var doc = a.uri;
 
@@ -65,6 +65,23 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
             }
         });
         $scope.occurrences = occurrences;
+    });
+}]);
+
+neonionApp.controller('qq', ['$scope', '$http', function ($scope, $http) {
+    "use strict";
+
+    $http.get('/api/store/annotations').success(function (data) {
+        var ann_docs = [];
+
+        data.forEach(function(a) {
+            var text = a.uri;
+            if (!(text in ann_docs)) {
+                ann_docs.push(text);
+            }
+        });
+        $scope.ann_docs = ann_docs;
+        console.log(ann_docs);
     });
 }]);
 

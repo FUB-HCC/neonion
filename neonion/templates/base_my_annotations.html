@@ -9,14 +9,12 @@
 {% block content %}
 
     <div>
+        {% url 'neonion.views.annotations_occurrences' as url_annotations_occurrences %}
+        {% url 'neonion.views.ann_documents' as url_ann_documents %}
+
         <h3>My Annotations</h3>
-        <span class="sorting">Sort By
-             <select>
-                <option>Name</option>
-                <option>Date</option>
-                <option>Concept</option>
-                <option>Occurrences</option>
-             </select>
+        <span {% if request.path == url_ann_documents %}class="active"{% endif %}>
+            <a href="{{ url_ann_documents }}">Documents</a>
         </span>
     </div>
 
@@ -32,11 +30,11 @@
                     is Person {{ occurrence.typeof }}
                 </div>
                 <div></div>
-                <div>
-                    <a href="neonion.views.annotations_occurrences/{{ occurrence.ann }}">{{ occurrence.count }} Occurences</a>
+                <div {% if request.path == url_annotations_occurrences %}class="active"{% endif %}>
+                    <a href="{{ url_annotations_occurrences }}{{ occurrence.ann }}">{{ occurrence.count }} Occurrences</a>
                 </div>
-                <div>
-                    <a href="neonion.views.annotations_documents">in {{ occurrence.docs.length }} Documents</a>
+                <div {% if request.path == url_ann_documents %}class="active"{% endif %}>
+                    <a href="{{ url_ann_documents }}">in {{ occurrence.docs.length }} Documents</a>
                 </div>
                 <div></div>
                 <div class="sub-info">
@@ -47,6 +45,4 @@
         {% endverbatim %}
 
     </ul>
-
 {% endblock %}
-

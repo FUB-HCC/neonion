@@ -68,7 +68,7 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
     });
 }]);
 
-neonionApp.controller('qq', ['$scope', '$http', function ($scope, $http) {
+neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
     $http.get('/api/store/annotations').success(function (data) {

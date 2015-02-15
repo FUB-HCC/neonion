@@ -53,7 +53,7 @@ def annotations_occurrences(request, quote):
 
 
 @login_required
-def annotations_documents(request):
+def ann_documents(request):
     return render_to_response('base_annotations_documents.html', {}, context_instance=RequestContext(request))
 
 

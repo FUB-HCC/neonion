@@ -39,5 +39,13 @@
 
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />
 
+    <!-- Include the hashgrid script -->
+    <script type="text/javascript" src="{% static 'js/hashgrid.js' %}"></script>
+
+    <!-- Kick hashgrid into action -->
+    <script type="text/javascript">
+      var grid = new hashgrid({ numberOfGrids: 2 });
+    </script>
+
     {% block scripts %}{% endblock %}
 </body>

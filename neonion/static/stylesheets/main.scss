@@ -20,3 +20,9 @@
 @import "partials/annotator";
 @import "partials/messages";
 @import "partials/tables";
+
+
+
+// TODO: delete in production!
+// only for development, not for production
+@import "vendor/hashgrid"; 

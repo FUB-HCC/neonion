@@ -2,37 +2,60 @@
   @include list-reset;
 
   li {
-    display: block;
-    a {
-      background-color: $white;
-      border: 1px solid $silver;
-      color: $ship-gray;
-      float: left; 
-      height: 7*$baseline;
-      margin-left: $column-gap;
-      margin-bottom: $baseline;
-      text-decoration: none;
-      width: 3*$column + 2*$column-gap;
+    background-color: $white;
+    border: 1px solid $silver;
+    float: left;
+    height: 7*$baseline;
+    margin-left: $column-gap;
+    margin-bottom: $baseline;
+    width: 3*$column + 2*$column-gap;
+
+    &:hover { border-color: $manatee; }
+  }
+
+ a {
+    color: $ship-gray;
+    text-decoration: none;
+
+    &:hover { color: $black; }
+
+    &.document-grid-content {
+      display: block;
+      height: 5*$baseline;
+      padding: $half-baseline $column-gap/2 0 $column-gap/2;
+      text-align: center;
 
       div {
-        text-overflow: ellipsis;
         overflow: hidden;
-        display: block;
-        margin: $half-baseline $column-gap/2;
-        text-align: center;
+        height: 4*$baseline;
       }
 
-      span {
-        color: $tangerine;
-        display: block;
-        font-size: 42px;
-        line-height: 3*$baseline;
-      }
+      &.upload {
+        height: 7*$baseline;
 
-      &:hover {
-        border-color: $manatee;
-        color: $black;
+        span{
+          color: $tangerine;
+          display: block;
+          font-size: 42px;
+          line-height: 3*$baseline;
+        }
       }
+    }
+  }
+
+  .document-grid-actions {
+    border-top: 1px dotted $silver;
+    padding: $half-baseline $column-gap/2;
+    position: relative;
+
+    span {
+      color: $silver;
+      cursor: pointer;
+      line-height: $baseline;
+      position: absolute;
+      right: $column-gap/2;
+
+      &:hover { color: $black; }
     }
   }
 }

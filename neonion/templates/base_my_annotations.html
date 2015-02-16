@@ -24,7 +24,7 @@
                     {{ occurrence.ann }}
                 </div>
                 <div class="sub-info">
-                    is Person {{ occurrence.typeof }}
+                    is {{ occurrence.typeof }}
                 </div>
                 <div></div>
                 <div {% if request.path == url_annotations_occurrences %}class="active"{% endif %}>

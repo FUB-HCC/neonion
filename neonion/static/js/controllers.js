@@ -46,10 +46,11 @@ neonionApp.controller('AnnotationSetCtrl', ['$scope', '$http', function ($scope,
 neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
-    $http.get('/api/store/annotations').success(function(data) {
+    $http.get('/api/store/filter').success(function(data) {
         var occurrences = {};
+        var filterUserData = data.rows;
 
-        data.forEach(function(a) {
+        filterUserData.forEach(function(a) {
             var key = a.quote;
             var annotation = a.quote;
             // var type = a.typeof;
@@ -80,10 +81,11 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
 neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
-    $http.get('/api/store/annotations').success(function (data) {
+    $http.get('/api/store/filter').success(function (data) {
         var ann_occur = {};
+        var filterUserData = data.rows;
 
-        data.forEach(function(a) {
+        filterUserData .forEach(function(a) {
             // context variable here
             var key = a.id;
             var text = a.uri;
@@ -99,10 +101,11 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', function ($scope, $htt
 neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
-    $http.get('/api/store/annotations').success(function (data) {
+    $http.get('/api/store/filter').success(function (data) {
         var ann_docs = [];
+        var filterUserData = data.rows;
 
-        data.forEach(function(a) {
+        filterUserData .forEach(function(a) {
             var text = a.uri;
             if (!(text in ann_docs)) {
                 ann_docs.push(text);

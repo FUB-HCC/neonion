@@ -8,18 +8,18 @@
 
 {% block content %}
     <div>
-        <h3>Annotated Documents for: </h3>
-        <ul id="document-table" class="document-grid">
-            <li><span class="fa fa-spinner fa-spin"></span> Loading...</li>
-        </ul>
+        <h3>Annotated Documents</h3>
     </div>
-{% endblock %}
 
+    <ul id="document-table" class="document-grid" ng-controller="AnnDocsCtrl">
 
-{% block scripts %}
-<script language="javascript">
-    "use strict";
+        {% verbatim %}
+        <li ng-repeat="doc in ann_docs track by $index | orderBy:'-created'">
+            <a href="/annotator/">
+                <div>{{ doc }}</div>
+            </a>
+        </li>
+        {% endverbatim %}
 
-
-</script>
+    </ul>
 {% endblock %}

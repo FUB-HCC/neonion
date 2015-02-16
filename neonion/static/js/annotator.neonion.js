@@ -196,6 +196,11 @@
                             about: dataItem.uri + '',
                             label: dataItem.label
                         };
+                        // update context information
+                        annotation.context = {
+                            beforeStartOffset: (annotation.ranges.startOffset - 30),
+                            afterEndOffset: (annotation.ranges.endOffset + 30)
+                        };
                         // remove from data
                         $(element).data("resource", null);
                     }

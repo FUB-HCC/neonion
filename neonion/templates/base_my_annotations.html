@@ -13,9 +13,6 @@
         {% url 'neonion.views.ann_documents' as url_ann_documents %}
 
         <h3>My Annotations</h3>
-        <span {% if request.path == url_ann_documents %}class="active"{% endif %}>
-            <a href="{{ url_ann_documents }}">Docs</a>
-        </span>
     </div>
 
     <ul id="annotation-table" class="annotation-grid" ng-controller="AnnotationStoreCtrl">
@@ -31,10 +28,10 @@
                 </div>
                 <div></div>
                 <div {% if request.path == url_annotations_occurrences %}class="active"{% endif %}>
-                    <a href="{{ url_annotations_occurrences }}{{ occurrence.ann }}">{{ occurrence.count }} Occurrences</a>
+                    <a href="/annotations_occurrences/{{ occurrence.ann }}">{{ occurrence.count }} Occurrences</a>
                 </div>
                 <div {% if request.path == url_ann_documents %}class="active"{% endif %}>
-                    <a href="{{ url_ann_documents }}">in {{ occurrence.docs.length }} Documents</a>
+                    <a href="/ann_documents">in {{ occurrence.docs.length }} Documents</a>
                 </div>
                 <div></div>
                 <div class="sub-info">

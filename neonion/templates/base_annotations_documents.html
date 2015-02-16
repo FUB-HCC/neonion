@@ -15,7 +15,7 @@
 
         {% verbatim %}
         <li ng-repeat="doc in ann_docs track by $index | orderBy:'-created'">
-            <a href="/annotator/">
+            <a href="/annotator/{{document.urn}}">
                 <div>{{ doc }}</div>
             </a>
         </li>

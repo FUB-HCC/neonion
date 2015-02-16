@@ -51,15 +51,15 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
         var filterUserData = data.rows;
 
         filterUserData.forEach(function(a) {
-            var key = a.quote;
-            var annotation = a.quote;
-            // var type = a.typeof;
+            var rdf = a.rdf;
+            var key = a.quote + rdf;
+            var ann = a.quote;
+            var type = rdf.typeof;
             var date = a.created;
-            // erweitern wenn typeof nicht mehr zu Fehler führt
             var doc = a.uri;
 
             if (!(key in occurrences)) {
-                occurrences[key] = {ann: annotation, count:  1, last: date, docs: new Array()};
+                occurrences[key] = {ann: ann, count:  1, typeof: type, last: date, docs: new Array()};
             } else {
                 occurrences[key].count++;
                 var parsedDate = Date.parse(date);
@@ -85,7 +85,7 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', function ($scope, $htt
         var ann_occur = {};
         var filterUserData = data.rows;
 
-        filterUserData .forEach(function(a) {
+        filterUserData.forEach(function(a) {
             // context variable here
             var key = a.id;
             var text = a.uri;
@@ -105,7 +105,7 @@ neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', function ($scope, $http
         var ann_docs = [];
         var filterUserData = data.rows;
 
-        filterUserData .forEach(function(a) {
+        filterUserData.forEach(function(a) {
             var text = a.uri;
             if (!(text in ann_docs)) {
                 ann_docs.push(text);

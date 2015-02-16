@@ -37,6 +37,12 @@ p {
     height: 117px; }
   .main .content {
     margin-left: 54px; }
+    .main .content div > h3 {
+      display: inline-block; }
+    .main .content div span {
+      margin-left: 30px; }
+    .main .content div .sorting {
+      float: right; }
 
 #page-signin .main, #page-signup .main {
   width: 540px; }
@@ -130,8 +136,7 @@ a {
 /**
  * Improve readability when focused and also mouse hovered in all browsers.
  */
-a:active,
-a:hover {
+a:hover, a:active, a:focus {
   outline: 0; }
 
 /* Text-level semantics
@@ -3110,6 +3115,8 @@ input[type="submit"].btn {
     margin: 0;
     padding: 0;
     list-style: none; }
+    .nav-vertical ul ul {
+      display: none; }
   .nav-vertical li a {
     border-left: 8px solid #ffffff;
     color: #434346;
@@ -3182,6 +3189,48 @@ input[type="submit"].btn {
     .document-list li.ui-selected {
       background-color: #008df3;
       color: #ffffff; }
+
+.annotation-grid {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+  .annotation-grid li {
+    display: block; }
+    .annotation-grid li div {
+      background-color: #ffffff;
+      border: 1px solid #cdcdcd;
+      color: #434346;
+      float: left;
+      display: block;
+      margin: 13px 8px;
+      margin-left: 16px;
+      margin-bottom: 26px;
+      width: 146px;
+      height: 182px;
+      font-size: 16px;
+      line-height: 26px;
+      font-weight: 300; }
+      .annotation-grid li div div {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        text-align: center;
+        height: 26px;
+        width: 146px;
+        font-size: 16px;
+        margin: 0px 0px 0px 0px;
+        border: none;
+        text-decoration: none; }
+        .annotation-grid li div div a:link, .annotation-grid li div div a:visited {
+          text-decoration: none;
+          color: #434346; }
+        .annotation-grid li div div a:hover {
+          border-color: #8e8e93;
+          color: #000000;
+          text-decoration: none; }
+  .annotation-grid .ann-header {
+    font-weight: bold; }
+  .annotation-grid .sub-info {
+    font-size: 12px; }
 
 .pull-right {
   float: right; }
@@ -3278,8 +3327,7 @@ input[type="text"], input[type="password"], input[type="email"] {
   line-height: 26px;
   padding: 12px 0; }
   input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
-    border-bottom-color: #008df3;
-    outline: 0; }
+    border-bottom-color: #008df3; }
   input[type="text"]:valid + label, input[type="text"]:focus + label, input[type="password"]:valid + label, input[type="password"]:focus + label, input[type="email"]:valid + label, input[type="email"]:focus + label {
     cursor: default;
     font-size: 14px;

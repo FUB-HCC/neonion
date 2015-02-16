@@ -1,0 +1,18 @@
+<table ng-controller="NamedEntityCtrl">
+    <thead>
+        <th>Model</th>
+        <th>Parameter</th>
+        <th>Value</th>
+    </thead>
+    <tbody ng-repeat="model in models">
+        {% verbatim %}
+        <tr>
+            <th rowspan="12">{{ model.identifier }}</th>
+        </tr>
+        <tr ng-repeat="(k,v) in model">
+            <td>{{ k }}</td>
+            <td>{{ v }}</td>
+        </tr>
+        {% endverbatim %}
+    </tbody>
+</table>

@@ -5,10 +5,9 @@
 {% block title %}Settings{% endblock %}
 {% block page_id %}settings{% endblock %}
 
-
 {% block content %}
       <div>
-        <h3>Manage AnnotationSets</h3>
+        <h3>My AnnotationSets</h3>
         <form action="{% url 'neonion.views.load_settings' %}" method="post">
             {% csrf_token %}
             <table>
@@ -42,34 +41,8 @@
             </table>
             <div class="form-buttons"><button class="button button-primary pull-right" id="btn-import">Save</button></div>
         </form>
-      <h3>My Annotations</h3>
-      <table id="tbl-annotations">
-          <thead>
-            <tr>
-                <th>Document</th>
-                <th>Date</th>
-            </tr>
-          </thead>
-      </table>
+
+        <h3>NER Settings</h3>
+        {% include 'partials/ner_models.html' %}
     </div>
-{% endblock %}
-
-{% block scripts %}
-<script language="javascript">
-    "use strict";
-
-    $(document).ready(function() {
-        // better replace this part by angular js
-        $.getJSON("{% url 'store.views.filter_annotations' %}", function(response) {
-            $.each(response.rows, function(index, value){
-                $("#tbl-annotations").append(
-                    "<tr><td><a href='/annotator/" + value['uri'] + "'>" + value['uri'] + "</a></td>" +
-                    "<td>" + value['created'] + "</td>" +
-                    "</tr>"
-                );
-            });
-        });
-    });
-
-</script>
 {% endblock %}

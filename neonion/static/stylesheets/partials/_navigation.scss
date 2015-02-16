@@ -6,6 +6,11 @@
 
   ul {
     @include list-reset;
+
+    
+    ul {
+      display: none;
+    }
   }
 
   li {

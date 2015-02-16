@@ -41,7 +41,7 @@ def download_file(url, outputfolder, logger):
                     actual_time = datetime.now()
                     delta = actual_time - last_time
                     logger.info(
-                        '{done:,d} MB ({done_percent:.{digits}f}%, {speed:.{digits}f} KB/s)'
+                        '{done:>5,d} MB ({done_percent:>6.{digits}f}%, {speed:>10.{digits}f} KB/s)'
                         .format(
                             done=downloaded / (1048576),
                             done_percent=100 * float(downloaded) / download_size,

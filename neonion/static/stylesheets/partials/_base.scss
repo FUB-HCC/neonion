@@ -54,6 +54,19 @@ p {
 
   .content {
     margin-left: $column + $column-gap;
+
+    div > h3 {
+      display: inline-block;
+    }
+    
+    div {
+      span {
+        margin-left: 30px;
+      }
+      .sorting {
+        float: right;
+      }
+    }
   }
 }
 

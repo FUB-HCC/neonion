@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}My Annotations{% endblock %}
+{% block page_id %}myAnnotations{% endblock %}
+
+
+{% block content %}
+
+    <div>
+        {% url 'neonion.views.annotations_occurrences' as url_annotations_occurrences %}
+        {% url 'neonion.views.ann_documents' as url_ann_documents %}
+
+        <h3>My Annotations</h3>
+        <span {% if request.path == url_ann_documents %}class="active"{% endif %}>
+            <a href="{{ url_ann_documents }}">Docs</a>
+        </span>
+    </div>
+
+    <ul id="annotation-table" class="annotation-grid" ng-controller="AnnotationStoreCtrl">
+
+        {% verbatim %}
+        <li ng-repeat="occurrence in occurrences | orderBy:'-created'">
+            <div>
+                <div class="ann-header">
+                    {{ occurrence.ann }}
+                </div>
+                <div class="sub-info">
+                    is Person {{ occurrence.typeof }}
+                </div>
+                <div></div>
+                <div {% if request.path == url_annotations_occurrences %}class="active"{% endif %}>
+                    <a href="{{ url_annotations_occurrences }}{{ occurrence.ann }}">{{ occurrence.count }} Occurrences</a>
+                </div>
+                <div {% if request.path == url_ann_documents %}class="active"{% endif %}>
+                    <a href="{{ url_ann_documents }}">in {{ occurrence.docs.length }} Documents</a>
+                </div>
+                <div></div>
+                <div class="sub-info">
+                    {{ occurrence.last | date : "MM/dd/yyyy 'at' h:mma" }}
+                </div>
+            </div>
+        </li>
+        {% endverbatim %}
+
+    </ul>
+{% endblock %}

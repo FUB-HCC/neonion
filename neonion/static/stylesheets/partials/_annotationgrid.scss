@@ -1,0 +1,59 @@
+.annotation-grid {
+  @include list-reset;
+
+  li {
+    display: block;
+
+    div {
+      background-color: $white;
+      border: 1px solid $silver;
+      color: $ship-gray;
+
+      float: left;
+      display: block;
+      margin: $half-baseline $column-gap/2;
+      margin-left: $column-gap;
+      margin-bottom: $baseline;
+
+      width: 3*$column + 2*$column-gap;
+      height: 7*$baseline;
+
+      font-size: $base-font-size;
+      line-height: $baseline;
+      font-weight: 300;
+
+      div {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        text-align: center;
+
+        height: $baseline;
+        width: 3*$column + 2*$column-gap;
+
+        font-size: 16px;
+        margin: 0px 0px 0px 0px;
+        border: none;
+        text-decoration: none;
+
+        a:link, a:visited {
+          text-decoration: none;
+          color: $ship-gray;
+        }
+
+        a:hover {
+          border-color: $manatee;
+          color: $black;
+          text-decoration: none;
+        }
+      }
+    }
+  }
+
+  .ann-header {
+    font-weight: bold;
+  }
+
+  .sub-info {
+    font-size: 12px;
+  }
+}

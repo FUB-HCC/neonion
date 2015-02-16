@@ -101,7 +101,7 @@ def store_root(request):
 
 @api_view(["GET"])
 def store_filter_annotations(request):
-    response = requests.get(settings.ANNOTATION_STORE_URL + '/search?creator.email=' + request.user.email)
+    response = requests.get(settings.ANNOTATION_STORE_URL + '/search?creator.email=' + request.user.email + "&limit=9999")
     return JsonResponse(response.json(), safe=False)
 
 

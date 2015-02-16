@@ -2,7 +2,7 @@ from rest_framework import serializers
 from accounts.models import User
 from documents.models import Document
 from neonion.models import Workspace
-from annotationsets.models import AnnotationSet, ConceptSource
+from annotationsets.models import AnnotationSet, Concept, LinkedConcept, AnnotationSetManager
 
 
 # Serializers define the API representation.
@@ -13,19 +13,31 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 # Serializers define the API representation.
-class ConceptSourceSerializer(serializers.ModelSerializer):
+class LinkedConceptSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ConceptSource
-        fields = ('linked_concept_uri', 'provider', 'class_name')
+        model = LinkedConcept
+        fields = ('uri', 'label', 'comment', 'linked_type', 'type', 'provider_class')
+
+
+# Serializers define the API representation.
+class ConceptSerializer(serializers.ModelSerializer):
+    linked_concepts = LinkedConceptSerializer(many=True)
+
+    class Meta:
+        model = Concept
+        fields = ('uri', 'label', 'comment', 'additional_type', 'type', 'linked_concepts')
 
 
 # Serializers define the API representation.
 class AnnotationSetSerializer(serializers.ModelSerializer):
-    sources = ConceptSourceSerializer(many=True)
+    concepts = ConceptSerializer(many=True)
 
     class Meta:
         model = AnnotationSet
-        fields = ('uri', 'label', 'allow_creation', 'sources')
+        fields = ('uri', 'label', 'comment', 'type', 'concepts')
+
+    def create(self, validated_data):
+        return AnnotationSet.objects.create_set(**validated_data)
 
 
 # Serializers define the API representation.
@@ -46,8 +58,8 @@ class DetailedDocumentSerializer(DocumentSerializer):
 class WorkspaceSerializer(serializers.HyperlinkedModelSerializer):
     owner = UserSerializer()
     documents = DocumentSerializer(many=True)
-    annotation_sets = AnnotationSetSerializer(many=True)
+    active_annotationset = AnnotationSetSerializer()
 
     class Meta:
         model = Workspace
-        fields = ('owner', 'documents', 'annotation_sets')
+        fields = ('owner', 'documents', 'active_annotationset')

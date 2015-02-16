@@ -8,39 +8,7 @@
 {% block content %}
       <div>
         <h3>My AnnotationSets</h3>
-        <form action="{% url 'neonion.views.load_settings' %}" method="post">
-            {% csrf_token %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Active</th>
-                        <th>AnnotationSet</th>
-                        <th>URI</th>
-                        <th>Linked concepts</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for k,v in annotation_sets.items %}
-                    <tr>
-                        <td>
-                            <input type="checkbox" name="as" value="{{ k.uri }}" {% if v %} checked {% endif %}>
-                        </td>
-                    <td>{{ k.label }}</td>
-                    <td>{{ k.uri }}</td>
-                    <td>
-                             <ul class="list-reset">
-                            {% for link in k.sources.all %}
-                                <li><b>{{ link.provider }}</b> - {{ link.linked_concept_uri }}</li>
-                            {% endfor %}
-                            </ul>
-   
-                    </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <div class="form-buttons"><button class="button button-primary pull-right" id="btn-import">Save</button></div>
-        </form>
+        {% include 'partials/annotationsets.html' %}
 
         <h3>NER Settings</h3>
         {% include 'partials/ner_models.html' %}

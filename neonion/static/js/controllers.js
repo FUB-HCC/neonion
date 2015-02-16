@@ -34,6 +34,15 @@ neonionApp.controller('WorkspaceImportCtrl', ['$scope', '$http', 'DocumentServic
 
 }]);
 
+neonionApp.controller('AnnotationSetCtrl', ['$scope', '$http', function ($scope, $http) {
+    "use strict";
+
+    $http.get('/api/annotationsets').success(function(data) {
+        $scope.annotationsets = data;
+    });
+
+}]);
+
 neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
@@ -103,6 +112,79 @@ neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', function ($scope, $http
     });
 }]);
 
+neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $http) {
+    "use strict";
+
+    $scope.setupAnnotator = function(urn, userId) {
+        $("#document-body").annotator()
+        .annotator('addPlugin', 'Neonion', {
+            whoamiUrl: "/accounts/me"
+        })
+        .annotator('addPlugin', 'Store', {
+            prefix: '/api/store',
+            annotationData: {'uri': urn},
+            // filter annotations by creator
+            loadFromSearch: {
+                'uri': urn,
+                'creator.email': userId,
+                'limit': 999999
+            }
+        });
+
+        $scope.annotator = $("#document-body").data("annotator");
+        $scope.loadAnnotationSet();
+
+        /*annotator.subscribe("annotationCreated", function (annotation) {
+        notifyEndpoint(annotation);
+        //annotationChanged(annotation);
+        });*/
+
+        // TODO raise refresh list when store plugin has finished async request
+        /*window.setTimeout(function() {
+        refreshContributors();
+        var users = Annotator.Plugin.Neonion.prototype.getContributors();
+        users.forEach(function(user) {
+        var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations(user);
+        annotations.forEach(function(ann){
+        colorizeAnnotation(ann);
+        });
+        });
+        }, 1000);*/
+    };
+
+    $scope.loadAnnotationSet = function() {
+        $http.get('/api/annotationsets').success(function (data) {
+            $scope.annotationsets = data;
+            if ($scope.annotationsets.length > 0) {
+                var sets = {};
+                $scope.annotationsets[0].concepts.forEach(function (item) {
+                    if (item.uri == 'http://neonion.org/concept/person') {
+                        sets[item.uri] = {
+                            label: item.label,
+                            create: Annotator.Plugin.Neonion.prototype.create.createPerson,
+                            search: Annotator.Plugin.Neonion.prototype.search.searchPerson,
+                            formatter: Annotator.Plugin.Neonion.prototype.formatter.formatPerson,
+                            decorator: Annotator.Plugin.Neonion.prototype.decorator.decoratePerson
+                        };
+                    }
+                    else if (item.uri == 'http://neonion.org/concept/institute') {
+                        sets[item.uri] = {
+                            label: item.label,
+                            create: Annotator.Plugin.Neonion.prototype.create.createInstitute,
+                            search: Annotator.Plugin.Neonion.prototype.search.searchInstitute,
+                            formatter: Annotator.Plugin.Neonion.prototype.formatter.formatInstitute,
+                            decorator: Annotator.Plugin.Neonion.prototype.decorator.decorateInstitute
+                        };
+                    }
+                });
+
+                $scope.annotator.plugins.Neonion.setCompositor(sets);
+            }
+        });
+    };
+
+}]);
+
 neonionApp.controller('NamedEntityCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
@@ -119,5 +201,6 @@ neonionApp.controller('NamedEntityCtrl', ['$scope', '$http', function ($scope, $
             learnNetworkInitialize: 'Standard',
             predictorLearn: false,
             learnNetworkLearn: false
-        }];
+        }
+    ];
 }]);

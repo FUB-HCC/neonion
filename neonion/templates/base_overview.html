@@ -9,14 +9,19 @@
 {% block content %}
     <ul id="document-table" class="document-grid" ng-controller="WorkspaceDocumentCtrl">
         <li>
-            <a href="{% url 'neonion.views.import_document' %}"><div><span class="fa fa-file-text-o"></span>Import to Workspace</div></a>
+            <a href="{% url 'neonion.views.import_document' %}" class="document-grid-content upload">
+                <span class="fa fa-file-text-o"></span>Import to Workspace
+            </a>
         </li>
         {% verbatim %}
         <li ng-repeat="document in documents | orderBy:'-created'">
-            <button class="fa fa-times" ng-click="removeDocument(document)"></button>
-            <a href="/annotator/{{document.urn}}">
+            <a href="/annotator/{{document.urn}}" class="document-grid-content">
                 <div>{{document.title}}</div>
             </a>
+            <div class="document-grid-actions">
+                <span class="fa fa-trash-o" ng-click="removeDocument(document)"></span>
+            </div>
+
         </li>
         {% endverbatim %}
     </ul>

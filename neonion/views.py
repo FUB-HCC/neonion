@@ -14,8 +14,6 @@ from pyelasticsearch import ElasticSearch
 from documents.models import Document
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from annotationsets.models import AnnotationSet
-from neonion.models import Workspace
 
 
 # Create your views here.
@@ -27,7 +25,6 @@ def home(request):
 @login_required
 def annotator(request, doc_urn):
     doc = get_object_or_404(Document, urn=doc_urn)
-    workspace = Workspace.objects.get_workspace(owner=request.user)
 
     data = {
         'urn': doc_urn,
@@ -36,7 +33,6 @@ def annotator(request, doc_urn):
         'endpoint_url': '/endpoint/',
         'store_url': settings.ANNOTATION_STORE_URL,
         'ner_url': settings.NER_SERVICE_URL,
-        'annotation_sets': workspace.annotation_sets.all()
     }
     return render_to_response('base_annotator.html', data, context_instance=RequestContext(request))
 
@@ -59,30 +55,7 @@ def ann_documents(request):
 
 @login_required
 def load_settings(request):
-    workspace = Workspace.objects.get_workspace(owner=request.user)
-
-    # update active annotation sets in current workspace
-    if request.method == 'POST':
-        # better move to update settings view???
-        if 'as' in request.POST:
-            active_sets = request.POST.getlist('as')
-        else:
-            active_sets = []
-
-        for annotation_set in AnnotationSet.objects.all():
-            if annotation_set.uri in active_sets:
-                workspace.annotation_sets.add(annotation_set)
-            else:
-                workspace.annotation_sets.remove(annotation_set)
-
-    annotation_sets = {}
-    for annotation_set in AnnotationSet.objects.all():
-        annotation_sets[annotation_set] = workspace.annotation_sets.all().filter(uri=annotation_set.uri).exists()
-
-    data = {
-        'annotation_sets': annotation_sets
-    }
-    return render_to_response('base_settings.html', data, context_instance=RequestContext(request))
+    return render_to_response('base_settings.html', context_instance=RequestContext(request))
 
 
 @login_required

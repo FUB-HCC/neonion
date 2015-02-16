@@ -4,7 +4,7 @@
 /*global Annotator:false */
 
 /**
- * @preserve Copyright 2014 HCC FU Berlin.
+ * @preserve Copyright 2015 HCC FU Berlin.
  * write licence text
  */
 (function () {
@@ -31,8 +31,7 @@
             compositor = {},
             selectedType = null,
             viewerFields = {},
-            editorFields = {},
-            visibleAnnotationSets = [];
+            editorFields = {}
 
         // properties
         this.setUser = function (userData) {
@@ -43,22 +42,10 @@
         };
         this.setCompositor = function (compositorData) {
             compositor = compositorData;
+            this.applyAnnotationSets(adder, compositor);
         };
         this.getCompositor = function () {
             return compositor;
-        };
-        this.setVisibleAnnotationSets = function (visible) {
-            visibleAnnotationSets = visible;
-            var uri;
-            for (uri in compositor) {
-                if (compositor.hasOwnProperty(uri)) {
-                    compositor[uri].omitAdder = (visible.indexOf(uri) === -1);
-                }
-            }
-            this.applyAnnotationSets(adder, this.getCompositor());
-        };
-        this.getVisibleAnnotationSets = function () {
-            return visibleAnnotationSets;
         };
 
         /**
@@ -70,9 +57,11 @@
             adder = this.overrideAdder();
             viewerFields = this.initViewerFields();
             editorFields = {
+                unknownEntity : this.initEditorUnknownEntity(),
                 search: this.initEditorEntitySearch(),
                 create: this.initEditorEntityCreation()
             };
+            this.setCompositor(this.getCompositor());
 
             // bind events to document
             $(document).bind({
@@ -104,31 +93,24 @@
 
             // create compositor from provided annotation sets
             if (options.hasOwnProperty("annotationSets")) {
-                this.setCompositor(options["annotationSets"]);
+                compositor = options["annotationSets"];
             }
             else {
-               this.setCompositor([]);
+               compositor = {};
             }
 
-            // collect default visible annotation sets
-            for (var uri in compositor) {
-                if (compositor.hasOwnProperty(uri) && !compositor[uri].omitAdder) {
-                    visibleAnnotationSets.push(uri);
-                }
-            }
-            // add additional adder buttons
-            this.applyAnnotationSets(adder, this.getCompositor());
             // catch submit event
             adder.on("click", "button", function () {
                 // set selected type
                 selectedType = $(this).val();
                 // show or hide entity creation field
-                if (compositor[selectedType] && compositor[selectedType].allowCreation) {
+                /*if (compositor[selectedType] && compositor[selectedType].allowCreation) {
                     $(editorFields.create).show();
                 }
                 else {
                     $(editorFields.create).hide();
-                }
+                }*/
+                $(editorFields.create).hide();
             });
             return adder;
         };
@@ -168,9 +150,40 @@
             };
         };
 
+        this.initEditorUnknownEntity = function() {
+            var field = this.annotator.editor.addField({
+                load : function(field, annotation) {
+                    // add resource uri itself
+                    $(field).children((":first")).replaceWith(Annotator.Plugin.Neonion.prototype.createListItems([
+                    {
+                        uri : selectedType,
+                        label : Annotator.Plugin.Neonion.prototype.literals['en'].unknown + " " + compositor[selectedType].label
+                    }
+                    ], compositor[selectedType].formatter));
+                },
+                submit : function(field, annotation) {
+                    if (!annotation.hasOwnProperty("rdf")) {
+                        annotation.rdf = {};
+                    }
+                    // add user to annotation
+                    annotation.creator = user;
+
+                    // update annotation object
+                    annotation.rdf.typeof = selectedType;
+                    annotation.rdf.label = annotation.quote;
+                }
+            });
+
+            $(field).on("click", "button", function () {
+                $(".annotator-widget").submit();
+            });
+
+            return field;
+        }
+
         // creates the search field in editor
         this.initEditorEntitySearch = function () {
-            // add field containing the suggested ressources
+            // add field containing the suggested resources
             var field = this.annotator.editor.addField({
                 load: function (field, annotation) {
                     // restore type from annotation if provided
@@ -184,18 +197,10 @@
                     $(field).find("#resource-form").submit();
                 },
                 submit: function (field, annotation) {
-                    // add user to annotation
-                    annotation.creator = user;
-
                     if ($(element).data("resource")) {
                         var dataItem = $(element).data("resource");
-                        // update annotation object
-                        annotation.rdf = {
-                            typeof: selectedType,
-                            property: "rdfs:label",
-                            about: dataItem.uri + '',
-                            label: dataItem.label
-                        };
+                        annotation.rdf.sameAs = dataItem.uri + '';
+                        annotation.rdf.label = dataItem.label;
                         // remove from data
                         $(element).data("resource", null);
                     }
@@ -223,17 +228,17 @@
                 // get search term
                 var searchTerm = $(this).find("#resource-search").val();
                 var list = $(this).parent().find("#resource-list");
+
+                // clear list and min-height css property
+                list.css("min-height", "");
+                list.empty();
+
                 if (compositor[selectedType] && compositor[selectedType].hasOwnProperty("search")) {
                     compositor[selectedType].search(searchTerm, function (items) {
                         // store last result set in jQuery data collection
                         $(element).data("results", items);
                         // update score
                         Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence(items);
-                        // add resource uri itself
-                        items.unshift({uri : selectedType, label : Annotator.Plugin.Neonion.prototype.literals['en'].unknown + " " + compositor[selectedType].label});
-                        // clear list and min-height css property
-                        list.css("min-height", "");
-                        list.empty();
                         // create and add items
                         list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, compositor[selectedType].formatter));
                     });
@@ -299,7 +304,7 @@
                 load: function (field, annotation) {
                     createForm.hide();
                     createForm.html('');
-                    if (compositor[selectedType] && compositor[selectedType].allowCreation) {
+                    if (compositor[selectedType]) {
                         if (compositor[selectedType].fields) {
                             compositor[selectedType].fields.forEach(function (element, index, array) {
                                 var field = "<label for='" + element.name + "''>" + element.label + "</label>";
@@ -317,9 +322,9 @@
                             // prefill first field
                             createForm.find("#" + compositor[selectedType].fields[0].name).val(annotation.quote);
                         }
-                        else {
+                        /*else {
                             console.error("No entity field description provided");
-                        }
+                        }*/
                     }
                 }
             });
@@ -403,42 +408,11 @@
         applyAnnotationSets: function (adder, compositor) {
             adder.html("");
             for (var uri in compositor) {
-                if (compositor.hasOwnProperty(uri) && !compositor[uri].omitAdder) {
+                if (compositor.hasOwnProperty(uri)) {
                     adder.append("<button class='btn' value='" + uri + "'>" + compositor[uri].label + "</button>");
                 }
             }
         },
-
-        /*defaultCompositor: function () {
-            return {
-                // add compositor for persons
-                "foaf:Person": {
-                    label: Annotator.Plugin.Neonion.prototype.literals['en'].person,
-                    omitAdder: false,
-                    allowCreation: true,
-                    create: Annotator.Plugin.Neonion.prototype.create.createPerson,
-                    search: Annotator.Plugin.Neonion.prototype.search.searchPerson,
-                    formatter: Annotator.Plugin.Neonion.prototype.formatter.formatPerson,
-                    decorator: Annotator.Plugin.Neonion.prototype.decorator.decoratePerson,
-                    fields: [
-                        { name: 'label', label: 'Full name', type: 'text', required: true },
-                        { name: 'descr', label: 'Occupation', type: 'text' },
-                        { name: 'birth', label: 'Date of birth', type: 'date' },
-                        { name: 'death', label: 'Date of death', type: 'date' }
-                    ]
-                },
-                // add compositor for institutes
-                "aiiso:Institution": {
-                    label: Annotator.Plugin.Neonion.prototype.literals['en'].institute,
-                    omitAdder: false,
-                    allowCreation: false,
-                    create: Annotator.Plugin.Neonion.prototype.create.createInstitute,
-                    search: Annotator.Plugin.Neonion.prototype.search.searchInstitute,
-                    formatter: Annotator.Plugin.Neonion.prototype.formatter.formatInstitute,
-                    decorator: Annotator.Plugin.Neonion.prototype.decorator.decorateInstitute
-                }
-            };
-        },*/
 
         getAnnotationHighlights: function () {
             return $(".annotator-hl:not(.annotator-hl-temporary),." + Annotator.Plugin.Neonion.prototype.classes.hide);

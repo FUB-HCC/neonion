@@ -39,7 +39,7 @@ sudo apt-get install oracle-java7-installer
 #### Elasticsearch 1.3
 ```
 wget -qO - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add -
-sudo echo "deb http://packages.elasticsearch.org/elasticsearch/1.3/debian stable main" >> /etc/apt/sources.list
+sudo echo "deb http://packages.elasticsearch.org/elasticsearch/1.3/debian stable main" | sudo tee -a /etc/apt/sources.list
 sudo apt-get update
 sudo apt-get install elasticsearch
 ```

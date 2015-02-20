@@ -10,6 +10,7 @@
     margin-left: $column-gap;
     margin-bottom: $baseline;
     width: 3*$column + 2*$column-gap;
+    text-align: center;
 
     &:hover { border-color: $manatee; }
   }
@@ -24,7 +25,6 @@
       display: block;
       height: 5*$baseline;
       padding: $half-baseline $column-gap/2 0 $column-gap/2;
-      text-align: center;
 
       div {
         overflow: hidden;

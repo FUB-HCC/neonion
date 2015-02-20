@@ -49,8 +49,9 @@ def annotations_occurrences(request, quote):
 
 
 @login_required
-def ann_documents(request):
-    return render_to_response('base_annotations_documents.html', {}, context_instance=RequestContext(request))
+def ann_documents(request, quote):
+    data = { 'annotation': quote }
+    return render_to_response('base_annotations_documents.html', data, context_instance=RequestContext(request))
 
 
 @login_required

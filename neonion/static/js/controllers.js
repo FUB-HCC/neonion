@@ -74,14 +74,13 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
             }
         });
         $scope.occurrences = occurrences;
-        console.log(occurrences);
     });
 }]);
 
 neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
-
-    $http.get('/api/store/filter').success(function (data) {
+    console.log($scope);
+    $http.get('/api/store/search?quote=').success(function (data) {
         var ann_occur = {};
         var filterUserData = data.rows;
 
@@ -100,9 +99,8 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', function ($scope, $htt
             });
         });
         $scope.ann_occur = ann_occur;
+        console.log(ann_occur);
     });
-
-
 }]);
 
 neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', function ($scope, $http) {

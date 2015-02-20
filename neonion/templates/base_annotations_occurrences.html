@@ -21,7 +21,7 @@
             {% verbatim %}
                 <tr ng-repeat="occur in ann_occur | orderBy:'-created'">
                     <td>quote</td>
-                    <td> {{ occur.doc }}</td>
+                    <td> {{ occur.title }}</td>
                     <td> {{ occur.created | date : "MM/dd/yyyy 'at' h:mma"}} </td>
                 </tr>
             {% endverbatim %}

@@ -27,11 +27,11 @@
                     is {{ occurrence.typeof }}
                 </div>
                 <div></div>
-                <div {% if request.path == url_annotations_occurrences %}class="active"{% endif %}>
+                <div>
                     <a href="/annotations_occurrences/{{ occurrence.ann }}">{{ occurrence.count }} Occurrences</a>
                 </div>
-                <div {% if request.path == url_ann_documents %}class="active"{% endif %}>
-                    <a href="/ann_documents">in {{ occurrence.docs.length }} Documents</a>
+                <div>
+                    <a href="/ann_documents/{{ occurrence.ann }}">in {{ occurrence.docs.length }} Documents</a>
                 </div>
                 <div></div>
                 <div class="sub-info">

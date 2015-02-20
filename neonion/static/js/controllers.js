@@ -88,27 +88,35 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', function ($scope, $htt
         filterUserData.forEach(function(a) {
             // context variable here
             var key = a.id;
-            var text = a.uri;
             var date = a.created;
 
-            ann_occur[key] = {doc: text, created: date};
+            ann_occur[key] = {created: date};
+
+            $http.get('/api/documents').success(function (data) {
+                data.forEach(function(a) {
+                    var title = a.title;
+                    ann_occur[key].title = title;
+                });
+            });
         });
         $scope.ann_occur = ann_occur;
-        console.log(ann_occur);
     });
+
+
 }]);
 
 neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
-    $http.get('/api/store/filter').success(function (data) {
-        var ann_docs = [];
-        var filterUserData = data.rows;
+    $http.get('/api/documents').success(function (data) {
+        var ann_docs = {};
 
-        filterUserData.forEach(function(a) {
-            var text = a.uri;
-            if (!(text in ann_docs)) {
-                ann_docs.push(text);
+        data.forEach(function(a) {
+            var urn = a.urn;
+            var title = a.title;
+
+            if (!(urn in ann_docs)) {
+                ann_docs[urn] = {urn: urn, title: title};
             }
         });
         $scope.ann_docs = ann_docs;

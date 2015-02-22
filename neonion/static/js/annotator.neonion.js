@@ -167,10 +167,12 @@
                     }
                     // add user to annotation
                     annotation.creator = user;
-
+                    // add context
+                    annotation.context = Annotator.Plugin.Neonion.prototype.extractSourroundedContent(element, annotation);
                     // update annotation object
                     annotation.rdf.typeof = selectedType;
                     annotation.rdf.label = annotation.quote;
+                    console.log(annotation);
                 }
             });
 
@@ -403,6 +405,44 @@
                 unknownResource: "Unbekannte Ressource",
                 creator: "Erfasser"
             }
+        },
+
+        extractSourroundedContent: function(element, annotation) {
+            var length = 200;
+            var node, contentLeft = '', contentRight = '';
+            // left
+            node = annotation.highlights[0];
+            while(node != element && contentLeft.length < length) {
+                if (node.previousSibling) {
+                    node = node.previousSibling;
+                    // prepend extracted text
+                    contentLeft = $(node).text() + contentLeft; 
+                }
+                else {
+                    node = node.parentNode;
+                }
+            }
+
+            // right
+            node = annotation.highlights[annotation.highlights.length - 1];
+            while(node != element && contentRight.length < length) {
+                if (node.nextSibling) {
+                    node = node.nextSibling;
+                    // append extracted text
+                    contentRight += $(node).text();
+                }
+                else {
+                    node = node.parentNode;
+                }
+            }
+            // replace line feed with space
+            contentLeft = contentLeft.replace(/(\r\n|\n|\r)/gm," ");
+            contentRight = contentRight.replace(/(\r\n|\n|\r)/gm," ");
+
+            return { 
+                left : contentLeft.trimLeft().substr(-length), 
+                right : contentRight.trimRight().substr(0, length) 
+            };
         },
 
         applyAnnotationSets: function (adder, compositor) {

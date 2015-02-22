@@ -9,7 +9,7 @@ def generate_uri(resource_type, name=None):
         resource_id = uuid.uuid1().hex
     else:
         # generate uuid from provided name
-        resource_id = uuid.uuid5(uuid.NAMESPACE_URL, str(name)).hex
+        resource_id = uuid.uuid5(uuid.NAMESPACE_URL, name.encode('utf8', 'replace')).hex
 
     concept_name = resource_type.rstrip('/').rsplit('/', 1)[1]
     return '{}/{}/{}'.format(

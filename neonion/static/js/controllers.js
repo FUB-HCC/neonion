@@ -120,6 +120,10 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $ht
         .annotator('addPlugin', 'Neonion', {
             whoamiUrl: "/accounts/me"
         })
+        .annotator('addPlugin', 'NER', {
+            service : 'http://localhost:5000',
+            uri : urn
+        })
         .annotator('addPlugin', 'Store', {
             prefix: '/api/store',
             annotationData: {'uri': urn},

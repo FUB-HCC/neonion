@@ -32,6 +32,7 @@
 {% block scripts %}
     <script type="text/javascript" src="{% static 'js/annotator.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/annotator.neonion.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/annotator.ner.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/annotator.store.min.js' %}"></script>
 
     <script language="javascript">
@@ -44,80 +45,13 @@
             return ( colorNum * (360 / colors) ) % 360;
         }*/
 
-        function processTokenSet(tokenList) {
-            var mergedToken = [];
-
-            // Workaround Array in Array
-            tokenList = tokenList.map(function(item) {
-                item[0].offset.start -= 1;
-                item[0].offset.end -= 1;
-                return item[0];
-            });
-
-            if (tokenList.length > 0) {
-                var plainText = $("#document-text").text();
-                // sort by ascending by token start
-                tokenList.sort(function (a, b) {
-                    return a.offset.start - b.offset.start
-                });
-                var groups = {};
-                // group token by type
-                tokenList.map(function(item) {
-                    if (!(item.type in groups)) {
-                        groups[item.type] = [];
-                    }
-                    groups[item.type].push(item);
-                    return item;
-                });
-
-                for (var key in groups) {
-                    var currentToken = groups[key][0];
-                    mergedToken.push(currentToken);
-                    for (var i = 1; i < groups[key].length; i++) {
-                        var token = groups[key][i];
-                        // check if token are overlapping or separated by whitespace
-                        if (
-                                token.offset.start <= currentToken.offset.end ||
-                                (Math.abs(token.offset.start - currentToken.offset.end) == 1 &&
-                                plainText.charAt(Math.max(token.offset.start - 1, 0)) == " ")
-                        ) {
-                            // merge token
-                            currentToken.offset.end = Math.max(currentToken.offset.end, token.offset.end);
-                            currentToken.text = plainText.substring(currentToken.offset.start, currentToken.offset.end);
-                        }
-                        else {
-                            currentToken = token;
-                            mergedToken.push(currentToken);
-                        }
-                    }
-                }
-            }
-            console.log(tokenList);
-            console.log(mergedToken);
-            return mergedToken;
-        }
-
         $(document).ready(function () {
             $('#nav-anotate').click(function() {
                 var span = $('#nav-anotate>span');
                 if (!span.hasClass('fa-spin')) {
                     span.addClass('fa-spin');
-
-                    // Post text to NER service
-                    var model = "default";
-                    var params = {
-                        textURI: "{{ urn }}",
-                        text: $("#document-text").text()
-                    };
-                    //console.log(params);
-                    $.ajax({
-                        type: "POST",
-                        url: "{{ ner_url }}/models/" + model + "/recognize",
-                        data: JSON.stringify(params),
-                        dataType: "json",
-                        contentType: "application/json; charset=utf-8",
+                    Annotator._instances[0].plugins.NER.recognize( {
                         success: function (data) {
-                            processTokenSet(data.results);
                             span.removeClass('fa-spin');
                         },
                         error: function () {

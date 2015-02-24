@@ -115,22 +115,22 @@ neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', function ($scope, $http
 neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
-    $scope.setupAnnotator = function(urn, userId) {
+    $scope.setupAnnotator = function(uri, userId) {
         $("#document-body").annotator()
         .annotator('addPlugin', 'Neonion', {
             whoamiUrl: "/accounts/me"
         })
         .annotator('addPlugin', 'NER', {
             service : 'http://localhost:5000',
-            uri : urn
+            uri : uri
         })
         .annotator('addPlugin', 'Store', {
             prefix: '/api/store',
-            annotationData: {'uri': urn},
+            annotationData: {'uri': uri},
             // filter annotations by creator
             loadFromSearch: {
-                'uri': urn,
-                'creator.email': userId,
+                'uri': uri,
+                //'creator.email': userId,
                 'limit': 999999
             }
         });

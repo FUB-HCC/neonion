@@ -59,7 +59,7 @@
             editorFields = {
                 unknownEntity : this.initEditorUnknownEntity(),
                 search: this.initEditorEntitySearch(),
-                create: this.initEditorEntityCreation()
+                create: null //this.initEditorEntityCreation()
             };
             this.setCompositor(this.getCompositor());
 
@@ -110,7 +110,6 @@
                 else {
                     $(editorFields.create).hide();
                 }*/
-                $(editorFields.create).hide();
             });
             return adder;
         };
@@ -153,6 +152,8 @@
         this.initEditorUnknownEntity = function() {
             var field = this.annotator.editor.addField({
                 load : function(field, annotation) {
+                    // restore type from annotation if provided
+                    selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : selectedType;
                     // add resource uri itself
                     $(field).children((":first")).replaceWith(Annotator.Plugin.Neonion.prototype.createListItems([
                     {
@@ -172,7 +173,6 @@
                     // update annotation object
                     annotation.rdf.typeof = selectedType;
                     annotation.rdf.label = annotation.quote;
-                    console.log(annotation);
                 }
             });
 
@@ -188,8 +188,6 @@
             // add field containing the suggested resources
             var field = this.annotator.editor.addField({
                 load: function (field, annotation) {
-                    // restore type from annotation if provided
-                    selectedType = annotation.rdf ? annotation.rdf.typeof : selectedType;
                     // reserve max height so annotator can arrange the editor window properly
                     var list = $(field).find("#resource-list");
                     list.css("min-height", list.css("max-height"));

@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 from common import uri
 from rest_framework import permissions
 from authentication import UnsafeSessionAuthentication
-from common.annotation import add_uri
+from common.annotation import add_resource_uri
 
 class WorkspaceDocumentList(APIView):
     def get(self, request, format=None):
@@ -61,8 +61,8 @@ class AnnotationListView(APIView):
     def post(self, request, format=None):
         """Creates a new annotation"""
         annotation = json.loads(request.body)
-        add_uri(annotation)
-        # TODO get or create URI according type of resource and attach it to the annotation object
+        add_resource_uri(annotation)
+        
         headers = {'content-type': 'application/json'}
         response = requests.post(settings.ANNOTATION_STORE_URL + '/annotations',
                                  data=json.dumps(annotation), headers=headers)

@@ -22,7 +22,7 @@
         <div id="document-frame" class="panel panel-default">
             <div id="document-title" class="panel-heading big">{{ title }}</div>
             <div id="document-body" class="panel-body">
-                <div id="document-text">{% autoescape off %}{{ content }}{% endautoescape %}</div>
+                <div>{% autoescape off %}{{ content }}{% endautoescape %}</div>
             </div>
         </div>
     </div>
@@ -50,11 +50,11 @@
                 var span = $('#nav-anotate>span');
                 if (!span.hasClass('fa-spin')) {
                     span.addClass('fa-spin');
-                    Annotator._instances[0].plugins.NER.recognize( {
-                        success: function (data) {
+                    Annotator._instances[0].plugins.NER.recognize({
+                        success : function (data) {
                             span.removeClass('fa-spin');
                         },
-                        error: function () {
+                        error : function () {
                             span.removeClass('fa-spin');
                         }
                     });

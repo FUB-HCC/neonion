@@ -47,6 +47,8 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
     "use strict";
 
     $http.get('/api/store/filter').success(function(data) {
+        var occurrences = {};
+        var filterUserData = data.rows;
 
         filterUserData.forEach(function(a) {
             var rdf = a.rdf;
@@ -56,8 +58,11 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
             var date = a.created;
             var doc = a.uri;
 
+            var typeParts = type.split('/');
+            var concept = typeParts[typeParts.length-1];
+
             if (!(key in occurrences)) {
-                occurrences[key] = {ann: ann, count:  1, typeof: type, last: date, docs: new Array()};
+                occurrences[key] = {ann: ann, count:  1, typeof: concept, last: date, docs: new Array()};
             } else {
                 occurrences[key].count++;
                 var parsedDate = Date.parse(date);
@@ -102,24 +107,35 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
     });
 }]);
 
-neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', function ($scope, $http) {
+neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
     "use strict";
+    var ann_docs = {};
+    var docUri = [];
     var url = $location.absUrl().split('/');
     var quote = url[url.length-1];
 
-    $http.get('/api/documents').success(function (data) {
-        var ann_docs = {};
+    $http.get('/api/store/search?quote=' + quote).success(function (data) {
+        var filterUserData = data.rows;
 
-        data.forEach(function(a) {
-            var urn = a.urn;
-            var title = a.title;
-
-            if (!(urn in ann_docs)) {
-                ann_docs[urn] = {urn: urn, title: title};
-            }
+        filterUserData.forEach(function(a) {
+            docUri.push(a.uri);
         });
-        $scope.ann_docs = ann_docs;
     });
+
+    $http.get('/api/documents/?format=json').success(function (data) {
+        console.log(data);
+        var urn = data.urn;
+        var title = data.title;
+
+        docUri.forEach(function(a) {
+            if (!(urn in ann_docs) && urn == a) {
+            ann_docs[urn] = {urn: urn, title: title};
+        }
+        });
+    });
+
+    $scope.ann_docs = ann_docs;
+    console.log(ann_docs);
 }]);
 
 neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $http) {

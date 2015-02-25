@@ -414,7 +414,7 @@
                 if (node.previousSibling) {
                     node = node.previousSibling;
                     // prepend extracted text
-                    contentLeft = $(node).text() + contentLeft; 
+                    contentLeft = $(node).text() + contentLeft;
                 }
                 else {
                     node = node.parentNode;
@@ -437,9 +437,9 @@
             contentLeft = contentLeft.replace(/(\r\n|\n|\r)/gm," ");
             contentRight = contentRight.replace(/(\r\n|\n|\r)/gm," ");
 
-            return { 
-                left : contentLeft.trimLeft().substr(-length), 
-                right : contentRight.trimRight().substr(0, length) 
+            return {
+                left : contentLeft.trimLeft().substr(-length),
+                right : contentRight.trimRight().substr(0, length)
             };
         },
 

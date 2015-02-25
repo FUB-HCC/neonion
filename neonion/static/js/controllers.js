@@ -47,8 +47,6 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
     "use strict";
 
     $http.get('/api/store/filter').success(function(data) {
-        var occurrences = {};
-        var filterUserData = data.rows;
 
         filterUserData.forEach(function(a) {
             var rdf = a.rdf;
@@ -77,10 +75,12 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
     });
 }]);
 
-neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', function ($scope, $http) {
+neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
     "use strict";
-    console.log($scope);
-    $http.get('/api/store/search?quote=').success(function (data) {
+    var url = $location.absUrl().split('/');
+    var quote = url[url.length-1];
+
+    $http.get('/api/store/search?quote=' + quote).success(function (data) {
         var ann_occur = {};
         var filterUserData = data.rows;
 
@@ -99,12 +99,13 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', function ($scope, $htt
             });
         });
         $scope.ann_occur = ann_occur;
-        console.log(ann_occur);
     });
 }]);
 
 neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
+    var url = $location.absUrl().split('/');
+    var quote = url[url.length-1];
 
     $http.get('/api/documents').success(function (data) {
         var ann_docs = {};

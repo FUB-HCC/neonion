@@ -61,7 +61,7 @@
         };
 
         /**
-        * Iniatates the recognition process.
+        * Initiates the recognition process.
         **/
         this.recognize = function(settings) {
             if (!_isProcessing) {
@@ -71,7 +71,7 @@
                     textURI: options.uri,
                     text: this.getPlainText()
                 };
-
+                //console.log(params.text);
                 // Post text to NER service
                 $.ajax({
                     type: "POST",
@@ -126,7 +126,7 @@
                 start: "//div[1]",
                 end: "//div[1]",
                 startOffset: token.offset.start,
-                endOffset: token.offset.end + 1
+                endOffset: token.offset.end
             }
         };
 
@@ -157,11 +157,11 @@
             if (tokenList.length > 0) {
 
                 // Workaround Array in Array
-                tokenList = tokenList.map(function(item) {
+                /*tokenList = tokenList.map(function(item) {
                     //item.offset.start -= 1;
                     item.offset.end -= 1;
                     return item;
-                });
+                });*/
 
                 var plainText = this.getPlainText();
                 // sort by ascending by token start
@@ -186,12 +186,12 @@
                         // check if token are overlapping or separated by whitespace
                         if (
                                 token.offset.start <= currentToken.offset.end ||
-                                (Math.abs(token.offset.start - currentToken.offset.end) - 1 == 1 &&
+                                (Math.abs(token.offset.start - currentToken.offset.end) == 1 &&
                                 plainText.charAt(Math.max(token.offset.start - 1, 0)) == " ")
                         ) {
                             // merge token
                             currentToken.offset.end = Math.max(currentToken.offset.end, token.offset.end);
-                            currentToken.text = plainText.substring(currentToken.offset.start, currentToken.offset.end + 1);
+                            currentToken.text = plainText.substring(currentToken.offset.start, currentToken.offset.end);
                         }
                         else {
                             currentToken = jQuery.extend(true, {}, token);

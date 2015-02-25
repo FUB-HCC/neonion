@@ -92,7 +92,11 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
         filterUserData.forEach(function(a) {
             // context variable here
             var key = a.id;
+            var ann = a.quote;
             var date = a.created;
+            var context = a.context;
+            var contextRight = context.right;
+            var contextLeft = context.left;
 
             ann_occur[key] = {created: date};
 
@@ -100,6 +104,9 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
                 data.forEach(function(a) {
                     var title = a.title;
                     ann_occur[key].title = title;
+                    ann_occur[key].ann = ann;
+                    ann_occur[key].contextRight = contextRight;
+                    ann_occur[key].contextLeft = contextLeft;
                 });
             });
         });

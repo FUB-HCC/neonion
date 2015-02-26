@@ -1,3 +1,56 @@
+neonionApp.controller('AccountsCtrl', ['$scope', '$http', 'AccountService', function ($scope, $http, AccountService) {
+    "use strict";
+
+    $http.get('/api/users').success(function(data) {
+        $scope.users = data;
+    });
+
+    $scope.updateUser = function (user, field, value) {
+        if (user.hasOwnProperty(field) && user[field] != value) {
+            user[field] = value;
+            AccountService.updateUser(user);   
+        }
+    };
+
+    $scope.deleteUser = function (user) {
+        var idx = $scope.users.indexOf(user);
+        AccountService.deleteUser(user);
+        $scope.users.splice(idx, 1);
+    };
+
+}]);
+
+neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', function ($scope, $http, GroupService) {
+    "use strict";
+
+    $scope.form = {
+        groupName : ""
+    };
+
+    $http.get('/api/groups').success(function(data) {
+        $scope.groups = data;
+    });
+
+    $scope.createGroup = function () {
+        if ($scope.form.groupName.length > 0) {
+            var group = {
+                name : $scope.form.groupName
+            }
+            GroupService.createGroup(group).then(function(result) {
+                $scope.groups.push(result.data);
+            });
+            $scope.form.groupName = ""; 
+        }
+    };
+
+    $scope.deleteGroup = function (group) {
+        var idx = $scope.groups.indexOf(group);
+        GroupService.deleteGroup(group);
+        $scope.groups.splice(idx, 1);
+    };
+
+}]);
+
 neonionApp.controller('WorkspaceDocumentCtrl', ['$scope', '$http', 'WorkspaceService', function ($scope, $http, WorkspaceService) {
     "use strict";
 
@@ -29,7 +82,10 @@ neonionApp.controller('WorkspaceImportCtrl', ['$scope', '$http', 'DocumentServic
         $('#document-import-list>.ui-selected').each(function() {
             selectedDocs.push(this.id);
         });
-        DocumentService.importDocuments(selectedDocs);
+        DocumentService.importDocuments(selectedDocs).then(function(data) {
+             // return to home
+            window.location = "/";
+        });
     };
 
 }]);

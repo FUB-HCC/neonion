@@ -1,0 +1,25 @@
+<table ng-controller='AccountsCtrl'>
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Account</th>
+        </tr>
+    </thead>
+    <tbody>
+         <tr ng-repeat="user in users | orderBy:'email'">
+            {% verbatim %}
+            <td>{{ user.email }}</td>
+            <td>
+                <a ng-show="user.is_superuser" class="button button-small button-wide" ng-click="updateUser(user,'is_superuser', false)">Make user</a>
+                <a ng-hide="user.is_superuser" class="button button-small button-wide" ng-click="updateUser(user,'is_superuser', true)">Make admin</a>
+                <a ng-hide="user.is_superuser" class="button button-small" ng-click="deleteUser(user)">
+                    <span class="fa fa-times fa-fw">Delete
+                </a>
+
+                <a ng-show="user.is_active" class="button button-small button-wide" ng-click="updateUser(user,'is_active', false)">Deactivate</a>
+                <a ng-hide="user.is_active" class="button button-small button-wide" ng-click="updateUser(user,'is_active', true)">Activate</a>
+            </td>
+            {% endverbatim %}
+        </tr>
+    </tbody>
+</table>

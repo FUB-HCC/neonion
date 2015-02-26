@@ -32,9 +32,9 @@
             </a>
         </li>
         {# Admin section #}
-        {% if request.user.is_admin %}
+        {% if request.user.is_superuser %}
             {% url 'endpoint.views.query_form' as url_query %}
-            {% url 'users.list' as url_user_list %}
+            {% url 'accounts.views.user_management' as url_user_list %}
 
             {# Query form #}
             <li {% if request.path == url_query %}class="active"{% endif %}>

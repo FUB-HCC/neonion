@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Login{% endblock %}
+{% block page_id %}userlist{% endblock %}
+
+{% block content %}
+    <h3>Registered Users</h3>
+    {% include 'partials/accounts.html' %}
+
+    <h3>Groups</h3>
+    {% include 'partials/groups.html' %}
+{% endblock %}

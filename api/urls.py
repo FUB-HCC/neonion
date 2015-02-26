@@ -3,9 +3,10 @@ from rest_framework import routers, viewsets
 from accounts.models import User
 from documents.models import Document
 from neonion.models import Workspace
+from django.contrib.auth.models import Group
 from annotationsets.models import AnnotationSet
 from api import views
-from api.serializers import UserSerializer, AnnotationSetSerializer, \
+from api.serializers import UserSerializer, GroupSerializer, AnnotationSetSerializer, \
     WorkspaceSerializer, DocumentSerializer, DetailedDocumentSerializer
 
 
@@ -13,6 +14,12 @@ from api.serializers import UserSerializer, AnnotationSetSerializer, \
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class GroupViewSet(viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+
 
 # ViewSets for document.
 class DocumentViewSet(viewsets.ModelViewSet):
@@ -39,8 +46,9 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
 
 
 # Routers provide an easy way of automatically determining the URL conf.
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'users', UserViewSet)
+router.register(r'groups', GroupViewSet)
 router.register(r'documents', DocumentViewSet)
 router.register(r'workspaces', WorkspaceViewSet)
 router.register(r'annotationsets', AnnotationSetViewSet)

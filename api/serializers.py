@@ -3,13 +3,20 @@ from accounts.models import User
 from documents.models import Document
 from neonion.models import Workspace
 from annotationsets.models import AnnotationSet, Concept, LinkedConcept, AnnotationSetManager
+from django.contrib.auth.models import Group
 
 
 # Serializers define the API representation.
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('email', 'name', 'surname', 'joined')
+        fields = ('id', 'email', 'name', 'surname', 'joined', 'is_active', 'is_superuser')
+
+
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('id', 'name')
 
 
 # Serializers define the API representation.

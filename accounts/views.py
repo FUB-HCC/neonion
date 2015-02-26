@@ -83,24 +83,6 @@ def logout(request):
 
 
 @login_required
-def delete_user(request, userID):
-    user = User.objects.filter(email=userID)[0]
-    if not user.is_admin:
-        user.delete()
+def user_management(request):
+    return render_to_response('user_management.html', context_instance=RequestContext(request))
 
-    return redirect(reverse('users.list'))
-
-
-@login_required
-@require_GET
-def edit_user(request, userID):
-    if User.objects.filter(email=userID).exists():
-        user = User.objects.filter(email=userID)[0]
-        if 'active' in request.GET:
-            user.is_active = bool(int(request.GET['active']))
-        if 'admin' in request.GET:
-            user.is_admin = bool(int(request.GET['admin']))
-        
-        user.save()
-
-    return redirect(reverse('users.list'))

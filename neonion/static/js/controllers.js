@@ -82,67 +82,70 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
 
 neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
     "use strict";
+    $scope.ann_occur = {};
     var url = $location.absUrl().split('/');
     var quote = url[url.length-1];
 
-    $http.get('/api/store/search?quote=' + quote).success(function (data) {
-        var ann_occur = {};
-        var filterUserData = data.rows;
+    $http.get('/api/store/search?quote=' + quote).success(function (data2) {
+
+        var filterUserData = data2.rows;
 
         filterUserData.forEach(function(a) {
             // context variable here
+
             var key = a.id;
-            var ann = a.quote;
             var date = a.created;
             var context = a.context;
             var contextRight = context.right;
             var contextLeft = context.left;
 
-            ann_occur[key] = {created: date};
-
             $http.get('/api/documents').success(function (data) {
-                data.forEach(function(a) {
-                    var title = a.title;
-                    ann_occur[key].title = title;
-                    ann_occur[key].ann = ann;
-                    ann_occur[key].contextRight = contextRight;
-                    ann_occur[key].contextLeft = contextLeft;
+                var self = this;
+
+                data.forEach(function(b) {
+                    var title = b.title;
+                    var urn = b.urn;
+
+                    if (urn == a.uri) {
+                        $scope.ann_occur[key] = {}
+                        $scope.ann_occur[key].title = title;
+                        console.log(title);
+                    };
                 });
+                $scope.ann_occur[key].created = date;
+                $scope.ann_occur[key].contextRight = contextRight;
+                $scope.ann_occur[key].contextLeft = contextLeft;
+
             });
+
         });
-        $scope.ann_occur = ann_occur;
     });
+
 }]);
 
 neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
     "use strict";
     var ann_docs = {};
-    var docUri = [];
     var url = $location.absUrl().split('/');
     var quote = url[url.length-1];
 
-    $http.get('/api/store/search?quote=' + quote).success(function (data) {
-        var filterUserData = data.rows;
+    $http.get('/api/documents').success(function (data2) {
+        data2.forEach(function(b) {
+            var urn = b.urn;
+            var title = b.title;
 
-        filterUserData.forEach(function(a) {
-            docUri.push(a.uri);
+            $http.get('/api/store/search?quote=' + quote).success(function (data) {
+                var filterUserData = data.rows;
+
+                filterUserData.forEach(function(a) {
+                    if (!(urn in ann_docs) && urn == a.uri) {
+                        ann_docs[urn] = {urn: urn, title: title};
+                    };
+                });
+            });
         });
     });
-
-    $http.get('/api/documents/?format=json').success(function (data) {
-        console.log(data);
-        var urn = data.urn;
-        var title = data.title;
-
-        docUri.forEach(function(a) {
-            if (!(urn in ann_docs) && urn == a) {
-            ann_docs[urn] = {urn: urn, title: title};
-        }
-        });
-    });
-
     $scope.ann_docs = ann_docs;
-    console.log(ann_docs);
 }]);
 
 neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $http) {

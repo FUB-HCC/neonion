@@ -3274,7 +3274,8 @@ input[type="submit"].btn {
     height: 182px;
     margin-left: 16px;
     margin-bottom: 26px;
-    width: 146px; }
+    width: 146px;
+    text-align: center; }
     .document-grid li:hover {
       border-color: #8e8e93; }
   .document-grid a {
@@ -3285,8 +3286,7 @@ input[type="submit"].btn {
     .document-grid a.document-grid-content {
       display: block;
       height: 130px;
-      padding: 13px 8px 0 8px;
-      text-align: center; }
+      padding: 13px 8px 0 8px; }
       .document-grid a.document-grid-content div {
         overflow: hidden;
         height: 104px; }

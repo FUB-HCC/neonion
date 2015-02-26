@@ -15,9 +15,12 @@
 
         {% verbatim %}
         <li ng-repeat="doc in ann_docs track by $index | orderBy:'-created'">
-            <a href="/annotator/{{document.urn}}">
-                <div>{{ doc }}</div>
+            <a href="/annotator/{{ doc.urn }}" class="document-grid-content">
+                <div>{{ doc.title }}</div>
             </a>
+            <div class="document-grid-actions">
+                <span class="fa fa-trash-o" ng-click="removeDocument(document)"></span>
+            </div>
         </li>
         {% endverbatim %}
 

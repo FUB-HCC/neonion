@@ -14,6 +14,7 @@ from pyelasticsearch import ElasticSearch
 from documents.models import Document
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from common.knowledge.provider import Provider
 
 
 # Create your views here.
@@ -72,52 +73,15 @@ def import_document(request):
 
 @login_required
 @require_GET
-def resource_search(request, index):
-    if 'q' in request.GET:
-        # TODO call WikiData.search method
+def resource_search(request):
+    if 'type' in request.GET and 'q' in request.GET:
+        resource_type = request.GET.get('type')
+        # extract from resource type
+        search_type = resource_type.rstrip('/').rsplit('/', 1)[1]
         search_term = request.GET.get('q')
-        size = 5
-        query = {
-            'query': {
-                'filtered': {
-                    'query': {
-                        'bool': {
-                            'should': [
-                                {
-                                    'wildcard': {
-                                        'label': u'*{}*'.format(search_term)
-                                    }
-                                },
-                                {
-                                    'wildcard': {
-                                        'aliases': u'*{}*'.format(search_term)
-                                    }
-                                },
-                                {
-                                    'more_like_this': {
-                                        'fields': ['label', 'aliases'],
-                                        'like_text': search_term,
-                                        'min_term_freq': 1,
-                                        'min_doc_freq': 1,
-                                        'max_query_terms': 12
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    'filter': {
-                        'type': {
-                            'value': index
-                        }
-                    }
-                }
-            }
-        }
-        index = 'wikidata' # TODO
-        url = settings.ELASTICSEARCH_URL + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format(json.dumps(query))
-        #print(url)
-        r = requests.get(url)
-        return JsonResponse(r.json())
+        # call search method from provider
+        provider = Provider(settings.ELASTICSEARCH_URL)
+        return JsonResponse(provider.search(search_type, search_term))
     else:
         return HttpResponseBadRequest()
 

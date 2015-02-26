@@ -197,25 +197,11 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $ht
             $scope.annotationsets = data;
             if ($scope.annotationsets.length > 0) {
                 var sets = {};
+                // TODO just take the first AS
                 $scope.annotationsets[0].concepts.forEach(function (item) {
-                    if (item.uri == 'http://neonion.org/concept/person') {
-                        sets[item.uri] = {
-                            label: item.label,
-                            create: Annotator.Plugin.Neonion.prototype.create.createPerson,
-                            search: Annotator.Plugin.Neonion.prototype.search.searchPerson,
-                            formatter: Annotator.Plugin.Neonion.prototype.formatter.formatPerson,
-                            decorator: Annotator.Plugin.Neonion.prototype.decorator.decoratePerson
-                        };
-                    }
-                    else if (item.uri == 'http://neonion.org/concept/institute') {
-                        sets[item.uri] = {
-                            label: item.label,
-                            create: Annotator.Plugin.Neonion.prototype.create.createInstitute,
-                            search: Annotator.Plugin.Neonion.prototype.search.searchInstitute,
-                            formatter: Annotator.Plugin.Neonion.prototype.formatter.formatInstitute,
-                            decorator: Annotator.Plugin.Neonion.prototype.decorator.decorateInstitute
-                        };
-                    }
+                    sets[item.uri] = {
+                        label: item.label
+                    };
                 });
 
                 $scope.annotator.plugins.Neonion.setCompositor(sets);

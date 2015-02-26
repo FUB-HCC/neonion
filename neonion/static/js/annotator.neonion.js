@@ -121,7 +121,8 @@
                 resource: this.annotator.viewer.addField({
                     load: function (field, annotation) {
                         if (annotation.rdf) {
-                            var fieldValue = "<a href='" + annotation.rdf.about + "' target='blank'>" + annotation.rdf.label + "</a>";
+                            var ref = annotation.rdf.hasOwnProperty('sameAs') ? annotation.rdf.sameAs : '#';
+                            var fieldValue = "<a href='" + ref + "' target='blank'>" + annotation.rdf.label + "</a>";
                             var fieldCaption;
                             if (compositor[annotation.rdf.typeof]) {
                                 fieldCaption = compositor[annotation.rdf.typeof].label;
@@ -160,7 +161,7 @@
                         uri : selectedType,
                         label : Annotator.Plugin.Neonion.prototype.literals['en'].unknown + " " + compositor[selectedType].label
                     }
-                    ], compositor[selectedType].formatter));
+                    ], Annotator.Plugin.Neonion.prototype.formatter.default));
                 },
                 submit : function(field, annotation) {
                     if (!annotation.hasOwnProperty("rdf")) {
@@ -228,21 +229,22 @@
                 // get search term
                 var searchTerm = $(this).find("#resource-search").val();
                 var list = $(this).parent().find("#resource-list");
+                list.html(Annotator.Plugin.Neonion.prototype.createSpinner());
 
                 // clear list and min-height css property
                 list.css("min-height", "");
-                list.empty();
-
-                if (compositor[selectedType] && compositor[selectedType].hasOwnProperty("search")) {
-                    compositor[selectedType].search(searchTerm, function (items) {
-                        // store last result set in jQuery data collection
-                        $(element).data("results", items);
-                        // update score
-                        Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence(items);
-                        // create and add items
-                        list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, compositor[selectedType].formatter));
-                    });
-                }
+                
+                Annotator.Plugin.Neonion.prototype.search(selectedType, searchTerm, 
+                function (items) {
+                    var formatter = Annotator.Plugin.Neonion.prototype.formatter[selectedType] || Annotator.Plugin.Neonion.prototype.formatter['default'];
+                    // store last result set in jQuery data collection
+                    $(element).data("results", items);
+                    // update score
+                    Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence(items);
+                    // create and add items
+                    list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, formatter));
+                });
+                
                 return false;
             });
             // attach key event to search while typing
@@ -265,7 +267,6 @@
             });
 
             var resourceList = $(field).find("#resource-list");
-            resourceList.html(this.createSpinner());
             // attach click handler
             resourceList.on("click", "button", function () {
                 var source = $(this);
@@ -284,7 +285,7 @@
             resourceList.on("mouseenter", "button", function () {
                 var dataIndex = parseInt($(this).val());
                 var dataItem = $(element).data("results")[dataIndex];
-                var decorator = compositor[selectedType].decorator || Annotator.Plugin.Neonion.prototype.decorator.decorateDefault;
+                var decorator = Annotator.Plugin.Neonion.prototype.decorator[selectedType] || Annotator.Plugin.Neonion.prototype.decorator['default'];
                 overlay.html(decorator(dataItem));
                 overlay.show();
             });
@@ -387,8 +388,6 @@
                 search: "Search",
                 searchText: "Search term",
                 create: "Create",
-                person: "Person",
-                institute: "Institute",
                 unknown: "Not identified",
                 unknownResource: "Unknown resource",
                 creator: "Creator"
@@ -397,8 +396,6 @@
                 search: "Suchen",
                 searchText: "Suchtext",
                 create: "Anlegen",
-                person: "Person",
-                institute: "Institut",
                 unknown: "Unbekannt",
                 unknownResource: "Unbekannte Ressource",
                 creator: "Erfasser"
@@ -579,20 +576,20 @@
         },
 
         formatter: {
-            formatPerson: function (value) {
+            'default': function (value) {
+                return "<span>" + value.label + "</span>";
+            },
+            'http://neonion.org/concept/person': function (value) {
                 var label = "<span>" + value.label + "</span>";
                 if (value.birth) {
                     label += "<small>&nbsp;" + value.birth + "</small>";
                 }
                 return label;
-            },
-            formatInstitute: function (value) {
-                return "<span>" + value.label + "</span>";
             }
         },
 
         decorator: {
-            decorateDefault: function (data) {
+            'default': function (data) {
                 var html = "";
                 for (var key in data) {
                     if (data.hasOwnProperty(key) && !Array.isArray(data[key])) {
@@ -603,7 +600,7 @@
                 }
                 return html;
             },
-            decoratePerson: function (data) {
+            'http://neonion.org/concept/person': function (data) {
                 var html = "<strong>" + data.label + "</strong>";
                 if (data.birth) {
                     html += "<small>&nbsp;&#42;&nbsp;" + data.birth + "</small>";
@@ -615,45 +612,30 @@
                     html += "<br/>" + data.descr;
                 }
                 return html;
-            },
-            decorateInstitute: function (data) {
-                var html = "<strong>" + data.label + "</strong>";
-                if (data.descr) {
-                    html += "<br/>" + data.descr;
-                }
-                return html;
             }
         },
 
-        search: {
-            searchPerson: function (name, callback) {
-                var url = '/es/person?q=' + name;
-                $.getJSON(url, function (data) {
-                    if (callback) {
-                        callback(Annotator.Plugin.Neonion.prototype.search.esNormalizeData(data));
-                    }
-                });
-            },
-            searchInstitute: function (name, callback) {
-                var url = '/es/institute?q=' + name;
-                $.getJSON(url, function (data) {
-                    if (callback) {
-                        callback(Annotator.Plugin.Neonion.prototype.search.esNormalizeData(data));
-                    }
-                });
-            },
-            esNormalizeData: function (data) {
-                //console.log(data);
-                var array = [];
-                if (data.hasOwnProperty("hits")) {
-                    data.hits.hits.forEach(function (value, index, arr) {
-                        array.push(value._source);
-                    });
+        search: function (type, searchText, callback) {
+            var url = '/es?type=' + encodeURI(type) + '&q=' + searchText;
+            $.getJSON(url, function (data) {
+                if (callback) {
+                    callback(Annotator.Plugin.Neonion.prototype.esNormalizeData(data));
                 }
-                return array;
-            }
+            });
         },
-        create: {
+
+        esNormalizeData: function (data) {
+            //console.log(data);
+            var array = [];
+            if (data.hasOwnProperty("hits")) {
+                data.hits.hits.forEach(function (value, index, arr) {
+                    array.push(value._source);
+                });
+            }
+            return array;
+        }
+
+        /*create: {
             createPerson: function (data, callback) {
                 $.ajax({
                     dataType: "json", type: "POST",
@@ -674,7 +656,7 @@
                     }
                 });
             }
-        }
+        }*/
     });
 
 })();

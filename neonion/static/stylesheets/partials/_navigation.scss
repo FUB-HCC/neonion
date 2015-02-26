@@ -39,6 +39,38 @@
   }
 }
 
+.nav-horizontal {
+  margin-bottom: 10px;
+
+  a {
+    display: inline-block;
+    position: relative;
+    text-decoration: none;
+    padding: 0px $baseline 0px 0px;
+    vertical-align: top;
+    font-weight: bold;
+  }
+
+  a:visited {
+    color: $black;
+  }
+
+  a:hover:after, a:visited:after {
+    color: $black;
+    content: '';
+    position: absolute;
+    left: 0;
+    display: inline-block;
+    height: 1em;
+    width: 84%;
+    border-bottom: 3px solid $tangerine;
+    margin-top: 10px;
+  }
+  .sorting {
+    float: right;
+  }
+}
+
 #page-annotator {
   .nav-vertical {
     padding-top: 4.5*$baseline;

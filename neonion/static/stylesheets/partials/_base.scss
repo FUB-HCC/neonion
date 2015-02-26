@@ -50,7 +50,9 @@ p {
 .main {
   margin-left: 5*$column + 4*$column-gap;
   width: 19*$column + 19*$column-gap;
-  .header { height: 4*$baseline + $half-baseline; }
+  .header {
+    height: 4*$baseline + $half-baseline;
+  }
 
   .content {
     margin-left: $column + $column-gap;
@@ -58,7 +60,7 @@ p {
     div > h3 {
       display: inline-block;
     }
-    
+
     div {
       span {
         margin-left: 30px;
@@ -69,7 +71,6 @@ p {
     }
   }
 }
-
 // put into seperate file soon
 #page-signin, #page-signup {
   .main {

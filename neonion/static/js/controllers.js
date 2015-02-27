@@ -150,6 +150,7 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
             // context variable here
 
             var key = a.id;
+            var ann = a.quote;
             var date = a.created;
             var context = a.context;
             var contextRight = context.right;
@@ -169,11 +170,10 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
                     };
                 });
                 $scope.ann_occur[key].created = date;
+                $scope.ann_occur[key].ann = ann;
                 $scope.ann_occur[key].contextRight = contextRight;
                 $scope.ann_occur[key].contextLeft = contextLeft;
-
             });
-
         });
     });
 

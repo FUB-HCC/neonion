@@ -23,25 +23,46 @@ neonionApp.controller('AccountsCtrl', ['$scope', '$http', 'AccountService', func
 
 neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', function ($scope, $http, GroupService) {
     "use strict";
-
+    
+    $scope.groups = [];
+    $scope.users = [];
     $scope.form = {
-        groupName : ""
+        groupName : "",
+        selectedGroup : -1
     };
 
     $http.get('/api/groups').success(function(data) {
         $scope.groups = data;
     });
 
+    $http.get('/api/users').success(function(data) {
+        $scope.users = data;
+    });
+
+    $scope.showMembership = function(group) {
+        if ($scope.form.selectedGroup == group.id) {
+            $scope.form.selectedGroup = -1;
+        }
+        else {
+            $scope.form.selectedGroup = group.id;
+        }
+    }
+
     $scope.createGroup = function () {
         if ($scope.form.groupName.length > 0) {
             var group = {
-                name : $scope.form.groupName
+                name : $scope.form.groupName,
+                user_set : []
             }
             GroupService.createGroup(group).then(function(result) {
                 $scope.groups.push(result.data);
             });
             $scope.form.groupName = ""; 
         }
+    };
+
+    $scope.updateGroup = function(group) {
+        GroupService.updateGroup(group);
     };
 
     $scope.deleteGroup = function (group) {
@@ -51,12 +72,26 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', function
         });
     };
 
-    $scope.addGroupMember = function(group, user) {
+    $scope.toogleMembership = function(group, user) {
+        if (group.user_set.indexOf(user.id) == -1) {
+            $scope.addGroupMember(group, user);
+        }
+        else {
+            $scope.removeGroupMember(group, user);
+        }
+    };
 
+    $scope.addGroupMember = function(group, user) {
+        group.user_set.push(user.id);
+        $scope.updateGroup(group);
     };
 
     $scope.removeGroupMember = function(group, user) {
-
+        var idx = group.user_set.indexOf(user.id);
+        if (idx > -1) {
+            group.user_set.splice(idx, 1);
+            $scope.updateGroup(group);
+        }
     };
 
 }]);
@@ -69,10 +104,10 @@ neonionApp.controller('WorkspaceDocumentCtrl', ['$scope', '$http', 'WorkspaceSer
     });
 
     $scope.removeDocument = function (document) {
-        var idx = $scope.documents.indexOf(document);
-        // TODO add prompt
-        WorkspaceService.removeDocument(document.urn);
-        $scope.documents.splice(idx, 1);
+        WorkspaceService.removeDocument(document.urn).then(function(result) {
+            var idx = $scope.documents.indexOf(document);
+            $scope.documents.splice(idx, 1);    
+        });
     };
 }]);
 

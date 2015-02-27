@@ -7,8 +7,8 @@
 
 {% block content %}
     <h3>Registered Users</h3>
-    {% include 'partials/accounts.html' %}
+    <ng-include src="'{% static 'partials/accounts_users.html' %}'"></ng-include>
 
-    <h3>Groups</h3>
-    {% include 'partials/groups.html' %}
+    <h3>User Groups</h3>
+    <ng-include src="'{% static 'partials/accounts_groups.html' %}'"></ng-include>
 {% endblock %}

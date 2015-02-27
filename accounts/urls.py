@@ -10,6 +10,4 @@ urlpatterns = patterns('',
     url(r'^login/?$', 'accounts.views.login'),
     url(r'^logout/?$', 'accounts.views.logout'),
     url(r'^profile/(?P<userID>.+)/$', 'accounts.views.profile'),
-
-    url(r'^management/?$', 'accounts.views.user_management'),
 )

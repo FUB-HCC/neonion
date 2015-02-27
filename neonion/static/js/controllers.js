@@ -13,9 +13,10 @@ neonionApp.controller('AccountsCtrl', ['$scope', '$http', 'AccountService', func
     };
 
     $scope.deleteUser = function (user) {
-        var idx = $scope.users.indexOf(user);
-        AccountService.deleteUser(user);
-        $scope.users.splice(idx, 1);
+        AccountService.deleteUser(user).then(function(result) {
+            var idx = $scope.users.indexOf(user);
+            $scope.users.splice(idx, 1);    
+        });
     };
 
 }]);
@@ -44,9 +45,18 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', function
     };
 
     $scope.deleteGroup = function (group) {
-        var idx = $scope.groups.indexOf(group);
-        GroupService.deleteGroup(group);
-        $scope.groups.splice(idx, 1);
+        GroupService.deleteGroup(group).then(function(result) {
+            var idx = $scope.groups.indexOf(group);
+            $scope.groups.splice(idx, 1);    
+        });
+    };
+
+    $scope.addGroupMember = function(group, user) {
+
+    };
+
+    $scope.removeGroupMember = function(group, user) {
+
     };
 
 }]);

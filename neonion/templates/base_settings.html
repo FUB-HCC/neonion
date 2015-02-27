@@ -6,11 +6,11 @@
 {% block page_id %}settings{% endblock %}
 
 {% block content %}
-      <div>
-        <h3>My AnnotationSets</h3>
-        {% include 'partials/annotationsets.html' %}
+<div>
+	<h3>My AnnotationSets</h3>
+	<ng-include src="'{% static 'partials/annotationsets_list.html' %}'"></ng-include>
 
-        <h3>NER Settings</h3>
-        {% include 'partials/ner_models.html' %}
-    </div>
+	<h3>NER Settings</h3>
+	<ng-include src="'{% static 'partials/ner_models.html' %}'"></ng-include>
+</div>
 {% endblock %}

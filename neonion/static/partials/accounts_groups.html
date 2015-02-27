@@ -1,12 +1,6 @@
 <table ng-controller='GroupsCtrl'>
     <thead>
         <tr>
-            <th>Group</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
             <td>
                 <input type="text" name="input" ng-model="form.groupName" required ng-trim="true" />
             </td>
@@ -16,18 +10,24 @@
                 </a>
             </td>
         </tr>
+    </thead>
+    <thead>
+        <tr>
+            <th>Group</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
          <tr ng-repeat="group in groups | orderBy:'name'">
-            {% verbatim %}
             <td>{{ group.name }}</td>
             <td>
                 <a class="button button-small">
-                    <span class="fa fa-edit fa-fw"></span>Edit
+                    <span class="fa fa-users fa-fw"></span>Member
                 </a>
                 <a class="button button-small" ng-click="deleteGroup(group)">
                     <span class="fa fa-times fa-fw"></span>Delete
                 </a>
             </td>
-            {% endverbatim %}
         </tr>
     </tbody>
 </table>

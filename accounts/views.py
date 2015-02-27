@@ -80,9 +80,3 @@ def logout(request):
     """
     django_logout(request)
     return redirect('/')
-
-
-@login_required
-def user_management(request):
-    return render_to_response('user_management.html', context_instance=RequestContext(request))
-

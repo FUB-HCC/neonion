@@ -7,8 +7,13 @@
 
 {% block content %}
 {% if use_file_upload %}
-{% include 'partials/upload_file.html' %}
+<h3>Import files</h3>
+<form method="post" action="{% url 'documents.views.upload_file' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input id="file-upload" name="file-upload" type="file" multiple>
+    <input class="button button-primary pull-right" type="submit" />
+</form>
 {% else %}
-{% include 'partials/upload_cms.html' %}
+<ng-include src="'{% static 'partials/upload_cms.html' %}'"></ng-include>
 {% endif %}
 {% endblock %}

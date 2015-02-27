@@ -34,7 +34,7 @@
         {# Admin section #}
         {% if request.user.is_superuser %}
             {% url 'endpoint.views.query_form' as url_query %}
-            {% url 'accounts.views.user_management' as url_user_list %}
+            {% url 'neonion.views.accounts_management' as url_accounts %}
 
             {# Query form #}
             <li {% if request.path == url_query %}class="active"{% endif %}>
@@ -42,9 +42,9 @@
                     <span class="fa fa-cube fa-fw"></span>Query
                 </a>
             </li>
-            {# Registered users #}
-            <li {% if request.path == url_user_list %}class="active"{% endif %}>
-                <a href="{{ url_user_list }}">
+            {# Accounts #}
+            <li {% if request.path == url_accounts %}class="active"{% endif %}>
+                <a href="{{ url_accounts }}">
                     <span class="fa fa-users fa-fw"></span>Users
                 </a>
             </li>

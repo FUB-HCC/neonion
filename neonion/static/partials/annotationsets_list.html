@@ -1,6 +1,5 @@
 <table ng-controller="AnnotationSetCtrl">
     <tbody ng-repeat="set in annotationsets">
-        {% verbatim %}
         <tr>
             <th>
                 <b data-tooltip="{{ set.uri }}">{{ set.label }}</b>
@@ -27,6 +26,5 @@
                 <span ng-show="{{ concept.linked_concepts.length == 0 }}">None</span>
             </td>
         </tr>
-        {% endverbatim %}
     </tbody>
 </table>

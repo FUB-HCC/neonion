@@ -61,6 +61,11 @@ def load_settings(request):
 
 
 @login_required
+def accounts_management(request):
+    return render_to_response('accounts_management.html', context_instance=RequestContext(request))
+
+
+@login_required
 def import_document(request):
     data = {}
     if hasattr(settings, 'CONTENT_SYSTEM_CLASS'):

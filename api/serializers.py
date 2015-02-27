@@ -10,13 +10,15 @@ from django.contrib.auth.models import Group
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'name', 'surname', 'joined', 'is_active', 'is_superuser')
+        fields = ('id', 'email', 'name', 'surname', 'joined', 'is_active', 'is_superuser', 'groups')
 
 
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
+class GroupSerializer(serializers.ModelSerializer):
+    #user_set = GroupMemberSerializer(many=True)
+
     class Meta:
         model = Group
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'user_set')
 
 
 # Serializers define the API representation.

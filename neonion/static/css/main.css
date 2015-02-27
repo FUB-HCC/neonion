@@ -3261,6 +3261,7 @@ input[type="submit"].btn {
 .nav-horizontal {
   margin-bottom: 10px; }
   .nav-horizontal a {
+    color: #000000;
     display: inline-block;
     position: relative;
     text-decoration: none;

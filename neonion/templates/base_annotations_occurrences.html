@@ -20,7 +20,7 @@
             <tbody ng-controller="AnnOccurCtrl">
             {% verbatim %}
                 <tr ng-repeat="occur in ann_occur | orderBy:'-created'">
-                    <td> {{ occur.contextRight + occur.ann + occur.contextLeft }} </td>
+                    <td> {{ occur.contextLeft }} <strong>{{ occur.ann }} </strong> {{ occur.contextRight }}</td>
                     <td> {{ occur.title }}</td>
                     <td> {{ occur.created | date : "MM/dd/yyyy 'at' h:mma" }} </td>
                 </tr>

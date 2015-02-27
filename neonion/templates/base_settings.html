@@ -6,11 +6,14 @@
 {% block page_id %}settings{% endblock %}
 
 {% block content %}
-<div>
-	<h3>My AnnotationSets</h3>
-	<ng-include src="'{% static 'partials/annotationsets_list.html' %}'"></ng-include>
+	<div>
+		<h2>Settings</h2>
+		<p class="nav-horizontal">
+			<a href="neonion.views.home">My AnnotationSets</a>
+			<a href="neonion.views.home">NER Settings</a></br></br>
+		</p>
+	</div>
 
-	<h3>NER Settings</h3>
+	<ng-include src="'{% static 'partials/annotationsets_list.html' %}'"></ng-include>
 	<ng-include src="'{% static 'partials/ner_models.html' %}'"></ng-include>
-</div>
 {% endblock %}

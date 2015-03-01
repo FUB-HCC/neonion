@@ -56,7 +56,7 @@
     color: $black;
   }
 
-  a:hover:after, a:visited:after {
+  a:hover:after, a:visited:after, a:active:after, a:focus:after {
     color: $black;
     content: '';
     position: absolute;
@@ -67,6 +67,7 @@
     border-bottom: 3px solid $tangerine;
     margin-top: 10px;
   }
+
   .sorting {
     float: right;
   }

@@ -211,7 +211,6 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
                     if (urn == a.uri) {
                         $scope.ann_occur[key] = {}
                         $scope.ann_occur[key].title = title;
-                        console.log(title);
                     };
                 });
                 $scope.ann_occur[key].created = date;

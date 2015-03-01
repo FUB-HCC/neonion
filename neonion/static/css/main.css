@@ -3270,7 +3270,7 @@ input[type="submit"].btn {
     font-weight: bold; }
   .nav-horizontal a:visited {
     color: #000000; }
-  .nav-horizontal a:hover:after, .nav-horizontal a:visited:after {
+  .nav-horizontal a:hover:after, .nav-horizontal a:visited:after, .nav-horizontal a:active:after, .nav-horizontal a:focus:after {
     color: #000000;
     content: '';
     position: absolute;

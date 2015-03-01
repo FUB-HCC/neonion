@@ -9,11 +9,18 @@
 	<div>
 		<h2>Settings</h2>
 		<p class="nav-horizontal">
-			<a href="neonion.views.home">My AnnotationSets</a>
-			<a href="neonion.views.home">NER Settings</a></br></br>
-		</p>
-	</div>
+            <a href="" ng-click="annotationSet=true">My Annotation Sets</a>
+			<a href="" ng-click="annotationSet=false">NER Settings</a>
+        </p></br>
 
-	<ng-include src="'{% static 'partials/annotationsets_list.html' %}'"></ng-include>
-	<ng-include src="'{% static 'partials/ner_models.html' %}'"></ng-include>
+        <div class="wrapper">
+            <p ng-hide="annotationSet">
+                <ng-include src="'{% static 'partials/ner_models.html' %}'"></ng-include>
+            </p>
+            <p ng-show="annotationSet">
+                <ng-include src="'{% static 'partials/annotationsets_list.html' %}'"></ng-include>
+            </p>
+        </div>
+
+	</div>
 {% endblock %}

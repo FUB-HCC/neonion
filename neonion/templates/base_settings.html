@@ -9,16 +9,16 @@
 	<div>
 		<h2>Settings</h2>
 		<p class="nav-horizontal">
-            <a href="" ng-click="annotationSet=true">My Annotation Sets</a>
-			<a href="" ng-click="annotationSet=false">NER Settings</a>
+            <a href="" ng-click="ner=false">My Annotation Sets</a>
+			<a href="" ng-click="ner=true">NER Settings</a>
         </p></br>
 
         <div class="wrapper">
-            <p ng-hide="annotationSet">
-                <ng-include src="'{% static 'partials/ner_models.html' %}'"></ng-include>
-            </p>
-            <p ng-show="annotationSet">
+            <p ng-hide="ner">
                 <ng-include src="'{% static 'partials/annotationsets_list.html' %}'"></ng-include>
+            </p>
+            <p ng-show="ner">
+                <ng-include src="'{% static 'partials/ner_models.html' %}'"></ng-include>
             </p>
         </div>
 

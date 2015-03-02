@@ -19,7 +19,7 @@
       color: $ship-gray;
       display: block;
       font-size: 20px;
-      padding: $half-baseline ($column - $column-gap/2); 
+      padding: $half-baseline ($column - $column-gap/2);
       text-decoration: none;
 
       .fa-fw { text-align: left; }
@@ -42,21 +42,26 @@
 .nav-horizontal {
   margin-bottom: 10px;
 
-  a {
-    color: $black;
+  ul {
+    @include list-reset;
+  }
+
+  li {
+    text-decoration: none;
     display: inline-block;
     position: relative;
-    text-decoration: none;
     padding: 0px $baseline 0px 0px;
+    text-align: left;
+  }
+
+  a, a:visited {
+    color: $black;
     vertical-align: top;
     font-weight: bold;
+    text-decoration: none;
   }
 
-  a:visited {
-    color: $black;
-  }
-
-  a:hover:after, a:visited:after, a:active:after, a:focus:after {
+   a:hover:after, a:visited:after, a:active:after, a:focus:after {
     color: $black;
     content: '';
     position: absolute;

@@ -8,10 +8,12 @@
 {% block content %}
 	<div>
 		<h2>Settings</h2>
-		<p class="nav-horizontal">
-            <a href="" ng-click="ner=false">My Annotation Sets</a>
-			<a href="" ng-click="ner=true">NER Settings</a>
-        </p></br>
+		<nav class="nav-horizontal">
+            <ul>
+                <li><a href="" ng-click="ner=false">My Annotation Sets</a></li>
+                <li><a href="" ng-click="ner=true">NER Settings</a></li>
+            </ul></br>
+        </nav>
 
         <div class="wrapper">
             <p ng-hide="ner">

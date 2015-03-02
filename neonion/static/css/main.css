@@ -3260,16 +3260,21 @@ input[type="submit"].btn {
 
 .nav-horizontal {
   margin-bottom: 10px; }
-  .nav-horizontal a {
-    color: #000000;
+  .nav-horizontal ul {
+    margin: 0;
+    padding: 0;
+    list-style: none; }
+  .nav-horizontal li {
+    text-decoration: none;
     display: inline-block;
     position: relative;
-    text-decoration: none;
     padding: 0px 26px 0px 0px;
+    text-align: left; }
+  .nav-horizontal a, .nav-horizontal a:visited {
+    color: #000000;
     vertical-align: top;
-    font-weight: bold; }
-  .nav-horizontal a:visited {
-    color: #000000; }
+    font-weight: bold;
+    text-decoration: none; }
   .nav-horizontal a:hover:after, .nav-horizontal a:visited:after, .nav-horizontal a:active:after, .nav-horizontal a:focus:after {
     color: #000000;
     content: '';

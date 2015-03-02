@@ -72,7 +72,7 @@ def load_ner_settings(request):
 
 @login_required
 def accounts_management(request):
-    return render_to_response('static/partials/accounts_management.html', context_instance=RequestContext(request))
+    return render_to_response('accounts_management.html', context_instance=RequestContext(request))
 
 
 @login_required

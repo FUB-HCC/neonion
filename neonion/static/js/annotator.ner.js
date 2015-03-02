@@ -107,13 +107,13 @@
                     annotation.rdf = {
                         typeof : 'http://neonion.org/concept/person', // tokenList[i].type,
                         label : tokenList[i].text
-                    }
+                    };
                     // add range to annotation
                     annotation.ranges = [path];
                     // finalize annotation
                     this.annotator.setupAnnotation(annotation);
                     // publish annotation created
-                    this.annotator.publish("annotationCreated", [annotation])  
+                    this.annotator.publish("annotationCreated", [annotation]);
                 }
             }
         };

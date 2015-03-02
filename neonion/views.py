@@ -96,7 +96,7 @@ def resource_search(request):
         search_term = request.GET.get('q')
         # call search method from provider
         provider = Provider(settings.ELASTICSEARCH_URL)
-        return JsonResponse(provider.search(search_type, search_term))
+        return JsonResponse(provider.search(search_term, search_type))
     else:
         return HttpResponseBadRequest()
 

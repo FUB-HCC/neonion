@@ -242,6 +242,7 @@
                     // update score
                     Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence(items);
                     // create and add items
+                    list.empty();
                     list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, formatter));
                 });
                 
@@ -619,7 +620,8 @@
         },
 
         search: function (type, searchText, callback) {
-            var url = '/es?type=' + encodeURI(type) + '&q=' + searchText;
+            var url = '/es?type=' + encodeURI(type) + '&q=' + encodeURI(searchText);
+            console.log(url);
             $.getJSON(url, function (data) {
                 if (callback) {
                     callback(Annotator.Plugin.Neonion.prototype.esNormalizeData(data));

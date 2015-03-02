@@ -439,7 +439,7 @@
 
             return {
                 left : leftC.substring(leftC.indexOf(" ") + 1),
-                right : rightC.substring(0, rightC.lastIndexOf(" ") - 1)
+                right : rightC.substring(0, rightC.lastIndexOf(" "))
             };
         },
 

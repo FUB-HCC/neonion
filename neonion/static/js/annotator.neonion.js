@@ -63,6 +63,14 @@
             };
             this.setCompositor(this.getCompositor());
 
+            this.annotator.subscribe('annotationsLoaded', function(annotations) {
+                annotations.forEach(function(annotation) {
+                   annotation.highlights.forEach(function(highlight) {
+                       highlight.setAttribute('id', annotation.id);
+                   });
+                });
+            });
+
             // bind events to document
             $(document).bind({
                 mouseup: function () {
@@ -504,7 +512,7 @@
             return null;
         },
 
-        getCookie: function (name) {
+        /*getCookie: function (name) {
             var cookieValue = null;
             if (document.cookie && document.cookie !== '') {
                 var cookies = document.cookie.split(';');
@@ -518,7 +526,7 @@
                 }
             }
             return cookieValue;
-        },
+        },*/
 
         createListItems: function (list, formatter) {
             var items = [];

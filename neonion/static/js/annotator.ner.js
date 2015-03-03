@@ -40,7 +40,7 @@
             this.annotator
                 .subscribe("annotationCreated", function (annotation) {
                     // TODO raise NER event
-                    console.log(annotation);
+                    //console.log(annotation);
                 })
                 .subscribe("annotationUpdated", function (annotation) {
                     // TODO raise NER event

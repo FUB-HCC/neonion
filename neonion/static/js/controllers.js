@@ -1,3 +1,5 @@
+/*jshint jquery:true */
+
 neonionApp.controller('AccountsCtrl', ['$scope', '$http', 'AccountService', function ($scope, $http, AccountService) {
     "use strict";
 
@@ -251,6 +253,8 @@ neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function (
 neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
+    $scope.contributors = [];
+
     $scope.setupAnnotator = function(uri, userId) {
         $("#document-body").annotator()
         .annotator('addPlugin', 'Neonion', {
@@ -271,31 +275,21 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $ht
             }
         });
 
+        // get annotator instance and subscribe to events
         $scope.annotator = $("#document-body").data("annotator");
+        $scope.annotator
+        .subscribe("annotationCreated", $scope.handleAnnotationEvent)
+        .subscribe("annotationUpdated", $scope.handleAnnotationEvent)
+        .subscribe("annotationDeleted", $scope.handleAnnotationEvent)
+        .subscribe('annotationsLoaded', function(annotations) {
+            $scope.$apply(function() {
+                $scope.contributors = $scope.getContributors();
+                // colorize each annotation
+                annotations.forEach($scope.colorizeAnnotation);
+            });
+        });
+
         $scope.loadAnnotationSet();
-
-        /*$scope.userColors = {};
-
-        function makeColor(colorNum, colors) {
-            if (colors < 1) colors = 1; // defaults to one color - avoid divide by zero
-            return ( colorNum * (360 / colors) ) % 360;
-        }*/
-
-        /*annotator.subscribe("annotationCreated", function (annotation) {
-        //  annotationChanged(annotation);
-        });*/
-
-        // TODO raise refresh list when store plugin has finished async request
-        /*window.setTimeout(function() {
-        refreshContributors();
-        var users = Annotator.Plugin.Neonion.prototype.getContributors();
-        users.forEach(function(user) {
-        var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations(user);
-        annotations.forEach(function(ann){
-        colorizeAnnotation(ann);
-        });
-        });
-        }, 1000);*/
     };
 
     $scope.loadAnnotationSet = function() {
@@ -313,6 +307,80 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $ht
                 $scope.annotator.plugins.Neonion.setCompositor(sets);
             }
         });
+    };
+
+    $scope.scrollToLastAnnotation = function() {
+        var annotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation(annotator.plugins.Neonion.getUser().email);
+        if (annotation) {
+            var target = $(annotation.highlights[0]);
+            $('html, body').stop().animate({
+                'scrollTop': target.offset().top - 50 },
+                1000,
+                'easeInOutQuart'
+            );
+            // blink for more attention
+            for(var i = 0; i < 2; i++) {
+                $(target).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
+            }
+        }
+        return false;
+    };
+
+    $scope.toggleContributor = function(contributor) {
+        var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations(contributor.user);
+        if (contributor.showAnnotation) {
+            annotations.forEach(function(item) {
+                Annotator.Plugin.Neonion.prototype.showAnnotation(item);
+                $scope.colorizeAnnotation(item);
+            });
+        } else {
+            annotations.forEach(Annotator.Plugin.Neonion.prototype.hideAnnotation);
+        }
+    };
+
+    $scope.makeColor = function(colorNum, colors) {
+        if (colors < 1) {
+            // defaults to one color - avoid divide by zero
+            colors = 1;
+        }
+        return ( colorNum * (360 / colors) ) % 360;
+    };
+
+    $scope.handleAnnotationEvent = function(annotation) {
+        $scope.$apply(function() {
+            $scope.contributors = $scope.getContributors();
+            $scope.colorizeAnnotation(annotation);
+        });
+    };
+
+    $scope.colorizeAnnotation = function(annotation) {
+        if (annotation.creator) {
+            var idx = $scope.contributors.map(function(x) {return x.user; }).indexOf(annotation.creator.email);
+            if (idx !== -1) {
+                var color = $scope.contributors[idx].color;
+                annotation.highlights.forEach(function (highlight) {
+                    $(highlight).css("backgroundColor", color);
+                });
+            }
+        }
+    };
+
+    $scope.getContributors = function() {
+        var users = Annotator.Plugin.Neonion.prototype.getContributors();
+        var items = [];
+
+        users.forEach(function (user, index) {
+            var lastAnnotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation(user);
+            var isoUpated = lastAnnotation.updated ? lastAnnotation.updated : new Date().toISOString();
+            items.push({
+                user: user, // creator of annotation
+                updated: isoUpated, // date when annotation was updated
+                showAnnotation : true,
+                color : "hsla( " + $scope.makeColor(index, users.length) + ", 100%, 50%, 0.3 )"
+            });
+        });
+
+        return items;
     };
 
 }]);

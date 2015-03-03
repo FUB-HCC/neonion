@@ -26,6 +26,13 @@
       margin-left: 2*$column + 3*$column-gap;
       width: 11*$column + 10*$column-gap;
     }
+
+    /* TODO @Alexa need review */
+    .annotator_menu {
+      position: fixed;
+      right: 1em;
+    }
+
   }
 
   p {

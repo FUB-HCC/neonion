@@ -635,9 +635,6 @@
 
 
 /* styling for the person-list */
-.annotator-item > div > button:first-child{
-    border-bottom: 1px solid black;
-}
 .annotator-item > div > button{
     color: black;
     padding-left: 1em;
@@ -674,15 +671,10 @@ a.annotator-cancel:after{ /* remove the shitty x-icon from the cancel button */
     content:none;
 }
 
-
-
-
 /* fix hover problem with annotate-button */
 #documentText > div > div.annotator-adder > button{
     /*background: transparent;*/
 }
-
-
 
 .annotator-controls .annotator-save{
     display:none;

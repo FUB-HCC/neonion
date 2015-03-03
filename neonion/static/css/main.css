@@ -1035,9 +1035,6 @@ th {
   color: white; }
 
 /* styling for the person-list */
-.annotator-item > div > button:first-child {
-  border-bottom: 1px solid black; }
-
 .annotator-item > div > button {
   color: black;
   padding-left: 1em; }
@@ -5089,7 +5086,8 @@ pre {
     width: 92px; }
   #page-annotator .main {
     margin-left: 92px;
-    width: 1188px; }
+    width: 1188px;
+    /* TODO @Alexa need review */ }
     #page-annotator .main .header {
       background: #eeeeee;
       border-bottom: 26px solid #ffffff;
@@ -5102,6 +5100,9 @@ pre {
       padding-top: 104px;
       margin-left: 124px;
       width: 578px; }
+    #page-annotator .main .annotator_menu {
+      position: fixed;
+      right: 1em; }
   #page-annotator p {
     margin: 0 0 26px 0; }
 

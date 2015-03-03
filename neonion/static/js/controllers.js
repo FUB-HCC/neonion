@@ -274,9 +274,15 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $ht
         $scope.annotator = $("#document-body").data("annotator");
         $scope.loadAnnotationSet();
 
+        /*$scope.userColors = {};
+
+        function makeColor(colorNum, colors) {
+            if (colors < 1) colors = 1; // defaults to one color - avoid divide by zero
+            return ( colorNum * (360 / colors) ) % 360;
+        }*/
+
         /*annotator.subscribe("annotationCreated", function (annotation) {
-        notifyEndpoint(annotation);
-        //annotationChanged(annotation);
+        //  annotationChanged(annotation);
         });*/
 
         // TODO raise refresh list when store plugin has finished async request

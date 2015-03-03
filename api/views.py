@@ -15,6 +15,9 @@ from common import uri
 from rest_framework import permissions
 from authentication import UnsafeSessionAuthentication
 from common.annotation import add_resource_uri
+from common.sparql import insert_data
+from common.statements import general_statement
+
 
 class WorkspaceDocumentList(APIView):
     def get(self, request, format=None):
@@ -52,7 +55,6 @@ class AnnotationListView(APIView):
     authentication_classes = (UnsafeSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)
 
-
     def get(self, request, format=None):
         """Returns a list of all annotations"""
         response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations')
@@ -62,7 +64,10 @@ class AnnotationListView(APIView):
         """Creates a new annotation"""
         annotation = json.loads(request.body)
         add_resource_uri(annotation)
-        
+
+        # insert data into TDB
+        insert_data(general_statement(annotation))
+
         headers = {'content-type': 'application/json'}
         response = requests.post(settings.ANNOTATION_STORE_URL + '/annotations',
                                  data=json.dumps(annotation), headers=headers)
@@ -73,7 +78,6 @@ class AnnotationDetailView(APIView):
     # TODO: find solution for annotator.store plugin an CSRF Tokens other than ignoring the absence of the token
     authentication_classes = (UnsafeSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)
-
 
     def get(self, request, pk, format=None):
         """Returns the specified annotation object"""

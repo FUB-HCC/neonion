@@ -1,5 +1,3 @@
-import json
-
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
@@ -13,7 +11,7 @@ from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 @require_http_methods(["GET", "POST"])
 def query(request):
     sparql_query = ''
-    sparql_output= 'json'
+    sparql_output = 'json'
 
     if request.method == 'POST':
         if 'query' in request.POST: sparql_query = request.POST['query']
@@ -42,40 +40,8 @@ def query_form(request):
         sparql_query = request.GET['query-field']
     else:
         sparql_query = "SELECT * {\n" \
-            "\t?s <rdf:type> <foaf:Person> .\n" \
-            "\t?s <foaf:name> ?n\n" \
+            "\t?uri rdf:type <http://neonion.org/concept/person> .\n" \
+            "\t?uri rdfs:label ?name\n" \
             "}\nLIMIT 50"
 
     return render_to_response('base_query.html', {'query': sparql_query, 'endpoint': settings.ENDPOINT}, context_instance=RequestContext(request))
-
-
-@login_required
-@require_POST
-def annotation_created(request):
-    annotation = json.loads(request.POST['annotation'])
-    rdf = annotation['rdf']
-
-    if rdf['typeof'] == 'http://xmlns.com/foaf/0.1/Person':
-        # insert statements about a person
-        try:
-            # http://stackoverflow.com/questions/14160437/insert-delete-update-query-using-sparqlwrapper
-            sparql = SPARQLWrapper(settings.ENDPOINT, settings.ENDPOINT_UPDATE)
-            sparql.method = 'POST'
-            sparql.setQuery(statement_about_person(annotation))
-            sparql.query()
-        except Exception as e:
-            print(e)
-    elif rdf['typeof'] == 'http://purl.org/vocab/aiiso/schema#Institution':
-        pass
-
-    return HttpResponse('')
-
-
-def statement_about_person(annotation):
-    #print(annotation)
-    rdf = annotation['rdf']
-    query = u'''INSERT DATA {{
-    <{}> <rdf:type> <foaf:Person>;
-    <foaf:name> "{}". }}'''.format(rdf['about'], annotation['quote'])
-
-    return query

@@ -38,13 +38,6 @@
     <script language="javascript">
         "use strict";
 
-        /*var userColors = {};
-
-        function makeColor(colorNum, colors) {
-            if (colors < 1) colors = 1; // defaults to one color - avoid divide by zero
-            return ( colorNum * (360 / colors) ) % 360;
-        }*/
-
         $(document).ready(function () {
             $('#nav-anotate').click(function() {
                 var span = $('#nav-anotate>span');
@@ -99,16 +92,7 @@
              */
         });
 
-        /*function notifyEndpoint(annotation) {
-            // clone annotation for stringify operation
-            var copy = $.extend(true, {}, annotation);
-            delete copy.highlights;
-            $.post("{% url 'endpoint.views.annotation_created' %}", {
-                annotation: JSON.stringify(copy),
-                docUrn: "{{ urn }}",
-                csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()
-            });
-        }
+        /*
 
         function annotationChanged(annotation) {
             refreshContributors();

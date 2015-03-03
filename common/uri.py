@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 
+
 def generate_uri(resource_type, name=None):
     validate = URLValidator()
     try:
@@ -22,6 +23,6 @@ def generate_uri(resource_type, name=None):
             concept_name,
             resource_id
         )
-    except ValidationError, e:
+    except ValidationError:
         return None
 

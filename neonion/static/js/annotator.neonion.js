@@ -156,7 +156,7 @@
                     // restore type from annotation if provided
                     selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : selectedType;
                     // add resource uri itself
-                    $(field).children((":first")).replaceWith("<div class='btn-group-git '></div>");
+                    $(field).children((":first")).replaceWith("<div class='btn-group-vertical unknown'></div>");
                     $(field).children((":first")).append(Annotator.Plugin.Neonion.prototype.createListItems([
                     {
                         uri : selectedType,

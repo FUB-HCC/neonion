@@ -1023,6 +1023,12 @@ th {
 .btn-group-vertical .annotator-btn {
   width: 100%; }
 
+.btn-group-vertical.unknown .annotator-btn:first-child {
+  background-color: #d4d4d4; }
+
+.btn-group-vertical.unknown .annotator-btn:first-child:hover {
+  background-color: #00ade8; }
+
 .btn-group-vertical .annotator-btn:nth-child(2n+1) {
   background-color: #f1f1f1; }
 

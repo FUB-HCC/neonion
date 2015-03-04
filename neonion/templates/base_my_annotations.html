@@ -28,10 +28,10 @@
                 </div>
                 <div></div>
                 <div>
-                    <a href="/annotations_occurrences/{{ occurrence.ann }}">{{ occurrence.count }} Occurrences</a>
+                    <a href="/annotations_occurrences/{{ occurrence.ann | escape }}">{{ occurrence.count }} Occurrences</a>
                 </div>
                 <div>
-                    <a href="/ann_documents/{{ occurrence.ann }}">in {{ occurrence.docs.length }} Documents</a>
+                    <a href="/ann_documents/{{ occurrence.ann | escape }}">in {{ occurrence.docs.length }} Documents</a>
                 </div>
                 <div></div>
                 <div class="sub-info">

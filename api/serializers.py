@@ -64,10 +64,10 @@ class DetailedDocumentSerializer(DocumentSerializer):
 
 
 # Serializers define the API representation.
-class WorkspaceSerializer(serializers.HyperlinkedModelSerializer):
+class WorkspaceSerializer(serializers.ModelSerializer):
     owner = UserSerializer()
     documents = DocumentSerializer(many=True)
-    active_annotationset = AnnotationSetSerializer()
+    #active_annotationset = AnnotationSetSerializer()
 
     class Meta:
         model = Workspace

@@ -17,6 +17,10 @@ from common.cms import instantiate_provider
 @login_required
 @require_POST
 def upload_file(request):
+    TEXT_TYPES = [
+        'text/plain',
+        'text/html',
+    ]
     for f in request.FILES:
         create_new_doc = False
 
@@ -28,7 +32,7 @@ def upload_file(request):
             doc_content = j['content']
 
             create_new_doc = True
-        elif request.FILES[f].content_type == 'text/plain':
+        elif request.FILES[f].content_type in TEXT_TYPES:
             file_name = request.FILES[f].name.encode('utf-8')
             doc_title = str(' '.join(splitext(basename(file_name))[0].split()))
             doc_urn = uuid.uuid1().hex

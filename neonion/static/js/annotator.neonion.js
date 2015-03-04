@@ -156,7 +156,8 @@
                     // restore type from annotation if provided
                     selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : selectedType;
                     // add resource uri itself
-                    $(field).children((":first")).replaceWith(Annotator.Plugin.Neonion.prototype.createListItems([
+                    $(field).children((":first")).replaceWith("<div class='btn-group-git '></div>");
+                    $(field).children((":first")).append(Annotator.Plugin.Neonion.prototype.createListItems([
                     {
                         uri : selectedType,
                         label : Annotator.Plugin.Neonion.prototype.literals['en'].unknown + " " + compositor[selectedType].label
@@ -229,11 +230,9 @@
                 // get search term
                 var searchTerm = $(this).find("#resource-search").val();
                 var list = $(this).parent().find("#resource-list");
+                // replace list with spinner while loading
                 list.html(Annotator.Plugin.Neonion.prototype.createSpinner());
 
-                // clear list and min-height css property
-                list.css("min-height", "");
-                
                 Annotator.Plugin.Neonion.prototype.search(selectedType, searchTerm, 
                 function (items) {
                     var formatter = Annotator.Plugin.Neonion.prototype.formatter[selectedType] || Annotator.Plugin.Neonion.prototype.formatter['default'];
@@ -244,6 +243,9 @@
                     // create and add items
                     list.empty();
                     list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, formatter));
+
+                    // clear list and min-height css property
+                    list.css("min-height", "");
                 });
                 
                 return false;

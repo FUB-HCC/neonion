@@ -1,3 +1,4 @@
+from exceptions import NoSemanticAnnotationError
 
 DEFAULT_PREFIXES = '''PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>
@@ -25,8 +26,8 @@ def general_statement(annotation):
 
         # add end of statement
         query += u'.\n}'
-    else:
-        query = None
 
-    #print(query)
-    return query
+        #print(query)
+        return query
+    else:
+        raise NoSemanticAnnotationError(annotation)

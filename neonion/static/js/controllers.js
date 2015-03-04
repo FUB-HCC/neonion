@@ -310,7 +310,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $ht
     };
 
     $scope.scrollToLastAnnotation = function() {
-        var annotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation(annotator.plugins.Neonion.getUser().email);
+        var annotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation($scope.annotator.plugins.Neonion.getUser().email);
         if (annotation) {
             var target = $(annotation.highlights[0]);
             $('html, body').stop().animate({
@@ -370,12 +370,14 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $ht
         var items = [];
 
         users.forEach(function (user, index) {
+            var idx = $scope.contributors.map(function(x) {return x.user; }).indexOf(user);
+            var showAnnotation = idx !== -1 ? $scope.contributors[idx].showAnnotation : true;
             var lastAnnotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation(user);
             var isoUpated = lastAnnotation.updated ? lastAnnotation.updated : new Date().toISOString();
             items.push({
                 user: user, // creator of annotation
                 updated: isoUpated, // date when annotation was updated
-                showAnnotation : true,
+                showAnnotation : showAnnotation,
                 color : "hsla( " + $scope.makeColor(index, users.length) + ", 100%, 50%, 0.3 )"
             });
         });

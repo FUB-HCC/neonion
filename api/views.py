@@ -11,12 +11,12 @@ from api.serializers import DocumentSerializer
 from rest_framework.response import Response
 from django.db import transaction
 from rest_framework.views import APIView
-from common import uri
 from rest_framework import permissions
 from authentication import UnsafeSessionAuthentication
 from common.annotation import add_resource_uri
 from common.sparql import insert_data
 from common.statements import general_statement
+from exceptions import InvalidResourceTypeError
 
 
 class WorkspaceDocumentList(APIView):
@@ -63,7 +63,10 @@ class AnnotationListView(APIView):
     def post(self, request, format=None):
         """Creates a new annotation"""
         annotation = json.loads(request.body)
-        add_resource_uri(annotation)
+        try:
+            add_resource_uri(annotation)
+        except InvalidResourceTypeError:
+            pass
 
         # insert data into TDB
         insert_data(general_statement(annotation))
@@ -114,12 +117,3 @@ def store_search(request):
     ##print(request.GET.urlencode())
     response = requests.get(settings.ANNOTATION_STORE_URL + '/search?' + request.GET.urlencode())
     return JsonResponse(response.json(), safe=False)
-
-
-# TEST uri
-def generate_uri(request, type, name):
-    return JsonResponse({
-        'uri': uri.generate_uri(resource_type=type, name=name),
-        'label': name,
-        'type': type
-    })

@@ -20,8 +20,8 @@ class NeonionUserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('email address', unique=True, db_index=True)
-    name = models.CharField('persons name',blank=True, max_length=256)
-    surname = models.CharField('persons surname', blank=True,max_length=256)
+    name = models.CharField('persons name', blank=True, max_length=256)
+    surname = models.CharField('persons surname', blank=True, max_length=256)
     joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=settings.DEFAULT_USER_ACTIVE_STATE)
 

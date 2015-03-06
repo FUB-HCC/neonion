@@ -3,7 +3,7 @@ import uuid
 from django.conf import settings
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
-from exceptions import InvalidResourceTypeError
+from common.exceptions import InvalidResourceTypeError
 
 
 def generate_uri(resource_type, name=None):

@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import BaseUserManager, Permission
 from django.conf import settings
+from documents.models import Document
 
 
 class NeonionUserManager(BaseUserManager):
@@ -36,3 +37,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __unicode__(self):
         return self.email
 
+
+class WorkingGroup(models.Model):
+    name = models.CharField('group name', max_length=128)
+    comment = models.CharField('group description', max_length=500, blank=True)
+    owner = models.ForeignKey(User, related_name="group_owner", null=True)
+    members = models.ManyToManyField(User, through='Membership', related_name="group_members")
+    documents = models.ManyToManyField(Document)
+
+    def __str__(self):
+        return self.name
+
+
+class Membership(models.Model):
+    user = models.ForeignKey(User)
+    group = models.ForeignKey(WorkingGroup)
+    date_joined = models.DateField(auto_now_add=True)
+    invite_reason = models.CharField(max_length=64, blank=True)
+    permissions = models.ManyToManyField(Permission, blank=True)

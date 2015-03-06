@@ -16,7 +16,7 @@ class WorkspaceManager(models.Manager):
 
 
 class Workspace(models.Model):
-    owner = models.OneToOneField(User, unique=True)
+    owner = models.ForeignKey(User)
     documents = models.ManyToManyField(Document, blank=True, null=True)
     hidden_documents = models.ManyToManyField(Document, related_name='hidden_documents', blank=True, null=True)
     active_annotationset = models.OneToOneField(AnnotationSet, blank=True, null=True)

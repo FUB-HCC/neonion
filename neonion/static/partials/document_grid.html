@@ -1,10 +1,10 @@
-<ul id="document-table" class="document-grid" ng-controller="WorkspaceDocumentCtrl">
+<ul id="document-table" class="document-grid" ng-controller="WorkspaceCtrl">
     <li>
         <a href="/import/" class="document-grid-content upload">
             <span class="fa fa-file-text-o"></span>Import to Workspace
         </a>
     </li>
-    <li ng-repeat="document in documents | orderBy:'-created'">
+    <li ng-repeat="document in workspace.documents | orderBy:'-created'">
         <a href="/annotator/{{document.urn}}" class="document-grid-content">
             <div>{{document.title}}</div>
         </a>

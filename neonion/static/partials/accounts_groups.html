@@ -24,7 +24,7 @@
                 <a class="button button-small" ng-click="showMembership(group)">
                     <span class="fa fa-users fa-fw"></span>Membership
                 </a>
-                <a class="button button-small" ng-click="deleteGroup(group)">
+                <a ng-show="group.owner != null" class="button button-small" ng-click="deleteGroup(group)">
                     <span class="fa fa-times fa-fw"></span>Delete
                 </a>
                 <div ng-show="group.id == form.selectedGroup">
@@ -32,8 +32,8 @@
                         <input id="ch_{{ group.id }}_{{ user.id }}" 
                         type="checkbox" 
                         style="width:auto;" 
-                        ng-click="toogleMembership(group, user)"
-                        ng-checked="group.user_set.indexOf(user.id) != -1" />
+                        ng-click="toggleMembership(group, user)"
+                        ng-checked="group.members.indexOf(user.id) != -1" />
                         <label for="ch_{{ group.id }}_{{ user.id }}">{{ user.email }}</label>
                     </div>
                 </div>

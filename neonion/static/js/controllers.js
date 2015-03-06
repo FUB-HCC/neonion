@@ -1,10 +1,15 @@
 /*jshint jquery:true */
 
+/**
+ * Accounts management controller
+ */
 neonionApp.controller('AccountsCtrl', ['$scope', '$http', 'AccountService', function ($scope, $http, AccountService) {
     "use strict";
 
-    $http.get('/api/users').success(function(data) {
-        $scope.users = data;
+    $scope.users = [];
+
+    AccountService.getAccounts().then(function(result) {
+        $scope.users = result.data;
     });
 
     $scope.updateUser = function (user, field, value) {
@@ -23,7 +28,11 @@ neonionApp.controller('AccountsCtrl', ['$scope', '$http', 'AccountService', func
 
 }]);
 
-neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', function ($scope, $http, GroupService) {
+/**
+ * Group management controller
+ */
+neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'AccountService',
+    function ($scope, $http, GroupService, AccountService) {
     "use strict";
     
     $scope.groups = [];
@@ -33,12 +42,12 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', function
         selectedGroup : -1
     };
 
-    $http.get('/api/groups').success(function(data) {
-        $scope.groups = data;
+    GroupService.getGroups().then(function(result) {
+        $scope.groups = result.data;
     });
 
-    $http.get('/api/users').success(function(data) {
-        $scope.users = data;
+    AccountService.getAccounts().then(function(result) {
+        $scope.users = result.data;
     });
 
     $scope.showMembership = function(group) {
@@ -48,23 +57,18 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', function
         else {
             $scope.form.selectedGroup = group.id;
         }
-    }
+    };
 
     $scope.createGroup = function () {
         if ($scope.form.groupName.length > 0) {
             var group = {
-                name : $scope.form.groupName,
-                user_set : []
-            }
+                name : $scope.form.groupName
+            };
             GroupService.createGroup(group).then(function(result) {
                 $scope.groups.push(result.data);
             });
             $scope.form.groupName = ""; 
         }
-    };
-
-    $scope.updateGroup = function(group) {
-        GroupService.updateGroup(group);
     };
 
     $scope.deleteGroup = function (group) {
@@ -74,8 +78,8 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', function
         });
     };
 
-    $scope.toogleMembership = function(group, user) {
-        if (group.user_set.indexOf(user.id) == -1) {
+    $scope.toggleMembership = function(group, user) {
+        if (group.members.indexOf(user.id) === -1) {
             $scope.addGroupMember(group, user);
         }
         else {
@@ -83,36 +87,46 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', function
         }
     };
 
+
     $scope.addGroupMember = function(group, user) {
-        group.user_set.push(user.id);
-        $scope.updateGroup(group);
+        GroupService.addGroupMember(group, user).then(function(result) {
+           group.members.push(user.id);
+        });
     };
 
     $scope.removeGroupMember = function(group, user) {
-        var idx = group.user_set.indexOf(user.id);
-        if (idx > -1) {
-            group.user_set.splice(idx, 1);
-            $scope.updateGroup(group);
-        }
+        GroupService.removeGroupMember(group, user).then(function(result) {
+             var idx = group.members.indexOf(user.id);
+            if (idx > -1) {
+                group.members.splice(idx, 1);
+            }
+        });
     };
 
 }]);
 
-neonionApp.controller('WorkspaceDocumentCtrl', ['$scope', '$http', 'WorkspaceService', function ($scope, $http, WorkspaceService) {
+/**
+ * My workspace controller
+ */
+neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'WorkspaceService', function ($scope, $http, WorkspaceService) {
     "use strict";
 
-    $http.get('/api/workspace/documents/').success(function(data) {
-        $scope.documents = data;
+    WorkspaceService.getWorkspace().then(function(result) {
+        $scope.workspace = result.data;
     });
 
     $scope.removeDocument = function (document) {
         WorkspaceService.removeDocument(document.urn).then(function(result) {
-            var idx = $scope.documents.indexOf(document);
-            $scope.documents.splice(idx, 1);    
+            var idx = $scope.workspace.documents.indexOf(document);
+            $scope.workspace.documents.splice(idx, 1);
         });
+
     };
 }]);
 
+/**
+ * Import controller
+ */
 neonionApp.controller('WorkspaceImportCtrl', ['$scope', '$http', 'DocumentService', function ($scope, $http, DocumentService) {
     "use strict";
 
@@ -250,6 +264,9 @@ neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function (
     $scope.ann_docs = ann_docs;
 }]);
 
+/**
+ * Annotator controller
+ */
 neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 

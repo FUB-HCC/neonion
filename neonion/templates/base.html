@@ -26,12 +26,11 @@
 
         {% block header %}
             {# Search field #}
-            <div ng-show="true">
-                <form id="search-form" class="search-form" method="get" action="/search" role="search">
-                    <button id="search-icon" class="fa fa-search"></button>
-                    <input id="search" placeholder="Search..."/>
-                </form>
+            <div class="search-form" ng-show="search.enabled">
+                <button id="search-icon" class="fa fa-search"></button>
+                <input id="search" type="text" placeholder="Search..." ng-model="search.query"/>
             </div>
+
         {% endblock %}
 
         </div>

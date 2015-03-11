@@ -5,13 +5,6 @@ var neonionApp = angular.module('neonionApp', [])
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 }]
 )
-.factory('Search', function () {
-    "use strict";
-    return {
-        query : "",
-        enabled : true
-    };
-})
 .filter('escape', function() {
     return window.encodeURIComponent;
 });

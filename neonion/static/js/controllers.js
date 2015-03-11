@@ -1,6 +1,7 @@
 
-neonionApp.controller('MainCtrl', ['$scope', '$http', function ($scope, $http) {
+neonionApp.controller('MainCtrl', ['$scope', '$http', 'SearchService', function ($scope, $http, SearchService) {
     "use strict";
+    $scope.search = SearchService;
 
     // TODO fill wit life
 }]);
@@ -104,11 +105,11 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', function
 
 }]);
 
-neonionApp.controller('WorkspaceDocumentCtrl', ['$scope', '$http', 'WorkspaceService', 'Search', function ($scope, $http, WorkspaceService, Search) {
+neonionApp.controller('WorkspaceDocumentCtrl', ['$scope', '$http', 'WorkspaceService', 'SearchService', function ($scope, $http, WorkspaceService, SearchService) {
     "use strict";
 
-    $scope.search = Search;
-    $scope.search.enable = true;
+    $scope.search = SearchService;
+    $scope.search.enabled = true;
 
     $http.get('/api/workspace/documents/').success(function(data) {
         $scope.documents = data;

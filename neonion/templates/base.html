@@ -24,7 +24,7 @@
     <div class="main">
         <div class="header">
         {% block header %}
-        <div ng-show="true">
+        <div ng-show="search.enabled">
             <button id="search-icon" class="fa fa-search"></button>
             <input id="search" type="text" placeholder="Search..." ng-model="search.query"/>
         </div>

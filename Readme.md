@@ -62,12 +62,12 @@ tar xzfv openrdf-sesame-2.7.13-sdk.tar.gz
 By default there are two predefined accounts 'neonion-admin@fu-berlin.de' and 'neonion-test@fu-berlin.de'. Both have the default password 'neonion' but different rights.
 
 ```
-python manage.py loaddata initial_accounts
+python manage.py loaddata fixtures/accounts
 ```
 
 #### Annotation set for annotating persons
 ```
-python manage.py loadadata initial_annotationsts
+python manage.py loadadata fixtures/annotationsets
 ```
 
 ### Start services

@@ -1,5 +1,15 @@
 /*jshint jquery:true */
 
+neonionApp.controller('MainCtrl', ['$scope', '$http', 'WorkspaceService', function ($scope, $http, WorkspaceService) {
+    "use strict";
+
+    // get current user
+    WorkspaceService.getUser().then(function(result) {
+        $scope.user = result.data;
+    });
+
+}]);
+
 /**
  * Accounts management controller
  */
@@ -31,12 +41,13 @@ neonionApp.controller('AccountsCtrl', ['$scope', '$http', 'AccountService', func
 /**
  * Group management controller
  */
-neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'AccountService',
-    function ($scope, $http, GroupService, AccountService) {
+neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'AccountService', 'DocumentService',
+    function ($scope, $http, GroupService, AccountService, DocumentService) {
     "use strict";
     
     $scope.groups = [];
     $scope.users = [];
+    $scope.documents = [];
     $scope.form = {
         groupName : "",
         selectedGroup : -1
@@ -48,6 +59,10 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'Account
 
     AccountService.getAccounts().then(function(result) {
         $scope.users = result.data;
+    });
+
+    DocumentService.getDocuments().then(function(result) {
+        $scope.documents = result.data;
     });
 
     $scope.showMembership = function(group) {
@@ -87,6 +102,14 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'Account
         }
     };
 
+    $scope.toggleDocumentAssignment = function(group, document) {
+        if (group.documents.indexOf(document.id) === -1) {
+            $scope.addDocument(group, document);
+        }
+        else {
+            $scope.removeDocument(group, document);
+        }
+    };
 
     $scope.addGroupMember = function(group, user) {
         GroupService.addGroupMember(group, user).then(function(result) {
@@ -103,25 +126,55 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'Account
         });
     };
 
+    $scope.addDocument = function(group, document) {
+       GroupService.addGroupDocument(group, document).then(function(result) {
+            group.documents.push(document.id);
+        });
+    };
+
+    $scope.removeDocument = function(group, document) {
+        GroupService.removeGroupDocument(group, document).then(function(result) {
+            var idx = group.documents.indexOf(document.id);
+            if (idx > -1) {
+                group.documents.splice(idx, 1);
+            }
+        });
+    };
+
 }]);
 
 /**
  * My workspace controller
  */
-neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'WorkspaceService', function ($scope, $http, WorkspaceService) {
+neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'WorkspaceService', 'Search', function ($scope, $http, WorkspaceService, Search) {
     "use strict";
 
-    WorkspaceService.getWorkspace().then(function(result) {
-        $scope.workspace = result.data;
-    });
+    $scope.search = Search;
+    $scope.search.enable = true;
+
+    $scope.allowImport = true;
+    $scope.allowRemove = true;
+    $scope.documents = [];
+
+    /*WorkspaceService.getDocumentsByGroup($scope.workspace).then(function(result) {
+
+    });*/
 
     $scope.removeDocument = function (document) {
-        WorkspaceService.removeDocument(document.urn).then(function(result) {
-            var idx = $scope.workspace.documents.indexOf(document);
-            $scope.workspace.documents.splice(idx, 1);
+        WorkspaceService.removeDocument($scope.workspace, document.id).then(function(result) {
+            var idx = $scope.documents.indexOf(document);
+            $scope.documents.splice(idx, 1);
         });
-
     };
+
+    $scope.filterDocuments = function(document) {
+        if ($scope.search.query.length > 0) {
+            // do something with $scope.search.query
+            return document.title.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
+        }
+        return true;
+    };
+
 }]);
 
 /**
@@ -203,37 +256,39 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
     var url = $location.absUrl().split('/');
     var quote = url[url.length-1];
 
-    $http.get('/api/store/search?quote=' + quote).success(function (data2) {
+    $http.get('/api/store/filter?quote=' + quote).success(function (data2) {
 
         var filterUserData = data2.rows;
 
         filterUserData.forEach(function(a) {
             // context variable here
+            if (decodeURI(quote) === a.quote) {
+                var key = a.id;
+                var ann = a.quote;
+                var date = a.created;
+                var context = a.context;
+                var contextRight = context.right;
+                var contextLeft = context.left;
 
-            var key = a.id;
-            var ann = a.quote;
-            var date = a.created;
-            var context = a.context;
-            var contextRight = context.right;
-            var contextLeft = context.left;
+                $http.get('/api/documents').success(function (data) {
+                    var self = this;
 
-            $http.get('/api/documents').success(function (data) {
-                var self = this;
+                    data.forEach(function (b) {
+                        var title = b.title;
+                        var id = b.id;
 
-                data.forEach(function(b) {
-                    var title = b.title;
-                    var urn = b.urn;
-
-                    if (urn == a.uri) {
-                        $scope.ann_occur[key] = {}
-                        $scope.ann_occur[key].title = title;
-                    };
+                        if (id == a.uri) {
+                            $scope.ann_occur[key] = {}
+                            $scope.ann_occur[key].title = title;
+                        }
+                        ;
+                    });
+                    $scope.ann_occur[key].created = date;
+                    $scope.ann_occur[key].ann = ann;
+                    $scope.ann_occur[key].contextRight = contextRight;
+                    $scope.ann_occur[key].contextLeft = contextLeft;
                 });
-                $scope.ann_occur[key].created = date;
-                $scope.ann_occur[key].ann = ann;
-                $scope.ann_occur[key].contextRight = contextRight;
-                $scope.ann_occur[key].contextLeft = contextLeft;
-            });
+            }
         });
     });
 
@@ -247,16 +302,18 @@ neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function (
 
     $http.get('/api/documents').success(function (data2) {
         data2.forEach(function(b) {
-            var urn = b.urn;
+            var id = b.id;
             var title = b.title;
 
-            $http.get('/api/store/search?quote=' + quote).success(function (data) {
+            $http.get('/api/store/filter?quote=' + quote).success(function (data) {
                 var filterUserData = data.rows;
 
-                filterUserData.forEach(function(a) {
-                    if (!(urn in ann_docs) && urn == a.uri) {
-                        ann_docs[urn] = {urn: urn, title: title};
-                    };
+                filterUserData.forEach(function (a) {
+                    if (decodeURI(quote) === a.quote) {
+                        if (!(id in ann_docs) && id == a.uri) {
+                            ann_docs[id] = {urn: id, title: title};
+                        }
+                    }
                 });
             });
         });

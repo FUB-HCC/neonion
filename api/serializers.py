@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from accounts.models import User, WorkingGroup, Membership
 from documents.models import Document
-from neonion.models import Workspace
 from annotationsets.models import AnnotationSet, Concept, LinkedConcept
 
 
@@ -9,15 +8,21 @@ from annotationsets.models import AnnotationSet, Concept, LinkedConcept
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
-        fields = ('urn', 'title', 'created', 'updated', 'workinggroup_set')
+        fields = ('id', 'title', 'created', 'updated', 'workinggroup_set')
 
 
 # Serializer for user representation.
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'is_active', 'is_superuser', 'membership_set')
+        fields = ('id', 'email', 'is_superuser')
 
+
+# Serializer for user representation.
+class UserDetailedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'is_active', 'is_superuser', 'membership_set', 'owned_documents')
 
 # Serializer for memberships representation.
 class MembershipSerializer(serializers.ModelSerializer):
@@ -34,12 +39,12 @@ class WorkingGroupSerializer(serializers.ModelSerializer):
 
 
 # Serializer for working group representation
-class DetailedWorkingGroupSerializer(serializers.ModelSerializer):
+class WorkingGroupDocumentSerializer(serializers.ModelSerializer):
     documents = DocumentSerializer(many=True)
 
     class Meta:
         model = WorkingGroup
-        fields = ('id', 'name', 'owner', 'documents')
+        fields = ('id', 'name', 'documents')
 
 
 # Serializers for linked concept representation.
@@ -70,20 +75,8 @@ class AnnotationSetSerializer(serializers.ModelSerializer):
         return AnnotationSet.objects.create_set(**validated_data)
 
 
-
 # Serializers for full document representation representation.
 class DetailedDocumentSerializer(DocumentSerializer):
     class Meta:
         model = Document
-        fields = ('urn', 'title', 'content', 'created', 'updated')
-
-
-# Serializers for workspace representation.
-class WorkspaceSerializer(serializers.ModelSerializer):
-    owner = UserSerializer()
-    documents = DocumentSerializer(many=True)
-    active_annotationset = AnnotationSetSerializer()
-
-    class Meta:
-        model = Workspace
-        fields = ('owner', 'documents', 'active_annotationset')
+        fields = ('id', 'title', 'content', 'created', 'updated')

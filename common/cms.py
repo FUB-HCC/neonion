@@ -22,9 +22,9 @@ class ContentSystem(object):
         pass
 
     @abstractmethod
-    def get_document(self, doc_urn):
+    def get_document(self, doc_id):
         pass
 
     @abstractmethod
-    def get_meta(self, doc_urn):
+    def get_meta(self, doc_id):
         pass

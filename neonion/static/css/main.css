@@ -39,8 +39,6 @@ p {
     margin-left: 54px; }
     .main .content div > h3 {
       display: inline-block; }
-    .main .content div span {
-      margin-left: 30px; }
     .main .content div .sorting {
       float: right; }
 
@@ -1024,6 +1022,12 @@ th {
 
 .btn-group-vertical .annotator-btn {
   width: 100%; }
+
+.btn-group-vertical.unknown .annotator-btn:first-child {
+  background-color: #d4d4d4; }
+
+.btn-group-vertical.unknown .annotator-btn:first-child:hover {
+  background-color: #00ade8; }
 
 .btn-group-vertical .annotator-btn:nth-child(2n+1) {
   background-color: #f1f1f1; }
@@ -5051,7 +5055,8 @@ input[type="text"], input[type="password"], input[type="email"] {
   line-height: 26px;
   padding: 12px 0; }
   input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
-    border-bottom-color: #008df3; }
+    border-bottom-color: #008df3;
+    outline: 0; }
   input[type="text"]:valid + label, input[type="text"]:focus + label, input[type="password"]:valid + label, input[type="password"]:focus + label, input[type="email"]:valid + label, input[type="email"]:focus + label {
     cursor: default;
     font-size: 14px;

@@ -6,15 +6,15 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', 'neonion.views.home'),
     url(r'^my_annotations/$', 'neonion.views.my_annotations'),
-    url(r'^annotations_occurrences/(?P<quote>\w+)$', 'neonion.views.annotations_occurrences'),
-    url(r'^ann_documents/(?P<quote>\w+)$', 'neonion.views.ann_documents'),
+    url(r'^annotations_occurrences/(?P<quote>.+)$', 'neonion.views.annotations_occurrences'),
+    url(r'^ann_documents/(?P<quote>.+)$', 'neonion.views.ann_documents'),
     url(r'^import/$', 'neonion.views.import_document'),
     url(r'^settings/$', 'neonion.views.load_settings'),
     url(r'^annotationsets/$', 'neonion.views.load_annotation_sets'),
     url(r'^ner_models/$', 'neonion.views.load_ner_settings'),
     url(r'^management/?$', 'neonion.views.accounts_management'),
 
-    url(r'^annotator/(?P<doc_urn>.+)$', 'neonion.views.annotator'),
+    url(r'^annotator/(?P<doc_id>.+)$', 'neonion.views.annotator'),
     
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('api.urls')),

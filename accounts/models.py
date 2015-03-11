@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import BaseUserManager, Permission
 from django.conf import settings
 from documents.models import Document
+from annotationsets.models import AnnotationSet
 
 
 class NeonionUserManager(BaseUserManager):
@@ -20,11 +21,15 @@ class NeonionUserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField('email address', unique=True, db_index=True)
+    email = models.EmailField('email address', unique=True)
     name = models.CharField('persons name', blank=True, max_length=256)
     surname = models.CharField('persons surname', blank=True, max_length=256)
     joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=settings.DEFAULT_USER_ACTIVE_STATE)
+
+    owned_documents = models.ManyToManyField(Document, blank=True, null=True)
+    hidden_documents = models.ManyToManyField(Document, related_name='hidden_documents', blank=True, null=True)
+    active_annotationset = models.OneToOneField(AnnotationSet, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
 

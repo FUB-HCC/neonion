@@ -619,9 +619,18 @@
     max-height: 25em;
     overflow-y:auto;
 }
+
 .btn-group-vertical .annotator-btn{
     width: 100%;
 }
+.btn-group-vertical.unknown .annotator-btn:first-child {
+    background-color: #d4d4d4;
+}
+
+.btn-group-vertical.unknown .annotator-btn:first-child:hover {
+    background-color: rgba( 0,173, 232, 1);
+}
+
 .btn-group-vertical .annotator-btn:nth-child(2n+1){
     background-color: #f1f1f1;
 }

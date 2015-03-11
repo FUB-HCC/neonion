@@ -66,16 +66,20 @@ neonionApp.factory('WorkspaceService', ['$http', function($http) {
     "use strict";
     var factory = {};
 
-    factory.getWorkspace = function() {
-        return $http.get('/api/workspace');
+    factory.getUser = function() {
+        return $http.get('/api/users/current');
     };
 
-    factory.addDocument = function () {
-        return $http.post("api/workspace/documents/" + pk, {});
+    factory.addDocument = function (user, docID) {
+        return $http.post("api/users/" + user.id + "/add_document", { doc_id : docID });
     };
 
-    factory.removeDocument = function(pk) {
-        return $http.delete("api/workspace/documents/" + pk, {});
+    factory.removeDocument = function(user, docID) {
+        return $http.post("api/users/" + user.id + "/hide_document", { doc_id : docID });
+    };
+
+    factory.getDocumentsByGroup = function(user) {
+        return $http.get("api/users/" + user.id + "/documents_by_group", {});
     };
 
     return factory;
@@ -84,6 +88,10 @@ neonionApp.factory('WorkspaceService', ['$http', function($http) {
 neonionApp.factory('DocumentService', ['$http', function($http) {
     "use strict";
     var factory = {};
+
+    factory.getDocuments = function() {
+        return $http.get('/api/documents');
+    };
 
     factory.importDocuments = function(arr) {
         return $http.post("/documents/cms/import", { documents : arr });

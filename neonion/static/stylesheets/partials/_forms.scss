@@ -47,6 +47,7 @@ input[type="text"], input[type="password"], input[type="email"] {
 
   &:focus {
     border-bottom-color: $azure;
+    outline: 0;
   }
 
   &:valid + label,

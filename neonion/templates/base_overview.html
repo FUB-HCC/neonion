@@ -7,5 +7,17 @@
 
 
 {% block content %}
-<ng-include src="'{% static 'partials/document_grid.html' %}'"></ng-include>
+<nav class="nav-horizontal">
+    <ul>
+        <li><a href="/">My</a></li>
+        <li><a href="#public">Public</a></li>
+        <li><a href="#groups">Groups</a></li>
+    </ul>
+</nav>
+
+<div class="view-animate-container">
+    <div ng-view class="view-animate"></div>
+</div>
+
+{#<ng-include src="'{% static 'partials/document_grid.html' %}'"></ng-include>#}
 {% endblock %}

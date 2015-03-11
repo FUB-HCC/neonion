@@ -24,11 +24,11 @@ def home(request):
 
 
 @login_required
-def annotator(request, doc_urn):
-    doc = get_object_or_404(Document, urn=doc_urn)
+def annotator(request, doc_id):
+    doc = get_object_or_404(Document, urn=doc_id)
 
     data = {
-        'urn': doc_urn,
+        'id': doc_id,
         'title': doc.title,
         'content': doc.content,
         'endpoint_url': '/endpoint/',

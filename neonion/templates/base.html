@@ -3,13 +3,13 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, maximum-scale=1, minimum-scale=1" />
-
+    <base href="/">
     <title>Neonion - {% block title %}{% endblock %}</title>
     {% load staticfiles %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}" type="text/css" media="screen" />
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
 </head>
-<body id="page-{% block page_id %}general{% endblock %}">
+<body id="page-{% block page_id %}general{% endblock %}" ng-controller="MainCtrl as main">
 {% csrf_token %}
 {% block left %}
     <div class="sidebar">
@@ -22,9 +22,13 @@
 
 {% block right %}
     <div class="main">
-      <div class="header">
-      {% block header %}{% endblock %}
-      </div>
+        <div class="header">
+        {% block header %}
+        <div ng-show="search.enabled">
+
+        </div>
+        {% endblock %}
+        </div>
       <div class="content">
       {% block content %}{% endblock %}
       </div>
@@ -34,6 +38,8 @@
     <script src="{% static 'js/jquery.min.js' %}"></script>
     <script src="{% static 'js/jquery-ui.min.js' %}"></script>
     <script src="{% static 'js/angular.min.js' %}"></script>
+    <script src="{% static 'js/angular-route.min.js' %}"></script>
+    <script src="{% static 'js/angular-animate.min.js' %}"></script>
     <script src="{% static 'js/app.js' %}"></script>
     <script src="{% static 'js/services.js' %}"></script>
     <script src="{% static 'js/controllers.js' %}"></script>

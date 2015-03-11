@@ -3,13 +3,8 @@ import json
 
 from django.conf import settings
 from django.http import JsonResponse
-from rest_framework import status
 from rest_framework.decorators import api_view
-from documents.models import Document
-from neonion.models import Workspace
-from api.serializers import WorkspaceSerializer
 from rest_framework.response import Response
-from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework import permissions
 from authentication import UnsafeSessionAuthentication
@@ -17,42 +12,6 @@ from common.annotation import add_resource_uri
 from common.sparql import insert_data
 from common.statements import general_statement
 from common.exceptions import InvalidResourceTypeError
-
-
-class CurrentWorkspaceView(APIView):
-
-    def get(self, request, format=None):
-        workspace = Workspace.objects.get_workspace(owner=request.user)
-        serializer = WorkspaceSerializer(workspace)
-        return Response(serializer.data)
-
-
-class CurrentWorkspaceDocumentView(APIView):
-
-    def post(self, request, pk, format=None):
-        if Document.objects.filter(urn=pk).exists():
-            document = Document.objects.get(urn=pk)
-            workspace = Workspace.objects.get_workspace(owner=request.user)
-
-            with transaction.atomic():
-                workspace.documents.add(document)
-                workspace.hidden_documents.remove(document)
-
-            return Response(status=status.HTTP_201_CREATED)
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def delete(self, request, pk, format=None):
-
-        if Document.objects.filter(urn=pk).exists():
-            document = Document.objects.get(urn=pk)
-            workspace = Workspace.objects.get_workspace(owner=request.user)
-
-            with transaction.atomic():
-                workspace.hidden_documents.add(document)
-                workspace.documents.remove(document)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AnnotationListView(APIView):

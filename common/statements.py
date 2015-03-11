@@ -17,7 +17,7 @@ def general_statement(annotation):
         # add type property
         query += u'\n<{}> rdf:type <{}>;'.format(rdf['uri'], rdf['typeof'])
         # add label property
-        query += u'\nrdfs:label "{}";'.format(annotation['quote'])
+        query += u'\nrdfs:label "{}";'.format(rdf['label'])
 
         if 'sameAs' in rdf:
             # add sameAs relation

@@ -4,7 +4,7 @@
             <span class="fa fa-file-text-o"></span>Import to Workspace
         </a>
     </li>
-    <li ng-repeat="document in documents | orderBy:'-created'">
+    <li ng-repeat="document in documents | filter:filterDocuments | orderBy:'-created'">
         <a href="/annotator/{{document.urn}}" class="document-grid-content">
             <div>{{document.title}}</div>
         </a>

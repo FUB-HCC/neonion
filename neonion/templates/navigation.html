@@ -7,14 +7,6 @@
         {% url 'neonion.views.load_settings' as url_settings %}
         {% url 'accounts.views.logout' as url_logout %}
 
-        {# Search field #}
-        <li id="search-box">
-            <form id="search-form" class="search-form" method="get" action="/search" role="search">
-                <button id="search-icon" class="fa fa-search"></button>
-                <input id="search" placeholder="Search..."/>
-            </form>
-        </li>
-
         {# My neonion #}
         <li {% if request.path == url_home %}class="active"{% endif %}>
             <a href="{{ url_home }}">

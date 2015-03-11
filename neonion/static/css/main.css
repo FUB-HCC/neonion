@@ -30,6 +30,41 @@ p {
     padding-top: 26px;
     padding-left: 38px; }
 
+.header {
+  hight: 52px; }
+  .header #search-form {
+    width: 228px;
+    margin: 42px;
+    padding: 13px 30px 0 30px;
+    display: inline-block;
+    position: relative; }
+  .header #search-icon {
+    float: left;
+    position: absolute;
+    padding: 9px 0 0 12px;
+    color: #434346;
+    border: none;
+    background-color: transparent; }
+  .header #search-icon:focus {
+    outline: 0; }
+  .header #search {
+    border: 0 none;
+    float: left;
+    width: 228px;
+    padding: 8px 16px 8px 38px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px #cdcdcd inset;
+    text-shadow: 0 2px 8px #8e8e93;
+    -webkit-transition: all 0.7s ease 0s; }
+  .header ::-webkit-input-placeholder {
+    color: #616165; }
+  .header ::-moz-placeholder {
+    /* Firefox 19+ */
+    color: #616165; }
+  .header #search:focus {
+    width: 214px;
+    outline: 0; }
+
 .main {
   margin-left: 254px;
   width: 1026px; }
@@ -4808,40 +4843,6 @@ input[type="submit"].btn {
     background: #eeeeee;
     border-color: #f39100;
     color: #000000; }
-  .nav-vertical li #search-icon {
-    float: left;
-    position: absolute;
-    padding: 9px 0 0 12px;
-    color: #434346;
-    border: none;
-    background-color: transparent; }
-  .nav-vertical li #search-icon:focus {
-    outline: 0; }
-  .nav-vertical li #search-box {
-    width: 254px;
-    hight: 52px; }
-  .nav-vertical li #search-form {
-    width: 244px;
-    padding: 13px 30px 0 30px;
-    display: inline-block;
-    position: relative; }
-  .nav-vertical li #search {
-    border: 0 none;
-    float: left;
-    width: 150px;
-    padding: 8px 16px 8px 38px;
-    border-radius: 20px;
-    box-shadow: 0 2px 8px #cdcdcd inset;
-    text-shadow: 0 2px 8px #8e8e93;
-    -webkit-transition: all 0.7s ease 0s; }
-  .nav-vertical li ::-webkit-input-placeholder {
-    color: #616165; }
-  .nav-vertical li ::-moz-placeholder {
-    /* Firefox 19+ */
-    color: #616165; }
-  .nav-vertical li #search:focus {
-    width: 214px;
-    outline: 0; }
 
 .nav-horizontal {
   margin-bottom: 10px; }

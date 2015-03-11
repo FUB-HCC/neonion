@@ -9,7 +9,7 @@ var neonionApp = angular.module('neonionApp', [])
     "use strict";
     return {
         query : "",
-        enabled : false
+        enabled : true
     };
 })
 .filter('escape', function() {

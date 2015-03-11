@@ -4812,7 +4812,11 @@ input[type="submit"].btn {
     float: left;
     position: absolute;
     padding: 9px 0 0 12px;
-    color: #434346; }
+    color: #434346;
+    border: none;
+    background-color: transparent; }
+  .nav-vertical li #search-icon:focus {
+    outline: 0; }
   .nav-vertical li #search-box {
     width: 254px;
     hight: 52px; }

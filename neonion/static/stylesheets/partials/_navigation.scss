@@ -35,6 +35,12 @@
       position: absolute;
       padding: 9px 0 0 12px;
       color: $ship-gray;
+      border: none;
+      background-color: transparent;
+    }
+
+    #search-icon:focus {
+      outline: 0;
     }
 
     #search-box {

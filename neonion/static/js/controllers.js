@@ -1,3 +1,11 @@
+
+neonionApp.controller('MainCtrl', ['$scope', '$http', function ($scope, $http) {
+    "use strict";
+
+    // TODO fill wit life
+}]);
+
+
 neonionApp.controller('AccountsCtrl', ['$scope', '$http', 'AccountService', function ($scope, $http, AccountService) {
     "use strict";
 
@@ -96,8 +104,11 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', function
 
 }]);
 
-neonionApp.controller('WorkspaceDocumentCtrl', ['$scope', '$http', 'WorkspaceService', function ($scope, $http, WorkspaceService) {
+neonionApp.controller('WorkspaceDocumentCtrl', ['$scope', '$http', 'WorkspaceService', 'Search', function ($scope, $http, WorkspaceService, Search) {
     "use strict";
+
+    $scope.search = Search;
+    $scope.search.enable = true;
 
     $http.get('/api/workspace/documents/').success(function(data) {
         $scope.documents = data;
@@ -109,6 +120,15 @@ neonionApp.controller('WorkspaceDocumentCtrl', ['$scope', '$http', 'WorkspaceSer
             $scope.documents.splice(idx, 1);    
         });
     };
+
+    $scope.filterDocuments = function(document) {
+        if ($scope.search.query.length > 0) {
+            // do something with $scope.search.query
+            return document.title.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
+        }
+        return true;
+    };
+
 }]);
 
 neonionApp.controller('WorkspaceImportCtrl', ['$scope', '$http', 'DocumentService', function ($scope, $http, DocumentService) {

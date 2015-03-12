@@ -31,11 +31,10 @@
                 <input id="search" type="text" autocomplete="off" ng-model="search.query"/>
             </div>
         {% endblock %}
-
+            <div class="content">
+              {% block content %}{% endblock %}
+            </div>
         </div>
-      <div class="content">
-      {% block content %}{% endblock %}
-      </div>
     </div>
 {% endblock %}
 

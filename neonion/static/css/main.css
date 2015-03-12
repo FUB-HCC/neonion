@@ -35,7 +35,7 @@ p {
   .header #search-form {
     width: 304px;
     height: 54px;
-    margin: 42px 0 0 42px;
+    margin: 42px 0 16px 42px;
     padding: 13px 30px 0 30px;
     display: inline-block;
     position: relative; }

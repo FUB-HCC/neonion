@@ -50,8 +50,9 @@ p {
   hight: 2*$baseline;
 
   #search-form {
-    width: 6*$column;
-    margin: $column + ($column-gap/4);
+    width: 8*$column;
+    height: $column + $column-gap;
+    margin: $column + ($column-gap/4) 0 0 $column + ($column-gap/4);
     padding: $half-baseline ($column - $column-gap/2) 0 ($column - $column-gap/2);
     display: inline-block;
     position: relative;
@@ -60,7 +61,7 @@ p {
   #search-icon {
     float: left;
     position: absolute;
-    padding: 9px 0 0 12px;
+    padding: 12px 0 0 12px;
     color: $ship-gray;
     border: none;
     background-color: transparent;
@@ -73,12 +74,10 @@ p {
   #search {
     border: 0 none;
     float: left;
-    width: 6*$column;
+    width: 6*$column + 5*$column-gap;
     padding:($base-font-size/2) $base-font-size ($base-font-size/2) $column;
-    border-radius: ($base-font-size+($base-font-size/4));
-    box-shadow: 0 2px 8px $silver inset;
-    text-shadow:0 2px 8px $manatee;
-    -webkit-transition: all 0.7s ease 0s;
+    background-color: $white;
+
   }
   ::-webkit-input-placeholder {
     color: $mid-gray;
@@ -89,7 +88,6 @@ p {
   }
 
   #search:focus {
-    width: 214px;
     outline: 0;
   }
 }

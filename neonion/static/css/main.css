@@ -33,15 +33,16 @@ p {
 .header {
   hight: 52px; }
   .header #search-form {
-    width: 228px;
-    margin: 42px;
+    width: 304px;
+    height: 54px;
+    margin: 42px 0 0 42px;
     padding: 13px 30px 0 30px;
     display: inline-block;
     position: relative; }
   .header #search-icon {
     float: left;
     position: absolute;
-    padding: 9px 0 0 12px;
+    padding: 12px 0 0 12px;
     color: #434346;
     border: none;
     background-color: transparent; }
@@ -50,19 +51,15 @@ p {
   .header #search {
     border: 0 none;
     float: left;
-    width: 228px;
+    width: 308px;
     padding: 8px 16px 8px 38px;
-    border-radius: 20px;
-    box-shadow: 0 2px 8px #cdcdcd inset;
-    text-shadow: 0 2px 8px #8e8e93;
-    -webkit-transition: all 0.7s ease 0s; }
+    background-color: #ffffff; }
   .header ::-webkit-input-placeholder {
     color: #616165; }
   .header ::-moz-placeholder {
     /* Firefox 19+ */
     color: #616165; }
   .header #search:focus {
-    width: 214px;
     outline: 0; }
 
 .main {

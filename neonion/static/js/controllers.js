@@ -123,13 +123,13 @@ neonionApp.controller('WorkspaceDocumentCtrl', ['$scope', '$http', 'WorkspaceSer
     };
 
     $scope.filterDocuments = function(document) {
+        console.log(document);
         if ($scope.search.query.length > 0) {
             // do something with $scope.search.query
             return document.title.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
         }
         return true;
     };
-
 }]);
 
 neonionApp.controller('WorkspaceImportCtrl', ['$scope', '$http', 'DocumentService', function ($scope, $http, DocumentService) {
@@ -165,8 +165,11 @@ neonionApp.controller('AnnotationSetCtrl', ['$scope', '$http', function ($scope,
 
 }]);
 
-neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scope, $http) {
+neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', 'SearchService', function ($scope, $http, SearchService) {
     "use strict";
+
+    $scope.search = SearchService;
+    $scope.search.enabled = true;
 
     $http.get('/api/store/filter').success(function(data) {
         var occurrences = {};
@@ -200,6 +203,14 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
         });
         $scope.occurrences = occurrences;
     });
+
+    $scope.filterAnnotations = function(occurrence) {
+        console.log(annotation);
+        if ($scope.search.query.length > 0) {
+            return occurrence.quote.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
+        }
+        return true;
+    };
 }]);
 
 neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {

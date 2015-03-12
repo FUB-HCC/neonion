@@ -1,15 +1,19 @@
-<ul class="document-grid">
-    <li ng-show="allowImport">
-        <a href="/import/" class="document-grid-content upload">
-            <span class="fa fa-file-text-o"></span>Import to Workspace
-        </a>
-    </li>
-    <li ng-repeat="document in documents | filter:filterDocuments | orderBy:'-created'">
-        <a href="/annotator/{{document.id}}" class="document-grid-content">
-            <div>{{document.title}}</div>
-        </a>
-        <div class="document-grid-actions">
-            <span ng-show="allowRemove" class="fa fa-trash-o" ng-click="removeDocument(document)"></span>
-        </div>
-    </li>
-</ul>
+<div ng-repeat="workspace in workspaces">
+    <p ng-show="showWorkspaceName">{{ workspace.name }}</p>
+    <ul class="document-grid">
+        <li ng-show="allowImport">
+            <a href="/import/" class="document-grid-content upload">
+                <span class="fa fa-file-text-o"></span>Import to Workspace
+            </a>
+        </li>
+        <li ng-repeat="document in workspace.documents | filter:filterDocuments | orderBy:'-created'">
+            <a href="/annotator/{{document.id}}" class="document-grid-content">
+                <div>{{document.title}}</div>
+            </a>
+            <div class="document-grid-actions">
+                <span ng-show="allowRemove" class="fa fa-trash-o" ng-click="removeDocument(workspace, document)"></span>
+            </div>
+        </li>
+    </ul>
+    <hr ng-hide="$last" />
+</div>

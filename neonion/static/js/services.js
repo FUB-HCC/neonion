@@ -5,8 +5,16 @@ neonionApp.factory('AccountService', ['$http', function($http) {
     "use strict";
     var factory = {};
 
+    factory.getCurrentUser = function() {
+        return $http.get('/api/users/current');
+    };
+
     factory.getAccounts = function() {
         return $http.get('/api/users');
+    };
+
+    factory.getEntitledDocuments = function(user) {
+        return $http.get('/api/users/' + user.id + "/entitled_documents");
     };
 
     factory.createUser = function(user) {
@@ -66,20 +74,12 @@ neonionApp.factory('WorkspaceService', ['$http', function($http) {
     "use strict";
     var factory = {};
 
-    factory.getUser = function() {
-        return $http.get('/api/users/current');
-    };
-
     factory.addDocument = function (user, docID) {
         return $http.post("api/users/" + user.id + "/add_document", { doc_id : docID });
     };
 
     factory.removeDocument = function(user, docID) {
         return $http.post("api/users/" + user.id + "/hide_document", { doc_id : docID });
-    };
-
-    factory.getDocumentsByGroup = function(user) {
-        return $http.get("api/users/" + user.id + "/documents_by_group", {});
     };
 
     return factory;

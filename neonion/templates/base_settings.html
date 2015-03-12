@@ -6,22 +6,22 @@
 {% block page_id %}settings{% endblock %}
 
 {% block content %}
-	<div>
+	<div ng-init="tab = 1" ng-cloak>
 		<h2>Settings</h2>
 		<nav class="nav-horizontal">
             <ul>
-                <li><a href="" ng-click="ner=false" ng-init="ner=false" class="active">My Annotation Sets</a></li>
-                <li><a href="" ng-click="ner=true" class="active">NER Settings</a></li>
-            </ul></br>
+                <li><a ng-click="tab = 1" ng-class="{active:tab===1}">My Annotation Sets</a></li>
+                <li><a ng-click="tab = 2" ng-class="{active:tab===1}">NER Settings</a></li>
+            </ul>
         </nav>
 
-        <div class="wrapper">
-            <p ng-hide="ner">
+        <div ng-switch="tab">
+            <div ng-switch-when="1">
                 <ng-include src="'{% static 'partials/annotationsets_list.html' %}'"></ng-include>
-            </p>
-            <p ng-show="ner">
+            </div>
+             <div ng-switch-when="2">
                 <ng-include src="'{% static 'partials/ner_models.html' %}'"></ng-include>
-            </p>
+            </div>
         </div>
 
 	</div>

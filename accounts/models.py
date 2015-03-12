@@ -33,6 +33,26 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
 
+    def join_group(self, group):
+        if not Membership.objects.filter(user=self, group=group).exists():
+            membership = Membership.objects.create(user=self, group=group)
+            membership.save()
+
+    def unjoin_group(self, group):
+        if Membership.objects.filter(user=self, group=group).exists():
+            # group owner cannot leave group
+            if group.owner is not self:
+                membership = Membership.objects.get(user=self, group=group)
+                membership.delete()
+            else:
+                # TODO raise exception
+                pass
+
+    def join_public_group(self):
+        # get public group
+        public_group = WorkingGroup.objects.get(pk=1)
+        self.join_group(public_group)
+
     def get_full_name(self):
         return self.name + ' ' + self.surname
 
@@ -46,7 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class WorkingGroup(models.Model):
     name = models.CharField('group name', max_length=128)
     comment = models.CharField('group description', max_length=500, blank=True)
-    owner = models.ForeignKey(User, related_name="group_owner", null=True)
+    owner = models.OneToOneField(User, related_name="group_owner", null=True)
     members = models.ManyToManyField(User, through='Membership', related_name="group_members")
     documents = models.ManyToManyField(Document)
 

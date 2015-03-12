@@ -11,6 +11,13 @@ class DocumentSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'created', 'updated', 'workinggroup_set')
 
 
+# Serializers for full document representation representation.
+class DocumentDetailedSerializer(DocumentSerializer):
+    class Meta:
+        model = Document
+        fields = ('id', 'title', 'content', 'created', 'updated', 'workinggroup_set')
+
+
 # Serializer for user representation.
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,9 +27,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 # Serializer for user representation.
 class UserDetailedSerializer(serializers.ModelSerializer):
+    owned_documents = DocumentSerializer(many=True)
+
     class Meta:
         model = User
         fields = ('id', 'email', 'is_active', 'is_superuser', 'membership_set', 'owned_documents')
+
 
 # Serializer for memberships representation.
 class MembershipSerializer(serializers.ModelSerializer):
@@ -73,10 +83,3 @@ class AnnotationSetSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return AnnotationSet.objects.create_set(**validated_data)
-
-
-# Serializers for full document representation representation.
-class DetailedDocumentSerializer(DocumentSerializer):
-    class Meta:
-        model = Document
-        fields = ('id', 'title', 'content', 'created', 'updated')

@@ -1,10 +1,10 @@
 /*jshint jquery:true */
 
-neonionApp.controller('MainCtrl', ['$scope', '$http', 'WorkspaceService', function ($scope, $http, WorkspaceService) {
+neonionApp.controller('MainCtrl', ['$scope', '$http', 'AccountService', function ($scope, $http, AccountService) {
     "use strict";
 
     // get current user
-    WorkspaceService.getUser().then(function(result) {
+    AccountService.getCurrentUser().then(function(result) {
         $scope.user = result.data;
     });
 
@@ -144,27 +144,54 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'Account
 }]);
 
 /**
- * My workspace controller
+ * Workspace controller
  */
-neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'WorkspaceService', 'Search', function ($scope, $http, WorkspaceService, Search) {
+neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'AccountService', 'DocumentService', 'WorkspaceService', 'Search',
+    function ($scope, $http, AccountService, DocumentService, WorkspaceService, Search) {
     "use strict";
 
     $scope.search = Search;
     $scope.search.enable = true;
+    $scope.allowRemove = false;
+    $scope.allowImport = false;
+    $scope.showWorkspaceName = false;
 
-    $scope.allowImport = true;
-    $scope.allowRemove = true;
-    $scope.documents = [];
-
-    /*WorkspaceService.getDocumentsByGroup($scope.workspace).then(function(result) {
-
-    });*/
-
-    $scope.removeDocument = function (document) {
-        WorkspaceService.removeDocument($scope.workspace, document.id).then(function(result) {
-            var idx = $scope.documents.indexOf(document);
-            $scope.documents.splice(idx, 1);
+    $scope.initPrivateWorkspace = function() {
+        $scope.allowRemove = true;
+        $scope.allowImport = true;
+        AccountService.getCurrentUser().then(function(result) {
+            $scope.user = result.data;
+            $scope.workspaces = [{ id : -1, name : 'Private', documents : result.data.owned_documents }];
         });
+    };
+
+    $scope.initPublicWorkspace = function() {
+        AccountService.getCurrentUser().then(function(result) {
+            var user = result.data;
+            AccountService.getEntitledDocuments(user).then(function(result) {
+                // filter for group public
+               $scope.workspaces = result.data.filter(function(element) { return element.id == 1; });
+            });
+        });
+    };
+
+    $scope.initGroupWorkspace = function() {
+        $scope.showWorkspaceName = true;
+        AccountService.getCurrentUser().then(function(result) {
+            var user = result.data;
+            AccountService.getEntitledDocuments(user).then(function(result) {
+               $scope.workspaces = result.data.filter(function(element) { return element.id != 1; });
+            });
+        });
+    };
+
+    $scope.removeDocument = function (workspace, document) {
+        if (workspace.id == -1) {
+            WorkspaceService.removeDocument($scope.user, document.id).then(function (result) {
+                var idx = workspace.documents.indexOf(document);
+                workspace.documents.splice(idx, 1);
+            });
+        }
     };
 
     $scope.filterDocuments = function(document) {

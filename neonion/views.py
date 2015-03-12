@@ -25,13 +25,12 @@ def home(request):
 
 @login_required
 def annotator(request, doc_id):
-    doc = get_object_or_404(Document, urn=doc_id)
+    doc = get_object_or_404(Document, id=doc_id)
 
     data = {
         'id': doc_id,
         'title': doc.title,
         'content': doc.content,
-        'endpoint_url': '/endpoint/',
         'store_url': settings.ANNOTATION_STORE_URL,
         'ner_url': settings.NER_SERVICE_URL,
     }
@@ -58,16 +57,6 @@ def ann_documents(request, quote):
 @login_required
 def load_settings(request):
     return render_to_response('base_settings.html', context_instance=RequestContext(request))
-
-
-@login_required
-def load_annotation_sets(request):
-    return render_to_response('static/partials/annotationsets_list.html', context_instance=RequestContext(request))
-
-
-@login_required
-def load_ner_settings(request):
-    return render_to_response('static/partials/ner_models.html', context_instance=RequestContext(request))
 
 
 @login_required

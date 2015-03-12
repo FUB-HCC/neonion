@@ -6,9 +6,22 @@
 {% block page_id %}userlist{% endblock %}
 
 {% block content %}
-    <h3>Registered Users</h3>
-    <ng-include src="'{% static 'partials/accounts_users.html' %}'"></ng-include>
+    <div ng-init="tab = 1" ng-cloak>
+        <h2>Account Management</h2>
+        <nav class="nav-horizontal">
+            <ul>
+                <li><a ng-click="tab = 1" ng-class="{active:tab===1}">Registered Users</a></li>
+                <li><a ng-click="tab = 2" ng-class="{active:tab===2}">Groups</a></li>
+            </ul>
+        </nav>
 
-    <h3>User Groups</h3>
-    <ng-include src="'{% static 'partials/accounts_groups.html' %}'"></ng-include>
+        <div ng-switch="tab">
+            <div ng-switch-when="1">
+                <ng-include  src="'{% static 'partials/accounts_users.html' %}'"></ng-include>
+            </div>
+            <div ng-switch-when="2">
+                <ng-include  src="'{% static 'partials/accounts_groups.html' %}'"></ng-include>
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -6,27 +6,20 @@
 
   ul {
     @include list-reset;
-
-    
-    ul {
-      display: none;
-    }
   }
 
   li {
     a {
-      border-left: $column-gap/2 solid $white; 
+      border-left: $column-gap/2 solid $white;
       color: $ship-gray;
       display: block;
       font-size: 20px;
       padding: $half-baseline ($column - $column-gap/2);
       text-decoration: none;
 
-      .fa-fw { text-align: left; }
-    }
-
-    a:hover {
-      color: $black;
+      .fa-fw {
+        text-align: left;
+      }
     }
 
     &.active {
@@ -38,7 +31,6 @@
     }
   }
 }
-
 .nav-horizontal {
   margin-bottom: 10px;
 

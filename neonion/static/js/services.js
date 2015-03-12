@@ -1,3 +1,14 @@
+/**
+ * Service for on page search
+ */
+neonionApp.factory('SearchService', function () {
+    "use strict";
+    return {
+        query : "",
+        enabled : false
+    };
+});
+
 neonionApp.factory('AccountService', ['$http', function($http) {
     "use strict";
     var factory = {};

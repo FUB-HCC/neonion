@@ -18,7 +18,7 @@
     <ul id="annotation-table" class="annotation-grid" ng-controller="AnnotationStoreCtrl">
 
         {% verbatim %}
-        <li ng-repeat="occurrence in occurrences | orderBy:'-created'">
+        <li ng-repeat="occurrence in occurrences | filter:filterAnnotations | orderBy:'-created'">
             <div>
                 <div class="ann-header">
                     {{ occurrence.ann }}

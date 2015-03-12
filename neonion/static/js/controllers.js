@@ -1,6 +1,7 @@
 
-neonionApp.controller('MainCtrl', ['$scope', '$http', function ($scope, $http) {
+neonionApp.controller('MainCtrl', ['$scope', '$http', 'SearchService', function ($scope, $http, SearchService) {
     "use strict";
+    $scope.search = SearchService;
 
     // TODO fill wit life
 }]);
@@ -104,11 +105,11 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', function
 
 }]);
 
-neonionApp.controller('WorkspaceDocumentCtrl', ['$scope', '$http', 'WorkspaceService', 'Search', function ($scope, $http, WorkspaceService, Search) {
+neonionApp.controller('WorkspaceDocumentCtrl', ['$scope', '$http', 'WorkspaceService', 'SearchService', function ($scope, $http, WorkspaceService, SearchService) {
     "use strict";
 
-    $scope.search = Search;
-    $scope.search.enable = true;
+    $scope.search = SearchService;
+    $scope.search.enabled = true;
 
     $http.get('/api/workspace/documents/').success(function(data) {
         $scope.documents = data;
@@ -122,13 +123,13 @@ neonionApp.controller('WorkspaceDocumentCtrl', ['$scope', '$http', 'WorkspaceSer
     };
 
     $scope.filterDocuments = function(document) {
+        console.log(document);
         if ($scope.search.query.length > 0) {
             // do something with $scope.search.query
             return document.title.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
         }
         return true;
     };
-
 }]);
 
 neonionApp.controller('WorkspaceImportCtrl', ['$scope', '$http', 'DocumentService', function ($scope, $http, DocumentService) {
@@ -164,8 +165,11 @@ neonionApp.controller('AnnotationSetCtrl', ['$scope', '$http', function ($scope,
 
 }]);
 
-neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scope, $http) {
+neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', 'SearchService', function ($scope, $http, SearchService) {
     "use strict";
+
+    $scope.search = SearchService;
+    $scope.search.enabled = true;
 
     $http.get('/api/store/filter').success(function(data) {
         var occurrences = {};
@@ -197,52 +201,68 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
                 occurrences[key].docs.push(doc);
             }
         });
-        $scope.occurrences = occurrences;
+        var keys = Object.keys(occurrences);
+        $scope.occurrences = keys.map(function(k) {
+            return occurrences[k];
+        });
     });
+
+    $scope.filterAnnotations = function(occurrence) {
+        console.log(occurrence);
+        if ($scope.search.query.length > 0) {
+            return occurrence.ann.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
+        }
+        return true;
+    };
 }]);
 
 neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
     "use strict";
-    $scope.ann_occur = {};
+
+    var docs = {};
+    var ann_occur = {};
     var url = $location.absUrl().split('/');
     var quote = url[url.length-1];
 
-    $http.get('/api/store/filter?quote=' + quote).success(function (data2) {
-
-        var filterUserData = data2.rows;
-
-        filterUserData.forEach(function(a) {
-            // context variable here
-            if (decodeURI(quote) === a.quote) {
-                var key = a.id;
-                var ann = a.quote;
-                var date = a.created;
-                var context = a.context;
-                var contextRight = context.right;
-                var contextLeft = context.left;
-
-                $http.get('/api/documents').success(function (data) {
-                    var self = this;
-
-                    data.forEach(function (b) {
-                        var title = b.title;
-                        var urn = b.urn;
-
-                        if (urn == a.uri) {
-                            $scope.ann_occur[key] = {}
-                            $scope.ann_occur[key].title = title;
-                        }
-                        ;
-                    });
-                    $scope.ann_occur[key].created = date;
-                    $scope.ann_occur[key].ann = ann;
-                    $scope.ann_occur[key].contextRight = contextRight;
-                    $scope.ann_occur[key].contextLeft = contextLeft;
-                });
-            }
+    $http.get('/api/documents').success(function (data) {
+        data.forEach(function (a) {
+            var title = a.title;
+            var urn = a.urn;
+            docs[urn] = title;
         });
+        getOccurrences();
     });
 
+    $scope.getOccurrences = function() {
+        $http.get('/api/store/filter?quote=' + quote).success(function (data) {
+            var filterUserData = data.rows;
+
+            filterUserData.forEach(function(a) {
+                if (decodeURI(quote) === a.quote) {
+                    var key = a.id;
+                    var ann = a.quote;
+                    var date = a.created;
+                    var context = a.context;
+                    var contextRight = context.right;
+                    var contextLeft = context.left;
+
+                    var urns = Object.keys(docs);
+
+                    urns.forEach(function(c) {
+                        if (c == a.uri) {
+                            ann_occur[key] = {}
+                            ann_occur[key].title = docs[a];
+                            ann_occur[key].created = date;
+                            ann_occur[key].ann = ann;
+                            ann_occur[key].contextRight = contextRight;
+                            ann_occur[key].contextLeft = contextLeft;
+                        };
+                    })
+                }
+            });
+        });
+        $scope.ann_occur = ann_occur;
+    }
 }]);
 
 neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {

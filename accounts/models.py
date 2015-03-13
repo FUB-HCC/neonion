@@ -4,7 +4,8 @@ from django.contrib.auth.models import BaseUserManager, Permission
 from django.conf import settings
 from documents.models import Document
 from annotationsets.models import AnnotationSet
-
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 class NeonionUserManager(BaseUserManager):
     def create_user(self, email, password=None, **kwargs):
@@ -66,7 +67,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class WorkingGroup(models.Model):
     name = models.CharField('group name', max_length=128)
     comment = models.CharField('group description', max_length=500, blank=True)
-    owner = models.OneToOneField(User, related_name="group_owner", null=True)
+    owner = models.ForeignKey(User, related_name="group_owner", null=True, unique=False)
     members = models.ManyToManyField(User, through='Membership', related_name="group_members")
     documents = models.ManyToManyField(Document)
 
@@ -80,3 +81,8 @@ class Membership(models.Model):
     date_joined = models.DateField(auto_now_add=True)
     invite_reason = models.CharField(max_length=64, blank=True)
     permissions = models.ManyToManyField(Permission, blank=True)
+
+@receiver(post_save, sender=User)
+def user_joins_public_group(sender, instance, created, **kwargs):
+    if created:
+        instance.join_public_group();

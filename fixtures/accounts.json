@@ -1,6 +1,21 @@
 [
   {
     "fields": {
+      "comment": "",
+      "owner": 1,
+      "documents": [
+        "4e41bee6c28111e4b236c42c0303b893",
+        "688cea47c27f11e494e4c42c0303b893",
+        "ba07e20ac28311e4a5bec42c0303b893",
+        "ac93538cc28a11e4b948c42c0303b893"
+      ],
+      "name": "Public"
+    },
+    "model": "accounts.workinggroup",
+    "pk": 1
+  },
+  {
+    "fields": {
       "surname": "",
       "name": "",
       "is_active": true,

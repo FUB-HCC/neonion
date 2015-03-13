@@ -13,7 +13,7 @@
 
 {% block content %}
 <div ng-controller="AnnotatorCtrl" data-ng-init="setupAnnotator('{{ urn }}', '{{ request.user.email }}')">
-    <div class="annotator_menu">
+    <div class="annotator_menu" ng-cloak>
         <ul id="annotator_contributors" class="forms-list">
             <li ng-repeat="contrib in contributors | orderBy:'-updated'">
             {% verbatim %}
@@ -63,6 +63,7 @@
                         }
                     });
                 }
+                return false;
             });
 
             /*$('#nav-fullscreen').click(function(){

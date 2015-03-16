@@ -361,15 +361,33 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $ht
 
 }]);
 
-neonionApp.controller('SettingsCtrl', ['$scope', '$http', function ($scope, $http) {
+neonionApp.controller('SettingsCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
     "use strict";
 
     // default for first sub-menu item
     $scope.page = 'page-1';
 
+    $scope.changeUrl = function(entry) {
+        switch (entry) {
+            case 1:
+                $location.hash('sets');
+                break;
+            case 2:
+                $location.hash('properties');
+                break;
+            case 3:
+                $location.hash('ner');
+                break;
+        }
+    }
+
     $scope.showThisPage = function(entry) {
+        $scope.changeUrl(entry);
         $scope.page = 'page-' + entry;
-        console.log($scope.page);
+    }
+
+    $scope.isActive = function(entry) {
+        return entry == $location.path();
     }
 }]);
 

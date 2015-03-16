@@ -11,9 +11,15 @@
 
         <nav class="nav-horizontal">
             <ul>
-                <li><a href="" ng-click="showThisPage(1)">Annotation Sets</a></li>
-                <li><a href="" ng-click="showThisPage(2)">Properties</a></li>
-                <li><a href="" ng-click="showThisPage(3)">NER Settings</a></li>
+                <li ng-class="{ active: isActive('/annotation_sets') }">
+                    <a href="" ng-click="showThisPage(1)">Annotation Sets</a>
+                </li>
+                <li ng-class="{ active: isActive('/properties') }">
+                    <a href="" ng-click="showThisPage(2)">Properties</a>
+                </li>
+                <li ng-class="{ active: isActive('ner') }">
+                    <a href="" ng-click="showThisPage(3)">NER Settings</a>
+                </li>
             </ul></br>
         </nav>
 

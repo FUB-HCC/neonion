@@ -12,7 +12,6 @@ urlpatterns = patterns('',
     url(r'^settings/$', 'neonion.views.load_settings'),
     url(r'^annotationsets/$', 'neonion.views.load_annotation_sets'),
     url(r'^ner_models/$', 'neonion.views.load_ner_settings'),
-    url(r'^doc_properties/$', 'neonion.views.load_meta_data'),
     url(r'^management/?$', 'neonion.views.accounts_management'),
 
     url(r'^annotator/(?P<doc_urn>.+)$', 'neonion.views.annotator'),

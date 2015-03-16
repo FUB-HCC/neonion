@@ -71,11 +71,6 @@ def load_ner_settings(request):
 
 
 @login_required
-def load_meta_data(request):
-    return render_to_response('static/partials/meta_data.html', context_instance=RequestContext(request))
-
-
-@login_required
 def accounts_management(request):
     return render_to_response('accounts_management.html', context_instance=RequestContext(request))
 

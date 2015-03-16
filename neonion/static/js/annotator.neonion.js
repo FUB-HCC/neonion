@@ -26,11 +26,12 @@
          *  Internal vars
          *  @private
          */
-        var adder = null,
+        var annotator = null,
+            adder = null,
             compositor = {},
             selectedType = null,
             viewerFields = {},
-            editorFields = {}
+            editorFields = {};
 
         // properties
         this.setCompositor = function (compositorData) {
@@ -49,7 +50,7 @@
             options.agent = options.agent || {
                 email: "unknown@neonion.org"
             };
-
+            annotator = this.annotator;
             adder = this.overrideAdder();
             viewerFields = this.initViewerFields();
             editorFields = {
@@ -163,7 +164,7 @@
                         if (annotation.creator) {
                             userField = annotation.creator.email;
                         }
-                        field.innerHTML = Annotator.Plugin.Neonion.prototype.literals['en'].creator + ": " + userField;
+                        field.innerHTML = Annotator.Plugin.Neonion.prototype.literals['en'].creator + ":&nbsp;" + userField;
                     }
                 })
             };
@@ -172,16 +173,20 @@
         this.initEditorUnknownEntity = function () {
             var field = this.annotator.editor.addField({
                 load: function (field, annotation) {
-                    // restore type from annotation if provided
+                  $(field).remove();
+
+                    // TODO@Andre: DAS WIR DAS FRAGEZEICHEN ICON ODER SO.
+ /*                    // restore type from annotation if provided
                     selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : selectedType;
                     // add resource uri itself
-                    $(field).children((":first")).replaceWith("<div class='btn-group-vertical unknown'></div>");
+
+                   $(field).children((":first")).replaceWith("<div class='btn-group-vertical unknown'></div>");
                     $(field).children((":first")).append(Annotator.Plugin.Neonion.prototype.createListItems([
                         {
                             uri: selectedType,
                             label: Annotator.Plugin.Neonion.prototype.literals['en'].unknown + " " + compositor[selectedType].label
                         }
-                    ], Annotator.Plugin.Neonion.prototype.formatter.default));
+                    ], Annotator.Plugin.Neonion.prototype.formatter.default));*/
                 },
                 submit: function (field, annotation) {
                     // add rdf data
@@ -234,9 +239,24 @@
                 }
             });
 
+            var searchItem = "<i class='fa fa-search'></i>";
+            var cancelItem = "<a href='#' data-action='annotator-cancel'><i class='fa fa-times-circle'></i></a>";
+            var unknownItem = "<a href='#' data-action='annotator-unknown'><i class='fa fa-question-circle'></i></a>";
+
             $(field).children((":first")).replaceWith(
-                "<div id='resource-list' class='btn-group-vertical'></div><form id='resource-form'></form>"
+                "<div class='resource-controles'>" + cancelItem + unknownItem + "</div>" +
+                "<form id='resource-form'>" + searchItem + "</form>" +
+                "<div id='resource-list' class=''></div>"
             );
+
+            $("[data-action=annotator-cancel]").on("click", function() {
+              annotator.editor.hide();
+            });;
+
+            $("[data-action=annotator-unknown]").on("click", function() {
+              // TODO@Andre: Hier  muss dann dass unknown Person passieren.
+              alert("TODO");
+            });;
 
             // create input for search term
             var searchInput = $('<input>').attr({
@@ -267,7 +287,18 @@
                         Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence(items);
                         // create and add items
                         list.empty();
-                        list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, formatter));
+                        var newlist = Annotator.Plugin.Neonion.prototype.createListItems(items, formatter);
+                        if (newlist.length !== 0) {
+                          list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, formatter));
+                          list.append("<button data-action='annotator-more'>Show more results&nbsp;&#8230;</button>");
+                        } else {
+                          list.append("<div class='empty'>No results found.</div>");
+                        }
+
+                        $("[data-action=annotator-more]").on("click", function() {
+                          alert("TODO: nachladen von Ergebnissen.");
+                          return false;
+                        });;
 
                         // clear list and min-height css property
                         list.css("min-height", "");
@@ -307,24 +338,6 @@
                 $(".annotator-widget").submit();
             });
 
-            var overlay = $("<div class='annotator-overlay' style='display:none;'></div>");
-            $(element).parent().append(overlay);
-            // mouse hover for detail window
-            resourceList.on("mouseenter", "button", function () {
-                var dataIndex = parseInt($(this).val());
-                var dataItem = $(element).data("results")[dataIndex];
-                var decorator = Annotator.Plugin.Neonion.prototype.decorator[selectedType] || Annotator.Plugin.Neonion.prototype.decorator['default'];
-                overlay.html(decorator(dataItem));
-                overlay.show();
-            });
-            resourceList.on("mousemove", "button", function (e) {
-                var pos = {top: e.pageY, left: e.pageX + 30};
-                overlay.css(pos);
-            });
-            resourceList.on("mouseleave", "button", function () {
-                overlay.hide();
-            });
-
             return field;
         };
 
@@ -345,7 +358,7 @@
                                 createForm.append(field + "<br>");
                             });
                             createForm.append(
-                                "<input type='submit' class='btn annotator-btn' value='" +
+                                "<input type='submit' class='' value='" +
                                 Annotator.Plugin.Neonion.prototype.literals['en'].create + "' />"
                             );
                             // prefill first field
@@ -359,7 +372,7 @@
             });
 
             $(createField).children((":first")).replaceWith(
-                "<button id='create-toggle' class='btn annotator-btn' >" +
+                "<button id='create-toggle' class='' >" +
                 Annotator.Plugin.Neonion.prototype.literals['en'].create +
                 "</button><form id='create-form'>fhjkfhfkjgdhfkjghfk</form>"
             );
@@ -497,7 +510,7 @@
             adder.html("");
             for (var uri in compositor) {
                 if (compositor.hasOwnProperty(uri)) {
-                    adder.append("<button class='btn' value='" + uri + "'>" + compositor[uri].label + "</button>");
+                    adder.append("<button value='" + uri + "'>" + compositor[uri].label + "</button>");
                 }
             }
         },
@@ -584,7 +597,7 @@
             var items = [];
             for (var i = 0; i < list.length; i++) {
                 var label = formatter(list[i]);
-                items.push("<button type='button' class='btn annotator-btn' value='" + i + "'>" + label + "</button>");
+                items.push("<button type='button' class='' value='" + i + "'>" + label + "</button>");
             }
             return items;
         },
@@ -637,45 +650,27 @@
                 }
                 return 0;
             }
-        },
+        },   
 
         formatter: {
             'default': function (value) {
                 return "<span>" + value.label + "</span>";
             },
             'http://neonion.org/concept/person': function (value) {
-                var label = "<span>" + value.label + "</span>";
+                var label = value.label;
                 if (value.birth) {
-                    label += "<small>&nbsp;" + value.birth + "</small>";
-                }
-                return label;
-            }
-        },
-
-        decorator: {
-            'default': function (data) {
-                var html = "";
-                for (var key in data) {
-                    if (data.hasOwnProperty(key) && !Array.isArray(data[key])) {
-                        if (data.hasOwnProperty(key)) {
-                            html += "<p><b>" + key + "</b>&nbsp;<span>" + data[key] + "</span></p>";
-                        }
+                    label += "<span>&nbsp;&#42;&nbsp;" + value.birth;
+                    if (value.death) {
+                      label += ",&nbsp;&#8224;&nbsp;" + value.death;
                     }
+                    label += "</span>"
                 }
-                return html;
-            },
-            'http://neonion.org/concept/person': function (data) {
-                var html = "<strong>" + data.label + "</strong>";
-                if (data.birth) {
-                    html += "<small>&nbsp;&#42;&nbsp;" + data.birth + "</small>";
+
+                if (value.descr) {
+                    label += "<br/><span>" + value.descr + "</span>";
                 }
-                if (data.death) {
-                    html += "<small>&nbsp;&#8224;&nbsp;" + data.death + "</small>";
-                }
-                if (data.descr) {
-                    html += "<br/>" + data.descr;
-                }
-                return html;
+               label += "<a class='pull-right' href='" + value.uri + "' target='blank'><i class='fa fa-external-link'></i></a>"
+                return label;
             }
         },
 

@@ -1,58 +1,157 @@
-.btn,
-input[type="submit"].btn {
-  display: inline-block;
-  vertical-align: top;
-  font-family: "Helvetica Neue", Helvetica, Tahoma, sans-serif;
-  font-size: 1em;
-  font-weight: 400;
-  line-height: 1.65em;
-  text-align: left;
-  text-decoration: none;
-  color: #222222;
-  -webkit-appearance: none;
-  outline: none;
-  margin: 0;
-  border: none;
-  border-radius: 2px;
-  box-shadow: none;
-  cursor: pointer;
-  background: #e0e3e5;
-  padding: 0.55em 2.5em;
+.annotator-notice,
+.annotator-adder, 
+.annotator-filter,
+.annotator-widget {
+  @extend %basefontsize;
+  @extend %font;
 }
 
-.annotator-widget #resource-form {
-  padding: 5px;
-  border-top: 1px solid #000;
+// Kommentarefeld ausblenden
+#annotator-field-0,
+.annotator-editor .annotator-controls {
+  display: none;
 }
 
-.annotator-widget #resource-form #resource-search {
-  border: 1px solid #000;
-  border-radius: 4px;
-  width: 50%;
-  padding: 3px 2px 3px 3px;
+.annotator-adder,
+.annotator-item {
+  @extend %shadow;
+
+  .empty {
+    @extend %basefontsize;
+    padding: 0 $column-gap;
+  }
+
+  button {
+    @extend %basefontsize;
+    background: $white;
+    border: none;
+    border-top: 1px solid $silver;
+    color: $black;
+    display: block;
+    padding: 0 $column-gap;
+    text-align: left;
+    text-indent: 0;
+    width: 100%;
+    outline: 0;
+
+    &:hover { background-color: $gallery; }
+    &:first-child { border-top: 0px; }
+    span { font-size: 14px; }
+  }
 }
 
-.annotator-overlay {
-  position: absolute;
-  background-color: #fff;
-  padding: 10px;
-  top: 100px;
-  left: 50px;
-  border: 1px solid black;
-  border-radius: 5px;
-  max-width: 400;
-  z-index: 1200;
+/* Annotator Adder
+-------------------------------------------------------------------- */
+.annotator-adder {
+  width: auto;
+  height: auto;
 }
 
-.annotator-widget .annotator-item #create-toggle {
-  width: 100%;
+/* Annotator Outer
+-------------------------------------------------------------------- */
+// Override the CSS(top/left), which was set by JS
+.annotator-editor[style] {
+  right: -2*($column + $column-gap) !important;
+  left: inherit !important;
 }
 
-.annotator-widget .annotator-item #create-form {
-  padding : 5px;
+/* Annotator Widget
+-------------------------------------------------------------------- */
+.annotator-editor {
+  .annotator-widget {
+    border: 0px;
+    left: 0px;
+    top: 0px;
+    width: 7* ($column + $column-gap);
+
+    &:after {
+      content: none;
+    }
+
+    .resource-controles {
+      color: $black;
+      left: -70px;
+      position: absolute;
+      top: $half-baseline;
+
+      i { font-size: $baseline; }
+    }
+
+    #resource-form {
+      background-color: $tangerine;
+
+      i {
+        @extend %basefontsize;
+        color: $ship-gray;
+        position: absolute;
+        padding: $half-baseline $column-gap;
+      }
+
+      input[type=text] {
+        @extend %basefontsize;
+        font-weight: bold;
+        padding: $half-baseline $column-gap $half-baseline $column-gap+ $column;
+
+        &:focus { background-color: transparent; }
+      }
+    }
+  }
 }
-.annotator-widget .annotator-item #create-form input {
-  border : 1px solid #dcdcdc;
-  border-radius : 5px;
-  padding : 3px 5px 3px 5px;
+
+/* Annotator Item Links
+-------------------------------------------------------------------- */
+.annotator-editor a {
+  @extend %basefontsize;
+  background-color: transparent;
+  background-image: none;
+  border: 0;
+  color: $black;
+  display: inline;
+  margin-left: $column-gap/2;
+  padding: 0;
+  text-shadow: none;
+
+  &:after {
+    content: none;
+  }
+
+  &:hover, &:active, &:focus {
+    background-color: transparent;
+    background-image: none;
+    color: $tangerine;
+    text-shadow: none;
+  }
+}
+
+.annotator-viewer {
+  border: 0px;
+  @extend %shadow;
+
+  .annotator-widget {
+    border: 0px;
+    border-radius: 0px;
+    @extend %shadow;
+
+    .annotator-controls {
+      right: 0px;
+      padding: $half-baseline $column-gap $half-baseline 0;
+      margin: 0px;
+
+      button {
+        padding: 0 0 0 0;
+
+        &:hover {
+          padding: 0px;
+          background-color: white;
+        }
+      }
+    }
+  }
+
+  .annotator-item div {
+    font-style: normal;
+    padding: $half-baseline $column-gap;
+    @extend %basefontsize;
+
+  }
 }

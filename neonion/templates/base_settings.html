@@ -6,22 +6,27 @@
 {% block page_id %}settings{% endblock %}
 
 {% block content %}
-	<div>
+	<div ng-controller="SettingsCtrl">
 		<h2>Settings</h2>
-		<nav class="nav-horizontal">
+
+        <nav class="nav-horizontal">
             <ul>
-                <li><a href="" ng-click="ner=false" ng-init="ner=false" class="active">My Annotation Sets</a></li>
-                <li><a href="" ng-click="ner=true" class="active">NER Settings</a></li>
+                <li><a href="" ng-click="showThisPage(1)">Annotation Sets</a></li>
+                <li><a href="" ng-click="showThisPage(2)">Properties</a></li>
+                <li><a href="" ng-click="showThisPage(3)">NER Settings</a></li>
             </ul></br>
         </nav>
 
-        <div class="wrapper">
-            <p ng-hide="ner">
+        <div class="wrapper" ng-switch="page">
+            <div ng-switch-when="page-1">
                 <ng-include src="'{% static 'partials/annotationsets_list.html' %}'"></ng-include>
-            </p>
-            <p ng-show="ner">
+            </div>
+            <div ng-switch-when="page-2">
+                <ng-include src="'{% static 'partials/meta_data.html' %}'"></ng-include>
+            </div>
+            <div ng-switch-when="page-3">
                 <ng-include src="'{% static 'partials/ner_models.html' %}'"></ng-include>
-            </p>
+            </div>
         </div>
 
 	</div>

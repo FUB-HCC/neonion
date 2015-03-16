@@ -50,7 +50,7 @@ p {
   hight: 2*$baseline;
 
   #search-form {
-    width: 8*$column;
+    width: 9*$column;
     height: $column + $column-gap;
     margin: $column + ($column-gap/4) 0 $column-gap $column + ($column-gap/4);
     padding: $half-baseline ($column - $column-gap/2) 0 ($column - $column-gap/2);
@@ -75,7 +75,8 @@ p {
     border: 0 none;
     float: left;
     width: 6*$column + 5*$column-gap;
-    padding:($base-font-size/2) $base-font-size ($base-font-size/2) $column;
+    hight: $baseline;
+    padding:($base-font-size/2 + $base-font-size/8) $base-font-size ($base-font-size/2) $column;
     background-color: $white;
   }
   ::-webkit-input-placeholder {

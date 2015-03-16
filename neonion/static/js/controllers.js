@@ -224,15 +224,6 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
     var url = $location.absUrl().split('/');
     var quote = url[url.length-1];
 
-    $http.get('/api/documents').success(function (data) {
-        data.forEach(function (a) {
-            var title = a.title;
-            var urn = a.urn;
-            docs[urn] = title;
-        });
-        getOccurrences();
-    });
-
     $scope.getOccurrences = function() {
         $http.get('/api/store/filter?quote=' + quote).success(function (data) {
             var filterUserData = data.rows;
@@ -251,7 +242,7 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
                     urns.forEach(function(c) {
                         if (c == a.uri) {
                             ann_occur[key] = {}
-                            ann_occur[key].title = docs[a];
+                            ann_occur[key].title = docs[a.uri];
                             ann_occur[key].created = date;
                             ann_occur[key].ann = ann;
                             ann_occur[key].contextRight = contextRight;
@@ -263,6 +254,15 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
         });
         $scope.ann_occur = ann_occur;
     }
+
+    $http.get('/api/documents').success(function (data) {
+        data.forEach(function (a) {
+            var title = a.title;
+            var urn = a.urn;
+            docs[urn] = title;
+        });
+        $scope.getOccurrences();
+    });
 }]);
 
 neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {

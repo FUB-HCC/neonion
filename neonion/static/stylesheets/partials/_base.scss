@@ -111,6 +111,11 @@ p {
         float: right;
       }
     }
+    .text {
+      margin-top: -($base-font-size + $base-font-size/4);
+      margin-bottom: $base-font-size + $base-font-size/2;
+      font-style: italic;
+    }
   }
 }
 

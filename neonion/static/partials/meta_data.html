@@ -1,20 +1,21 @@
-<p>
-    Please choose the properties you want to consider for this list
+
+<p class="text">
+    Please choose the properties you want to consider for this list <br>
     that corresponds to the Dublin Core Metadata Element Set
 </p>
 
-<table>
+<table ng-controller="MetaDataCtrl">
 
     <thead>
         <th>Active</th>
         <th>Property</th>
     </thead>
 
-    <tbody >
+    <tbody>
         <tr ng-repeat="element in metaDataElements">
-            <td></td>
+            <td class="checkbox"><input type="checkbox"/></td>
             <td>{{ element }}</td>
         </tr>
     </tbody>
-
+<!-- ng-model="element.isChecked" -->
 </table>

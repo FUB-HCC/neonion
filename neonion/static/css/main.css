@@ -73,6 +73,10 @@ p {
       display: inline-block; }
     .main .content div .sorting {
       float: right; }
+    .main .content .text {
+      margin-top: -20px;
+      margin-bottom: 24px;
+      font-style: italic; }
 
 #page-signin .main, #page-signup .main {
   width: 540px; }
@@ -5162,6 +5166,10 @@ th, td {
   text-align: left;
   border-bottom: 1px solid #cdcdcd;
   vertical-align: top; }
+
+.checkbox {
+  width: 76px;
+  height: 26px; }
 
 /* latin-ext */
 @font-face {

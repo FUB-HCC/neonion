@@ -361,6 +361,18 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $ht
 
 }]);
 
+neonionApp.controller('SettingsCtrl', ['$scope', '$http', function ($scope, $http) {
+    "use strict";
+
+    // default for first sub-menu item
+    $scope.page = 'page-1';
+
+    $scope.showThisPage = function(entry) {
+        $scope.page = 'page-' + entry;
+        console.log($scope.page);
+    }
+}]);
+
 neonionApp.controller('NamedEntityCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
@@ -383,6 +395,7 @@ neonionApp.controller('NamedEntityCtrl', ['$scope', '$http', function ($scope, $
 
 neonionApp.controller('MetaDataCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
+
     $scope.metaDataElements = ['Contributor', 'Coverage', 'Creator', 'Date', 'Description',
                             'Format', 'Identifier', 'Language', 'Publisher', 'Relation',
                             'Rights', 'Source', 'Subject', 'Title', 'Type']

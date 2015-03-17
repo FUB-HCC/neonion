@@ -22,15 +22,19 @@
 {% block right %}
     <div class="main">
         <div class="header">
+
         {% block header %}
-        <div ng-show="search.enabled">
+            {# Search field #}
+            <div id="search-form" ng-show="search.enabled" ng-cloak>
+                <button id="search-icon" class="fa fa-search"></button>
+                <input id="search" type="text" autocomplete="off" ng-model="search.query"/>
+            </div>
+        {% endblock %}
 
         </div>
-        {% endblock %}
+        <div class="content">
+              {% block content %}{% endblock %}
         </div>
-      <div class="content">
-      {% block content %}{% endblock %}
-      </div>
     </div>
 {% endblock %}
 

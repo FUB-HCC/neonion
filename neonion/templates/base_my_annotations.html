@@ -15,10 +15,10 @@
         <h3>My Annotations</h3>
     </div>
 
-    <ul id="annotation-table" class="annotation-grid" ng-controller="AnnotationStoreCtrl">
+    <ul id="annotation-table" class="annotation-grid" ng-controller="AnnotationStoreCtrl" ng-cloak>
 
         {% verbatim %}
-        <li ng-repeat="occurrence in occurrences | orderBy:'-created'">
+        <li ng-repeat="occurrence in occurrences | filter:filterAnnotations | orderBy:'-created'">
             <div>
                 <div class="ann-header">
                     {{ occurrence.ann }}

@@ -11,7 +11,7 @@
         <h3>Annotated Documents</h3>
     </div>
 
-    <ul id="document-table" class="document-grid" ng-controller="AnnDocsCtrl">
+    <ul id="document-table" class="document-grid" ng-controller="AnnDocsCtrl" ng-cloak>
 
         {% verbatim %}
         <li ng-repeat="doc in ann_docs track by $index | orderBy:'-created'">

@@ -17,7 +17,7 @@
     	            <th>Date</th>
                 </tr>
             </thead>
-            <tbody ng-controller="AnnOccurCtrl">
+            <tbody ng-controller="AnnOccurCtrl" ng-cloak>
             {% verbatim %}
                 <tr ng-repeat="occur in ann_occur | orderBy:'-created'">
                     <td> {{ occur.contextLeft }} <strong>{{ occur.ann }} </strong> {{ occur.contextRight }}</td>

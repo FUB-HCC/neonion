@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content %}
-<div ng-controller="AnnotatorCtrl" data-ng-init="setupAnnotator('{{ urn }}', '{{ request.user.email }}')">
+<div ng-controller="AnnotatorCtrl" data-ng-init="initialize({ docID:'{{ doc_id }}', userID:'{{ request.user.email }}', nerUrl:'{{ ner_url }}', nerAuth:'{{ ner_auth }}'})">
     <div class="annotator_menu" ng-cloak>
         <ul id="annotator_contributors" class="forms-list">
             <li ng-repeat="contrib in contributors | orderBy:'-updated'">
@@ -25,7 +25,7 @@
             {% endverbatim %}
             </li>
         </ul>
-        <a href="#" ng-click="scrollToLastAnnotation()">
+        <a ng-click="scrollToLastAnnotation()">
             <i class="fa fa-arrow-circle-down"></i> Scroll to last annotation
         </a>
     </div>

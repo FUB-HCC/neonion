@@ -11,9 +11,9 @@
     "use strict"; // enable strict mode
 
     /**
-    * Named entity plugin for Annotator
-    * @implements {Annotator.Plugin}
-    */
+     * Named entity plugin for Annotator
+     * @implements {Annotator.Plugin}
+     */
     Annotator.Plugin.NER = function (element, options) {
 
         /**
@@ -22,17 +22,17 @@
          */
         Annotator.Plugin.apply(this, arguments);
 
-       /**
+        /**
          *  Internal vars
          *  @private
          */
         var _isProcessing = false;
 
         this.pluginInit = function () {
-            options.model = options.model || 'default';
+            options.model = options.model || 'standard';
             options.agent = options.agent || {
-                email : 'ner@neonion.org',
-                name : 'Stanford NER'
+                email: 'ner@neonion.org',
+                name: 'Stanford NER'
             };
             options.motivation = options.motivation || 'oa:questioning';
 
@@ -54,16 +54,16 @@
         };
 
         /**
-        * Returns the plain text of the document.
-        **/
-        this.getPlainText = function() {
+         * Returns the plain text of the document.
+         **/
+        this.getPlainText = function () {
             return $(this.annotator.wrapper[0]).children('div:first').text();
         };
 
         /**
-        * Initiates the recognition process.
-        **/
-        this.recognize = function(settings) {
+         * Initiates the recognition process.
+         **/
+        this.recognize = function (settings) {
             if (!_isProcessing) {
                 _isProcessing = true;
                 // assemble parameters for NER recognition
@@ -80,6 +80,11 @@
                     dataType: "json",
                     context: this,
                     contentType: "application/json; charset=utf-8",
+                    beforeSend: function (request) {
+                        if (options.hasOwnProperty('auth')) {
+                            //request.setRequestHeader("X-Neonion-Authorization", options['auth']);
+                        }
+                    },
                     success: function (data, textStatus, jqXH) {
                         _isProcessing = false;
                         this.createAnnotations(this.processTokenSet(data.results));
@@ -87,31 +92,33 @@
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         _isProcessing = false;
-                        if (settings.hasOwnProperty('error')) settings.error(jqXHR, textStatus, errorThrown);  
+                        if (settings.hasOwnProperty('error')) settings.error(jqXHR, textStatus, errorThrown);
                     }
                 });
             }
         };
 
         /**
-        *Creates annotations from list of token.
-        **/
-        this.createAnnotations = function(tokenList) {
-            for(var i = 0; i < tokenList.length; i++) {
-                if (!this.annotationExist(tokenList[i])){
-                    var path = this.convertToXPath(tokenList[i]); 
+         *Creates annotations from list of token.
+         **/
+        this.createAnnotations = function (tokenList) {
+            for (var i = 0; i < tokenList.length; i++) {
+                if (!this.annotationExist(tokenList[i])) {
+                    var path = this.convertToXPath(tokenList[i]);
                     var annotation = this.annotator.createAnnotation();
                     // additional properties to identify automatic annotations
+                    annotation.user = options.agent.email;
                     annotation.creator = options.agent;
-                    annotation.motivatedBy = options.motivation;
                     annotation.rdf = {
-                        typeof : 'http://neonion.org/concept/person', // tokenList[i].type,
-                        label : tokenList[i].text
+                        typeof: 'http://neonion.org/concept/person', // tokenList[i].type,
+                        label: tokenList[i].text,
+                        motivatedBy: options.motivation
                     };
                     // add range to annotation
                     annotation.ranges = [path];
                     // finalize annotation
                     this.annotator.setupAnnotation(annotation);
+                    annotation.context = Annotator.Plugin.Neonion.prototype.extractSourroundedContent(element, annotation);
                     // publish annotation created
                     this.annotator.publish("annotationCreated", [annotation]);
                 }
@@ -119,21 +126,21 @@
         };
 
         /**
-        * Convert the offset of an token to an XPath expression.
-        **/
-        this.convertToXPath = function(token) {
+         * Convert the offset of an token to an XPath expression.
+         **/
+        this.convertToXPath = function (token) {
             return {
                 start: "//div[1]",
                 end: "//div[1]",
                 startOffset: token.offset.start,
                 endOffset: token.offset.end
-            }
+            };
         };
 
         /**
-        * Checks if an annotation already exists.
-        **/
-        this.annotationExist = function(token){
+         * Checks if an annotation already exists.
+         **/
+        this.annotationExist = function (token) {
             var path = this.convertToXPath(token);
             var range = Annotator.Range.sniff(path).normalize(this.annotator.wrapper[0]);
 
@@ -141,27 +148,27 @@
                 range.commonAncestor.className == 'annotator-hl') {
                 // get annotation of ancestor
                 var annotation = $(range.commonAncestor).data('annotation');
-                if (annotation && annotation.quote == token.text){
+                if (annotation && annotation.quote == token.text) {
                     return true;
                 }
             }
             return false;
-        }
+        };
 
         /**
-        * Post-process token set and merges contiguous token.
-        */
-        this.processTokenSet = function(tokenList) {
+         * Post-process token set and merges contiguous token.
+         */
+        this.processTokenSet = function (tokenList) {
             var mergedToken = [];
 
             if (tokenList.length > 0) {
 
                 // Workaround Array in Array
                 /*tokenList = tokenList.map(function(item) {
-                    //item.offset.start -= 1;
-                    item.offset.end -= 1;
-                    return item;
-                });*/
+                 //item.offset.start -= 1;
+                 item.offset.end -= 1;
+                 return item;
+                 });*/
 
                 var plainText = this.getPlainText();
                 // sort by ascending by token start
@@ -170,7 +177,7 @@
                 });
                 var groups = {};
                 // group token by type
-                tokenList.map(function(item) {
+                tokenList.map(function (item) {
                     if (!(item.type in groups)) {
                         groups[item.type] = [];
                     }
@@ -185,9 +192,9 @@
                         var token = groups[key][i];
                         // check if token are overlapping or separated by whitespace
                         if (
-                                token.offset.start <= currentToken.offset.end ||
-                                (Math.abs(token.offset.start - currentToken.offset.end) == 1 &&
-                                plainText.charAt(Math.max(token.offset.start - 1, 0)) == " ")
+                            token.offset.start <= currentToken.offset.end ||
+                            (Math.abs(token.offset.start - currentToken.offset.end) == 1 &&
+                            plainText.charAt(Math.max(token.offset.start - 1, 0)) == " ")
                         ) {
                             // merge token
                             currentToken.offset.end = Math.max(currentToken.offset.end, token.offset.end);
@@ -203,7 +210,7 @@
             console.log(tokenList);
             console.log(mergedToken);
             return mergedToken;
-        }
+        };
 
     };
 

@@ -82,7 +82,9 @@ class Membership(models.Model):
     invite_reason = models.CharField(max_length=64, blank=True)
     permissions = models.ManyToManyField(Permission, blank=True)
 
+
+# Signal which ensures that newly created users joins the public group automatically
 @receiver(post_save, sender=User)
 def user_joins_public_group(sender, instance, created, **kwargs):
     if created:
-        instance.join_public_group();
+        instance.join_public_group()

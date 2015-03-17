@@ -4,7 +4,7 @@ neonionApp.controller('MainCtrl', ['$scope', '$http', 'AccountService', function
     "use strict";
 
     // get current user
-    AccountService.getCurrentUser().then(function(result) {
+    AccountService.getCurrentUser().then(function (result) {
         $scope.user = result.data;
     });
 
@@ -18,21 +18,21 @@ neonionApp.controller('AccountsCtrl', ['$scope', '$http', 'AccountService', func
 
     $scope.users = [];
 
-    AccountService.getAccounts().then(function(result) {
+    AccountService.getAccounts().then(function (result) {
         $scope.users = result.data;
     });
 
     $scope.updateUser = function (user, field, value) {
         if (user.hasOwnProperty(field) && user[field] != value) {
             user[field] = value;
-            AccountService.updateUser(user);   
+            AccountService.updateUser(user);
         }
     };
 
     $scope.deleteUser = function (user) {
-        AccountService.deleteUser(user).then(function(result) {
+        AccountService.deleteUser(user).then(function (result) {
             var idx = $scope.users.indexOf(user);
-            $scope.users.splice(idx, 1);    
+            $scope.users.splice(idx, 1);
         });
     };
 
@@ -43,166 +43,170 @@ neonionApp.controller('AccountsCtrl', ['$scope', '$http', 'AccountService', func
  */
 neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'AccountService', 'DocumentService',
     function ($scope, $http, GroupService, AccountService, DocumentService) {
-    "use strict";
-    
-    $scope.groups = [];
-    $scope.users = [];
-    $scope.documents = [];
-    $scope.form = {
-        groupName : "",
-        selectedGroup : -1
-    };
+        "use strict";
 
-    GroupService.getGroups().then(function(result) {
-        $scope.groups = result.data;
-    });
+        $scope.groups = [];
+        $scope.users = [];
+        $scope.documents = [];
+        $scope.form = {
+            groupName: "",
+            selectedGroup: -1
+        };
 
-    AccountService.getAccounts().then(function(result) {
-        $scope.users = result.data;
-    });
+        GroupService.getGroups().then(function (result) {
+            $scope.groups = result.data;
+        });
 
-    DocumentService.getDocuments().then(function(result) {
-        $scope.documents = result.data;
-    });
+        AccountService.getAccounts().then(function (result) {
+            $scope.users = result.data;
+        });
 
-    $scope.showMembership = function(group) {
-        if ($scope.form.selectedGroup == group.id) {
-            $scope.form.selectedGroup = -1;
-        }
-        else {
-            $scope.form.selectedGroup = group.id;
-        }
-    };
+        DocumentService.getDocuments().then(function (result) {
+            $scope.documents = result.data;
+        });
 
-    $scope.createGroup = function () {
-        if ($scope.form.groupName.length > 0) {
-            var group = {
-                name : $scope.form.groupName
-            };
-            GroupService.createGroup(group).then(function(result) {
-                $scope.groups.push(result.data);
+        $scope.showMembership = function (group) {
+            if ($scope.form.selectedGroup == group.id) {
+                $scope.form.selectedGroup = -1;
+            }
+            else {
+                $scope.form.selectedGroup = group.id;
+            }
+        };
+
+        $scope.createGroup = function () {
+            if ($scope.form.groupName.length > 0) {
+                var group = {
+                    name: $scope.form.groupName
+                };
+                GroupService.createGroup(group).then(function (result) {
+                    $scope.groups.push(result.data);
+                });
+                $scope.form.groupName = "";
+            }
+        };
+
+        $scope.deleteGroup = function (group) {
+            GroupService.deleteGroup(group).then(function (result) {
+                var idx = $scope.groups.indexOf(group);
+                $scope.groups.splice(idx, 1);
             });
-            $scope.form.groupName = ""; 
-        }
-    };
+        };
 
-    $scope.deleteGroup = function (group) {
-        GroupService.deleteGroup(group).then(function(result) {
-            var idx = $scope.groups.indexOf(group);
-            $scope.groups.splice(idx, 1);    
-        });
-    };
-
-    $scope.toggleMembership = function(group, user) {
-        if (group.members.indexOf(user.id) === -1) {
-            $scope.addGroupMember(group, user);
-        }
-        else {
-            $scope.removeGroupMember(group, user);
-        }
-    };
-
-    $scope.toggleDocumentAssignment = function(group, document) {
-        if (group.documents.indexOf(document.id) === -1) {
-            $scope.addDocument(group, document);
-        }
-        else {
-            $scope.removeDocument(group, document);
-        }
-    };
-
-    $scope.addGroupMember = function(group, user) {
-        GroupService.addGroupMember(group, user).then(function(result) {
-           group.members.push(user.id);
-        });
-    };
-
-    $scope.removeGroupMember = function(group, user) {
-        GroupService.removeGroupMember(group, user).then(function(result) {
-             var idx = group.members.indexOf(user.id);
-            if (idx > -1) {
-                group.members.splice(idx, 1);
+        $scope.toggleMembership = function (group, user) {
+            if (group.members.indexOf(user.id) === -1) {
+                $scope.addGroupMember(group, user);
             }
-        });
-    };
-
-    $scope.addDocument = function(group, document) {
-       GroupService.addGroupDocument(group, document).then(function(result) {
-            group.documents.push(document.id);
-        });
-    };
-
-    $scope.removeDocument = function(group, document) {
-        GroupService.removeGroupDocument(group, document).then(function(result) {
-            var idx = group.documents.indexOf(document.id);
-            if (idx > -1) {
-                group.documents.splice(idx, 1);
+            else {
+                $scope.removeGroupMember(group, user);
             }
-        });
-    };
+        };
 
-}]);
+        $scope.toggleDocumentAssignment = function (group, document) {
+            if (group.documents.indexOf(document.id) === -1) {
+                $scope.addDocument(group, document);
+            }
+            else {
+                $scope.removeDocument(group, document);
+            }
+        };
+
+        $scope.addGroupMember = function (group, user) {
+            GroupService.addGroupMember(group, user).then(function (result) {
+                group.members.push(user.id);
+            });
+        };
+
+        $scope.removeGroupMember = function (group, user) {
+            GroupService.removeGroupMember(group, user).then(function (result) {
+                var idx = group.members.indexOf(user.id);
+                if (idx > -1) {
+                    group.members.splice(idx, 1);
+                }
+            });
+        };
+
+        $scope.addDocument = function (group, document) {
+            GroupService.addGroupDocument(group, document).then(function (result) {
+                group.documents.push(document.id);
+            });
+        };
+
+        $scope.removeDocument = function (group, document) {
+            GroupService.removeGroupDocument(group, document).then(function (result) {
+                var idx = group.documents.indexOf(document.id);
+                if (idx > -1) {
+                    group.documents.splice(idx, 1);
+                }
+            });
+        };
+
+    }]);
 
 /**
  * Workspace controller
  */
 neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'AccountService', 'DocumentService', 'WorkspaceService', 'Search',
     function ($scope, $http, AccountService, DocumentService, WorkspaceService, Search) {
-    "use strict";
+        "use strict";
 
-    $scope.search = Search;
-    $scope.search.enable = true;
-    $scope.allowRemove = false;
-    $scope.allowImport = false;
-    $scope.showWorkspaceName = false;
+        $scope.search = Search;
+        $scope.search.enable = true;
+        $scope.allowRemove = false;
+        $scope.allowImport = false;
+        $scope.showWorkspaceName = false;
 
-    $scope.initPrivateWorkspace = function() {
-        $scope.allowRemove = true;
-        $scope.allowImport = true;
-        AccountService.getCurrentUser().then(function(result) {
-            $scope.user = result.data;
-            $scope.workspaces = [{ id : -1, name : 'Private', documents : result.data.owned_documents }];
-        });
-    };
-
-    $scope.initPublicWorkspace = function() {
-        AccountService.getCurrentUser().then(function(result) {
-            var user = result.data;
-            AccountService.getEntitledDocuments(user).then(function(result) {
-                // filter for group public
-               $scope.workspaces = result.data.filter(function(element) { return element.id == 1; });
+        $scope.initPrivateWorkspace = function () {
+            $scope.allowRemove = true;
+            $scope.allowImport = true;
+            AccountService.getCurrentUser().then(function (result) {
+                $scope.user = result.data;
+                $scope.workspaces = [{id: $scope.user.email, name: 'Private', documents: result.data.owned_documents}];
             });
-        });
-    };
+        };
 
-    $scope.initGroupWorkspace = function() {
-        $scope.showWorkspaceName = true;
-        AccountService.getCurrentUser().then(function(result) {
-            var user = result.data;
-            AccountService.getEntitledDocuments(user).then(function(result) {
-               $scope.workspaces = result.data.filter(function(element) { return element.id != 1; });
+        $scope.initPublicWorkspace = function () {
+            AccountService.getCurrentUser().then(function (result) {
+                var user = result.data;
+                AccountService.getEntitledDocuments(user).then(function (result) {
+                    // filter for group public
+                    $scope.workspaces = result.data.filter(function (element) {
+                        return element.id == 1;
+                    });
+                });
             });
-        });
-    };
+        };
 
-    $scope.removeDocument = function (workspace, document) {
-        if (workspace.id == -1) {
-            WorkspaceService.removeDocument($scope.user, document.id).then(function (result) {
-                var idx = workspace.documents.indexOf(document);
-                workspace.documents.splice(idx, 1);
+        $scope.initGroupWorkspace = function () {
+            $scope.showWorkspaceName = true;
+            AccountService.getCurrentUser().then(function (result) {
+                var user = result.data;
+                AccountService.getEntitledDocuments(user).then(function (result) {
+                    $scope.workspaces = result.data.filter(function (element) {
+                        return element.id != 1;
+                    });
+                });
             });
-        }
-    };
+        };
 
-    $scope.filterDocuments = function(document) {
-        if ($scope.search.query.length > 0) {
-            // do something with $scope.search.query
-            return document.title.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
-        }
-        return true;
-    };
+        $scope.removeDocument = function (workspace, document) {
+            if (workspace.id == -1) {
+                WorkspaceService.removeDocument($scope.user, document.id).then(function (result) {
+                    var idx = workspace.documents.indexOf(document);
+                    workspace.documents.splice(idx, 1);
+                });
+            }
+        };
 
-}]);
+        $scope.filterDocuments = function (document) {
+            if ($scope.search.query.length > 0) {
+                // do something with $scope.search.query
+                return document.title.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
+            }
+            return true;
+        };
+
+    }]);
 
 /**
  * Import controller
@@ -210,7 +214,7 @@ neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'AccountService', 'Do
 neonionApp.controller('WorkspaceImportCtrl', ['$scope', '$http', 'DocumentService', function ($scope, $http, DocumentService) {
     "use strict";
 
-    $http.get('/documents/cms/list').success(function(data) {
+    $http.get('/documents/cms/list').success(function (data) {
         $scope.documents = data;
     });
 
@@ -220,11 +224,11 @@ neonionApp.controller('WorkspaceImportCtrl', ['$scope', '$http', 'DocumentServic
 
     $scope.importDocuments = function () {
         var selectedDocs = [];
-        $('#document-import-list>.ui-selected').each(function() {
+        $('#document-import-list>.ui-selected').each(function () {
             selectedDocs.push(this.id);
         });
-        DocumentService.importDocuments(selectedDocs).then(function(data) {
-             // return to home
+        DocumentService.importDocuments(selectedDocs).then(function (data) {
+            // return to home
             window.location = "/";
         });
     };
@@ -234,7 +238,7 @@ neonionApp.controller('WorkspaceImportCtrl', ['$scope', '$http', 'DocumentServic
 neonionApp.controller('AnnotationSetCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
-    $http.get('/api/annotationsets').success(function(data) {
+    $http.get('/api/annotationsets').success(function (data) {
         $scope.annotationsets = data;
     });
 
@@ -243,11 +247,11 @@ neonionApp.controller('AnnotationSetCtrl', ['$scope', '$http', function ($scope,
 neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
-    $http.get('/api/store/filter').success(function(data) {
+    $http.get('/api/store/filter').success(function (data) {
         var occurrences = {};
         var filterUserData = data.rows;
 
-        filterUserData.forEach(function(a) {
+        filterUserData.forEach(function (a) {
             var rdf = a.rdf;
             var key = a.quote + rdf;
             var ann = a.quote;
@@ -256,10 +260,10 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', function ($scop
             var doc = a.uri;
 
             var typeParts = type.split('/');
-            var concept = typeParts[typeParts.length-1];
+            var concept = typeParts[typeParts.length - 1];
 
             if (!(key in occurrences)) {
-                occurrences[key] = {ann: ann, count:  1, typeof: concept, last: date, docs: new Array()};
+                occurrences[key] = {ann: ann, count: 1, typeof: concept, last: date, docs: new Array()};
             } else {
                 occurrences[key].count++;
                 var parsedDate = Date.parse(date);
@@ -281,13 +285,13 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
     "use strict";
     $scope.ann_occur = {};
     var url = $location.absUrl().split('/');
-    var quote = url[url.length-1];
+    var quote = url[url.length - 1];
 
     $http.get('/api/store/filter?quote=' + quote).success(function (data2) {
 
         var filterUserData = data2.rows;
 
-        filterUserData.forEach(function(a) {
+        filterUserData.forEach(function (a) {
             // context variable here
             if (decodeURI(quote) === a.quote) {
                 var key = a.id;
@@ -325,10 +329,10 @@ neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function (
     "use strict";
     var ann_docs = {};
     var url = $location.absUrl().split('/');
-    var quote = url[url.length-1];
+    var quote = url[url.length - 1];
 
     $http.get('/api/documents').success(function (data2) {
-        data2.forEach(function(b) {
+        data2.forEach(function (b) {
             var id = b.id;
             var title = b.title;
 
@@ -351,49 +355,72 @@ neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function (
 /**
  * Annotator controller
  */
-neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $http) {
+neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', 'AccountService', function ($scope, $http, $location, AccountService) {
     "use strict";
 
     $scope.contributors = [];
 
-    $scope.setupAnnotator = function(uri, userId) {
-        $("#document-body").annotator()
-        .annotator('addPlugin', 'Neonion', {
-            whoamiUrl: "/accounts/me"
-        })
-        .annotator('addPlugin', 'NER', {
-            service : 'http://localhost:5000',
-            uri : uri
-        })
-        .annotator('addPlugin', 'Store', {
-            prefix: '/api/store',
-            annotationData: {'uri': uri},
-            // filter annotations by creator
-            loadFromSearch: {
-                'uri': uri,
-                //'creator.email': userId,
-                'limit': 999999
-            }
+    $scope.initialize = function (params) {
+        AccountService.getCurrentUser().then(function(result) {
+            params.agent = {
+                id: result.data.id,
+                email: result.data.email
+            };
+            $scope.setupAnnotator(params);
         });
+    };
+
+    $scope.setupAnnotator = function (params) {
+        var queryParams = $location.search();
+
+        $("#document-body").annotator()
+            // add store plugin
+            .annotator('addPlugin', 'Store', {
+                prefix: '/api/store',
+                showViewPermissionsCheckbox: false,
+                showEditPermissionsCheckbox: false,
+                annotationData: {
+                    uri: params.docID
+                },
+                loadFromSearch: {'limit': 0}
+            })
+            // add neonion plugin
+            .annotator('addPlugin', 'Neonion', {
+                uri: params.docID,
+                agent: params.agent,
+                workspace: queryParams.workspace
+            })
+            // add NER plugin
+            .annotator('addPlugin', 'NER', {
+                uri: params.docID,
+                service: params.nerUrl,
+                auth: params.nerAuth
+            });
+
 
         // get annotator instance and subscribe to events
         $scope.annotator = $("#document-body").data("annotator");
         $scope.annotator
-        .subscribe("annotationCreated", $scope.handleAnnotationEvent)
-        .subscribe("annotationUpdated", $scope.handleAnnotationEvent)
-        .subscribe("annotationDeleted", $scope.handleAnnotationEvent)
-        .subscribe('annotationsLoaded', function(annotations) {
-            $scope.$apply(function() {
-                $scope.contributors = $scope.getContributors();
-                // colorize each annotation
-                annotations.forEach($scope.colorizeAnnotation);
+            .subscribe("annotationCreated", $scope.handleAnnotationEvent)
+            .subscribe("annotationUpdated", $scope.handleAnnotationEvent)
+            .subscribe("annotationDeleted", $scope.handleAnnotationEvent)
+            .subscribe('annotationsLoaded', function (annotations) {
+                $scope.$apply(function () {
+                    $scope.contributors = $scope.getContributors();
+                    // colorize each annotation
+                    annotations.forEach($scope.colorizeAnnotation);
+                });
+
+                // go to annotation given by hash
+                if (queryParams.hasOwnProperty("annotation")) {
+                    $scope.scrollToAnnotation(queryParams.annotation);
+                }
             });
-        });
 
         $scope.loadAnnotationSet();
     };
 
-    $scope.loadAnnotationSet = function() {
+    $scope.loadAnnotationSet = function () {
         $http.get('/api/annotationsets').success(function (data) {
             $scope.annotationsets = data;
             if ($scope.annotationsets.length > 0) {
@@ -410,36 +437,49 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $ht
         });
     };
 
-    $scope.scrollToLastAnnotation = function() {
-        var annotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation($scope.annotator.plugins.Neonion.getUser().email);
+    $scope.scrollToAnnotation = function (annotation) {
+        // check if just the annotation id was passed
+        if (typeof annotation == 'string') {
+            var annotations = $scope.annotator.plugins.Neonion.getAnnotationObjects();
+            annotation = annotations.find(function (element) {
+                return (element.id == $location.hash());
+            });
+        }
         if (annotation) {
             var target = $(annotation.highlights[0]);
             $('html, body').stop().animate({
-                'scrollTop': target.offset().top - 50 },
+                    'scrollTop': target.offset().top - 200
+                },
                 1000,
                 'easeInOutQuart'
             );
             // blink for more attention
-            for(var i = 0; i < 2; i++) {
+            for (var i = 0; i < 2; i++) {
                 $(target).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
             }
         }
-        return false;
     };
 
-    $scope.toggleContributor = function(contributor) {
-        var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations(contributor.user);
-        if (contributor.showAnnotation) {
-            annotations.forEach(function(item) {
-                Annotator.Plugin.Neonion.prototype.showAnnotation(item);
-                $scope.colorizeAnnotation(item);
-            });
-        } else {
-            annotations.forEach(Annotator.Plugin.Neonion.prototype.hideAnnotation);
+    $scope.scrollToLastAnnotation = function () {
+        var annotation = $scope.annotator.plugins.Neonion.getLastAnnotation();
+        if (annotation) {
+            $scope.scrollToAnnotation(annotation);
         }
     };
 
-    $scope.makeColor = function(colorNum, colors) {
+    $scope.toggleContributor = function (contributor) {
+        var annotations = $scope.annotator.plugins.Neonion.getUserAnnotations(contributor.user);
+        if (contributor.showAnnotation) {
+            annotations.forEach(function (item) {
+                $scope.annotator.plugins.Neonion.showAnnotation(item);
+                $scope.colorizeAnnotation(item);
+            });
+        } else {
+            annotations.forEach($scope.annotator.plugins.Neonion.hideAnnotation);
+        }
+    };
+
+    $scope.makeColor = function (colorNum, colors) {
         if (colors < 1) {
             // defaults to one color - avoid divide by zero
             colors = 1;
@@ -447,16 +487,18 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $ht
         return ( colorNum * (360 / colors) ) % 360;
     };
 
-    $scope.handleAnnotationEvent = function(annotation) {
-        $scope.$apply(function() {
+    $scope.handleAnnotationEvent = function (annotation) {
+        $scope.$apply(function () {
             $scope.contributors = $scope.getContributors();
             $scope.colorizeAnnotation(annotation);
         });
     };
 
-    $scope.colorizeAnnotation = function(annotation) {
+    $scope.colorizeAnnotation = function (annotation) {
         if (annotation.creator) {
-            var idx = $scope.contributors.map(function(x) {return x.user; }).indexOf(annotation.creator.email);
+            var idx = $scope.contributors.map(function (x) {
+                return x.user;
+            }).indexOf(annotation.creator.email);
             if (idx !== -1) {
                 var color = $scope.contributors[idx].color;
                 annotation.highlights.forEach(function (highlight) {
@@ -466,20 +508,22 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', function ($scope, $ht
         }
     };
 
-    $scope.getContributors = function() {
-        var users = Annotator.Plugin.Neonion.prototype.getContributors();
+    $scope.getContributors = function () {
+        var users = $scope.annotator.plugins.Neonion.getContributors();
         var items = [];
 
         users.forEach(function (user, index) {
-            var idx = $scope.contributors.map(function(x) {return x.user; }).indexOf(user);
+            var idx = $scope.contributors.map(function (x) {
+                return x.user;
+            }).indexOf(user);
             var showAnnotation = idx !== -1 ? $scope.contributors[idx].showAnnotation : true;
-            var lastAnnotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation(user);
+            var lastAnnotation = $scope.annotator.plugins.Neonion.getLastAnnotation(user);
             var isoUpated = lastAnnotation.updated ? lastAnnotation.updated : new Date().toISOString();
             items.push({
                 user: user, // creator of annotation
                 updated: isoUpated, // date when annotation was updated
-                showAnnotation : showAnnotation,
-                color : "hsla( " + $scope.makeColor(index, users.length) + ", 100%, 50%, 0.3 )"
+                showAnnotation: showAnnotation,
+                color: "hsla( " + $scope.makeColor(index, users.length) + ", 100%, 50%, 0.3 )"
             });
         });
 

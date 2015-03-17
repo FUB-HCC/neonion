@@ -1,8 +1,8 @@
-var neonionApp = angular.module('neonionApp', ['ngRoute', 'ngAnimate'])
-.config(['$routeProvider', '$locationProvider', '$httpProvider',
-    function($routeProvider, $locationProvider, $httpProvider) {
+var neonionApp = angular.module('neonionApp', ['ngAnimate'])
+.config(['$httpProvider', '$locationProvider',
+    function($httpProvider, $locationProvider) {
         "use strict";
-
+        $locationProvider.html5Mode(false);
         // CSRF settings
         $httpProvider.defaults.xsrfCookieName = 'csrftoken';
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';

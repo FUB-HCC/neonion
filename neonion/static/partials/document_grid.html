@@ -7,7 +7,7 @@
             </a>
         </li>
         <li ng-repeat="document in workspace.documents | filter:filterDocuments | orderBy:'-created'">
-            <a href="/annotator/{{document.id}}" class="document-grid-content">
+            <a ng-href="/annotator/{{document.id}}#?workspace={{ workspace.id }}" class="document-grid-content">
                 <div>{{document.title}}</div>
             </a>
             <div class="document-grid-actions">

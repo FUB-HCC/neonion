@@ -142,7 +142,7 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'Account
             });
         };
 
-}]);
+    }]);
 
 /**
  * Workspace controller
@@ -208,7 +208,7 @@ neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'AccountService', 'Wo
             return true;
         };
 
-}]);
+    }]);
 
 /**
  * Import controller
@@ -252,7 +252,7 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', 'SearchService'
     SearchService.enabled = true;
     $scope.search = SearchService;
 
-    $http.get('/api/store/filter').success(function(data) {
+    $http.get('/api/store/filter').success(function (data) {
         var occurrences = {};
         var filterUserData = data.rows;
 
@@ -283,12 +283,12 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', 'SearchService'
             }
         });
         var keys = Object.keys(occurrences);
-        $scope.occurrences = keys.map(function(k) {
+        $scope.occurrences = keys.map(function (k) {
             return occurrences[k];
         });
     });
 
-    $scope.filterAnnotations = function(occurrence) {
+    $scope.filterAnnotations = function (occurrence) {
         if ($scope.search.query.length > 0) {
             return occurrence.ann.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
         }
@@ -302,7 +302,7 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
     var docs = {};
     var ann_occur = {};
     var url = $location.absUrl().split('/');
-    var quote = url[url.length-1];
+    var quote = url[url.length - 1];
 
     $http.get('/api/documents').success(function (data) {
         data.forEach(function (a) {
@@ -313,11 +313,11 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
         $scope.getOccurrences();
     });
 
-    $scope.getOccurrences = function() {
+    $scope.getOccurrences = function () {
         $http.get('/api/store/filter?quote=' + quote).success(function (data) {
             var filterUserData = data.rows;
 
-            filterUserData.forEach(function(a) {
+            filterUserData.forEach(function (a) {
                 if (decodeURI(quote) === a.quote) {
                     var key = a.id;
                     var ann = a.quote;
@@ -328,7 +328,7 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
 
                     var urns = Object.keys(docs);
 
-                    urns.forEach(function(c) {
+                    urns.forEach(function (c) {
                         if (c == a.uri) {
                             ann_occur[key] = {}
                             ann_occur[key].title = docs[a];
@@ -336,7 +336,8 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
                             ann_occur[key].ann = ann;
                             ann_occur[key].contextRight = contextRight;
                             ann_occur[key].contextLeft = contextLeft;
-                        };
+                        }
+                        ;
                     });
                 }
             });
@@ -349,10 +350,10 @@ neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function (
     "use strict";
     var ann_docs = {};
     var url = $location.absUrl().split('/');
-    var quote = url[url.length-1];
+    var quote = url[url.length - 1];
 
     $http.get('/api/documents').success(function (data2) {
-        data2.forEach(function(b) {
+        data2.forEach(function (b) {
             var urn = b.id;
             var title = b.title;
 
@@ -381,7 +382,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', 'Account
     $scope.contributors = [];
 
     $scope.initialize = function (params) {
-        AccountService.getCurrentUser().then(function(result) {
+        AccountService.getCurrentUser().then(function (result) {
             params.agent = {
                 id: result.data.id,
                 email: result.data.email
@@ -552,7 +553,39 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', 'Account
 
 }]);
 
-neonionApp.controller('NamedEntityCtrl', ['$scope', '$http', function ($scope, $http) {
+/**
+ * SPARQL query form controller
+ */
+neonionApp.controller('QueryCtrl', ['$scope', function ($scope) {
+    "use strict";
+
+    $scope.form = {
+        prefixes: "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+        "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+        "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
+        "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>",
+        query: "SELECT * {\n" +
+        "\t?uri rdf:type <http://neonion.org/concept/person> .\n" +
+        "\t?uri rdfs:label ?name\n" +
+        "}\nLIMIT 50"
+    };
+
+    $scope.initialize = function (params) {
+        $scope.endpoint = params.endpoint;
+    };
+
+    $scope.executeQuery = function () {
+        var q = new sgvizler.Query();
+        q.query($scope.form.query).
+            endpointURL($scope.endpoint).
+            endpointOutputFormat("json").
+            chartFunction("google.visualization.Table").
+            draw("query-result");
+    };
+
+}]);
+
+neonionApp.controller('NamedEntityCtrl', ['$scope', function ($scope) {
     "use strict";
 
     $scope.models = [

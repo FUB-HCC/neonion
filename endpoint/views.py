@@ -29,19 +29,3 @@ def query(request):
         return JsonResponse(sparql.query().convert())
     except Exception as e:
         return HttpResponseForbidden()
-
-
-@login_required
-@require_http_methods(["GET", "POST"])
-def query_form(request):
-    if request.method == 'POST' and 'query-field' in request.POST:
-        sparql_query = request.POST['query-field']
-    elif request.method == 'GET' and 'query-field' in request.GET:
-        sparql_query = request.GET['query-field']
-    else:
-        sparql_query = "SELECT * {\n" \
-            "\t?uri rdf:type <http://neonion.org/concept/person> .\n" \
-            "\t?uri rdfs:label ?name\n" \
-            "}\nLIMIT 50"
-
-    return render_to_response('base_query.html', {'query': sparql_query, 'endpoint': settings.ENDPOINT}, context_instance=RequestContext(request))

@@ -11,9 +11,9 @@
     "use strict"; // enable strict mode
 
     /**
-    * neonion plugin for Annotator
-    * @implements {Annotator.Plugin}
-    */
+     * neonion plugin for Annotator
+     * @implements {Annotator.Plugin}
+     */
     Annotator.Plugin.Neonion = function (element, options) {
 
         /**
@@ -27,19 +27,12 @@
          *  @private
          */
         var adder = null,
-            user = null,
             compositor = {},
             selectedType = null,
             viewerFields = {},
             editorFields = {}
 
         // properties
-        this.setUser = function (userData) {
-            user = userData;
-        };
-        this.getUser = function () {
-            return user;
-        };
         this.setCompositor = function (compositorData) {
             compositor = compositorData;
             this.applyAnnotationSets(adder, compositor);
@@ -53,11 +46,14 @@
          * @override
          */
         this.pluginInit = function () {
+            options.agent = options.agent || {
+                email: "unknown@neonion.org"
+            };
 
             adder = this.overrideAdder();
             viewerFields = this.initViewerFields();
             editorFields = {
-                unknownEntity : this.initEditorUnknownEntity(),
+                unknownEntity: this.initEditorUnknownEntity(),
                 search: this.initEditorEntitySearch(),
                 create: null //this.initEditorEntityCreation()
             };
@@ -77,17 +73,37 @@
                 }
             });
 
-            // get logged in user credentials
-            $.ajax({
-                context: this,
-                type: "get",
-                url: options.whoamiUrl,
-                success: this.setUser,
-                dataType: "json"
-            });
+            // subscribe to create event to add extra data
+            this.annotator
+                .subscribe("beforeAnnotationCreated", function (annotation) {
+                    if (options.hasOwnProperty("workspace")) {
+                        // add permissions to annotation
+                        annotation.permissions = {
+                            read: [options.workspace],
+                            update: [options.workspace],
+                            delete: [options.agent.email],
+                            admin: [options.agent.email]
+                        };
+                    }
+                });
+
+            this.applyLayer(Annotator.Plugin.Neonion.prototype.annotationLayers.group);
         };
 
-        // overrides the adder according provided types
+        /**
+         * Restores annotations if an uri is provided
+         */
+        this.applyLayer = function (layer) {
+            if (this.annotator.plugins.Store && options.hasOwnProperty("uri")) {
+                var query = layer(options);
+                this.annotator.plugins.Store.loadAnnotationsFromSearch(query);
+            }
+        };
+
+        /**
+         * Overrides the adder according provided types
+         * @returns {*|jQuery|HTMLElement}
+         */
         this.overrideAdder = function () {
             var adder = $(this.annotator.adder[0]);
 
@@ -96,7 +112,7 @@
                 compositor = options["annotationSets"];
             }
             else {
-               compositor = {};
+                compositor = {};
             }
 
             // catch submit event
@@ -105,16 +121,19 @@
                 selectedType = $(this).val();
                 // show or hide entity creation field
                 /*if (compositor[selectedType] && compositor[selectedType].allowCreation) {
-                    $(editorFields.create).show();
-                }
-                else {
-                    $(editorFields.create).hide();
-                }*/
+                 $(editorFields.create).show();
+                 }
+                 else {
+                 $(editorFields.create).hide();
+                 }*/
             });
             return adder;
         };
 
-        // creates additional fields in viewer
+        /**
+         * Creates additional fields in viewer
+         * @returns {{resource: *, creator: *}}
+         */
         this.initViewerFields = function () {
             return {
                 // add field to linked person
@@ -150,31 +169,33 @@
             };
         };
 
-        this.initEditorUnknownEntity = function() {
+        this.initEditorUnknownEntity = function () {
             var field = this.annotator.editor.addField({
-                load : function(field, annotation) {
+                load: function (field, annotation) {
                     // restore type from annotation if provided
                     selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : selectedType;
                     // add resource uri itself
                     $(field).children((":first")).replaceWith("<div class='btn-group-vertical unknown'></div>");
                     $(field).children((":first")).append(Annotator.Plugin.Neonion.prototype.createListItems([
-                    {
-                        uri : selectedType,
-                        label : Annotator.Plugin.Neonion.prototype.literals['en'].unknown + " " + compositor[selectedType].label
-                    }
+                        {
+                            uri: selectedType,
+                            label: Annotator.Plugin.Neonion.prototype.literals['en'].unknown + " " + compositor[selectedType].label
+                        }
                     ], Annotator.Plugin.Neonion.prototype.formatter.default));
                 },
-                submit : function(field, annotation) {
+                submit: function (field, annotation) {
+                    // add rdf data
                     if (!annotation.hasOwnProperty("rdf")) {
-                        annotation.rdf = {};
+                        annotation.rdf = {
+                            typeof: selectedType,
+                            label: annotation.quote
+                        };
                     }
                     // add user to annotation
-                    annotation.creator = user;
+                    annotation.user = options.agent.email;
+                    annotation.creator = options.agent;
                     // add context
                     annotation.context = Annotator.Plugin.Neonion.prototype.extractSourroundedContent(element, annotation);
-                    // update annotation object
-                    annotation.rdf.typeof = selectedType;
-                    annotation.rdf.label = annotation.quote;
                 }
             });
 
@@ -183,9 +204,12 @@
             });
 
             return field;
-        }
+        };
 
-        // creates the search field in editor
+        /**
+         * Creates the search field in editor
+         * @returns {*}
+         */
         this.initEditorEntitySearch = function () {
             // add field containing the suggested resources
             var field = this.annotator.editor.addField({
@@ -201,6 +225,7 @@
                 submit: function (field, annotation) {
                     if ($(element).data("resource")) {
                         var dataItem = $(element).data("resource");
+                        // add rdf data
                         annotation.rdf.sameAs = dataItem.uri + '';
                         annotation.rdf.label = dataItem.label;
                         // remove from data
@@ -233,21 +258,21 @@
                 // replace list with spinner while loading
                 list.html(Annotator.Plugin.Neonion.prototype.createSpinner());
 
-                Annotator.Plugin.Neonion.prototype.search(selectedType, searchTerm, 
-                function (items) {
-                    var formatter = Annotator.Plugin.Neonion.prototype.formatter[selectedType] || Annotator.Plugin.Neonion.prototype.formatter['default'];
-                    // store last result set in jQuery data collection
-                    $(element).data("results", items);
-                    // update score
-                    Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence(items);
-                    // create and add items
-                    list.empty();
-                    list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, formatter));
+                Annotator.Plugin.Neonion.prototype.search(selectedType, searchTerm,
+                    function (items) {
+                        var formatter = Annotator.Plugin.Neonion.prototype.formatter[selectedType] || Annotator.Plugin.Neonion.prototype.formatter['default'];
+                        // store last result set in jQuery data collection
+                        $(element).data("results", items);
+                        // update score
+                        Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence(items);
+                        // create and add items
+                        list.empty();
+                        list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, formatter));
 
-                    // clear list and min-height css property
-                    list.css("min-height", "");
-                });
-                
+                        // clear list and min-height css property
+                        list.css("min-height", "");
+                    });
+
                 return false;
             });
             // attach key event to search while typing
@@ -293,7 +318,7 @@
                 overlay.show();
             });
             resourceList.on("mousemove", "button", function (e) {
-                var pos = { top: e.pageY, left: e.pageX + 30 };
+                var pos = {top: e.pageY, left: e.pageX + 30};
                 overlay.css(pos);
             });
             resourceList.on("mouseleave", "button", function () {
@@ -320,15 +345,15 @@
                                 createForm.append(field + "<br>");
                             });
                             createForm.append(
-                                    "<input type='submit' class='btn annotator-btn' value='" +
-                                    Annotator.Plugin.Neonion.prototype.literals['en'].create + "' />"
+                                "<input type='submit' class='btn annotator-btn' value='" +
+                                Annotator.Plugin.Neonion.prototype.literals['en'].create + "' />"
                             );
                             // prefill first field
                             createForm.find("#" + compositor[selectedType].fields[0].name).val(annotation.quote);
                         }
                         /*else {
-                            console.error("No entity field description provided");
-                        }*/
+                         console.error("No entity field description provided");
+                         }*/
                     }
                 }
             });
@@ -378,9 +403,9 @@
         options: {},
 
         /**
-        * Enum annotator classes.
-        * @enum {string}
-        */
+         * Enum annotator classes.
+         * @enum {string}
+         */
         classes: {
             visible: "annotator-hl",
             hide: "annotator-hl-filtered"
@@ -405,12 +430,34 @@
             }
         },
 
-        extractSourroundedContent: function(element, annotation) {
+        annotationLayers : {
+            unspecified: function(params) {
+                return {
+                    uri: params.uri,
+                    limit: 999999
+                };
+            },
+            private: function(params) {
+                var query = Annotator.Plugin.Neonion.prototype.annotationLayers.unspecified(params);
+                query["creator.email"] = params.agent.email;
+                return query;
+            },
+            group: function(params) {
+                var query = Annotator.Plugin.Neonion.prototype.annotationLayers.unspecified(params);
+                if (params.hasOwnProperty("workspace")) {
+                    // filter for workspace
+                    query["permissions.read"] = params.workspace;
+                }
+                return query;
+            }
+        },
+
+        extractSourroundedContent: function (element, annotation) {
             var length = 200;
             var node, contentLeft = '', contentRight = '';
             // left
             node = annotation.highlights[0];
-            while(node != element && contentLeft.length < length) {
+            while (node != element && contentLeft.length < length) {
                 if (node.previousSibling) {
                     node = node.previousSibling;
                     // prepend extracted text
@@ -423,7 +470,7 @@
 
             // right
             node = annotation.highlights[annotation.highlights.length - 1];
-            while(node != element && contentRight.length < length) {
+            while (node != element && contentRight.length < length) {
                 if (node.nextSibling) {
                     node = node.nextSibling;
                     // append extracted text
@@ -434,15 +481,15 @@
                 }
             }
             // replace line feed with space
-            contentLeft = contentLeft.replace(/(\r\n|\n|\r)/gm," ");
-            contentRight = contentRight.replace(/(\r\n|\n|\r)/gm," ");
+            contentLeft = contentLeft.replace(/(\r\n|\n|\r)/gm, " ");
+            contentRight = contentRight.replace(/(\r\n|\n|\r)/gm, " ");
 
             var leftC = contentLeft.trimLeft().substr(-length);
             var rightC = contentRight.trimRight().substr(0, length);
 
             return {
-                left : leftC.substring(leftC.indexOf(" ") + 1),
-                right : rightC.substring(0, rightC.lastIndexOf(" "))
+                left: leftC.substring(leftC.indexOf(" ") + 1),
+                right: rightC.substring(0, rightC.lastIndexOf(" "))
             };
         },
 
@@ -485,20 +532,31 @@
             return constributors;
         },
 
-        getUserAnnotations: function (userId) {
+        getAnnotationObjects: function () {
             var highlights = Annotator.Plugin.Neonion.prototype.getAnnotationHighlights();
             var annotations = [];
             highlights.each(function () {
                 var annotation = $(this).data("annotation");
-                if (annotation.creator.email === userId) {
-                    annotations.push(annotation);
-                }
+                annotations.push(annotation);
             });
             return annotations;
         },
 
+        getUserAnnotations: function (userId) {
+            var annotations = Annotator.Plugin.Neonion.prototype.getAnnotationObjects();
+            return annotations.filter(function (element) {
+                return element.creator.email == userId;
+            });
+        },
+
         getLastAnnotation: function (userId) {
-            var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations(userId);
+            var annotations;
+            if (userId) {
+                annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations(userId);
+            }
+            else {
+                annotations = Annotator.Plugin.Neonion.prototype.getAnnotationObjects();
+            }
             if (annotations.length > 0) {
                 annotations.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByUpdated);
                 return annotations[annotations.length - 1];
@@ -506,21 +564,21 @@
             return null;
         },
 
-        getCookie: function (name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = $.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        },
+        /*getCookie: function (name) {
+         var cookieValue = null;
+         if (document.cookie && document.cookie !== '') {
+         var cookies = document.cookie.split(';');
+         for (var i = 0; i < cookies.length; i++) {
+         var cookie = $.trim(cookies[i]);
+         // Does this cookie string begin with the name we want?
+         if (cookie.substring(0, name.length + 1) === (name + '=')) {
+         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+         break;
+         }
+         }
+         }
+         return cookieValue;
+         },*/
 
         createListItems: function (list, formatter) {
             var items = [];
@@ -643,27 +701,27 @@
         }
 
         /*create: {
-            createPerson: function (data, callback) {
-                $.ajax({
-                    dataType: "json", type: "POST",
-                    url: '/es/create/persons',
-                    data: { "data": JSON.stringify(data), csrfmiddlewaretoken: Annotator.Plugin.Neonion.prototype.getCookie('csrftoken') },
-                    success: function (data, jqXHR) {
-                        if (callback) { callback(data); }
-                    }
-                });
-            },
-            createInstitute: function (data, callback) {
-                $.ajax({
-                    dataType: "json", type: "POST",
-                    url: '/es/create/institutes',
-                    data: { "data": JSON.stringify(data), csrfmiddlewaretoken: Annotator.Plugin.Neonion.prototype.getCookie('csrftoken') },
-                    success: function (data, jqXHR) {
-                        if (callback) { callback(data); }
-                    }
-                });
-            }
-        }*/
+         createPerson: function (data, callback) {
+         $.ajax({
+         dataType: "json", type: "POST",
+         url: '/es/create/persons',
+         data: { "data": JSON.stringify(data), csrfmiddlewaretoken: Annotator.Plugin.Neonion.prototype.getCookie('csrftoken') },
+         success: function (data, jqXHR) {
+         if (callback) { callback(data); }
+         }
+         });
+         },
+         createInstitute: function (data, callback) {
+         $.ajax({
+         dataType: "json", type: "POST",
+         url: '/es/create/institutes',
+         data: { "data": JSON.stringify(data), csrfmiddlewaretoken: Annotator.Plugin.Neonion.prototype.getCookie('csrftoken') },
+         success: function (data, jqXHR) {
+         if (callback) { callback(data); }
+         }
+         });
+         }
+         }*/
     });
 
 })();

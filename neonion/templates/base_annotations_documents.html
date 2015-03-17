@@ -15,7 +15,7 @@
 
         {% verbatim %}
         <li ng-repeat="doc in ann_docs track by $index | orderBy:'-created'">
-            <a href="/annotator/{{ doc.urn }}" class="document-grid-content">
+            <a href="/annotator/{{ doc.id }}" class="document-grid-content">
                 <div>{{ doc.title }}</div>
             </a>
             <div class="document-grid-actions">

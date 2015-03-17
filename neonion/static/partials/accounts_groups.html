@@ -24,18 +24,39 @@
                 <a class="button button-small" ng-click="showMembership(group)">
                     <span class="fa fa-users fa-fw"></span>Membership
                 </a>
-                <a class="button button-small" ng-click="deleteGroup(group)">
+                <a ng-show="group.owner != null" class="button button-small" ng-click="deleteGroup(group)">
                     <span class="fa fa-times fa-fw"></span>Delete
                 </a>
                 <div ng-show="group.id == form.selectedGroup">
-                    <div ng-repeat="user in users | orderBy:'email'">
-                        <input id="ch_{{ group.id }}_{{ user.id }}" 
-                        type="checkbox" 
-                        style="width:auto;" 
-                        ng-click="toogleMembership(group, user)"
-                        ng-checked="group.user_set.indexOf(user.id) != -1" />
-                        <label for="ch_{{ group.id }}_{{ user.id }}">{{ user.email }}</label>
-                    </div>
+                    <table>
+                        <tr>
+                            <th>User</th>
+                            <th>Document</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div ng-repeat="user in users | orderBy:'email'">
+                                    <input id="ch_{{ group.id }}_{{ user.id }}"
+                                    type="checkbox"
+                                    style="width:auto;"
+                                    ng-click="toggleMembership(group, user)"
+                                    ng-checked="group.members.indexOf(user.id) != -1" />
+                                    <label>{{ user.email }}</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div ng-repeat="document in documents | orderBy:'title'">
+                                    <input id="ch_{{ group.id }}_{{ user.id }}"
+                                    type="checkbox"
+                                    style="width:auto;"
+                                    ng-click="toggleDocumentAssignment(group, document)"
+                                    ng-checked="group.documents.indexOf(document.id) != -1" />
+                                    <label>{{ document.title }}</label>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </table>
                 </div>
             </td>
         </tr>

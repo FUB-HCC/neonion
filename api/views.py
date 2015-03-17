@@ -3,51 +3,15 @@ import json
 
 from django.conf import settings
 from django.http import JsonResponse
-from rest_framework import status
 from rest_framework.decorators import api_view
-from documents.models import Document
-from neonion.models import Workspace
-from api.serializers import DocumentSerializer
 from rest_framework.response import Response
-from django.db import transaction
 from rest_framework.views import APIView
-from common import uri
 from rest_framework import permissions
 from authentication import UnsafeSessionAuthentication
 from common.annotation import add_resource_uri
 from common.sparql import insert_data
 from common.statements import general_statement
-
-
-class WorkspaceDocumentList(APIView):
-    def get(self, request, format=None):
-        workspace = Workspace.objects.get_workspace(owner=request.user)
-        serializer = DocumentSerializer(workspace.documents.all(), many=True)
-        return Response(serializer.data)
-
-    def post(self, request, pk, format=None):
-        if Document.objects.filter(urn=pk).exists():
-            document = Document.objects.get(urn=pk)
-            workspace = Workspace.objects.get_workspace(owner=request.user)
-
-            with transaction.atomic():
-                workspace.documents.add(document)
-                workspace.hidden_documents.remove(document)
-
-            return Response(status=status.HTTP_201_CREATED)
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def delete(self, request, pk, format=None):
-        if Document.objects.filter(urn=pk).exists():
-            document = Document.objects.get(urn=pk)
-            workspace = Workspace.objects.get_workspace(owner=request.user)
-
-            with transaction.atomic():
-                workspace.hidden_documents.add(document)
-                workspace.documents.remove(document)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+from common.exceptions import InvalidResourceTypeError
 
 
 class AnnotationListView(APIView):
@@ -63,7 +27,10 @@ class AnnotationListView(APIView):
     def post(self, request, format=None):
         """Creates a new annotation"""
         annotation = json.loads(request.body)
-        add_resource_uri(annotation)
+        try:
+            add_resource_uri(annotation)
+        except InvalidResourceTypeError:
+            pass
 
         # insert data into TDB
         insert_data(general_statement(annotation))
@@ -114,12 +81,3 @@ def store_search(request):
     ##print(request.GET.urlencode())
     response = requests.get(settings.ANNOTATION_STORE_URL + '/search?' + request.GET.urlencode())
     return JsonResponse(response.json(), safe=False)
-
-
-# TEST uri
-def generate_uri(request, type, name):
-    return JsonResponse({
-        'uri': uri.generate_uri(resource_type=type, name=name),
-        'label': name,
-        'type': type
-    })

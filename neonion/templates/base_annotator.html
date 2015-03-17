@@ -12,11 +12,22 @@
 {% endblock %}
 
 {% block content %}
-<div ng-controller="AnnotatorCtrl" data-ng-init="setupAnnotator('{{ urn }}', '{{ request.user.email }}')">
-    <div id="annotator_menu" style="display:none;position:fixed;">
-        <ul id="annotator_contributors" class="forms-list"></ul>
-        <a href="#" id="scoll_to_latest_annotation"><i class="fa fa-arrow-circle-down"></i> scroll to last
-            annotation</a>
+<div ng-controller="AnnotatorCtrl" data-ng-init="initialize({ docID:'{{ doc_id }}', userID:'{{ request.user.email }}', nerUrl:'{{ ner_url }}', nerAuth:'{{ ner_auth }}'})">
+    <div class="annotator_menu" ng-cloak>
+        <ul id="annotator_contributors" class="forms-list">
+            <li ng-repeat="contrib in contributors | orderBy:'-updated'">
+            {% verbatim %}
+                <input
+                type='checkbox'
+                ng-model="contrib.showAnnotation"
+                ng-click="toggleContributor(contrib)"/>
+                <label style="background-color:{{ contrib.color }}">{{ contrib.user }} ({{contrib.updated | date: 'short'}})</label>
+            {% endverbatim %}
+            </li>
+        </ul>
+        <a ng-click="scrollToLastAnnotation()">
+            <i class="fa fa-arrow-circle-down"></i> Scroll to last annotation
+        </a>
     </div>
     <div>
         <div id="document-frame" class="panel panel-default">
@@ -52,112 +63,27 @@
                         }
                     });
                 }
+                return false;
             });
 
-            /*
-             $('#nav-fullscreen').click(function(){
-             enableFullscreen( document.getElementById( 'document-frame' ) );
-             });
-
-             $('#scoll_to_latest_annotation').click(function(){
-             var annotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation(annotator.plugins.Neonion.getUser().email);
-             if (annotation) {
-             var target = $(annotation.highlights[0]);
-             $('html, body').stop().animate(
-             { 'scrollTop': target.offset().top - 50 },
-             1000,
-             'easeInOutQuart'
-             );
-             // blink for more attention
-             for(var i = 0; i < 2; i++) {
-             $(target).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
-             }
-             }
-             return false;
-             });
-
-             $("#annotator_menu").on("click", "input[type=checkbox]", function() {
-             var annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations($(this).val());
-             if ($(this).is(':checked')) {
-             annotations.forEach(function(item) {
-             Annotator.Plugin.Neonion.prototype.showAnnotation(item);
-             colorizeAnnotation(item);
-             });
-             } else {
-             annotations.forEach(function(item) {
-             Annotator.Plugin.Neonion.prototype.hideAnnotation(item);
-             });
-             }
-             });
-             */
+            /*$('#nav-fullscreen').click(function(){
+                enableFullscreen( document.getElementById( 'document-frame' ) );
+            });*/
         });
 
         /*
-
-        function annotationChanged(annotation) {
-            refreshContributors();
-            colorizeAnnotation(annotation);
-        }
-
-        function colorizeAnnotation(annotation) {
-            if (annotation.creator) {
-                var color = userColors[annotation.creator.email];
-                annotation.highlights.forEach(function (highlight) {
-                    $(highlight).css("backgroundColor", color);
-                });
+        // Find the right method, call on correct element
+        function enableFullscreen(element) {
+            if(element.requestFullscreen) {
+            element.requestFullscreen();
+            } else if(element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+            } else if(element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+            } else if(element.msRequestFullscreen) {
+            element.msRequestFullscreen();
             }
         }
-
-        function refreshContributors() {
-            var users = Annotator.Plugin.Neonion.prototype.getContributors();
-            var items = [];
-
-            users.forEach(function (user) {
-                var lastAnnotation = Annotator.Plugin.Neonion.prototype.getLastAnnotation(user);
-                var isoUpated = lastAnnotation.updated ? lastAnnotation.updated : new Date().toISOString();
-                items.push({
-                    user: user, // creator of annotation
-                    updated: isoUpated // date when annotation was updated
-                });
-            });
-            // sort according last activity
-            items.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByUpdated);
-            items.reverse();
-
-            var i = 0;
-            var totalcolors = users.length;
-            $('#annotator_contributors').html('');
-            items.forEach(function (item) {
-                var input = $("<input>").attr({
-                    id: item.user,
-                    value: item.user,
-                    type: "checkbox",
-                    checked: true
-                });
-                var listItem = $("<li>");
-                if (!userColors[item.user]) {
-                    userColors[item.user] = "hsla( " + makeColor(i++, totalcolors) + ", 100%, 50%, 0.3 )"
-                }
-                listItem.css("backgroundColor", userColors[item.user]);
-                listItem.append(input);
-                listItem.append("<label for='" + item.user + "'>" + item.user + " (" + moment(item.updated).fromNow(true) + ")" + "</label>");
-                $('#annotator_contributors').append(listItem);
-            });
-        }*/
-
-        /*
-         // Find the right method, call on correct element
-         function enableFullscreen(element) {
-         if(element.requestFullscreen) {
-         element.requestFullscreen();
-         } else if(element.mozRequestFullScreen) {
-         element.mozRequestFullScreen();
-         } else if(element.webkitRequestFullscreen) {
-         element.webkitRequestFullscreen();
-         } else if(element.msRequestFullscreen) {
-         element.msRequestFullscreen();
-         }
-         }
-         */
+        */
     </script>
 {% endblock %}

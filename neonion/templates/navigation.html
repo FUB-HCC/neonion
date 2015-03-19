@@ -1,10 +1,10 @@
 <nav class="nav-vertical">
     <ul>
     {% if request.user.is_authenticated %}
-        {% url 'neonion.views.home' as url_home %}
+        {% url 'neonion.views.render_home' as url_home %}
         {% url 'neonion.views.my_annotations' as url_my_annotations %}
         {% url 'neonion.views.import_document' as url_import %}
-        {% url 'neonion.views.load_settings' as url_settings %}
+        {% url 'neonion.views.render_settings' as url_settings %}
         {% url 'accounts.views.logout' as url_logout %}
 
         {# My neonion #}
@@ -33,7 +33,7 @@
         </li>
         {# Admin section #}
         {% if request.user.is_superuser %}
-            {% url 'endpoint.views.query_form' as url_query %}
+            {% url 'neonion.views.render_query' as url_query %}
             {% url 'neonion.views.accounts_management' as url_accounts %}
 
             {# Query form #}

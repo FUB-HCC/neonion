@@ -2,7 +2,7 @@
 <div ng-controller="WorkspaceImportCtrl" data-ng-init="init()">
     <div class="scroll-container">
         <ul id="document-import-list" class="document-list">
-            <li ng-repeat="document in documents" id="{{ document.urn }}">{{ document.name }}</li>
+            <li ng-repeat="document in documents" id="{{ document.id }}">{{ document.name }}</li>
         </ul>
     </div>
     <div class="form-buttons">

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}My neonion{% endblock %}
+{% block page_id %}workspace{% endblock %}
+
+{% block content %}
+    <div ng-init="tab = 1" ng-cloak>
+        <nav class="nav-horizontal">
+            <ul>
+                <li><a ng-click="tab = 1" ng-class="{active:tab===1}">My</a></li>
+                <li><a ng-click="tab = 2" ng-class="{active:tab===2}">Public</a></li>
+                <li><a ng-click="tab = 3" ng-class="{active:tab===3}">Groups</a></li>
+            </ul>
+        </nav>
+
+        <div ng-switch="tab">
+            <div ng-switch-when="1">
+                <ng-include
+                    ng-controller="WorkspaceCtrl"
+                    onload="initPrivateWorkspace()"
+                    src="'{% static 'partials/document_grid.html' %}'"></ng-include>
+            </div>
+            <div ng-switch-when="2">
+                <ng-include
+                    ng-controller="WorkspaceCtrl"
+                    onload="initPublicWorkspace()"
+                    src="'{% static 'partials/document_grid.html' %}'"></ng-include>
+            </div>
+            <div ng-switch-when="3">
+                <ng-include
+                    ng-controller="WorkspaceCtrl"
+                    onload="initGroupWorkspace()"
+                    src="'{% static 'partials/document_grid.html' %}'"></ng-include>
+            </div>
+        </div>
+    </div>
+{% endblock %}

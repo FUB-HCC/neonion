@@ -3,6 +3,7 @@ import uuid
 from django.conf import settings
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+from common.exceptions import InvalidResourceTypeError
 
 
 def generate_uri(resource_type, name=None):
@@ -24,5 +25,5 @@ def generate_uri(resource_type, name=None):
             resource_id
         )
     except ValidationError:
-        return None
+        raise InvalidResourceTypeError(resource_type)
 

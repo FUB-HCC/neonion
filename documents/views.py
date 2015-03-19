@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from documents.models import Document
-from neonion.models import Workspace
 from django.shortcuts import redirect
 from django.core.files.base import ContentFile
 from operator import itemgetter
@@ -27,7 +26,7 @@ def upload_file(request):
         if request.FILES[f].content_type == 'application/json':
             uploaded_file = ContentFile(request.FILES[f].read())
             j = json.loads(uploaded_file.read())
-            doc_urn = j['urn']
+            doc_id = j['id']
             doc_title = j['title']
             doc_content = j['content']
 
@@ -35,8 +34,8 @@ def upload_file(request):
         elif request.FILES[f].content_type in TEXT_TYPES:
             file_name = request.FILES[f].name.encode('utf-8')
             doc_title = str(' '.join(splitext(basename(file_name))[0].split()))
-            doc_urn = uuid.uuid1().hex
-            print(doc_title + "   " + doc_urn)
+            doc_id = uuid.uuid1().hex
+            print(doc_title + "   " + doc_id)
             # read plain text content
             content = []
             for chunk in request.FILES[f].chunks():
@@ -46,14 +45,13 @@ def upload_file(request):
             create_new_doc = True
 
         if create_new_doc:
-            if not Document.objects.filter(urn=doc_urn).exists():
-                document = Document.objects.create_document(doc_urn, doc_title, doc_content)
+            if not Document.objects.filter(id=doc_id).exists():
+                document = Document.objects.create_document(doc_id, doc_title, doc_content)
             else:
-                document = Document.objects.get(urn=doc_urn)
+                document = Document.objects.get(id=doc_id)
 
             # import document into workspace
-            workspace = Workspace.objects.get_workspace(owner=request.user)
-            workspace.documents.add(document)
+            request.user.owned_documents.add(document)
 
     return redirect('/')
 
@@ -68,19 +66,17 @@ def cms_list(request):
 @require_POST
 def cms_import(request):
     data = json.loads(request.body)
-    for doc_urn in data['documents']:
+    for doc_id in data['documents']:
         # import document if it not exists otherwise skip import
-        if not Document.objects.filter(urn=doc_urn).exists():
+        if not Document.objects.filter(id=doc_id).exists():
             cms = instantiate_provider(settings.CONTENT_SYSTEM_CLASS)
 
-            new_document = cms.get_document(doc_urn)
-            document = Document.objects.create_document(doc_urn, new_document['title'], new_document['content'])
+            new_document = cms.get_document(doc_id)
+            document = Document.objects.create_document(doc_id, new_document['title'], new_document['content'])
         else:
-            document = Document.objects.get(urn=doc_urn)
+            document = Document.objects.get(id=doc_id)
 
         # import document into workspace
-        if document:
-            workspace = Workspace.objects.get_workspace(owner=request.user)
-            workspace.documents.add(document)
+        request.user.owned_documents.add(document)
 
     return JsonResponse({})

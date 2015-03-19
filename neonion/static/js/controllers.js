@@ -370,13 +370,13 @@ neonionApp.controller('SettingsCtrl', ['$scope', '$http', '$location', function 
     $scope.changeUrl = function(entry) {
         switch (entry) {
             case 1:
-                $location.hash('sets');
+                $location.path('sets');
                 break;
             case 2:
-                $location.hash('properties');
+                $location.path('properties');
                 break;
             case 3:
-                $location.hash('ner');
+                $location.path('ner');
                 break;
         }
     }

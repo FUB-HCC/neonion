@@ -4882,7 +4882,13 @@ input[type="submit"].btn {
 .document-grid {
   margin: 0;
   padding: 0;
-  list-style: none; }
+  list-style: none;
+  *zoom: 1; }
+  .document-grid:before, .document-grid:after {
+    display: table;
+    content: ""; }
+  .document-grid:after {
+    clear: both; }
   .document-grid li {
     background-color: #ffffff;
     border: 1px solid #cdcdcd;
@@ -5112,6 +5118,11 @@ h3 {
 
 pre {
   margin: 0 0 26px 0; }
+
+hr {
+  margin: 0;
+  border: solid #cdcdcd;
+  border-width: 1px 0 0; }
 
 #page-annotator {
   background: #ffffff; }

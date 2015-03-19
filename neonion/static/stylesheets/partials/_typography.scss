@@ -4,10 +4,6 @@ h1 {
   margin: 0 0 $baseline 0;
 }
 
-h2 {
-
-}
-
 h3 {
   font-size: 18px;
   line-height: $baseline;
@@ -16,4 +12,10 @@ h3 {
 
 pre {
   margin: 0 0 $baseline 0;
+}
+
+hr {
+  margin: 0;
+  border: solid $silver;
+  border-width: 1px 0 0;
 }

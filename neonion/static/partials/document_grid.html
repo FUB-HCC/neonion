@@ -1,5 +1,5 @@
-<div ng-repeat="workspace in workspaces">
-    <p ng-show="showWorkspaceName">{{ workspace.name }}</p>
+<div ng-repeat="workspace in workspaces" class="clearfix">
+    <h2 ng-show="showWorkspaceName">{{ workspace.name }}</h2>
     <ul class="document-grid">
         <li ng-show="allowImport">
             <a href="/import/" class="document-grid-content upload">

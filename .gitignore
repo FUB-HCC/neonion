@@ -12,4 +12,4 @@ __pycache__
 /plugins/*/*
 !plugins/__init__.py
 *.*~
-
+/neonion/static/css/

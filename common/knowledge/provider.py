@@ -29,7 +29,7 @@ class Provider(object):
     def delete(self, uri):
         pass
 
-    def search(self, search_term, search_type, size=5):
+    def search(self, search_term, search_type, size=50):
         query = {
             'query': {
                 'filtered': {

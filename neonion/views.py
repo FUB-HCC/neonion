@@ -81,9 +81,15 @@ def resource_search(request):
         # extract from resource type
         search_type = resource_type.rstrip('/').rsplit('/', 1)[1]
         search_term = request.GET.get('q')
-        # call search method from provider
-        provider = Provider(settings.ELASTICSEARCH_URL)
-        return JsonResponse(provider.search(search_term, search_type))
+        if search_term:
+            # call search method from provider
+            provider = Provider(settings.ELASTICSEARCH_URL)
+            result_set = provider.search(search_term, search_type)['hits']['hits']
+            result_set = map(lambda item: item['_source'], result_set)
+        else:
+            result_set = []
+
+        return JsonResponse(result_set, safe=False)
     else:
         return HttpResponseBadRequest()
 

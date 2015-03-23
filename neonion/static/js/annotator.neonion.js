@@ -172,10 +172,6 @@
                     // restore type from annotation if provided
                     selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : selectedType;
 
-                    // reserve max height so annotator can arrange the editor window properly
-                    var list = $(field).find("#resource-list");
-                    list.css("min-height", list.css("max-height"));
-
                     $(field).show();
                     $(field).find("#resource-search").val(annotation.quote);
                     $(field).find("#resource-form").submit();
@@ -279,9 +275,6 @@
                         } else {
                             list.append(Annotator.Plugin.Neonion.prototype.templates.noResults);
                         }
-
-                        // clear list and min-height css property
-                        list.css("min-height", "");
                     });
 
                 return false;

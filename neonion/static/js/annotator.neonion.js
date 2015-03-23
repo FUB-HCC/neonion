@@ -175,6 +175,9 @@
                     $(field).show();
                     $(field).find("#resource-search").val(annotation.quote);
                     $(field).find("#resource-form").submit();
+
+                    // TODO@Alexa: Irgendwie besser benennen.
+                    Annotator.Plugin.Neonion.prototype.calcPositionFromAnnotation(annotator, annotation);
                 },
                 submit: function (field, annotation) {
                     // add user to annotation
@@ -315,9 +318,11 @@
                 annotator.editor.submit();
             });
 
+            var linie = $("<div class='annotator-linie'></div>");
+            $(".annotator-editor").append(linie);
+
             return field;
         };
-
     };
 
     $.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
@@ -380,6 +385,18 @@
                 }
                 return query;
             }
+        },
+
+        calcPositionFromAnnotation: function (annotator, annotation) {
+          var top = $(annotation.highlights[0]).position().top;
+          var left = $(annotation.highlights[0]).position().left;
+          var editor = $(annotator.editor.element[0]);
+          var annotator = $(annotator.element[0]);
+          var width = annotator.width();
+          editor.css("top", top);
+          editor.find(".annotator-linie").width(width - left + 378 + 108);
+          editor.find(".annotator-linie").css("left", -(width - left + 108));
+          $(annotation.highlights[0]).css("border-left", "1px solid #717171");
         },
 
         extractSourroundedContent: function (element, annotation) {

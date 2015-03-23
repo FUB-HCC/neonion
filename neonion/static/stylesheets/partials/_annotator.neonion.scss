@@ -58,6 +58,8 @@
 /* Annotator Widget
 -------------------------------------------------------------------- */
 .annotator-editor {
+  z-index: 0;
+
   .annotator-widget {
     border: 0px;
     left: 0px;
@@ -78,17 +80,18 @@
     }
 
     #resource-form {
-      background-color: $tangerine;
+      background-color: $blue;
 
       i {
         @extend %basefontsize;
-        color: $ship-gray;
+        color: $black;
         position: absolute;
         padding: $half-baseline $column-gap;
       }
 
       input[type=text] {
         @extend %basefontsize;
+        color: $black;
         font-weight: bold;
         padding: $half-baseline $column-gap $half-baseline $column-gap+ $column;
 
@@ -125,6 +128,7 @@
 
 .annotator-viewer {
   border: 0px;
+  z-index: 100;
   @extend %shadow;
 
   .annotator-widget {
@@ -154,4 +158,11 @@
     @extend %basefontsize;
 
   }
+}
+
+.annotator-linie {
+  border-bottom: 1px solid $dove-gray;
+  position: absolute;
+  width: 500px;
+  z-index: -100;
 }

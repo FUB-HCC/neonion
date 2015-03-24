@@ -453,7 +453,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', 'Account
                     };
                 });
 
-                $scope.annotator.plugins.Neonion.setCompositor(sets);
+                $scope.annotator.plugins.Neonion.annotationSets(sets);
             }
         });
     };

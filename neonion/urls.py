@@ -23,8 +23,7 @@ urlpatterns = patterns('',
     url(r'^endpoint/', include('endpoint.urls')),
 
     # Elasticsearch proxy
-    url(r'^es$', 'neonion.views.resource_search'),
-    #url(r'^es/create/(?P<index>\w+)$', 'neonion.views.resource_create'),
+    url(r'^search$', 'neonion.views.resource_search'),
 
     # Django rest
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))

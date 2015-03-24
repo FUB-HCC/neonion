@@ -31,7 +31,7 @@ p {
     padding-left: 38px; }
 
 .header {
-  hight: 52px; }
+  height: 52px; }
   .header #search-form {
     width: 342px;
     height: 54px;
@@ -52,7 +52,7 @@ p {
     border: 0 none;
     float: left;
     width: 632px;
-    hight: 26px;
+    height: 26px;
     padding: 10px 16px 8px 38px;
     background-color: #ffffff; }
   .header ::-webkit-input-placeholder {

@@ -47,7 +47,7 @@ p {
 }
 
 .header {
-  hight: 2*$baseline;
+  height: 2*$baseline;
 
   #search-form {
     width: 9*$column;
@@ -75,7 +75,7 @@ p {
     border: 0 none;
     float: left;
     width: 12*$column + 11*$column-gap;
-    hight: $baseline;
+    height: $baseline;
     padding:($base-font-size/2 + $base-font-size/8) $base-font-size ($base-font-size/2) $column;
     background-color: $white;
   }

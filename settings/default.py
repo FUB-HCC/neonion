@@ -67,7 +67,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-
+LOGIN_URL = '/accounts/login'
 
 ROOT_URLCONF = 'neonion.urls'
 

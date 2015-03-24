@@ -29,6 +29,8 @@ def upload_file(request):
             doc_id = j['id']
             doc_title = j['title']
             doc_content = j['content']
+            doc_creator = j['creator']
+            doc_type = j['doc_type']
 
             create_new_doc = True
         elif request.FILES[f].content_type in TEXT_TYPES:
@@ -41,12 +43,14 @@ def upload_file(request):
             for chunk in request.FILES[f].chunks():
                 content.append(chunk)
             doc_content = ''.join(content)
+            doc_creator = ''
+            doc_type = ''
 
             create_new_doc = True
 
         if create_new_doc:
             if not Document.objects.filter(id=doc_id).exists():
-                document = Document.objects.create_document(doc_id, doc_title, doc_content)
+                document = Document.objects.create_document(doc_id, doc_title, doc_content, doc_creator, doc_type)
             else:
                 document = Document.objects.get(id=doc_id)
 

@@ -32,7 +32,7 @@ def render_annotator(request, doc_id):
 
 @login_required
 def my_annotations(request):
-    return render_to_response('base_my_annotations.html', {}, context_instance=RequestContext(request))
+    return render_to_response('base_my_annotations.html', context_instance=RequestContext(request))
 
 
 @login_required
@@ -92,22 +92,3 @@ def resource_search(request):
         return JsonResponse(result_set, safe=False)
     else:
         return HttpResponseBadRequest()
-
-
-# @login_required
-# @require_POST
-# def resource_create(request, index):
-#     data = json.loads(request.POST['data'])
-#     data['new'] = True
-#     # random identifier
-#     data['uri'] = ''.join(random.choice('0123456789ABCDEF') for i in range(32))
-#
-#     # store data in elasticsearch
-#     es = ElasticSearch(settings.ELASTICSEARCH_URL)
-#     if index == 'persons':
-#         es.index(index, "person", data)
-#     elif index == 'institutes':
-#         es.index(index, "institute", data)
-#     es.refresh(index)
-#
-#     return JsonResponse(data)

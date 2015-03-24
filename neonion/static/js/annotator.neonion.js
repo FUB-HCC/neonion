@@ -30,8 +30,10 @@
             adder = null,
             compositor = {},
             selectedType = null,
-            viewerFields = {},
-            editorFields = {};
+            fields = {
+                viewer : null,
+                editor : null
+            };
 
         // properties
         this.setCompositor = function (compositorData) {
@@ -52,9 +54,9 @@
             };
             annotator = this.annotator;
             adder = this.overrideAdder();
-            viewerFields = this.initViewerFields();
-            editorFields = {
-                search: this.initEditorEntitySearch()
+            fields = {
+                viewer : this.initViewerField(),
+                editor : this.initEditorField()
             };
             this.setCompositor(this.getCompositor());
 
@@ -126,7 +128,7 @@
          * Creates additional fields in viewer
          * @returns {{resource: *, creator: *}}
          */
-        this.initViewerFields = function () {
+        this.initViewerField = function () {
             return {
                 // add field to linked person
                 resource: this.annotator.viewer.addField({
@@ -165,7 +167,7 @@
          * Creates the search field in editor
          * @returns {*}
          */
-        this.initEditorEntitySearch = function () {
+        this.initEditorField = function () {
             // add field containing the suggested resources
             var field = this.annotator.editor.addField({
                 load: function (field, annotation) {

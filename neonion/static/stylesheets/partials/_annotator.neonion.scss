@@ -153,9 +153,14 @@
   }
 
   .annotator-item div {
+    border-bottom: 1px solid $silver;
     font-style: normal;
     padding: $half-baseline $column-gap;
     @extend %basefontsize;
+
+    &:last-child {
+      border-bottom: none;
+    }
 
   }
 }

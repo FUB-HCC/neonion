@@ -135,7 +135,8 @@
                     load: function (field, annotation) {
                         if (annotation.rdf) {
                             var ref = annotation.rdf.hasOwnProperty('sameAs') ? annotation.rdf.sameAs : '#';
-                            var fieldValue = "<a href='" + ref + "' target='blank'>" + annotation.rdf.label + "</a>";
+                            var fieldValue = annotation.rdf.hasOwnProperty('sameAs') ? "<a href='" + ref + "' target='blank'>" + annotation.rdf.label +
+                            "</a>" : annotation.rdf.label;
                             var fieldCaption;
                             if (compositor[annotation.rdf.typeof]) {
                                 fieldCaption = compositor[annotation.rdf.typeof].label;
@@ -398,7 +399,6 @@
           editor.css("top", top);
           editor.find(".annotator-linie").width(width - left + 378 + 108);
           editor.find(".annotator-linie").css("left", -(width - left + 108));
-          $(annotation.highlights[0]).css("border-left", "1px solid #717171");
         },
 
         extractSourroundedContent: function (element, annotation) {

@@ -26,11 +26,14 @@
          *  Internal vars
          *  @private
          */
-        var adder = null,
+        var annotator = null,
+            adder = null,
             compositor = {},
             selectedType = null,
-            viewerFields = {},
-            editorFields = {}
+            fields = {
+                viewer : null,
+                editor : null
+            };
 
         // properties
         this.setCompositor = function (compositorData) {
@@ -49,13 +52,11 @@
             options.agent = options.agent || {
                 email: "unknown@neonion.org"
             };
-
+            annotator = this.annotator;
             adder = this.overrideAdder();
-            viewerFields = this.initViewerFields();
-            editorFields = {
-                unknownEntity: this.initEditorUnknownEntity(),
-                search: this.initEditorEntitySearch(),
-                create: null //this.initEditorEntityCreation()
+            fields = {
+                viewer : this.initViewerField(),
+                editor : this.initEditorField()
             };
             this.setCompositor(this.getCompositor());
 
@@ -119,13 +120,6 @@
             adder.on("click", "button", function () {
                 // set selected type
                 selectedType = $(this).val();
-                // show or hide entity creation field
-                /*if (compositor[selectedType] && compositor[selectedType].allowCreation) {
-                 $(editorFields.create).show();
-                 }
-                 else {
-                 $(editorFields.create).hide();
-                 }*/
             });
             return adder;
         };
@@ -134,14 +128,15 @@
          * Creates additional fields in viewer
          * @returns {{resource: *, creator: *}}
          */
-        this.initViewerFields = function () {
+        this.initViewerField = function () {
             return {
                 // add field to linked person
                 resource: this.annotator.viewer.addField({
                     load: function (field, annotation) {
                         if (annotation.rdf) {
                             var ref = annotation.rdf.hasOwnProperty('sameAs') ? annotation.rdf.sameAs : '#';
-                            var fieldValue = "<a href='" + ref + "' target='blank'>" + annotation.rdf.label + "</a>";
+                            var fieldValue = annotation.rdf.hasOwnProperty('sameAs') ? "<a href='" + ref + "' target='blank'>" + annotation.rdf.label +
+                            "</a>" : annotation.rdf.label;
                             var fieldCaption;
                             if (compositor[annotation.rdf.typeof]) {
                                 fieldCaption = compositor[annotation.rdf.typeof].label;
@@ -163,66 +158,43 @@
                         if (annotation.creator) {
                             userField = annotation.creator.email;
                         }
-                        field.innerHTML = Annotator.Plugin.Neonion.prototype.literals['en'].creator + ": " + userField;
+                        field.innerHTML = Annotator.Plugin.Neonion.prototype.literals['en'].creator + ":&nbsp;" + userField;
                     }
                 })
             };
-        };
-
-        this.initEditorUnknownEntity = function () {
-            var field = this.annotator.editor.addField({
-                load: function (field, annotation) {
-                    // restore type from annotation if provided
-                    selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : selectedType;
-                    // add resource uri itself
-                    $(field).children((":first")).replaceWith("<div class='btn-group-vertical unknown'></div>");
-                    $(field).children((":first")).append(Annotator.Plugin.Neonion.prototype.createListItems([
-                        {
-                            uri: selectedType,
-                            label: Annotator.Plugin.Neonion.prototype.literals['en'].unknown + " " + compositor[selectedType].label
-                        }
-                    ], Annotator.Plugin.Neonion.prototype.formatter.default));
-                },
-                submit: function (field, annotation) {
-                    // add rdf data
-                    if (!annotation.hasOwnProperty("rdf")) {
-                        annotation.rdf = {
-                            typeof: selectedType,
-                            label: annotation.quote
-                        };
-                    }
-                    // add user to annotation
-                    annotation.user = options.agent.email;
-                    annotation.creator = options.agent;
-                    // add context
-                    annotation.context = Annotator.Plugin.Neonion.prototype.extractSourroundedContent(element, annotation);
-                }
-            });
-
-            $(field).on("click", "button", function () {
-                $(".annotator-widget").submit();
-            });
-
-            return field;
         };
 
         /**
          * Creates the search field in editor
          * @returns {*}
          */
-        this.initEditorEntitySearch = function () {
+        this.initEditorField = function () {
             // add field containing the suggested resources
             var field = this.annotator.editor.addField({
                 load: function (field, annotation) {
-                    // reserve max height so annotator can arrange the editor window properly
-                    var list = $(field).find("#resource-list");
-                    list.css("min-height", list.css("max-height"));
+                    // restore type from annotation if provided
+                    selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : selectedType;
 
                     $(field).show();
                     $(field).find("#resource-search").val(annotation.quote);
                     $(field).find("#resource-form").submit();
+
+                    // TODO@Alexa: Irgendwie besser benennen.
+                    Annotator.Plugin.Neonion.prototype.calcPositionFromAnnotation(annotator, annotation);
                 },
                 submit: function (field, annotation) {
+                    // add user to annotation
+                    annotation.user = options.agent.email;
+                    annotation.creator = options.agent;
+                    // add context
+                    annotation.context = Annotator.Plugin.Neonion.prototype.extractSourroundedContent(element, annotation);
+
+                    // add rdf data
+                    annotation.rdf = {
+                        typeof: selectedType,
+                        label: annotation.quote
+                    };
+
                     if ($(element).data("resource")) {
                         var dataItem = $(element).data("resource");
                         // add rdf data
@@ -234,9 +206,23 @@
                 }
             });
 
+            var searchItem = "<i class='fa fa-search'></i>";
+            var cancelItem = "<a href='#' data-action='annotator-cancel'><i class='fa fa-times-circle'></i></a>";
+            var unknownItem = "<a href='#' data-action='annotator-unknown'><i class='fa fa-question-circle'></i></a>";
+
             $(field).children((":first")).replaceWith(
-                "<div id='resource-list' class='btn-group-vertical'></div><form id='resource-form'></form>"
+                "<div class='resource-controles'>" + cancelItem + unknownItem + "</div>" +
+                "<form id='resource-form'>" + searchItem + "</form>" +
+                "<div id='resource-list' class=''></div>"
             );
+
+            $("[data-action=annotator-cancel]").on("click", function () {
+                annotator.editor.hide();
+            });
+
+            $("[data-action=annotator-unknown]").on("click", function () {
+                annotator.editor.submit();
+            });
 
             // create input for search term
             var searchInput = $('<input>').attr({
@@ -256,7 +242,7 @@
                 var searchTerm = $(this).find("#resource-search").val();
                 var list = $(this).parent().find("#resource-list");
                 // replace list with spinner while loading
-                list.html(Annotator.Plugin.Neonion.prototype.createSpinner());
+                list.html(Annotator.Plugin.Neonion.prototype.templates.spinner);
 
                 Annotator.Plugin.Neonion.prototype.search(selectedType, searchTerm,
                     function (items) {
@@ -267,10 +253,34 @@
                         Annotator.Plugin.Neonion.prototype.updateScoreAccordingOccurrence(items);
                         // create and add items
                         list.empty();
-                        list.append(Annotator.Plugin.Neonion.prototype.createListItems(items, formatter));
 
-                        // clear list and min-height css property
-                        list.css("min-height", "");
+                        if (items.length !== 0) {
+                            list.append(Annotator.Plugin.Neonion.prototype.createListItems(0, items, formatter));
+
+                            // do we need pagination?
+                            if (items.length > Annotator.Plugin.Neonion.prototype.defaults.paginationSize) {
+                                var idxOffset = Annotator.Plugin.Neonion.prototype.defaults.paginationSize;
+                                var btnLoadMore = $(Annotator.Plugin.Neonion.prototype.templates.showMore);
+                                list.append(btnLoadMore);
+
+                                btnLoadMore.click(function () {
+                                    list.append(Annotator.Plugin.Neonion.prototype.createListItems(idxOffset, items, formatter));
+                                    idxOffset += Annotator.Plugin.Neonion.prototype.defaults.paginationSize;
+
+                                    if (idxOffset < items.length) {
+                                        // move button to end
+                                        btnLoadMore.parent().append(btnLoadMore);
+                                    }
+                                    else {
+                                        // hide button if all items are visible
+                                        btnLoadMore.hide();
+                                    }
+                                    return false;
+                                });
+                            }
+                        } else {
+                            list.append(Annotator.Plugin.Neonion.prototype.templates.noResults);
+                        }
                     });
 
                 return false;
@@ -295,8 +305,12 @@
             });
 
             var resourceList = $(field).find("#resource-list");
+            // stop propagation on anchor click
+            resourceList.on("click", "a", function (event) {
+                event.stopPropagation();
+            });
             // attach click handler
-            resourceList.on("click", "button", function () {
+            resourceList.on("click", "button", function (event) {
                 var source = $(this);
                 //source.parent().children().removeClass("active");
                 //source.addClass("active");
@@ -304,103 +318,29 @@
                 var dataItem = $(element).data("results")[itemIndex];
                 // store selected resource in data
                 $(element).data("resource", dataItem);
-                $(".annotator-widget").submit();
+                annotator.editor.submit();
             });
 
-            var overlay = $("<div class='annotator-overlay' style='display:none;'></div>");
-            $(element).parent().append(overlay);
-            // mouse hover for detail window
-            resourceList.on("mouseenter", "button", function () {
-                var dataIndex = parseInt($(this).val());
-                var dataItem = $(element).data("results")[dataIndex];
-                var decorator = Annotator.Plugin.Neonion.prototype.decorator[selectedType] || Annotator.Plugin.Neonion.prototype.decorator['default'];
-                overlay.html(decorator(dataItem));
-                overlay.show();
-            });
-            resourceList.on("mousemove", "button", function (e) {
-                var pos = {top: e.pageY, left: e.pageX + 30};
-                overlay.css(pos);
-            });
-            resourceList.on("mouseleave", "button", function () {
-                overlay.hide();
-            });
+            var linie = $("<div class='annotator-linie'></div>");
+            $(".annotator-editor").append(linie);
 
             return field;
-        };
-
-        this.initEditorEntityCreation = function () {
-            var createField = this.annotator.editor.addField({
-                load: function (field, annotation) {
-                    createForm.hide();
-                    createForm.html('');
-                    if (compositor[selectedType]) {
-                        if (compositor[selectedType].fields) {
-                            compositor[selectedType].fields.forEach(function (element, index, array) {
-                                var field = "<label for='" + element.name + "''>" + element.label + "</label>";
-                                field += "<input type='" + element.type + "' id='" + element.name + "'";
-                                if (element.required) {
-                                    field += " required";
-                                }
-                                field += " autocomplete='off' />";
-                                createForm.append(field + "<br>");
-                            });
-                            createForm.append(
-                                "<input type='submit' class='btn annotator-btn' value='" +
-                                Annotator.Plugin.Neonion.prototype.literals['en'].create + "' />"
-                            );
-                            // prefill first field
-                            createForm.find("#" + compositor[selectedType].fields[0].name).val(annotation.quote);
-                        }
-                        /*else {
-                         console.error("No entity field description provided");
-                         }*/
-                    }
-                }
-            });
-
-            $(createField).children((":first")).replaceWith(
-                "<button id='create-toggle' class='btn annotator-btn' >" +
-                Annotator.Plugin.Neonion.prototype.literals['en'].create +
-                "</button><form id='create-form'>fhjkfhfkjgdhfkjghfk</form>"
-            );
-
-            $(createField).find("#create-toggle").click(function () {
-                $(editorFields.search).slideToggle();
-                createForm.slideToggle();
-                return false;
-            });
-
-            var createForm = $(createField).find("#create-form");
-            createForm.submit(function () {
-                if (compositor[selectedType]) {
-                    var fields = {};
-                    var formFields = this.elements;
-                    // collect fields
-                    compositor[selectedType].fields.forEach(function (element, index, array) {
-                        var value = formFields[element.name].value;
-                        fields[element.name] = value ? value : null;
-                    });
-                    // create entity
-                    if (compositor[selectedType].create) {
-                        compositor[selectedType].create(fields, function (data) {
-                            $(element).data("resource", data);
-                            $(".annotator-widget").submit();
-                        });
-                    }
-                    else {
-                        console.error("No create entity service provided");
-                    }
-                }
-                return false;
-            });
-
-            return createField;
         };
     };
 
     $.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
         events: {},
         options: {},
+
+        defaults : {
+            paginationSize : 5
+        },
+
+        templates : {
+            showMore : "<button data-action='annotator-more'>Show more results&nbsp;&#8230;</button>",
+            spinner : "<span style='margin:5px;' class='fa fa-spinner fa-spin'></span>",
+            noResults : "<div class='empty'>No results found.</div>"
+        },
 
         /**
          * Enum annotator classes.
@@ -415,7 +355,6 @@
             en: {
                 search: "Search",
                 searchText: "Search term",
-                create: "Create",
                 unknown: "Not identified",
                 unknownResource: "Unknown resource",
                 creator: "Creator"
@@ -423,26 +362,25 @@
             de: {
                 search: "Suchen",
                 searchText: "Suchtext",
-                create: "Anlegen",
                 unknown: "Unbekannt",
                 unknownResource: "Unbekannte Ressource",
                 creator: "Erfasser"
             }
         },
 
-        annotationLayers : {
-            unspecified: function(params) {
+        annotationLayers: {
+            unspecified: function (params) {
                 return {
                     uri: params.uri,
                     limit: 999999
                 };
             },
-            private: function(params) {
+            private: function (params) {
                 var query = Annotator.Plugin.Neonion.prototype.annotationLayers.unspecified(params);
                 query["creator.email"] = params.agent.email;
                 return query;
             },
-            group: function(params) {
+            group: function (params) {
                 var query = Annotator.Plugin.Neonion.prototype.annotationLayers.unspecified(params);
                 if (params.hasOwnProperty("workspace")) {
                     // filter for workspace
@@ -450,6 +388,17 @@
                 }
                 return query;
             }
+        },
+
+        calcPositionFromAnnotation: function (annotator, annotation) {
+          var top = $(annotation.highlights[0]).position().top;
+          var left = $(annotation.highlights[0]).position().left;
+          var editor = $(annotator.editor.element[0]);
+          var annotator = $(annotator.element[0]);
+          var width = annotator.width();
+          editor.css("top", top);
+          editor.find(".annotator-linie").width(width - left + 378 + 108);
+          editor.find(".annotator-linie").css("left", -(width - left + 108));
         },
 
         extractSourroundedContent: function (element, annotation) {
@@ -497,7 +446,7 @@
             adder.html("");
             for (var uri in compositor) {
                 if (compositor.hasOwnProperty(uri)) {
-                    adder.append("<button class='btn' value='" + uri + "'>" + compositor[uri].label + "</button>");
+                    adder.append("<button value='" + uri + "'>" + compositor[uri].label + "</button>");
                 }
             }
         },
@@ -564,33 +513,19 @@
             return null;
         },
 
-        /*getCookie: function (name) {
-         var cookieValue = null;
-         if (document.cookie && document.cookie !== '') {
-         var cookies = document.cookie.split(';');
-         for (var i = 0; i < cookies.length; i++) {
-         var cookie = $.trim(cookies[i]);
-         // Does this cookie string begin with the name we want?
-         if (cookie.substring(0, name.length + 1) === (name + '=')) {
-         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-         break;
-         }
-         }
-         }
-         return cookieValue;
-         },*/
-
-        createListItems: function (list, formatter) {
+        createListItems: function (offset, list, formatter) {
+            list = list.slice(offset, offset + Annotator.Plugin.Neonion.prototype.defaults.paginationSize);
             var items = [];
             for (var i = 0; i < list.length; i++) {
                 var label = formatter(list[i]);
-                items.push("<button type='button' class='btn annotator-btn' value='" + i + "'>" + label + "</button>");
+                items.push(
+                    "<button type='button' class='' value='" + (offset + i) + "'>" +
+                    label +
+                    "<a class='pull-right' href='" + list[i].uri + "' target='blank'><i class='fa fa-external-link'></i></a>" +
+                    "</button>"
+                );
             }
             return items;
-        },
-
-        createSpinner: function () {
-            return "<span style='margin:5px;' class='fa fa-spinner fa-spin'></span>";
         },
 
         updateScoreAccordingOccurrence: function (items) {
@@ -644,84 +579,30 @@
                 return "<span>" + value.label + "</span>";
             },
             'http://neonion.org/concept/person': function (value) {
-                var label = "<span>" + value.label + "</span>";
+                var label = value.label;
                 if (value.birth) {
-                    label += "<small>&nbsp;" + value.birth + "</small>";
+                    label += "<span>&nbsp;&#42;&nbsp;" + value.birth;
+                    if (value.death) {
+                        label += ",&nbsp;&#8224;&nbsp;" + value.death;
+                    }
+                    label += "</span>";
+                }
+
+                if (value.descr) {
+                    label += "<br/><span>" + value.descr + "</span>";
                 }
                 return label;
             }
         },
 
-        decorator: {
-            'default': function (data) {
-                var html = "";
-                for (var key in data) {
-                    if (data.hasOwnProperty(key) && !Array.isArray(data[key])) {
-                        if (data.hasOwnProperty(key)) {
-                            html += "<p><b>" + key + "</b>&nbsp;<span>" + data[key] + "</span></p>";
-                        }
-                    }
-                }
-                return html;
-            },
-            'http://neonion.org/concept/person': function (data) {
-                var html = "<strong>" + data.label + "</strong>";
-                if (data.birth) {
-                    html += "<small>&nbsp;&#42;&nbsp;" + data.birth + "</small>";
-                }
-                if (data.death) {
-                    html += "<small>&nbsp;&#8224;&nbsp;" + data.death + "</small>";
-                }
-                if (data.descr) {
-                    html += "<br/>" + data.descr;
-                }
-                return html;
-            }
-        },
-
         search: function (type, searchText, callback) {
             var url = '/es?type=' + encodeURI(type) + '&q=' + encodeURI(searchText);
-            console.log(url);
             $.getJSON(url, function (data) {
                 if (callback) {
-                    callback(Annotator.Plugin.Neonion.prototype.esNormalizeData(data));
+                    callback(data);
                 }
             });
-        },
-
-        esNormalizeData: function (data) {
-            //console.log(data);
-            var array = [];
-            if (data.hasOwnProperty("hits")) {
-                data.hits.hits.forEach(function (value, index, arr) {
-                    array.push(value._source);
-                });
-            }
-            return array;
         }
-
-        /*create: {
-         createPerson: function (data, callback) {
-         $.ajax({
-         dataType: "json", type: "POST",
-         url: '/es/create/persons',
-         data: { "data": JSON.stringify(data), csrfmiddlewaretoken: Annotator.Plugin.Neonion.prototype.getCookie('csrftoken') },
-         success: function (data, jqXHR) {
-         if (callback) { callback(data); }
-         }
-         });
-         },
-         createInstitute: function (data, callback) {
-         $.ajax({
-         dataType: "json", type: "POST",
-         url: '/es/create/institutes',
-         data: { "data": JSON.stringify(data), csrfmiddlewaretoken: Annotator.Plugin.Neonion.prototype.getCookie('csrftoken') },
-         success: function (data, jqXHR) {
-         if (callback) { callback(data); }
-         }
-         });
-         }
-         }*/
     });
 
 })();

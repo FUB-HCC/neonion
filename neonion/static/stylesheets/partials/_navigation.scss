@@ -42,6 +42,7 @@
     a {
       font-weight: bold;
       cursor: pointer;
+      text-decoration: none;
     }
 
     &.active a { border-bottom: 3px solid $tangerine; }

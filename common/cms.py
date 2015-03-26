@@ -15,16 +15,16 @@ class ContentSystem(object):
 
     @abstractmethod
     def list(self):
-        pass
+        raise NotImplementedError()
 
     @abstractmethod
     def search(self, search_term):
-        pass
+        raise NotImplementedError()
 
     @abstractmethod
     def get_document(self, doc_id):
-        pass
+        raise NotImplementedError()
 
     @abstractmethod
     def get_meta(self, doc_id):
-        pass
+        raise NotImplementedError()

@@ -570,9 +570,7 @@ neonionApp.controller('QueryCtrl', ['$scope', function ($scope) {
         "}\nLIMIT 50"
     };
 
-    $scope.initialize = function (params) {
-        $scope.endpoint = params.endpoint;
-    };
+    $scope.endpoint = "endpoint/query";
 
     $scope.executeQuery = function () {
         var q = new sgvizler.Query();

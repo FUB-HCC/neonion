@@ -59,7 +59,7 @@ def accounts_management(request):
 
 @login_required
 def render_query(request):
-    return render_to_response('query.html', {'endpoint': settings.ENDPOINT}, context_instance=RequestContext(request))
+    return render_to_response('query.html', context_instance=RequestContext(request))
 
 
 @login_required

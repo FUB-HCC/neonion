@@ -47,18 +47,14 @@ class UserViewSet(viewsets.ModelViewSet):
         if 'doc_id' in request.data and Document.objects.filter(id=request.data['doc_id']).exists():
             document = Document.objects.get(id=request.data['doc_id'])
             user = User.objects.get(pk=pk)
-
-            with transaction.atomic():
-                user.hidden_documents.add(document)
-                user.owned_documents.remove(document)
+            user.hide_document(document)
 
         return Response(status=status.HTTP_200_OK)
 
     @detail_route(methods=['get'])
     def entitled_documents(self, request, pk):
-        requested_user = User.objects.get(pk=pk)
-        entitled_groups = WorkingGroup.objects.filter(members__in=[requested_user])
-        serializer = WorkingGroupDocumentSerializer(entitled_groups, many=True)
+        user = User.objects.get(pk=pk)
+        serializer = WorkingGroupDocumentSerializer(user.entitled_groups(), many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

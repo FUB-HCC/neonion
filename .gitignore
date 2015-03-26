@@ -13,3 +13,4 @@ __pycache__
 !plugins/__init__.py
 *.*~
 /neonion/static/css/
+.coverage

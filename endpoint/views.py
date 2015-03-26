@@ -1,10 +1,7 @@
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_http_methods, require_POST
-from django.conf import settings
-from SPARQLWrapper import SPARQLWrapper
-from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
+from django.views.decorators.http import require_http_methods
+from common.sparql import execute_query
+from django.http import HttpResponseForbidden, JsonResponse
 
 
 @login_required
@@ -20,12 +17,9 @@ def query(request):
         if 'query' in request.GET: sparql_query = request.GET['query']
         if 'output' in request.GET: sparql_output = request.GET['output']
 
-    print(sparql_query)
     try:
         # execute query
-        sparql = SPARQLWrapper(settings.ENDPOINT, settings.ENDPOINT_UPDATE)
-        sparql.setQuery(sparql_query)
-        sparql.setReturnFormat(sparql_output)
-        return JsonResponse(sparql.query().convert())
+        return JsonResponse(execute_query(sparql_query, sparql_output))
     except Exception as e:
+        print(e.message)
         return HttpResponseForbidden()

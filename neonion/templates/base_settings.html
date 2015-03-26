@@ -6,25 +6,25 @@
 {% block page_id %}settings{% endblock %}
 
 {% block content %}
-	<div ng-init="page = page-1" ng-cloak ng-controller="SettingsCtrl">
+	<div ng-init="tab = 1" ng-cloak>
 		<h2>Settings</h2>
 
         <nav class="nav-horizontal">
             <ul>
                 <li ng-class="{active:tab===1}"><a href="" ng-click="tab = 1">Annotation Sets</a></li>
-                <li ng-class="{active:tab===2"><a href="" ng-click="tab = 2">Properties</a></li>
+                <li ng-class="{active:tab===2}"><a href="" ng-click="tab = 2">Properties</a></li>
                 <li ng-class="{active:tab===3}"><a href="" ng-click="tab = 3" >NER Settings</a></li>
             </ul></br>
         </nav>
 
-        <div class="wrapper" ng-switch="page">
-            <div ng-switch-when="page-1">
+        <div class="wrapper" ng-switch="tab">
+            <div ng-switch-when="1">
                 <ng-include src="'{% static 'partials/annotationsets_list.html' %}'"></ng-include>
             </div>
-            <div ng-switch-when="page-2">
+            <div ng-switch-when="2">
                 <ng-include src="'{% static 'partials/meta_data.html' %}'"></ng-include>
             </div>
-            <div ng-switch-when="page-3">
+            <div ng-switch-when="3">
                 <ng-include src="'{% static 'partials/ner_models.html' %}'"></ng-include>
             </div>
         </div>

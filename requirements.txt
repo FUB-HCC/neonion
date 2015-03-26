@@ -34,3 +34,4 @@ six==1.8.0
 static3==0.5.1
 urllib3==1.9.1
 wsgiref==0.1.2
+coverage==3.7.1

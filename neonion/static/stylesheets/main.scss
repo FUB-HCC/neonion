@@ -1,13 +1,13 @@
-// Modules and Variables
-@import "partials/base";
-
-
 // Third-party
 @import "vendor/normalize";
-@import "vendor/annotator.min";
+@import "vendor/annotator";
 @import "vendor/font-awesome.min";
 @import "vendor/simptip";
 @import "vendor/jquery-ui";
+
+
+// Modules and Variables
+@import "partials/base";
 
 
 // Partials

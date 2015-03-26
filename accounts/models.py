@@ -6,6 +6,8 @@ from documents.models import Document
 from annotationsets.models import AnnotationSet
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.db import transaction
+
 
 class NeonionUserManager(BaseUserManager):
     def create_user(self, email, password=None, **kwargs):
@@ -53,6 +55,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         # get public group
         public_group = WorkingGroup.objects.get(pk=1)
         self.join_group(public_group)
+
+    def hide_document(self, document):
+        with transaction.atomic():
+            self.hidden_documents.add(document)
+            self.owned_documents.remove(document)
+
+    def entitled_groups(self):
+        return WorkingGroup.objects.filter(members__in=[self])
 
     def get_full_name(self):
         return self.name + ' ' + self.surname

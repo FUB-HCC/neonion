@@ -32,8 +32,11 @@ class AnnotationListView(APIView):
         except InvalidResourceTypeError:
             pass
 
-        # insert data into TDB
-        insert_data(general_statement(annotation))
+        try:
+             # insert data into TDB
+            insert_data(general_statement(annotation))
+        except Exception as e:
+            print(e.message)
 
         headers = {'content-type': 'application/json'}
         response = requests.post(settings.ANNOTATION_STORE_URL + '/annotations',

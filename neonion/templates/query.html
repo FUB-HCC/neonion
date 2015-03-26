@@ -6,7 +6,7 @@
 
 {% block content %}
     <h3>Query form</h3>
-    <form ng-controller="QueryCtrl" ng-init="initialize({endpoint:'{{ endpoint }}'})" ng-cloak="">
+    <form ng-controller="QueryCtrl" ng-cloak="">
         {% verbatim %}
         <pre id="query-prefixes">{{ form.prefixes }}</pre>
         <textarea ng-model="form.query" rows="10">

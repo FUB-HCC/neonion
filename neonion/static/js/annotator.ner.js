@@ -118,7 +118,9 @@
                     annotation.ranges = [path];
                     // finalize annotation
                     this.annotator.setupAnnotation(annotation);
-                    annotation.context = Annotator.Plugin.Neonion.prototype.extractSourroundedContent(element, annotation);
+                    if (this.annotator.plugins.Neonion) {
+                        annotation.context = this.annotator.plugins.Neonion.extractSurroundedContent(annotation);
+                    }
                     // publish annotation created
                     this.annotator.publish("annotationCreated", [annotation]);
                 }

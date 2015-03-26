@@ -1,78 +1,50 @@
-// Vertikales Menü
+.nav-vertical, .nav-horizontal {
+  ul { @include list-reset; }
 
-.nav-vertical {
+  li {
+    a { color: $ship-gray; }
 
-  padding-top: $half-baseline;
-
-  ul {
-    @include list-reset;
+    a:hover,
+    &.active a {
+      color: $black;
+    }
   }
+}
+
+// Vertikales Menü
+.nav-vertical {
+  padding-top: $half-baseline;
 
   li {
     a {
       border-left: $column-gap/2 solid $white;
-      color: $ship-gray;
       display: block;
       font-size: 20px;
       padding: $half-baseline ($column - $column-gap/2);
       text-decoration: none;
-
-      .fa-fw {
-        text-align: left;
-      }
+      .fa-fw { text-align: left; }
     }
 
-    &.active {
-      a {
-        background: $gallery;
-        border-color: $tangerine;
-        color: $black;
-      }
+    &.active a {
+      background: $gallery;
+      border-color: $tangerine;
     }
   }
 }
-.nav-horizontal {
-  margin-bottom: 10px;
 
-  ul {
-    @include list-reset;
-  }
+.nav-horizontal {
+  margin-bottom: $half-baseline;
 
   li {
-    text-decoration: none;
     display: inline-block;
-    position: relative;
     padding: 0px $baseline 0px 0px;
-    text-align: left;
 
-    a, a:visited {
-      color: $black;
-      vertical-align: top;
+    a {
       font-weight: bold;
-      text-decoration: none;
+      cursor: pointer;
     }
 
-     a:hover:after, a:visited:after, a:active:after, a:focus:after {
-      color: $black;
-      content: '';
-      position: absolute;
-      left: 0;
-      display: inline-block;
-      height: 1em;
-      width: 84%;
-      border-bottom: 3px solid $tangerine;
-      margin-top: 10px;
-    }
-
-    &.active {
-      a {
-        border-bottom: 3px solid $tangerine;
-      }
-    }
-  }
-
-  .sorting {
-    float: right;
+    &.active a { border-bottom: 3px solid $tangerine; }
   }
 }
 

@@ -583,29 +583,6 @@ neonionApp.controller('QueryCtrl', ['$scope', function ($scope) {
 
 }]);
 
-
-neonionApp.controller('SettingsCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
-    "use strict";
-
-    $scope.changeUrl = function(entry) {
-        switch (entry) {
-            case 1:
-                $location.path('sets');
-                break;
-            case 2:
-                $location.path('properties');
-                break;
-            case 3:
-                $location.path('ner');
-                break;
-        }
-    }
-
-    $scope.isActive = function(entry) {
-        return entry == $location.path();
-    }
-}]);
-
 /**
  * NER model controller
  */

@@ -587,9 +587,6 @@ neonionApp.controller('QueryCtrl', ['$scope', function ($scope) {
 neonionApp.controller('SettingsCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
     "use strict";
 
-    // default for first sub-menu item
-    $scope.page = 'page-1';
-
     $scope.changeUrl = function(entry) {
         switch (entry) {
             case 1:
@@ -602,11 +599,6 @@ neonionApp.controller('SettingsCtrl', ['$scope', '$http', '$location', function 
                 $location.path('ner');
                 break;
         }
-    }
-
-    $scope.showThisPage = function(entry) {
-        $scope.changeUrl(entry);
-        $scope.page = 'page-' + entry;
     }
 
     $scope.isActive = function(entry) {

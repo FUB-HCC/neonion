@@ -17,6 +17,11 @@ th, tr {
 }
 
 .checkbox {
+  width: 2*$column;
+  height: $baseline;
+}
+
+.checkbox-import {
   width: $column/2;
   height: 2*$baseline;
   padding-right: 4px;
@@ -28,3 +33,4 @@ th, tr {
     cursor: pointer;
   }
 }
+

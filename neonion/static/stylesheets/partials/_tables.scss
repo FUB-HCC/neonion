@@ -7,17 +7,24 @@ th {
 }
 
 td {
-  padding: $half-baseline $baseline ($half-baseline - 1) 0;
+  padding: $half-baseline $baseline $half-baseline 0;
 }
 
-
-th, td {
+th, tr {
   text-align: left;
   border-bottom: 1px solid $silver;
   vertical-align: top;
 }
 
 .checkbox {
-  width: 2*$column;
-  height: $baseline;
+  width: $column/2;
+  height: 2*$baseline;
+  padding-right: 4px;
+  float: left;
+}
+
+.checkbox:hover {
+  input {
+    cursor: pointer;
+  }
 }

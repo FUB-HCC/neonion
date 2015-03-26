@@ -117,6 +117,69 @@ p {
       margin-bottom: $base-font-size + $base-font-size/2;
       font-style: italic;
     }
+
+    #metadata {
+      .field {
+        border-bottom: none;
+        height: $baseline;
+        cursor: pointer;
+      }
+
+      .field::-webkit-input-placeholder {
+        font-style: italic;
+      }
+
+      .field::-ms-input-placeholder {
+        font-style: italic;
+      }
+
+      .field::-moz-placeholder {
+        font-style: italic;
+      }
+
+      .edit {
+        color: $ship-gray;
+        width: 4*$column + 4*$column-gap;
+        display: inline-block;
+        position: relative;
+        padding: 2px 2px 2px 2px;
+        border: 1px solid $gallery;
+
+        span {
+          opacity: 0;
+        }
+      }
+
+      .edit:hover {
+        color: $black;
+        cursor: pointer;
+        border: 1px solid $silver;
+
+        span {
+          opacity: 1;
+          margin-left: -$baseline;
+        }
+      }
+    }
+
+    #import-main {
+      width: 66.75%;
+      height: 14*$baseline;
+      float: left;
+      display: inline-block;
+    }
+
+    .side-view {
+      width: 33.25%;
+      height: 14*$baseline;
+      float: right;
+      display: block;
+
+      tr {
+        border-bottom: none;
+        border-top: none;
+      }
+    }
   }
 }
 

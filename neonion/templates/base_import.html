@@ -7,12 +7,62 @@
 
 {% block content %}
 {% if use_file_upload %}
-<h3>Import files</h3>
-<form method="post" action="{% url 'documents.views.upload_file' %}" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input id="file-upload" name="file-upload" type="file" multiple>
-    <input class="button button-primary pull-right" type="submit" />
-</form>
+<div id="import-main">
+    <h3>Import files</h3>
+    <form method="post" action="{% url 'documents.views.upload_file' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input id="file-upload" name="file-upload" type="file" multiple>
+        <input class="button button-primary button-import pull-right" type="submit" />
+    </form>
+</div>
+
+<div class="side-view">
+    <h3>Document properties</h3>
+    <div>Please specify the properties of the </div>
+    <div>document you are about to upload</div>
+
+    <table ng-controller="MetaDataCtrl">
+        <tbody id="metadata">
+            <tr>
+                <td class="checkbox"><input type="checkbox"/></td>
+                <td>Title:</td>
+                <td>
+                    <div class="edit" style="white-space: nowrap">
+                        <input class="field" type="text" placeholder="There is no title">
+                        <span class="fa fa-pencil-square-o fa-fw"></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="checkbox"><input type="checkbox" /></td>
+                <td>Creator:</td>
+                <td>
+                    <div class="edit" style="white-space: nowrap">
+                        <input class="field" type="text" placeholder="There is no creator">
+                        <span class="fa fa-pencil-square-o fa-fw"></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="checkbox"><input type="checkbox" /></td>
+                <td>Type:</td>
+                <td>
+                    <div class="edit" style="white-space: nowrap">
+                        <input class="field" type="text" placeholder="There is no type">
+                        <span class="fa fa-pencil-square-o fa-fw"></span>
+                    </div>
+                </td>
+            </tr>
+            <!--
+            <tr ng-repeat="element in metaDataElements">
+                <td class="checkbox"><input type="checkbox"/></td>
+                <td>{{ element }}</td>
+            </tr> -->
+        </tbody>
+    <!-- ng-model="element.isChecked" -->
+    </table>
+</div>
+
 {% else %}
 <ng-include src="'{% static 'partials/upload_cms.html' %}'"></ng-include>
 {% endif %}

@@ -8,7 +8,7 @@
 {% block content %}
 {% if use_file_upload %}
 <div id="import-main">
-    <h3>Import files</h3>
+    <h2>Import</h2>
     <form method="post" action="{% url 'documents.views.upload_file' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <input id="file-upload" name="file-upload" type="file" multiple change="fileLoad($files)"

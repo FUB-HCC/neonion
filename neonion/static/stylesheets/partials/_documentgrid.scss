@@ -38,8 +38,8 @@
         span{
           color: $tangerine;
           display: block;
-          font-size: 42px;
-          line-height: 3*$baseline;
+          font-size: 1.8em;
+          line-height: 3em;
         }
       }
     }
@@ -71,7 +71,7 @@
   @include list-reset;
 
   li {
-    padding: ($half-baseline - 1px) $column-gap;
+    padding: $half-baseline $column-gap;
     background-color: $white;
     color: $dove-gray;
     border: 1px solid $silver;

@@ -6,23 +6,25 @@
 {% block page_id %}annotator{% endblock %}
 
 {% block left %}
-    <div class="sidebar">
-        {% include "navigation_annotator.html" %}
-    </div>
+<div class="sidebar">
+    {% include "navigation_annotator.html" %}
+</div>
 {% endblock %}
 
 {% block content %}
-<div ng-controller="AnnotatorCtrl" data-ng-init="initialize({ docID:'{{ doc_id }}', userID:'{{ request.user.email }}', nerUrl:'{{ ner_url }}', nerAuth:'{{ ner_auth }}'})">
+<div id="annotate-space" ng-controller="AnnotatorCtrl" data-ng-init="initialize({ docID:'{{ doc_id }}', userID:'{{ request.user.email }}', nerUrl:'{{ ner_url }}', nerAuth:'{{ ner_auth }}'})">
     <div class="annotator_menu" ng-cloak>
         <ul id="annotator_contributors" class="forms-list">
             <li ng-repeat="contrib in contributors | orderBy:'-updated'">
-            {% verbatim %}
+
+                {% verbatim %}
                 <input
                 type='checkbox'
                 ng-model="contrib.showAnnotation"
                 ng-click="toggleContributor(contrib)"/>
                 <label style="background-color:{{ contrib.color }}">{{ contrib.user }} ({{contrib.updated | date: 'short'}})</label>
             {% endverbatim %}
+
             </li>
         </ul>
         <a ng-click="scrollToLastAnnotation()">
@@ -66,24 +68,27 @@
                 return false;
             });
 
-            /*$('#nav-fullscreen').click(function(){
-                enableFullscreen( document.getElementById( 'document-frame' ) );
-            });*/
+            $('#nav-fullscreen').click(function(){
+                enableFullscreen( document.getElementById( 'annotate-space' ) );
+            });
         });
 
-        /*
         // Find the right method, call on correct element
         function enableFullscreen(element) {
+
             if(element.requestFullscreen) {
-            element.requestFullscreen();
+                element.requestFullscreen();
+
             } else if(element.mozRequestFullScreen) {
-            element.mozRequestFullScreen();
+                element.mozRequestFullScreen();
+
             } else if(element.webkitRequestFullscreen) {
-            element.webkitRequestFullscreen();
+                element.webkitRequestFullscreen();
+
             } else if(element.msRequestFullscreen) {
-            element.msRequestFullscreen();
+                element.msRequestFullscreen();
             }
         }
-        */
+        
     </script>
 {% endblock %}

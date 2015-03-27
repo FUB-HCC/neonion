@@ -13,6 +13,13 @@
 
     div {
       color: $ship-gray;
+      float: left;
+      display: block;
+      margin-bottom: $baseline;
+
+      width: 3*$column + 2*$column-gap;
+      height: 7*$baseline;
+
       font-size: $base-font-size;
       line-height: $baseline;
       font-weight: 300;

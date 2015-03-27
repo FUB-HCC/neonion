@@ -337,8 +337,8 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
                             ann_occur[key].title = docs[a.uri];
                             ann_occur[key].created = date;
                             ann_occur[key].ann = ann;
-                            ann_occur[key].contextRight = contextRight;
-                            ann_occur[key].contextLeft = contextLeft;
+                            ann_occur[key].contextRight = contextRight + " [...]";
+                            ann_occur[key].contextLeft = "[...] " + contextLeft;
                         }
                         ;
                     });
@@ -600,6 +600,10 @@ neonionApp.controller('MetaDataCtrl', ['$scope', '$http', function ($scope, $htt
         $scope.metaDataValues[entry].checked = false;
         $scope.metaDataValues[entry].definition = definitions[entry];
     });
+
+    $scope.submit = function() {
+        $("input[type=text]").blur();
+    }
 
     $scope.fileLoad = function ($files) {
         /* TODO */

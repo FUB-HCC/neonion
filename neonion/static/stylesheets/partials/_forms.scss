@@ -43,7 +43,7 @@ input[type="text"], input[type="password"], input[type="email"] {
   border-bottom: 2px solid $dove-gray;
   font-size: $base-font-size;
   line-height: $baseline;
-  padding: ($half-baseline - 1px) 0;
+  padding: $half-baseline 0;
 
   &:focus {
     border-bottom-color: $azure;

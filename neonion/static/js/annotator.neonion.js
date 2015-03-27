@@ -40,7 +40,6 @@
          * @override
          */
         this.pluginInit = function () {
-            //this.annotator = this.annotator;
             this.adder = this.overrideAdder();
             this.fields = {
                 viewer: this.initViewerField(),
@@ -72,7 +71,7 @@
 
         /**
          * Creates additional fields in viewer
-         * @returns {{resource: *, creator: *}}
+         * @returns {{resource: *, agent: *}}
          */
         this.initViewerField = function () {
             return {
@@ -80,9 +79,9 @@
                 resource: this.annotator.viewer.addField({
                     load: $.proxy(this.viewerLoadResourceField, this)
                 }),
-                // add field with creator
-                creator: this.annotator.viewer.addField({
-                    load: $.proxy(this.viewerLoadCreatorField, this)
+                // add field with agent
+                agent: this.annotator.viewer.addField({
+                    load: $.proxy(this.viewerLoadAgentField, this)
                 })
             };
         };
@@ -182,7 +181,9 @@
         },
         options: {
             prefix: "/",
-            agent: { email: "unknown@neonion.org" },
+            agent: {
+                email: "unknown@neonion.org"
+            },
             urls: {
                 search: "search"
             },
@@ -214,14 +215,35 @@
                 searchText: "Search term",
                 unknown: "Not identified",
                 unknownResource: "Unknown resource",
-                creator: "Creator"
+                agent: "Creator"
             },
             de: {
                 search: "Suchen",
                 searchText: "Suchtext",
                 unknown: "Unbekannt",
                 unknownResource: "Unbekannte Ressource",
-                creator: "Erfasser"
+                agent: "Erfasser"
+            }
+        },
+
+        oa: {
+            motivation: {
+                classifying: "oa:classifying",
+                identifying: "oa:identifying",
+                linking: "oa:linking",
+                questioning: "oa:questioning"
+            },
+            types : {
+                agent: {
+                    person: "foaf:person",
+                    software: "prov:SoftwareAgent"
+                },
+                document: {
+                    text: "dctypes:Text"
+                },
+                tag: {
+                    semanticTag: "oa:SemanticTag"
+                }
             }
         },
 
@@ -254,8 +276,16 @@
          */
         beforeAnnotationCreated : function (annotation) {
             // add user to annotation
-            annotation.user = this.options.agent.email;
             annotation.creator = this.options.agent;
+            annotation.oa = {
+                annotatedBy: $.extend(this.options.agent, {type: this.oa.types.agent.person}),
+                hasBody: {
+                    type: this.oa.types.tag.semanticTag
+                },
+                hasTarget: {
+                    type: this.oa.types.document.text
+                }
+            };
 
             if (this.options.hasOwnProperty("workspace")) {
                 // add permissions to annotation
@@ -266,6 +296,7 @@
                     admin: [this.options.agent.email]
                 };
             }
+            //console.log(annotation);
         },
 
         annotationEditorShown: function(editor, annotation) {
@@ -335,12 +366,12 @@
             }
         },
 
-        viewerLoadCreatorField : function (field, annotation) {
+        viewerLoadAgentField : function (field, annotation) {
             var userField = this.literals['en'].unknown;
-            if (annotation.creator) {
-                userField = annotation.creator.email;
+            if (annotation.hasOwnProperty('oa')) {
+                userField = annotation.oa.annotatedBy.email;
             }
-            field.innerHTML = this.literals['en'].creator + ":&nbsp;" + userField;
+            field.innerHTML = this.literals['en'].agent + ":&nbsp;" + userField;
         },
 
         loadEditorField : function (field, annotation) {
@@ -358,12 +389,14 @@
                 typeof: this.editorState.selectedType,
                 label: annotation.quote
             };
+            annotation.oa.motivatedBy = this.oa.motivation.classifying;
 
+            // add extra semantic data from identified resource
             if (this.editorState.selectedItem > 0) {
                 var dataItem = this.editorState.resultSet[this.editorState.selectedItem];
-                // add rdf data
                 annotation.rdf.sameAs = dataItem.uri + '';
                 annotation.rdf.label = dataItem.label;
+                annotation.oa.motivatedBy = this.oa.motivation.identifying;
             }
         },
 
@@ -620,7 +653,6 @@
         },
 
         search: function (type, searchText, callback) {
-            //this.options.prefix + this.options.urls.search + "?";
             var url = this.options.prefix + this.options.urls.search + "?";
             url += 'type=' + encodeURI(type) + '&q=' + encodeURI(searchText);
             $.getJSON(url, $.proxy(callback, this));

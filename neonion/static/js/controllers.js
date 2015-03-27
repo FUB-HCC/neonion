@@ -192,7 +192,8 @@ neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'AccountService', 'Wo
         };
 
         $scope.removeDocument = function (workspace, document) {
-            if (workspace.id == -1) {
+            // allow remove on private workspace
+            if (workspace.id == $scope.user.email) {
                 WorkspaceService.removeDocument($scope.user, document.id).then(function (result) {
                     var idx = workspace.documents.indexOf(document);
                     workspace.documents.splice(idx, 1);

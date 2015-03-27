@@ -20,38 +20,40 @@ def upload_file(request):
         'text/plain',
         'text/html',
     ]
-    for f in request.FILES:
-        create_new_doc = False
 
-        if request.FILES[f].content_type == 'application/json':
-            uploaded_file = ContentFile(request.FILES[f].read())
-            j = json.loads(uploaded_file.read())
-            doc_id = j['id']
-            doc_title = j['title']
-            doc_content = j['content']
+    for upload_field in request.FILES:
+        for f in request.FILES.getlist(upload_field):
+            create_new_doc = False
 
-            create_new_doc = True
-        elif request.FILES[f].content_type in TEXT_TYPES:
-            file_name = request.FILES[f].name.encode('utf-8')
-            doc_title = str(' '.join(splitext(basename(file_name))[0].split()))
-            doc_id = uuid.uuid1().hex
-            print(doc_title + "   " + doc_id)
-            # read plain text content
-            content = []
-            for chunk in request.FILES[f].chunks():
-                content.append(chunk)
-            doc_content = ''.join(content)
+            if f.content_type == 'application/json':
+                uploaded_file = ContentFile(f.read())
+                j = json.loads(uploaded_file.read())
+                doc_id = j['id']
+                doc_title = j['title']
+                doc_content = j['content']
 
-            create_new_doc = True
+                create_new_doc = True
+            elif f.content_type in TEXT_TYPES:
+                file_name = f.name.encode('utf-8')
+                doc_title = str(' '.join(splitext(basename(file_name))[0].split()))
+                doc_id = uuid.uuid1().hex
 
-        if create_new_doc:
-            if not Document.objects.filter(id=doc_id).exists():
-                document = Document.objects.create_document(doc_id, doc_title, doc_content)
-            else:
-                document = Document.objects.get(id=doc_id)
+                # read plain text content
+                content = []
+                for chunk in f.chunks():
+                    content.append(chunk)
+                doc_content = ''.join(content)
 
-            # import document into workspace
-            request.user.owned_documents.add(document)
+                create_new_doc = True
+
+            if create_new_doc:
+                if not Document.objects.filter(id=doc_id).exists():
+                    document = Document.objects.create_document(doc_id, doc_title, doc_content)
+                else:
+                    document = Document.objects.get(id=doc_id)
+
+                # import document into workspace
+                request.user.owned_documents.add(document)
 
     return redirect('/')
 

@@ -7,12 +7,57 @@
 
 {% block content %}
 {% if use_file_upload %}
-<h3>Import files</h3>
-<form method="post" action="{% url 'documents.views.upload_file' %}" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input id="file-upload" name="file-upload" type="file" multiple>
-    <input class="button button-primary pull-right" type="submit" />
-</form>
+<div id="import-main">
+    <h3>Import files</h3>
+    <form method="post" action="{% url 'documents.views.upload_file' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input id="file-upload" name="file-upload" type="file" multiple ng-click="meta=true" ng-init="meta=false">
+        <input class="button button-primary button-import pull-right" type="submit" />
+    </form>
+</div>
+
+<div class="side-view" ng-controller="MetaDataCtrl" ng-show="meta">
+    <h3>Document properties</h3>
+    <div>Please specify the properties of the </div>
+    <div>document you are about to upload</div>
+
+    <table>
+        {% verbatim %}
+        <tbody id="metadata">
+            <tr ng-repeat="primary in primaryMetaData">
+                <td class="checkbox-import"><input id="checkProperty" type="checkbox" checklist-model="">
+                    <!-- ng-model="contrib.showAnnotation" ng-click="toggleContributor(contrib)"/>--> </td>
+                <td>{{ primary }}:</td>
+                <td>
+                    <div class="edit" style="white-space: nowrap">
+                        <input id="property" class="field" type="text" placeholder="There is no {{ primary }}">
+                        <span class="fa fa-pencil-square-o fa-fw"></span>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+        {% endverbatim %}
+    <!-- ng-model="element.isChecked" -->
+    </table>
+    <table>
+        {% verbatim %}
+        <tbody id="metadata" ng-show="moreMeta">
+            <tr ng-repeat="secondary in secondaryMetaData">
+                <td class="checkbox-import"><input id="checkProperty" type="checkbox"/></td>
+                <td>{{ secondary }}:</td>
+                <td>
+                    <div class="edit" style="white-space: nowrap">
+                        <input id="property" class="field" type="text" placeholder="There is no {{ secondary }}">
+                        <span class="fa fa-pencil-square-o fa-fw"></span>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+        {% endverbatim %}
+    </table>
+    <input id="meta" value="More Properties" class="button button-primary button-import pull-left" ng-click="moreMeta=true" ng-init="=false"/>
+</div>
+
 {% else %}
 <ng-include src="'{% static 'partials/upload_cms.html' %}'"></ng-include>
 {% endif %}

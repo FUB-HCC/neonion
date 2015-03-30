@@ -1,0 +1,28 @@
+
+<p class="text">
+    Please choose the properties you want to consider for this list <br>
+    that corresponds to the Dublin Core Metadata Element Set
+</p>
+
+<table ng-controller="MetaDataCtrl">
+
+    <thead>
+        <th>Active</th>
+        <th>Property</th>
+        <th>Entry</th>
+    </thead>
+
+    <tbody id="metadata">
+        <tr ng-repeat="element in metaDataElements">
+            <td class="checkbox"><input type="checkbox"/></td>
+            <td>{{ element }}</td>
+            <td>
+                <div class="edit" style="white-space: nowrap">
+                    <input id="property" class="field" type="text" placeholder="There is no {{ element }}">
+                    <span class="fa fa-pencil-square-o fa-fw"></span>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+<!-- ng-model="element.isChecked" -->
+</table>

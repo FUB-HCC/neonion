@@ -6,6 +6,7 @@ PREFIX owl:<http://www.w3.org/2002/07/owl#>
 PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX sesame:<http://www.openrdf.org/schema/sesame#>
 PREFIX fn:<http://www.w3.org/2005/xpath-functions#>
+PREFIX dc:<http://purl.org/dc/elements/1.1/>
 '''
 
 
@@ -27,7 +28,27 @@ def general_statement(annotation):
         # add end of statement
         query += u'.\n}'
 
-        #print(query)
+        # print(query)
         return query
     else:
         raise NoSemanticAnnotationError(annotation)
+
+
+def metadata_statement(document):
+
+    title = document['title']
+    creator = document['creator']
+    type = document['type']
+
+    # add prefixes and insert preamble
+    query = DEFAULT_PREFIXES + u'\nINSERT DATA {'
+    # add title property
+    query += u'\n"{}" dc:title "{}";'.format('title')
+    # add creator property
+    query += u'\ndc:creator "{}";'.format('creator')
+    # add type property
+    query += u'\n<{}> dc:type "{}";'.format('type')
+    # add end of statement
+    query += u'.\n}'
+
+    return query

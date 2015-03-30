@@ -39,3 +39,11 @@
 .button-wide {
   width: 4*$column + 3*$column-gap;
 }
+
+.button-import {
+  margin-right: $column + $column-gap;
+}
+
+#meta {
+  outline: none;
+}

@@ -16,7 +16,7 @@
     </form>
 </div>
 
-<div class="side-view" ng-controller="MetaDataCtrl"><!--ng-show="meta"-->
+<div class="side-view" ng-controller="MetaDataCtrl" ng-show="meta">
     <h3>Document properties</h3>
     <div>Please specify the properties of the </div>
     <div>document you are about to upload</div>
@@ -29,7 +29,7 @@
                 <td>{{ primary }}:</td>
                 <td>
                     <div class="edit" style="white-space: nowrap">
-                        <input class="field" type="text" placeholder="There is no title">
+                        <input class="field" type="text" placeholder="There is no {{ primary }}">
                         <span class="fa fa-pencil-square-o fa-fw"></span>
                     </div>
                 </td>
@@ -46,7 +46,7 @@
                 <td>{{ secondary }}:</td>
                 <td>
                     <div class="edit" style="white-space: nowrap">
-                        <input class="field" type="text" placeholder="There is no type">
+                        <input class="field" type="text" placeholder="There is no" {{ secondary }}>
                         <span class="fa fa-pencil-square-o fa-fw"></span>
                     </div>
                 </td>

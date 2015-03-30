@@ -11,12 +11,12 @@
     <h3>Import files</h3>
     <form method="post" action="{% url 'documents.views.upload_file' %}" enctype="multipart/form-data">
         {% csrf_token %}
-        <input id="file-upload" name="file-upload" type="file" multiple>
+        <input id="file-upload" name="file-upload" type="file" multiple ng-click="meta=true" ng-init="meta=false">
         <input class="button button-primary button-import pull-right" type="submit" />
     </form>
 </div>
 
-<div class="side-view">
+<div class="side-view" ng-show="meta">
     <h3>Document properties</h3>
     <div>Please specify the properties of the </div>
     <div>document you are about to upload</div>

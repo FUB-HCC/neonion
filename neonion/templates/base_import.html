@@ -16,16 +16,17 @@
     </form>
 </div>
 
-<div class="side-view" ng-show="meta">
+<div class="side-view" ng-controller="MetaDataCtrl"><!--ng-show="meta"-->
     <h3>Document properties</h3>
     <div>Please specify the properties of the </div>
     <div>document you are about to upload</div>
 
-    <table ng-controller="MetaDataCtrl">
+    <table>
+        {% verbatim %}
         <tbody id="metadata">
-            <tr>
+            <tr ng-repeat="primary in primaryMetaData">
                 <td class="checkbox-import"><input type="checkbox"/></td>
-                <td>Title:</td>
+                <td>{{ primary }}:</td>
                 <td>
                     <div class="edit" style="white-space: nowrap">
                         <input class="field" type="text" placeholder="There is no title">
@@ -33,19 +34,16 @@
                     </div>
                 </td>
             </tr>
-            <tr>
-                <td class="checkbox-import"><input type="checkbox" /></td>
-                <td>Creator:</td>
-                <td>
-                    <div class="edit" style="white-space: nowrap">
-                        <input class="field" type="text" placeholder="There is no creator">
-                        <span class="fa fa-pencil-square-o fa-fw"></span>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="checkbox-import"><input type="checkbox" /></td>
-                <td>Type:</td>
+        </tbody>
+        {% endverbatim %}
+    <!-- ng-model="element.isChecked" -->
+    </table>
+    <table>
+        {% verbatim %}
+        <tbody id="metadata" ng-show="moreMeta">
+            <tr ng-repeat="secondary in secondaryMetaData">
+                <td class="checkbox-import"><input type="checkbox"/></td>
+                <td>{{ secondary }}:</td>
                 <td>
                     <div class="edit" style="white-space: nowrap">
                         <input class="field" type="text" placeholder="There is no type">
@@ -53,14 +51,10 @@
                     </div>
                 </td>
             </tr>
-            <!--
-            <tr ng-repeat="element in metaDataElements">
-                <td class="checkbox"><input type="checkbox"/></td>
-                <td>{{ element }}</td>
-            </tr> -->
         </tbody>
-    <!-- ng-model="element.isChecked" -->
+        {% endverbatim %}
     </table>
+    <input id="meta" value="More Properties" class="button button-primary button-import pull-left" ng-click="moreMeta=true" ng-init="=false"/>
 </div>
 
 {% else %}

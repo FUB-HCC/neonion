@@ -608,7 +608,16 @@ neonionApp.controller('NamedEntityCtrl', ['$scope', function ($scope) {
 neonionApp.controller('MetaDataCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
-    $scope.metaDataElements = ['Contributor', 'Coverage', 'Creator', 'Date', 'Description',
+    var primaryMetaData = ['Title', 'Creator', 'Type'];
+
+    var secondaryMetaData = ['Contributor', 'Coverage', 'Date', 'Description',
                             'Format', 'Identifier', 'Language', 'Publisher', 'Relation',
-                            'Rights', 'Source', 'Subject', 'Title', 'Type']
+                            'Rights', 'Source', 'Subject'];
+
+    $scope.primaryMetaData = primaryMetaData;
+    $scope.secondaryMetaData = secondaryMetaData;
+
+    console.log($scope.primaryMetaData);
+    console.log($scope.secondaryMetaData);
+
 }]);

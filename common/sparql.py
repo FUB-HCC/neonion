@@ -13,13 +13,15 @@ def prepare_sparql(format='json'):
 
 
 def insert_data(query):
-    sparql = prepare_sparql()
-    sparql.method = 'POST'
-    sparql.setQuery(query)
-    return sparql.query()
+    if query:
+        sparql = prepare_sparql()
+        sparql.method = 'POST'
+        sparql.setQuery(query)
+        return sparql.query()
 
 
 def execute_query(query, format='json'):
-    sparql = prepare_sparql(format)
-    sparql.setQuery(query)
-    return sparql.query().convert()
+    if query:
+        sparql = prepare_sparql(format)
+        sparql.setQuery(query)
+        return sparql.query().convert()

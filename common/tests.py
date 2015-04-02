@@ -1,6 +1,6 @@
 from django.test import TestCase
 from uri import generate_uri
-from statements import general_statement
+from statements import statement_about_resource
 from annotation import add_resource_uri
 from exceptions import NoSemanticAnnotationError, InvalidResourceTypeError
 from vocab import neonion
@@ -71,15 +71,15 @@ class StatementsTestCase(TestCase):
         }
 
     def test_no_semantic_annotation(self):
-        self.assertRaises(NoSemanticAnnotationError, general_statement, self.noSemanticAnnotation)
+        self.assertRaises(NoSemanticAnnotationError, statement_about_resource, self.noSemanticAnnotation)
 
     def test_semantic_annotation(self):
-        statement = general_statement(self.semanticAnnotation)
+        statement = statement_about_resource(self.semanticAnnotation)
         self.assertTrue("rdf:type" in statement)
         self.assertTrue("rdfs:label" in statement)
 
     def test_semantic_annotation_with_same_as(self):
-        statement = general_statement(self.semanticAnnotationWithSameAs)
+        statement = statement_about_resource(self.semanticAnnotationWithSameAs)
         self.assertTrue("owl:sameAs" in statement)
 
     def test_add_uri_to_invalid_annotation(self):
@@ -97,7 +97,7 @@ class VocabTestCase(TestCase):
     def test_valid_urls(self):
         """ Tests whether the vocab contains only valid URLs. """
         vocab = neonion()
-        vocab_uri = [vocab.ANNOTATION_SET, vocab.CONCEPT, vocab.LINKED_CONCEPT]
+        vocab_uri = [vocab.ANNOTATION_SET, vocab.CONCEPT, vocab.LINKED_CONCEPT, vocab.ANNOTATION_STORE_GRAPH]
         validate = URLValidator()
         for uri in vocab_uri:
             self.assertIsNone(validate(uri))

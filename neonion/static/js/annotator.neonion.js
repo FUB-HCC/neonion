@@ -86,6 +86,7 @@
                         var childBtn = $(this.adder).find("button");
                         // only one button is visible in adder
                         if (childBtn.length === 1) {
+                            this.annotator.ignoreMouseup = true;
                             childBtn.click();
                         } 
                     }
@@ -114,6 +115,8 @@
          */
         this.initViewerField = function () {
             return {
+                // get comment field
+                comment: this.annotator.viewer.fields[0].element,
                 // add field to linked resource
                 resource: this.annotator.viewer.addField({
                     load: $.proxy(this.viewerLoadResourceField, this)
@@ -222,7 +225,8 @@
             beforeAnnotationCreated: "beforeAnnotationCreated",
             annotationEditorShown: "annotationEditorShown",
             annotationEditorHidden: "annotationEditorHidden",
-            annotationEditorSubmit: "annotationEditorSubmit"
+            annotationEditorSubmit: "annotationEditorSubmit",
+            annotationViewerTextField: "annotationViewerTextField"
         },
 
         annotationModes : {
@@ -341,7 +345,16 @@
                     type: this.oa.types.document.text
                 }
             };
-            // TODO annotation.oa.hasBody.type = this.oa.types.tag.semanticTag
+
+            // set type of body
+            switch(this.editorState.annotationMode) {
+                case this.annotationModes.semanticAnnotation:
+                    annotation.oa.hasBody.type = this.oa.types.tag.semanticTag; break;
+                case this.annotationModes.freeTextAnnotation:
+                    annotation.oa.hasBody.type = this.oa.types.tag.tag; break;
+            }
+
+            // set permission according current workspace
             if (this.options.hasOwnProperty("workspace")) {
                 // add permissions to annotation
                 annotation.permissions = {
@@ -357,15 +370,17 @@
         annotationEditorShown: function(editor, annotation) {
             this.placeEditorBesidesAnnotation(annotation);
 
-             switch(this.editorState.annotationMode) {
-                case this.annotationModes.semanticAnnotation:
-                    $(this.fields.freeTextField).hide();
-                    $(this.fields.semanticAnnotationField).show();
-                    break;
-                case this.annotationModes.freeTextAnnotation:
-                    $(this.fields.freeTextField).show();
-                    $(this.fields.semanticAnnotationField).hide();
-                    break;
+            if (annotation.hasOwnProperty("oa")) {
+                // make visibility of fields depended from type of body
+                switch (annotation.oa.hasBody.type) {
+                    case this.oa.types.tag.tag:
+                        $(this.fields.editor.freeTextField).show();
+                        $(this.fields.editor.semanticAnnotationField).hide();
+                        break;
+                    case this.oa.types.tag.semanticTag:
+                        $(this.fields.editor.freeTextField).hide();
+                        $(this.fields.editor.semanticAnnotationField).show();
+                }
             }
         },
 
@@ -374,6 +389,16 @@
             this.editorState.selectedItem = -1;
             this.editorState.resultSet = [];
             this.editorState.selectedType = "";
+        },
+
+        annotationViewerTextField: function(field, annotation) {
+            if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("hasBody") &&
+                annotation.oa.hasBody.type == this.oa.types.tag.tag) {
+                $(field).show();
+            }
+            else {
+                $(field).hide();
+            }
         },
 
         annotationEditorSubmit: function(editor, annotation) {
@@ -405,6 +430,7 @@
                     // set selected type
                     this.editorState.selectedType = sender.val();
                 }
+                return true;
             }, this));
             return adder;
         },
@@ -446,7 +472,7 @@
         },
 
         submitEditorField : function (field, annotation) {
-            if (this.editorState.annotationMode == this.annotationModes.semanticAnnotation) {
+            if (annotation.oa.hasBody.type == this.oa.types.tag.semanticTag) {
                 // add rdf data
                 annotation.rdf = {
                     typeof: this.editorState.selectedType,
@@ -465,7 +491,7 @@
         },
 
         updateResourceList : function(searchTerm) {
-            var list = $(this.fields.editor).find("#resource-list");
+            var list = $(this.fields.editor.semanticAnnotationField).find("#resource-list");
             // replace list with spinner while loading
             list.html(this.templates.spinner);
             // lookup resource by search term

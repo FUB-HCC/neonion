@@ -35,19 +35,14 @@ def general_statement(annotation):
 
 
 def metadata_statement(document):
-
-    title = document['title']
-    creator = document['creator']
-    type = document['type']
-
     # add prefixes and insert preamble
     query = DEFAULT_PREFIXES + u'\nINSERT DATA {'
     # add title property
-    query += u'\n"{}" dc:title "{}";'.format('title')
+    query += u'\n"{}" dc:title "{}";'.format(document.title)
     # add creator property
-    query += u'\ndc:creator "{}";'.format('creator')
+    query += u'\ndc:creator "{}";'.format(document.creator)
     # add type property
-    query += u'\n<{}> dc:type "{}";'.format('type')
+    query += u'\n<{}> dc:type "{}";'.format(document.type)
     # add end of statement
     query += u'.\n}'
 

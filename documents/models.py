@@ -32,4 +32,10 @@ class Document(models.Model):
 # Signal which ensures that metadata gets saved automatically after newly created document
 @receiver(post_save, sender=Document)
 def send_meta_data(sender, instance, **kwargs):
-    insert_data(metadata_statement(instance))
+    try:
+        # insert data into TDB
+        pass
+        #insert_data(metadata_statement(instance))
+    except Exception as e:
+        print(e.message)
+    

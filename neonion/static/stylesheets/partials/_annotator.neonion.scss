@@ -6,10 +6,15 @@
   @extend %font;
 }
 
-// Kommentarefeld ausblenden
-#annotator-field-0,
+.annotator-editor .annotator-resize,
 .annotator-editor .annotator-controls {
   display: none;
+}
+
+// Kommentarfeld
+#annotator-field-0 {
+  @extend %basefontsize;
+  background: $white;
 }
 
 .annotator-adder,

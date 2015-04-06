@@ -10,8 +10,9 @@ from rest_framework import permissions
 from authentication import UnsafeSessionAuthentication
 from common.annotation import add_resource_uri
 from common.sparql import insert_data
-from common.statements import general_statement
+from common.statements import Annotation
 from common.exceptions import InvalidResourceTypeError
+from common.vocab import OpenAnnotation
 
 
 class AnnotationListView(APIView):
@@ -27,20 +28,29 @@ class AnnotationListView(APIView):
     def post(self, request, format=None):
         """Creates a new annotation"""
         annotation = json.loads(request.body)
-        try:
-            add_resource_uri(annotation)
-        except InvalidResourceTypeError:
-            pass
 
-        try:
-             # insert data into TDB
-            insert_data(general_statement(annotation))
-        except Exception as e:
-            print(e.message)
+        if 'oa' in annotation and 'hasBody' in annotation['oa']:
+            if annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.semanticTag.value:
+                try:
+                    add_resource_uri(annotation)
+                except InvalidResourceTypeError:
+                    pass
 
+        # forward request to anntation store
         headers = {'content-type': 'application/json'}
         response = requests.post(settings.ANNOTATION_STORE_URL + '/annotations',
                                  data=json.dumps(annotation), headers=headers)
+
+        # extract data from annotation and insert in triple store
+        if 'oa' in annotation and 'hasBody' in annotation['oa']:
+            try:
+                #print(Annotation.create_annotation_statement(annotation))
+                #insert_data(Annotation.create_annotation_statement(annotation))
+                if annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.semanticTag.value:
+                    insert_data(Annotation.statement_about_resource(annotation))
+            except Exception as e:
+                print(e.message)
+
         return JsonResponse(response.json(), status=201, safe=False)
 
 

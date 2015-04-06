@@ -13,4 +13,7 @@ __pycache__
 !plugins/__init__.py
 *.*~
 /neonion/static/css/
+
+# converage.py files
 .coverage
+/htmlcov

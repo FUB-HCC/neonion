@@ -112,8 +112,8 @@ p {
 
     #metadata {
       .field {
-        border-bottom: none;
         height: $baseline;
+        width: 3*$column + 4*$column-gap;
         cursor: pointer;
       }
 
@@ -129,28 +129,11 @@ p {
         font-style: italic;
       }
 
-      .edit {
-        color: $ship-gray;
+      tr > td > div {
         width: 4*$column + 4*$column-gap;
         display: inline-block;
         position: relative;
         padding: 2px 2px 2px 2px;
-        border: 1px solid $gallery;
-
-        span {
-          opacity: 0;
-        }
-      }
-
-      .edit:hover {
-        color: $black;
-        cursor: pointer;
-        border: 1px solid $silver;
-
-        span {
-          opacity: 1;
-          margin-left: -$baseline;
-        }
       }
     }
 

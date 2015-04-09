@@ -34,3 +34,41 @@ th, tr {
   }
 }
 
+#metadata {
+  .field {
+    height: $baseline;
+    width: 3*$column + 4*$column-gap;
+    cursor: pointer;
+    float: right;
+  }
+
+  .fieldSettings {
+    height: $baseline;
+    width: 4*$column + 5*$column-gap;
+    cursor: pointer;
+    float: left;
+  }
+
+  .field::-webkit-input-placeholder {
+    font-style: italic;
+  }
+
+  .field::-ms-input-placeholder {
+    font-style: italic;
+  }
+
+  .field::-moz-placeholder {
+    font-style: italic;
+  }
+
+  tr > td > div {
+    width: 4*$column + 4*$column-gap;
+    display: inline-block;
+    position: relative;
+    padding: 2px 2px 2px 2px;
+  }
+}
+
+#meta {
+  margin-top: $baseline;
+}

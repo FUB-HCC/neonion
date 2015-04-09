@@ -115,6 +115,7 @@ p {
         height: $baseline;
         width: 3*$column + 4*$column-gap;
         cursor: pointer;
+        float: right;
       }
 
       .field::-webkit-input-placeholder {
@@ -138,14 +139,14 @@ p {
     }
 
     #import-main {
-      width: 66.75%;
+      width: 61.25%;
       height: 14*$baseline;
       float: left;
       display: inline-block;
     }
 
     .side-view {
-      width: 33.25%;
+      width: 38.75%;
       height: 14*$baseline;
       float: right;
       display: block;

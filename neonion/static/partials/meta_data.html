@@ -13,11 +13,11 @@
     </thead>
 
     <tbody id="metadata">
-        <tr ng-repeat="element in metaDataElements">
+        <tr ng-repeat="(key, value) in metaDataValues">
             <td class="checkbox"><input type="checkbox"/></td>
-            <td>{{ element }}</td>
+            <td>{{ key }}</td>
             <td>
-                <input class="fieldSettings" type="text" placeholder="There is no {{ element }}">
+                <input class="fieldSettings" type="text" placeholder="There is no {{ key }}">
             </td>
         </tr>
     </tbody>

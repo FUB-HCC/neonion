@@ -608,15 +608,22 @@ neonionApp.controller('NamedEntityCtrl', ['$scope', function ($scope) {
 
 neonionApp.controller('MetaDataCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
-
-    $scope.metaDataElements = ['Title', 'Creator', 'Type', 'Contributor', 'Coverage', 'Date', 'Description',
-                            'Format', 'Identifier', 'Language', 'Publisher', 'Relation', 'Rights', 'Source', 'Subject'];
-
     $scope.primaryMetaData = ['Title', 'Creator', 'Type'];
 
     $scope.secondaryMetaData  = ['Contributor', 'Coverage', 'Date', 'Description',
                             'Format', 'Identifier', 'Language', 'Publisher', 'Relation',
                             'Rights', 'Source', 'Subject'];
+
+    $scope.metaDataValues = {};
+
+    var metaData = $scope.primaryMetaData.concat($scope.secondaryMetaData);
+
+    metaData.forEach(function (entry) {
+
+       $scope.metaDataValues[entry] = {};
+       $scope.metaDataValues[entry].value = "";
+       $scope.metaDataValues[entry].checked = false;
+    });
 
     if ($("#property").val()) {
         $('#checkProperty').toggle();

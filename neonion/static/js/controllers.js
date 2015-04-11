@@ -624,8 +624,4 @@ neonionApp.controller('MetaDataCtrl', ['$scope', '$http', function ($scope, $htt
        $scope.metaDataValues[entry].value = "";
        $scope.metaDataValues[entry].checked = false;
     });
-
-    if ($("#property").val()) {
-        $('#checkProperty').toggle();
-    };
 }]);

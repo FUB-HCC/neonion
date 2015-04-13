@@ -31,8 +31,6 @@ def upload_file(request):
                 doc_id = j['id']
                 doc_title = j['title']
                 doc_content = j['content']
-                doc_creator = j['creator']
-                doc_type = j['doc_type']
 
                 create_new_doc = True
             elif f.content_type in TEXT_TYPES:
@@ -45,9 +43,6 @@ def upload_file(request):
                 for chunk in f.chunks():
                     content.append(chunk)
                 doc_content = ''.join(content)
-                ###TODO
-                doc_creator = ''
-                doc_type = ''
 
                 create_new_doc = True
 
@@ -79,7 +74,7 @@ def cms_import(request):
             cms = instantiate_provider(settings.CONTENT_SYSTEM_CLASS)
 
             new_document = cms.get_document(doc_id)
-            document = Document.objects.create_document(doc_id, new_document['title'], new_document['content'])
+            document = Document.objects.create_document(doc_id, new_document['title'], new_document['content'], )
         else:
             document = Document.objects.get(id=doc_id)
 

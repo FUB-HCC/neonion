@@ -10,16 +10,22 @@
         <th>Active</th>
         <th>Property</th>
         <th>Entry</th>
+        <th>Definition</th>
     </thead>
 
     <tbody id="metadata">
         <tr ng-repeat="(key, value) in metaDataValues">
-            <td class="checkbox"><input type="checkbox"/></td>
+            <td class="checkbox" ng-model="metaDataValues[key].checked">
+                <input type="checkbox" ng-model="metaDataValues[key].checked"/>
+            </td>
             <td>{{ key }}</td>
             <td>
-                <input class="fieldSettings" type="text" placeholder="There is no {{ key }}">
+                <form ng-submit="metaDataValues[key].checked=true">
+                    <input class="fieldSettings" id="meta-{{$index}}" type="text" placeholder="There is no {{ key }}">
+                </form>
             </td>
+            <td>{{ value.definition }}</td>
         </tr>
     </tbody>
-<!-- ng-model="element.isChecked" -->
+
 </table>

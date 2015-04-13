@@ -11,7 +11,8 @@
     <h3>Import files</h3>
     <form method="post" action="{% url 'documents.views.upload_file' %}" enctype="multipart/form-data">
         {% csrf_token %}
-        <input id="file-upload" name="file-upload" type="file" multiple ng-click="meta=true" ng-init="meta=false">
+        <input id="file-upload" name="file-upload" type="file" multiple change="fileLoad($files)"
+               ng-click="meta=true" ng-init="meta=false">
         <input class="button button-primary button-import pull-right" type="submit" />
     </form>
 </div>
@@ -25,32 +26,40 @@
         {% verbatim %}
         <tbody id="metadata">
             <tr ng-repeat="primary in primaryMetaData">
-                <td class="checkbox-import"><input id="checkProperty" type="checkbox" checklist-model="">
-                    <!-- ng-model="contrib.showAnnotation" ng-click="toggleContributor(contrib)"/>--> </td>
+                <td class="checkbox-import">
+                    <input id="checkProperty" type="checkbox" ng-model="metaDataValues[primary].checked">
+                </td>
                 <td>{{ primary }}:</td>
                 <td>
-                    <input id="property" class="field" type="text" placeholder="There is no {{ primary }}">
+                    <form ng-submit="metaDataValues[primary].checked=true">
+                        <input id="property" class="field" type="text" ng-model="metaDataValues[primary].value"
+                               placeholder="There is no {{ primary }}">
+                    </form>
                 </td>
             </tr>
         </tbody>
         {% endverbatim %}
-    <!-- ng-model="element.isChecked" -->
     </table>
-    <table>
+    <table ng-controller="MetaDataCtrl">
         {% verbatim %}
         <tbody id="metadata" ng-show="moreMetaData">
             <tr ng-repeat="secondary in secondaryMetaData">
-                <td class="checkbox-import"><input id="checkProperty" type="checkbox"/></td>
+                <td class="checkbox-import">
+                    <input id="checkProperty" type="checkbox" ng-model="metaDataValues[secondary].checked"/>
+                </td>
                 <td>{{ secondary }}:</td>
                 <td>
-                    <input id="property" class="field" type="text" placeholder="There is no {{ secondary }}">
+                    <form ng-submit="metaDataValues[secondary].checked=true">
+                        <input id="property" class="field" type="text" ng-model="metaDataValues[secondary].value"
+                            placeholder="There is no {{ secondary }}">
+                    </form>
                 </td>
             </tr>
         </tbody>
         {% endverbatim %}
     </table>
     <input id="meta" value="More Properties" class="button button-primary button-import pull-left"
-           ng-click="moreMeta=true" ng-init="false"/>
+           ng-click="moreMetaData=true" ng-init="false"/>
 </div>
 
 {% else %}

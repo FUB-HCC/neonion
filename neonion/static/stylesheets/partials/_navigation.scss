@@ -37,7 +37,8 @@
 
   li {
     display: inline-block;
-    padding: 0px $baseline 0px 0px;
+    height: $baseline;
+    padding: 0em $baseline 3.7em 0em;
 
     a {
       font-weight: bold;

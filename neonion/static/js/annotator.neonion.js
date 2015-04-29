@@ -107,6 +107,14 @@
             this.annotationSets(this.annotationSets());
             this.applyLayer(this.annotationLayers.group);
             //this.annotationMode(this.annotationModes.freeTextAnnotation);
+
+            // Damit sich das Ding auch beim Danebenklicken schließt.
+            $(document).mouseup($.proxy(function (e) {
+                var container = $(".annotator-editor");
+                if (!container.is(e.target) && container.has(e.target).length === 0) {
+                    this.annotator.editor.hide();
+                }
+            }, this));
         };
 
         /**
@@ -157,9 +165,9 @@
 
             // replace filed with custom content
             $(field).children((":first")).replaceWith(
-                "<div class='resource-controles'>" + this.templates.cancelItem + this.templates.unknownItem + "</div>" +
+                "<div class='resource-controles'>" + this.templates.cancelItem + "</div>" +
                 "<form id='resource-form'>" + this.templates.searchItem + "</form>" +
-                "<div id='resource-list'></div>"
+                "<div id='resource-list'>" + this.templates.unknownItem + "</div>"
             );
 
             // create input for search term
@@ -218,6 +226,13 @@
 
             return field;
         };
+
+        this.initEditorUnknownEntity = function () {
+            this.annotator.editor
+
+
+
+        };
     };
 
     $.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
@@ -251,9 +266,9 @@
             noResults: "<div class='empty'>No results found.</div>",
             editorLine: "<div class='annotator-linie'></div>",
             searchItem : "<i class='fa fa-search'></i>",
-            cancelItem : "<a href='#' data-action='annotator-cancel'><i class='fa fa-times-circle'></i></a>",
-            submitItem : "<a href='#' data-action='annotator-submit'><i class='fa fa-check-circle'></i></a>",
-            unknownItem : "<a href='#' data-action='annotator-submit'><i class='fa fa-question-circle'></i></a>",
+            cancelItem : "<a href='#' data-action='annotator-cancel'><i class='fa fa-times'></i></a>",
+            submitItem : "<a href='#' data-action='annotator-submit'><i class='fa fa-check'></i></a>",
+            unknownItem : "<button class='unknown' data-action='annotator-submit'>Unknown Resource</button>",
             emptyAdder : "<button></button>"
         },
 
@@ -468,6 +483,7 @@
 
             $(field).show();
             $(field).find("#resource-search").val(annotation.quote);
+            $(field).find("#resource-search").attr("autofocus", "autofocus");
             $(field).find("#resource-form").submit();
         },
 
@@ -532,6 +548,7 @@
                     } else {
                         list.append(this.templates.noResults);
                     }
+                    list.prepend(this.templates.unknownItem);
                 }
             );
         },
@@ -546,6 +563,9 @@
             editor.find(".annotator-linie").width(width - left + 378 + 108);
             editor.find(".annotator-linie").css("left", -(width - left + 108));
             $(annotation.highlights[0]).css("border-left", "1px solid #717171");
+
+            // Aotofocus wieder setzen:
+            editor.find("#resource-search").focus();
         },
 
         extractSurroundedContent: function (annotation) {

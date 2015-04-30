@@ -4,6 +4,11 @@
   list-style: none;
 }
 
+@mixin heading-reset {
+  margin: 0;
+  padding: 0;
+}
+
 @mixin clearfix {
   *zoom: 1;
   &:before,

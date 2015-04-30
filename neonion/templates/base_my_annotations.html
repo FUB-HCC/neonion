@@ -13,33 +13,33 @@
         {% url 'neonion.views.ann_documents' as url_ann_documents %}
 
         <h2>My Annotations</h2>
+
+        <ul id="annotation-table" class="annotation-grid" ng-controller="AnnotationStoreCtrl" ng-cloak>
+
+            {% verbatim %}
+            <li ng-repeat="occurrence in occurrences | filter:filterAnnotations | orderBy:'-created'">
+                <div>
+                    <div class="ann-header">
+                        {{ occurrence.ann }}
+                    </div>
+                    <div class="sub-info">
+                        is {{ occurrence.typeof }}
+                    </div>
+                    <div></div>
+                    <div>
+                        <a href="/annotations_occurrences/{{ occurrence.ann | escape }}">{{ occurrence.count }} Occurrences</a>
+                    </div>
+                    <div>
+                        <a href="/ann_documents/{{ occurrence.ann | escape }}">in {{ occurrence.docs.length }} Documents</a>
+                    </div>
+                    <div></div>
+                    <div class="sub-info">
+                        {{ occurrence.last | date : "MM/dd/yyyy 'at' h:mma" }}
+                    </div>
+                </div>
+            </li>
+            {% endverbatim %}
+
+        </ul>
     </div>
-
-    <ul id="annotation-table" class="annotation-grid" ng-controller="AnnotationStoreCtrl" ng-cloak>
-
-        {% verbatim %}
-        <li ng-repeat="occurrence in occurrences | filter:filterAnnotations | orderBy:'-created'">
-            <div>
-                <div class="ann-header">
-                    {{ occurrence.ann }}
-                </div>
-                <div class="sub-info">
-                    is {{ occurrence.typeof }}
-                </div>
-                <div></div>
-                <div>
-                    <a href="/annotations_occurrences/{{ occurrence.ann | escape }}">{{ occurrence.count }} Occurrences</a>
-                </div>
-                <div>
-                    <a href="/ann_documents/{{ occurrence.ann | escape }}">in {{ occurrence.docs.length }} Documents</a>
-                </div>
-                <div></div>
-                <div class="sub-info">
-                    {{ occurrence.last | date : "MM/dd/yyyy 'at' h:mma" }}
-                </div>
-            </div>
-        </li>
-        {% endverbatim %}
-
-    </ul>
 {% endblock %}

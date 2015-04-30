@@ -119,23 +119,8 @@ h2 {
       font-style: italic;
     }
 
-    #import-main {
-      width: 61.25%;
-      height: 14*$baseline;
-      float: left;
-      display: inline-block;
-    }
-
-    .side-view {
-      width: 38.75%;
-      height: 14*$baseline;
-      float: right;
-      display: block;
-
-      tr {
-        border-bottom: none;
-        border-top: none;
-      }
+    #import-metadata {
+      padding-top: 2*$baseline;
     }
   }
 }

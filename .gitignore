@@ -12,7 +12,10 @@ __pycache__
 /plugins/*/*
 !plugins/__init__.py
 *.*~
-/neonion/static/css/
+# keep the css folder and ignore the content (except the .keep file)
+/neonion/static/css/*.css
+/neonion/static/css/*.map
+
 
 # converage.py files
 .coverage

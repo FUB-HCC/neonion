@@ -14,6 +14,11 @@
     background-color: $manatee;
     color: $gallery;
   }
+
+  &.disabled {
+    color: $manatee;
+    pointer-events: none;
+  }
 }
 
 .button-secondary {

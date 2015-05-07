@@ -2,7 +2,14 @@
   ul { @include list-reset; }
 
   li {
-    a { color: $ship-gray; }
+    a {
+      color: $ship-gray;
+
+      &.disabled {
+        color: $manatee;
+        pointer-events: none;
+      }
+    }
 
     a:hover,
     &.active a {

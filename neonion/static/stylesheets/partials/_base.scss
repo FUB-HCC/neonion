@@ -8,6 +8,8 @@ padding and border, but not the margin
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 body {
@@ -18,6 +20,11 @@ body {
 
 p {
   margin: $half-baseline 0 ;
+}
+
+h2 {
+  padding-top: 0.5em;
+  padding-bottom: 1.1em;
 }
 
 // left Sidebar containing navigation and logo

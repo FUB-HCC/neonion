@@ -2,7 +2,14 @@
   ul { @include list-reset; }
 
   li {
-    a { color: $ship-gray; }
+    a {
+      color: $ship-gray;
+
+      &.disabled {
+        color: $manatee;
+        pointer-events: none;
+      }
+    }
 
     a:hover,
     &.active a {
@@ -33,7 +40,7 @@
 }
 
 .nav-horizontal {
-  margin-bottom: $half-baseline;
+  margin: $half-baseline 0;
 
   li {
     display: inline-block;

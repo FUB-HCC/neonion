@@ -64,7 +64,7 @@
                 editor: this.initEditorField()
             };
             this.editorState = {
-                annotationMode : this.annotationModes.semanticAnnotation,
+                annotationMode : this.annotationModes.freeTextAnnotation,
                 selectedType : "",
                 selectedItem : -1,
                 resultSet : []
@@ -78,9 +78,9 @@
                 this.compositor = {};
             }
             
-            // bind events to document
+            // bind events on document
             $(document).bind({
-                mouseup: $.proxy(function (event) {
+                mouseup: $.proxy(function (e) {
                     // skip adder if only one button is visible
                     if ($(this.adder).is(":visible")) {
                         var childBtn = $(this.adder).find("button");
@@ -89,6 +89,13 @@
                             this.annotator.ignoreMouseup = true;
                             childBtn.click();
                         } 
+                    }
+                    else {
+                        // otherwise check whether a click on the document should close the editor
+                        var container = $(this.annotator.editor.element[0]);
+                        if (!container.is(e.target) && container.has(e.target).length === 0) {
+                            this.annotator.editor.hide();
+                        }
                     }
                 }, this)
             });
@@ -106,15 +113,6 @@
             // closure
             this.annotationSets(this.annotationSets());
             this.applyLayer(this.annotationLayers.group);
-            //this.annotationMode(this.annotationModes.freeTextAnnotation);
-
-            // Damit sich das Ding auch beim Danebenklicken schließt.
-            $(document).mouseup($.proxy(function (e) {
-                var container = $(".annotator-editor");
-                if (!container.is(e.target) && container.has(e.target).length === 0) {
-                    this.annotator.editor.hide();
-                }
-            }, this));
         };
 
         /**
@@ -227,12 +225,6 @@
             return field;
         };
 
-        this.initEditorUnknownEntity = function () {
-            this.annotator.editor
-
-
-
-        };
     };
 
     $.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
@@ -353,6 +345,7 @@
         beforeAnnotationCreated : function (annotation) {
             // add user to annotation
             annotation.creator = this.options.agent;
+            // create a child element to store Open Annotation data
             annotation.oa = {
                 annotatedBy: $.extend(this.options.agent, {type: this.oa.types.agent.person}),
                 hasBody: {},
@@ -386,15 +379,19 @@
             this.placeEditorBesidesAnnotation(annotation);
 
             if (annotation.hasOwnProperty("oa")) {
-                // make visibility of fields depended from type of body
+                // visibility of fields depends on type of body
                 switch (annotation.oa.hasBody.type) {
                     case this.oa.types.tag.tag:
-                        $(this.fields.editor.freeTextField).show();
-                        $(this.fields.editor.semanticAnnotationField).hide();
+                        this.showField(this.fields.editor.freeTextField);
+                        var textarea = $(this.fields.editor.freeTextField).find("textarea");
+                        // transfer quote to text input
+                        textarea.val(annotation.quote);
+                        // preselect text
+                        textarea.select();
                         break;
                     case this.oa.types.tag.semanticTag:
-                        $(this.fields.editor.freeTextField).hide();
-                        $(this.fields.editor.semanticAnnotationField).show();
+                        this.showField(this.fields.editor.semanticAnnotationField);
+                        break;
                 }
             }
         },
@@ -429,6 +426,19 @@
                 var query = layer(this.options);
                 this.annotator.plugins.Store.loadAnnotationsFromSearch(query);
             }
+        },
+
+        /**
+         * Shows the specified field and hides the other ones.
+         * @param field
+         */
+        showField: function(field) {
+            // hide all fields first
+            for(var key in this.fields.editor) {
+                $(this.fields.editor[key]).hide();
+            }
+            // show specified field
+            $(field).show();
         },
 
         /**
@@ -478,32 +488,36 @@
         },
 
         loadEditorField : function (field, annotation) {
-            // restore type from annotation if provided
-            this.editorState.selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : this.editorState.selectedType;
+            if (this.annotationMode() == this.annotationModes.semanticAnnotation) {
+                // restore type from annotation if provided
+                this.editorState.selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : this.editorState.selectedType;
 
-            $(field).show();
-            $(field).find("#resource-search").val(annotation.quote);
-            $(field).find("#resource-search").attr("autofocus", "autofocus");
-            $(field).find("#resource-form").submit();
+                $(field).show();
+                $(field).find("#resource-search").val(annotation.quote);
+                $(field).find("#resource-search").attr("autofocus", "autofocus");
+                $(field).find("#resource-form").submit();
+            }
         },
 
         submitEditorField : function (field, annotation) {
-            if (annotation.oa.hasBody.type == this.oa.types.tag.semanticTag) {
-                // add rdf data
-                annotation.rdf = {
-                    typeof: this.editorState.selectedType,
-                    label: annotation.quote
-                };
-                annotation.oa.motivatedBy = this.oa.motivation.classifying;
+               if (this.annotationMode() == this.annotationModes.semanticAnnotation) {
+                   if (annotation.oa.hasBody.type == this.oa.types.tag.semanticTag) {
+                       // add rdf data
+                       annotation.rdf = {
+                           typeof: this.editorState.selectedType,
+                           label: annotation.quote
+                       };
+                       annotation.oa.motivatedBy = this.oa.motivation.classifying;
 
-                // add extra semantic data from identified resource
-                if (this.editorState.selectedItem > 0) {
-                    var dataItem = this.editorState.resultSet[this.editorState.selectedItem];
-                    annotation.rdf.sameAs = dataItem.uri + '';
-                    annotation.rdf.label = dataItem.label;
-                    annotation.oa.motivatedBy = this.oa.motivation.identifying;
-                }
-            }
+                       // add extra semantic data from identified resource
+                       if (this.editorState.selectedItem > 0) {
+                           var dataItem = this.editorState.resultSet[this.editorState.selectedItem];
+                           annotation.rdf.sameAs = dataItem.uri + '';
+                           annotation.rdf.label = dataItem.label;
+                           annotation.oa.motivatedBy = this.oa.motivation.identifying;
+                       }
+                   }
+               }
         },
 
         updateResourceList : function(searchTerm) {

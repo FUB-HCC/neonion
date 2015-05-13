@@ -15,7 +15,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 class DocumentDetailedSerializer(DocumentSerializer):
     class Meta:
         model = Document
-        fields = ('id', 'title', 'content', 'created', 'updated', 'workinggroup_set')
+        fields = ('id', 'title', 'content', 'created', 'updated', 'attached_file', 'workinggroup_set')
 
 
 # Serializer for user representation.

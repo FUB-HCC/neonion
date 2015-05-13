@@ -1,3 +1,7 @@
+import uuid
+
+from django.db import transaction
+from os.path import splitext, basename
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
@@ -5,7 +9,23 @@ from common.sparql import insert_data
 from common.statements import metadata_statement
 
 
+class File(models.Model):
+    name = models.CharField('name', max_length=500)
+    content_type = models.CharField('content_type', max_length=50, default='', null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now_add=True)
+    origin_url = models.CharField('origin_url', max_length=500, null=True)
+    raw_data = models.BinaryField()
+
+
 class DocumentManager(models.Manager):
+
+    SUPPORTED_TYPES = [
+        'text/plain',
+        'text/html',
+        'application/pdf'
+    ]
+
     def create_document(self, id, title, content, creator=None, type=None, contributor=None, coverage=None,
                         description=None, format=None, identifier=None, language=None, publisher=None, relation=None,
                         rights=None, source=None, subject=None, created=None, updated=None):
@@ -15,11 +35,41 @@ class DocumentManager(models.Manager):
                            language=language, publisher=publisher, relation=relation, rights=rights, source=source,
                            subject=subject, created=created, updated=updated)
 
+    def create_document_from_file(self, file):
+        if file.content_type in DocumentManager.SUPPORTED_TYPES:
+            file_name = file.name.encode('utf-8')
+            doc_title = str(' '.join(splitext(basename(file_name))[0].split()))
+            doc_id = uuid.uuid1().hex
+
+            raw_data = ''
+            # read chunks
+            for chunk in file.chunks():
+                raw_data += chunk
+
+            with transaction.atomic():
+                # create new file object
+                uploaded_file = File.objects.create(
+                    name=file_name,
+                    content_type=file.content_type,
+                    raw_data=raw_data)
+
+                return self.create(
+                    id=doc_id,
+                    title=doc_title,
+                    attached_file=uploaded_file)
+
+        return None
+
+    def create_document_from_url(self, url):
+        return None
+
 
 class Document(models.Model):
     id = models.CharField('id', primary_key=True, max_length=200)
     title = models.CharField('name', max_length=500)
-    content = models.TextField('content')
+    content = models.TextField('content')  # TODO remove this field
+    attached_file = models.OneToOneField(File, null=True)
+
     creator = models.CharField('creator', max_length=500, default='', null=True)
     type = models.CharField('type', max_length=500, default='', null=True)
     contributor = models.CharField('contributor', max_length=500, default='', null=True)
@@ -57,4 +107,3 @@ def send_meta_data(sender, instance, **kwargs):
         #insert_data(metadata_statement(instance))
     except Exception as e:
         print(e.message)
-    

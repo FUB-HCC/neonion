@@ -1,5 +1,7 @@
+{% load staticfiles %}
+
 <nav class="nav-vertical">
-    <ul>
+    <ul ng-controller="AnnotatorMenuCtrl">
         <li>
             <a id="nav-home" class="simptip-position-right" href="{% url 'neonion.views.render_home' %}" data-tooltip="Home">
                 <span class="fa fa-home fa-fw"></span>
@@ -8,6 +10,43 @@
         <li>
             <a id="nav-anotate" class="simptip-position-right" href="#" data-tooltip="Find concepts">
                 <span class="fa fa-magic fa-fw"></span>
+            </a>
+        </li>
+        <li ng-class="{active:active===0}">
+            <a id="nav-anotate" href="#" ng-click="toggleSubMenu(0)" >
+                <span class="fa fa-users fa-fw"></span>
+                <span class="fa fa-caret-right small"></span>
+            </a>
+            <div class="submenu ng-cloak" ng-show="active === 0" >
+                <div class="submenu-heading">HEADING<i class="fa fa-times pull-right" ng-click="toggleSubMenu(0)"></i>
+                </div>
+                <ul class="submenu-content">
+                    <li>Element 1</li>
+                    <li>Element 2</li>
+                    <li>Element 3</li>
+                </ul>
+            </div>
+        </li>
+        <li ng-class="{active:active===1}">
+            <a id="nav-anotate" href="#" ng-click="toggleSubMenu(1)" >
+                <span class="fa fa-pencil fa-fw"></span>
+                <span class="fa fa-caret-right small"></span>
+            </a>
+            <div class="submenu ng-cloak" ng-show="active === 1" >
+                <div class="submenu-heading">Switch Annotation Mode<i class="fa fa-times pull-right" ng-click="toggleSubMenu(1)"></i>
+                </div>
+                <ul class="submenu-content">
+                    <li ng-click="setAnnotationMode(mode.freetext)" ng-class="{selected: getAnnotationMode()===mode.freetext}"><i class="fa fa-check fa-fw" ></i><span>Free Text Annotation</span></li>
+                    <li ng-click="setAnnotationMode(mode.semantic)" ng-class="{selected: getAnnotationMode()===mode.semantic}">
+                        <i class="fa fa-check fa-fw"
+                        ></i><span>Semantic Annotation</span>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <a id="nav-anotate" class="simptip-position-right" href="#" data-tooltip="Last annotation" ng-click="scrollToLastAnnotation()">
+                <span class="fa fa-arrow-circle-down fa-fw"></span>
             </a>
         </li>
         <li>

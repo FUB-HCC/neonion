@@ -26,6 +26,7 @@ p {
   height: 100vh;
   position: fixed;
   width: 5*$column + 4*$column-gap;
+  z-index: 100;
 
   .logo {
     background: url(../img/logo.png) no-repeat;

@@ -118,3 +118,44 @@ neonionApp.factory('DocumentService', ['$http', function($http) {
 
     return factory;
 }]);
+
+/**
+ * Service for Annotator
+ */
+neonionApp.factory('AnnotatorService', ['$http', function($http) {
+    "use strict";
+    var factory = {};
+    var annotator;
+
+    factory.annotator = function(value) {
+        if (value) {
+          annotator = value;
+        }
+        return annotator;
+    };
+
+    factory.scrollToAnnotation = function (annotation) {
+        // check if just the annotation id was passed
+        if (typeof annotation == 'string') {
+            var annotations = annotator.plugins.Neonion.getAnnotationObjects();
+            annotation = annotations.find(function (element) {
+                return (element.id == $location.hash());
+            });
+        }
+        if (annotation) {
+            var target = $(annotation.highlights[0]);
+            $('html, body').stop().animate({
+                    'scrollTop': target.offset().top - 200
+                },
+                1000,
+                'easeInOutQuart'
+            );
+            // blink for more attention
+            for (var i = 0; i < 2; i++) {
+                $(target).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
+            }
+        }
+    };
+
+    return factory;
+}]);

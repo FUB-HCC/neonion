@@ -1,3 +1,4 @@
+// general gtyling of gavigation
 .nav-vertical, .nav-horizontal {
   ul { @include list-reset; }
 
@@ -15,19 +16,24 @@
     &.active a {
       color: $black;
     }
+
+    .small {
+      font-size: $base-font-size;
+    }
   }
 }
 
-// Vertikales Menu
+// vertical menu
 .nav-vertical {
   padding-top: $half-baseline;
 
   li {
+    position: relative;
     a {
       border-left: $column-gap/2 solid $white;
       display: block;
       font-size: 20px;
-      padding: $half-baseline ($column - $column-gap/2);
+      padding: $half-baseline 0 $half-baseline ($column - $column-gap/2);
       text-decoration: none;
       .fa-fw { text-align: left; }
     }
@@ -53,6 +59,67 @@
     }
 
     &.active a { border-bottom: 3px solid $tangerine; }
+  }
+}
+
+// submenu inside vertical navigation
+.submenu {
+  @extend %shadow;
+  left: 2* $column + 2* $column-gap;
+  position: absolute;
+  top: 0;
+  width: 5*$column + 5*$column-gap;
+}
+
+.submenu-heading {
+  @extend %border;
+  background-color: $gallery;
+  font-weight: bold;
+  line-height: 2*$baseline;
+  padding: 0 $column-gap;
+
+  // TODO: @Alexa: hoververhalten irgendwie wiederverwendbar machen
+  i {
+    color: $ship-gray;
+    line-height: 2*$baseline;
+
+    &:hover {
+      color: $black;
+      cursor: pointer;
+      display: block;
+    }
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 19px;
+    border: 6px solid $silver;
+    border-color: $gallery;
+    transform-origin: 0 0;
+    transform: rotate(45deg);
+    box-shadow: -3px 3px 3px 0 rgba(0, 0, 0, 0.23);
+  }
+}
+
+.submenu-content {
+  li {
+    @extend %border;
+    background-color: $white;
+    border-top: none;
+    color: $black;
+    cursor: pointer;
+    padding: $half-baseline $column-gap;
+
+    i { color: transparent; }
+    &.selected i{ color: $black; }
+    span { padding-left: $column-gap/2; }
+
+    &:hover {
+      background-color: $tangerine;
+      color: $white;
+    }
   }
 }
 

@@ -67,7 +67,6 @@ class DocumentManager(models.Manager):
 class Document(models.Model):
     id = models.CharField('id', primary_key=True, max_length=200)
     title = models.CharField('name', max_length=500)
-    content = models.TextField('content')  # TODO remove this field
     attached_file = models.OneToOneField(File, null=True)
 
     creator = models.CharField('creator', max_length=500, default='', null=True)

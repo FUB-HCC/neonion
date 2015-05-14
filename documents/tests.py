@@ -6,7 +6,9 @@ def create_test_document(doc_id='12345'):
     test_document = {
         'id': doc_id,
         'title': 'Test Document',
-        'content': 'Content of the document'
+        'content': 'Content of the document',
+        'type': 'Article',
+        'creator': 'test@nutzer.com'
     }
     return Document.objects.create(**test_document)
 

@@ -68,7 +68,7 @@
   left: 2* $column + 2* $column-gap;
   position: absolute;
   top: 0;
-  width: 5*$column + 5*$column-gap;
+  white-space: nowrap; // to have everything on one line and not linebreaks
 }
 
 .submenu-heading {
@@ -76,20 +76,22 @@
   background-color: $gallery;
   font-weight: bold;
   line-height: 2*$baseline;
-  padding: 0 $column-gap;
+  padding: 0 3*$column-gap 0 $column-gap;
+  position: relative;
 
-  // TODO: @Alexa: hoververhalten irgendwie wiederverwendbar machen
   i {
     color: $ship-gray;
     line-height: 2*$baseline;
+    position: absolute;
+    right: $column-gap;
 
     &:hover {
       color: $black;
       cursor: pointer;
-      display: block;
     }
   }
 
+  // the little triangle on the left
   &::after {
     content: "";
     position: absolute;
@@ -110,16 +112,38 @@
     border-top: none;
     color: $black;
     cursor: pointer;
-    padding: $half-baseline $column-gap;
-
-    i { color: transparent; }
-    &.selected i{ color: $black; }
-    span { padding-left: $column-gap/2; }
+    padding: $half-baseline 3*$column-gap $half-baseline $column-gap;
+    position: relative;
 
     &:hover {
       background-color: $tangerine;
       color: $white;
+
+      .content-time {
+        color: $gallery;
+      }
     }
+  }
+}
+
+.submenu-content-item {
+  i {
+    vertical-align: top;
+    line-height: $baseline;
+  }
+
+  .content { display: inline-block; }
+  .content-time {
+    display: block;
+    color: #909090;
+  }
+  .content-color {
+    width: $baseline;
+    height: $baseline;
+    border: 1px solid $white;
+    display: inline-block;
+    position: absolute;
+    right: $column-gap;
   }
 }
 

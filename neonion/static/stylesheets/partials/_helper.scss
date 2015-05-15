@@ -6,4 +6,14 @@
 
 .hidden { display: none; }
 
+.invisible { visibility: hidden; }
+
 .list-reset { @include list-reset; }
+
+.icon-left {
+  i { padding-right: $column-gap/2; }
+}
+
+.icon-right {
+  i { padding-left: $column-gap/2; }
+}

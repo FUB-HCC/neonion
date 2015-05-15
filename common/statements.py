@@ -35,8 +35,16 @@ class Annotation:
             if 'hasBody' in annotation['oa']:
                 if annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.semanticTag.value:
                     query += Annotation.substatement_body_semantic_tag(annotation)
+
+                # for free text annotation
                 elif annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.tag.value:
                     query += Annotation.substatement_body_tag(annotation)
+
+            # add motivation
+            query += u'\noa:motivatedBy "{}";'.format(oa['motivatedBy'])
+
+            # add origin (creator)
+            query += u'\noa:annotatedBy "{}";'.format(oa['annotatedBy'])
 
             # end of statement
             query += u'.\n}\n}'

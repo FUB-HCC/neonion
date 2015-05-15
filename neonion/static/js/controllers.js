@@ -377,8 +377,8 @@ neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function (
 /**
  * Annotator controller
  */
-neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', 'AccountService', '$sce', 'AnnotatorService',
-    function ($scope, $http, $location, $sce, AccountService, AnnotatorService) {
+neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 'AccountService', 'AnnotatorService', 'DocumentService',
+    function ($scope, $http, $location, $sce, AccountService, AnnotatorService, DocumentService) {
         "use strict";
 
         $scope.contributors = [];
@@ -493,13 +493,6 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', 'Account
                 for (var i = 0; i < 2; i++) {
                     $(target).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
                 }
-            }
-        };
-
-        $scope.scrollToLastAnnotation = function () {
-            var annotation = $scope.annotator.plugins.Neonion.getLastAnnotation();
-            if (annotation) {
-                $scope.scrollToAnnotation(annotation);
             }
         };
 

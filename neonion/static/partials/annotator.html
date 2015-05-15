@@ -1,0 +1,31 @@
+<div class="annotator_menu" ng-cloak>
+    <ul id="annotator_contributors" class="forms-list">
+        <li ng-repeat="contrib in contributors | orderBy:'-updated'">
+            <input
+            type='checkbox'
+            ng-model="contrib.showAnnotation"
+            ng-click="toggleContributor(contrib)"/>
+            <label style="background-color:{{ contrib.color }}">{{ contrib.user }} ({{contrib.updated | date: 'short'}})</label>
+        </li>
+    </ul>
+    <a ng-click="scrollToLastAnnotation()">
+        <i class="fa fa-arrow-circle-down"></i> Scroll to last annotation
+    </a>
+</div>
+<div ng-cloak>
+    <div id="document-frame" class="panel panel-default">
+        <div id="document-title" class="panel-heading big">{{ document.title }}</div>
+        <div ng-switch on="document.attached_file.content_type">
+            <div ng-switch-when="text/plain">
+                <ng-include src="'/static/partials/annotator_render_default.html'" onload="setupAnnotator(params)"></ng-include>
+            </div>
+             <div ng-switch-when="text/html">
+                 <ng-include src="'/static/partials/annotator_render_default.html'" onload="setupAnnotator(params)"></ng-include>
+            </div>
+            <div ng-switch-when="application/pdf">
+                 <ng-include src="'/static/partials/annotator_render_pdf.html'"></ng-include>
+            </div>
+            <div ng-switch-default>The format <i>{{ document.attached_file.content_type }}</i> is not supported yet</div>
+        </div>
+    </div>
+</div>

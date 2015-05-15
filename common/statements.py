@@ -24,24 +24,47 @@ class Annotation:
     @staticmethod
     def create_annotation_statement(annotation):
         if 'oa' in annotation:
+            oa = annotation['oa']
+
             # add preamble
             query = DEFAULT_PREFIXES + u'\nINSERT DATA {\n'
+
+            # http://www.w3.org/TR/sparql11-update/#updateLanguage
             query += u'GRAPH <{}>'.format(neonion.ANNOTATION_STORE_GRAPH)
             query += u' {\n'
 
-            # TODO create general statement about annotation according OA
-            # http://www.w3.org/TR/sparql11-update/#updateLanguage
+            # general statement about annotation according to OA
+            # add target property
+            query += u'\noa:hasTarget "{}";'.format(oa['hasTarget'])
 
+            # add body property if existing
             if 'hasBody' in annotation['oa']:
+
+                # add body property
+                query += u'\noa:hasBody "{}";'.format(oa['hasBody'])
+
+                # for semantic annotation
                 if annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.semanticTag.value:
                     query += Annotation.substatement_body_semantic_tag(annotation)
+
+                    # add identifying motivation property
+                    query += u'\noa:motivatedBy oa:identifying;'
+
+                # for free text annotation
                 elif annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.tag.value:
                     query += Annotation.substatement_body_tag(annotation)
+
+                    # add tagging motivation property
+                    query += u'\noa:motivatedBy oa:tagging;'
+
+            # add origin (creator)
+            query += u'\noa:annotatedBy "{}";'.format(oa['annotatedBy'])
 
             # end of statement
             query += u'.\n}\n}'
 
             return query
+
         else:
             raise NoSemanticAnnotationError(annotation)
 
@@ -91,7 +114,6 @@ class Annotation:
             return query
         else:
             raise NoSemanticAnnotationError(annotation)
-
 
 def metadata_statement(document):
     # add prefixes and insert preamble

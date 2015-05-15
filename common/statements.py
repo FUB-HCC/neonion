@@ -48,14 +48,14 @@ class Annotation:
                     query += Annotation.substatement_body_semantic_tag(annotation)
 
                     # add identifying motivation property
-                    query += u'\noa:motivatedBy oa:identifying;'
+                    query += u'\noa:motivatedBy "{}";'.format(oa['motivatedBy'])
 
                 # for free text annotation
                 elif annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.tag.value:
                     query += Annotation.substatement_body_tag(annotation)
 
                     # add tagging motivation property
-                    query += u'\noa:motivatedBy oa:tagging;'
+                    query += u'\noa:motivatedBy "{}";'.format(oa['motivatedBy'])
 
             # add origin (creator)
             query += u'\noa:annotatedBy "{}";'.format(oa['annotatedBy'])

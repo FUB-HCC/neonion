@@ -377,8 +377,8 @@ neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function (
 /**
  * Annotator controller
  */
-neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 'AccountService', 'DocumentService',
-    function ($scope, $http, $location, $sce, AccountService, DocumentService) {
+neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 'AccountService', 'AnnotatorService', 'DocumentService',
+    function ($scope, $http, $location, $sce, AccountService, AnnotatorService, DocumentService) {
         "use strict";
 
         $scope.contributors = [];
@@ -493,13 +493,6 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
                 for (var i = 0; i < 2; i++) {
                     $(target).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
                 }
-            }
-        };
-
-        $scope.scrollToLastAnnotation = function () {
-            var annotation = $scope.annotator.plugins.Neonion.getLastAnnotation();
-            if (annotation) {
-                $scope.scrollToAnnotation(annotation);
             }
         };
 
@@ -684,4 +677,61 @@ neonionApp.controller('MetaDataCtrl', ['$scope', '$http', function ($scope, $htt
     $scope.fileLoad = function ($files) {
         /* TODO */
     }
+}]);
+
+/**
+ * AnnotatorMenu controller
+ */
+neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$http', 'AnnotatorService', function ($scope, $http, AnnotatorService) {
+    "use strict";
+
+    $scope.active = -1;
+    $scope.mode = {
+        freetext: Annotator.Plugin.Neonion.prototype.annotationModes.freeTextAnnotation,
+        semantic: Annotator.Plugin.Neonion.prototype.annotationModes.semanticAnnotation
+      };
+
+    // for closing the submenu if clicked anywere except the menu itself
+    angular.element(document).ready(function () {
+        $(document).mouseup(function (e) {
+            var navigation = $(".nav-vertical");
+            if ( !navigation.is(e.target) && navigation.has(e.target).length === 0) {
+                $scope.closeSubMenus();
+                $scope.$apply();
+            }
+        });
+    });
+
+    $scope.scrollToLastAnnotation = function () {
+        var annotation = AnnotatorService.annotator().plugins.Neonion.getLastAnnotation();
+        if (annotation) {
+            AnnotatorService.scrollToAnnotation(annotation);
+        }
+    };
+
+    $scope.toggleSubMenu = function (index) {
+        if (index == $scope.active) {
+            $scope.closeSubMenus();
+        } else {
+            $scope.active = index;
+        }
+    };
+
+    $scope.closeSubMenus = function () {
+        $scope.active = -1;
+    }
+
+    $scope.getAnnotationMode = function () {
+        if(Annotator && Annotator._instances.length >= 1) {
+            return Annotator._instances[0].plugins.Neonion.annotationMode();
+        }
+        else {
+            return 1;
+        }
+    }
+
+    $scope.setAnnotationMode = function (mode) {
+        Annotator._instances[0].plugins.Neonion.annotationMode(mode);
+        $scope.closeSubMenus();
+    };
 }]);

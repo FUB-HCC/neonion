@@ -1,14 +1,3 @@
-<div class="annotator_menu" ng-cloak>
-    <ul id="annotator_contributors" class="forms-list">
-        <li ng-repeat="contrib in contributors | orderBy:'-updated'">
-            <input
-            type='checkbox'
-            ng-model="contrib.showAnnotation"
-            ng-click="toggleContributor(contrib)"/>
-            <label style="background-color:{{ contrib.color }}">{{ contrib.user }} ({{contrib.updated | date: 'short'}})</label>
-        </li>
-    </ul>
-</div>
 <div ng-cloak>
     <div id="document-frame" class="panel panel-default">
         <div id="document-title" class="panel-heading big">{{ document.title }}</div>

@@ -381,8 +381,6 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
     function ($scope, $http, $location, $sce, AccountService, AnnotatorService, DocumentService) {
         "use strict";
 
-        $scope.contributors = [];
-
         $scope.initialize = function (params) {
             $scope.params = params;
 
@@ -436,15 +434,16 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
 
                     // get annotator instance and subscribe to events
                     $scope.annotator = $("#document-body").data("annotator");
+                    AnnotatorService.annotator($scope.annotator);
                     $scope.annotator
                         .subscribe("annotationCreated", $scope.handleAnnotationEvent)
                         .subscribe("annotationUpdated", $scope.handleAnnotationEvent)
                         .subscribe("annotationDeleted", $scope.handleAnnotationEvent)
                         .subscribe('annotationsLoaded', function (annotations) {
                             $scope.$apply(function () {
-                                $scope.contributors = $scope.getContributors();
+                                AnnotatorService.refreshContributors();
                                 // colorize each annotation
-                                annotations.forEach($scope.colorizeAnnotation);
+                                annotations.forEach(AnnotatorService.colorizeAnnotation);
                             });
 
                             // go to annotation given by hash
@@ -473,92 +472,12 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
             });
         };
 
-        $scope.scrollToAnnotation = function (annotation) {
-            // check if just the annotation id was passed
-            if (typeof annotation == 'string') {
-                var annotations = $scope.annotator.plugins.Neonion.getAnnotationObjects();
-                annotation = annotations.find(function (element) {
-                    return (element.id == $location.hash());
-                });
-            }
-            if (annotation) {
-                var target = $(annotation.highlights[0]);
-                $('html, body').stop().animate({
-                        'scrollTop': target.offset().top - 200
-                    },
-                    1000,
-                    'easeInOutQuart'
-                );
-                // blink for more attention
-                for (var i = 0; i < 2; i++) {
-                    $(target).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
-                }
-            }
-        };
-
-        $scope.toggleContributor = function (contributor) {
-            var annotations = $scope.annotator.plugins.Neonion.getUserAnnotations(contributor.user);
-            if (contributor.showAnnotation) {
-                annotations.forEach(function (item) {
-                    $scope.annotator.plugins.Neonion.showAnnotation(item);
-                    $scope.colorizeAnnotation(item);
-                });
-            } else {
-                annotations.forEach($scope.annotator.plugins.Neonion.hideAnnotation);
-            }
-        };
-
-        $scope.makeColor = function (colorNum, colors) {
-            if (colors < 1) {
-                // defaults to one color - avoid divide by zero
-                colors = 1;
-            }
-            return ( colorNum * (360 / colors) ) % 360;
-        };
-
         $scope.handleAnnotationEvent = function (annotation) {
             $scope.$apply(function () {
-                $scope.contributors = $scope.getContributors();
-                $scope.colorizeAnnotation(annotation);
+                AnnotatorService.refreshContributors();
+                AnnotatorService.colorizeAnnotation(annotation);
             });
         };
-
-        $scope.colorizeAnnotation = function (annotation) {
-            if (annotation.creator) {
-                var idx = $scope.contributors.map(function (x) {
-                    return x.user;
-                }).indexOf(annotation.creator.email);
-                if (idx !== -1) {
-                    var color = $scope.contributors[idx].color;
-                    annotation.highlights.forEach(function (highlight) {
-                        $(highlight).css("backgroundColor", color);
-                    });
-                }
-            }
-        };
-
-        $scope.getContributors = function () {
-            var users = $scope.annotator.plugins.Neonion.getContributors();
-            var items = [];
-
-            users.forEach(function (user, index) {
-                var idx = $scope.contributors.map(function (x) {
-                    return x.user;
-                }).indexOf(user);
-                var showAnnotation = idx !== -1 ? $scope.contributors[idx].showAnnotation : true;
-                var lastAnnotation = $scope.annotator.plugins.Neonion.getLastAnnotation(user);
-                var isoUpated = lastAnnotation.updated ? lastAnnotation.updated : new Date().toISOString();
-                items.push({
-                    user: user, // creator of annotation
-                    updated: isoUpated, // date when annotation was updated
-                    showAnnotation: showAnnotation,
-                    color: "hsla( " + $scope.makeColor(index, users.length) + ", 100%, 50%, 0.3 )"
-                });
-            });
-
-            return items;
-        };
-
     }]);
 
 /**
@@ -685,6 +604,7 @@ neonionApp.controller('MetaDataCtrl', ['$scope', '$http', function ($scope, $htt
 neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$http', 'AnnotatorService', function ($scope, $http, AnnotatorService) {
     "use strict";
 
+    $scope.annotatorService = AnnotatorService;
     $scope.active = -1;
     $scope.mode = {
         freetext: Annotator.Plugin.Neonion.prototype.annotationModes.freeTextAnnotation,
@@ -734,4 +654,20 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$http', 'AnnotatorService
         Annotator._instances[0].plugins.Neonion.annotationMode(mode);
         $scope.closeSubMenus();
     };
+
+    $scope.toggleContributor = function (contributor) {
+        var annotations = Annotator._instances[0].plugins.Neonion.getUserAnnotations(contributor.user);
+        if (!contributor.showAnnotation) {
+            annotations.forEach(function (item) {
+                Annotator._instances[0].plugins.Neonion.showAnnotation(item);
+                AnnotatorService.colorizeAnnotation(item);
+            });
+            contributor.showAnnotation = true;
+
+        } else {
+            annotations.forEach(Annotator._instances[0].plugins.Neonion.hideAnnotation);
+            contributor.showAnnotation = false;
+        }
+    };
+
 }]);

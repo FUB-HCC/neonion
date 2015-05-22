@@ -255,7 +255,7 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', 'SearchService'
 
     $http.get('/api/store/filter').success(function (data) {
         var occurrences = {};
-        var filterUserData = data.rows;
+        var filterUserData = data.rows.filter($scope.isSemanticAnnotation);
 
         filterUserData.forEach(function (a) {
             var rdf = a.rdf;
@@ -288,6 +288,13 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', 'SearchService'
             return occurrences[k];
         });
     });
+
+    $scope.isSemanticAnnotation = function(annotation) {
+        if (annotation.hasOwnProperty("rdf")) {
+            return true;
+        }
+        return false;
+    };
 
     $scope.filterAnnotations = function (occurrence) {
         if ($scope.search.query.length > 0) {
@@ -387,10 +394,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
             DocumentService.getDocument(params.docID)
                 .then(function (document) {
                     $scope.document = document.data;
-                    if ($scope.document.attached_file.hasOwnProperty("url")) {
-                        $scope.documentUrl = $scope.document.attached_file.url;
-                    }
-                    else {
+                    if ($scope.document.hasOwnProperty("attached_file")) {
                         $scope.documentUrl = "/documents/viewer/" + $scope.document.attached_file.id;
                     }
                 });

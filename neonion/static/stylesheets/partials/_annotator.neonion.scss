@@ -24,6 +24,8 @@
   .empty {
     @extend %basefontsize;
     padding: 0 $column-gap;
+    background-color: $white;
+    border-top: 1px solid $silver;
   }
 
   button {
@@ -39,10 +41,23 @@
     width: 100%;
     outline: 0;
 
-    &:hover { background-color: $gallery; }
-    &:first-child { border-top: 0px; }
+    &:hover {
+      background-color: $tangerine;
+      color: white;
+      span, i { color: $gallery; }
+    }
     span { font-size: 14px; }
+
+    i:hover {color: black;}
+
+    &.unknown {
+      background-image: url("../img/unknown.png");
+      background-repeat: no-repeat;
+      background-position: $column-gap;
+      padding-left: $column-gap + 30px + 8px;
+    }
   }
+
 }
 
 /* Annotator Adder
@@ -68,7 +83,7 @@
   .annotator-widget {
     border: 0px;
     left: 0px;
-    top: 0px;
+    top: -53px;
     width: 7* ($column + $column-gap);
 
     &:after {
@@ -76,20 +91,34 @@
     }
 
     .resource-controles {
-      color: $black;
-      left: -70px;
+      left: -54px;
       position: absolute;
-      top: $half-baseline;
+      top: 0px;
+      z-index: -100;
 
-      i { font-size: $baseline; }
+      i {
+        font-size: $base-font-size;
+        color: $ship-gray;
+
+        &:hover {
+          color: $black;
+        }
+      }
+
+      a {
+        display: block;
+        padding: $half-baseline $column-gap;
+        border-radius: 0;
+        background-color: $gallery;
+      }
     }
 
     #resource-form {
-      background-color: $blue;
+      background-color: $white;
 
       i {
         @extend %basefontsize;
-        color: $black;
+        color: $manatee;
         position: absolute;
         padding: $half-baseline $column-gap;
       }
@@ -100,7 +129,11 @@
         font-weight: bold;
         padding: $half-baseline $column-gap $half-baseline $column-gap+ $column;
 
-        &:focus { background-color: transparent; }
+        &:focus {
+          background-color: transparent;
+          box-shadow: 0 0 5px 1px rgba($tangerine, 0.5);
+          border-color: rgba($tangerine, 0);
+        }
       }
     }
   }
@@ -113,6 +146,7 @@
   background-color: transparent;
   background-image: none;
   border: 0;
+  box-shadow: none;
   color: $black;
   display: inline;
   margin-left: $column-gap/2;
@@ -171,7 +205,7 @@
 }
 
 .annotator-linie {
-  border-bottom: 1px solid $dove-gray;
+  border-bottom: 1px solid $black;
   position: absolute;
   width: 500px;
   z-index: -100;

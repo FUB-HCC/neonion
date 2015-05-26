@@ -94,14 +94,16 @@ class Annotation:
 
 
 def metadata_statement(document):
+    document_uri = "http://neonion.org/document/" + document.id
+
     # add prefixes and insert preamble
     query = DEFAULT_PREFIXES + u'\nINSERT DATA {'
     # add title property
-    query += u'\n"{}" dc:title "{}";'.format(document.title)
+    query += u'\n"{}" dc:title "{}";'.format(document_uri, document.title)
     # add creator property
     query += u'\ndc:creator "{}";'.format(document.creator)
     # add type property
-    query += u'\n<{}> dc:type "{}";'.format(document.type)
+    query += u'\ndc:type "{}";'.format(document.type)
     # add end of statement
     query += u'.\n}'
 

@@ -129,3 +129,21 @@ python manage.py runserver 0.0.0.0:8000
 ```
 python /PATH/TO/NEONION/common/knowledge/wikidata/wd_import.py --folder /PATH/TO/NEONION/elasticsearch/wikidata
 ```
+
+# Docker
+
+To run neonoin with docker you have to install docker and compose (https://docs.docker.com/compose/install/)
+
+Then running neonion is as easy as:
+```
+docker-compose up
+```
+
+When neonion is running you can import the provided person data into elasticsearch with:
+```
+virtualenv -p /usr/bin/python2.7 venv27
+source venv27/bin/activate
+pip install pyelasticsearch
+
+python common/knowledge/wikidata/wd_import.py -f elasticsearch/wikidata/
+```

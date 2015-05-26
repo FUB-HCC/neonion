@@ -64,7 +64,7 @@
                 editor: this.initEditorField()
             };
             this.editorState = {
-                annotationMode : this.annotationModes.semanticAnnotation,
+                annotationMode : this.annotationModes.freeTextAnnotation,
                 selectedType : "",
                 selectedItem : -1,
                 resultSet : []
@@ -78,9 +78,9 @@
                 this.compositor = {};
             }
             
-            // bind events to document
+            // bind events on document
             $(document).bind({
-                mouseup: $.proxy(function (event) {
+                mouseup: $.proxy(function (e) {
                     // skip adder if only one button is visible
                     if ($(this.adder).is(":visible")) {
                         var childBtn = $(this.adder).find("button");
@@ -89,6 +89,13 @@
                             this.annotator.ignoreMouseup = true;
                             childBtn.click();
                         } 
+                    }
+                    else {
+                        // otherwise check whether a click on the document should close the editor
+                        var container = $(this.annotator.editor.element[0]);
+                        if (!container.is(e.target) && container.has(e.target).length === 0) {
+                            this.annotator.editor.hide();
+                        }
                     }
                 }, this)
             });
@@ -106,7 +113,6 @@
             // closure
             this.annotationSets(this.annotationSets());
             this.applyLayer(this.annotationLayers.group);
-            //this.annotationMode(this.annotationModes.freeTextAnnotation);
         };
 
         /**
@@ -157,9 +163,9 @@
 
             // replace filed with custom content
             $(field).children((":first")).replaceWith(
-                "<div class='resource-controles'>" + this.templates.cancelItem + this.templates.unknownItem + "</div>" +
+                "<div class='resource-controles'>" + this.templates.cancelItem + "</div>" +
                 "<form id='resource-form'>" + this.templates.searchItem + "</form>" +
-                "<div id='resource-list'></div>"
+                "<div id='resource-list'>" + this.templates.unknownItem + "</div>"
             );
 
             // create input for search term
@@ -218,6 +224,7 @@
 
             return field;
         };
+
     };
 
     $.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
@@ -251,9 +258,9 @@
             noResults: "<div class='empty'>No results found.</div>",
             editorLine: "<div class='annotator-linie'></div>",
             searchItem : "<i class='fa fa-search'></i>",
-            cancelItem : "<a href='#' data-action='annotator-cancel'><i class='fa fa-times-circle'></i></a>",
-            submitItem : "<a href='#' data-action='annotator-submit'><i class='fa fa-check-circle'></i></a>",
-            unknownItem : "<a href='#' data-action='annotator-submit'><i class='fa fa-question-circle'></i></a>",
+            cancelItem : "<a href='#' data-action='annotator-cancel'><i class='fa fa-times'></i></a>",
+            submitItem : "<a href='#' data-action='annotator-submit'><i class='fa fa-check'></i></a>",
+            unknownItem : "<button class='unknown' data-action='annotator-submit'>Unknown Resource</button>",
             emptyAdder : "<button></button>"
         },
 
@@ -338,6 +345,7 @@
         beforeAnnotationCreated : function (annotation) {
             // add user to annotation
             annotation.creator = this.options.agent;
+            // create a child element to store Open Annotation data
             annotation.oa = {
                 annotatedBy: $.extend(this.options.agent, {type: this.oa.types.agent.person}),
                 hasBody: {},
@@ -371,15 +379,19 @@
             this.placeEditorBesidesAnnotation(annotation);
 
             if (annotation.hasOwnProperty("oa")) {
-                // make visibility of fields depended from type of body
+                // visibility of fields depends on type of body
                 switch (annotation.oa.hasBody.type) {
                     case this.oa.types.tag.tag:
-                        $(this.fields.editor.freeTextField).show();
-                        $(this.fields.editor.semanticAnnotationField).hide();
+                        this.showField(this.fields.editor.freeTextField);
+                        var textarea = $(this.fields.editor.freeTextField).find("textarea");
+                        // transfer quote to text input
+                        textarea.val(annotation.quote);
+                        // preselect text
+                        textarea.select();
                         break;
                     case this.oa.types.tag.semanticTag:
-                        $(this.fields.editor.freeTextField).hide();
-                        $(this.fields.editor.semanticAnnotationField).show();
+                        this.showField(this.fields.editor.semanticAnnotationField);
+                        break;
                 }
             }
         },
@@ -414,6 +426,19 @@
                 var query = layer(this.options);
                 this.annotator.plugins.Store.loadAnnotationsFromSearch(query);
             }
+        },
+
+        /**
+         * Shows the specified field and hides the other ones.
+         * @param field
+         */
+        showField: function(field) {
+            // hide all fields first
+            for(var key in this.fields.editor) {
+                $(this.fields.editor[key]).hide();
+            }
+            // show specified field
+            $(field).show();
         },
 
         /**
@@ -463,31 +488,36 @@
         },
 
         loadEditorField : function (field, annotation) {
-            // restore type from annotation if provided
-            this.editorState.selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : this.editorState.selectedType;
+            if (this.annotationMode() == this.annotationModes.semanticAnnotation) {
+                // restore type from annotation if provided
+                this.editorState.selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : this.editorState.selectedType;
 
-            $(field).show();
-            $(field).find("#resource-search").val(annotation.quote);
-            $(field).find("#resource-form").submit();
+                $(field).show();
+                $(field).find("#resource-search").val(annotation.quote);
+                $(field).find("#resource-search").attr("autofocus", "autofocus");
+                $(field).find("#resource-form").submit();
+            }
         },
 
         submitEditorField : function (field, annotation) {
-            if (annotation.oa.hasBody.type == this.oa.types.tag.semanticTag) {
-                // add rdf data
-                annotation.rdf = {
-                    typeof: this.editorState.selectedType,
-                    label: annotation.quote
-                };
-                annotation.oa.motivatedBy = this.oa.motivation.classifying;
+               if (this.annotationMode() == this.annotationModes.semanticAnnotation) {
+                   if (annotation.oa.hasBody.type == this.oa.types.tag.semanticTag) {
+                       // add rdf data
+                       annotation.rdf = {
+                           typeof: this.editorState.selectedType,
+                           label: annotation.quote
+                       };
+                       annotation.oa.motivatedBy = this.oa.motivation.classifying;
 
-                // add extra semantic data from identified resource
-                if (this.editorState.selectedItem > 0) {
-                    var dataItem = this.editorState.resultSet[this.editorState.selectedItem];
-                    annotation.rdf.sameAs = dataItem.uri + '';
-                    annotation.rdf.label = dataItem.label;
-                    annotation.oa.motivatedBy = this.oa.motivation.identifying;
-                }
-            }
+                       // add extra semantic data from identified resource
+                       if (this.editorState.selectedItem > 0) {
+                           var dataItem = this.editorState.resultSet[this.editorState.selectedItem];
+                           annotation.rdf.sameAs = dataItem.uri + '';
+                           annotation.rdf.label = dataItem.label;
+                           annotation.oa.motivatedBy = this.oa.motivation.identifying;
+                       }
+                   }
+               }
         },
 
         updateResourceList : function(searchTerm) {
@@ -532,6 +562,7 @@
                     } else {
                         list.append(this.templates.noResults);
                     }
+                    list.prepend(this.templates.unknownItem);
                 }
             );
         },
@@ -546,6 +577,9 @@
             editor.find(".annotator-linie").width(width - left + 378 + 108);
             editor.find(".annotator-linie").css("left", -(width - left + 108));
             $(annotation.highlights[0]).css("border-left", "1px solid #717171");
+
+            // Aotofocus wieder setzen:
+            editor.find("#resource-search").focus();
         },
 
         extractSurroundedContent: function (annotation) {

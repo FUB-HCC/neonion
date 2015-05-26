@@ -12,3 +12,7 @@
   font-size: $base-font-size;
   line-height: $baseline;
 }
+
+%border {
+  border: 1px solid $silver;
+}

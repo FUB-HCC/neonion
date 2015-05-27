@@ -24,27 +24,54 @@ class Annotation:
     @staticmethod
     def create_annotation_statement(annotation):
         if 'oa' in annotation:
+            oa = annotation['oa']
+            target = oa['hasTarget']
+            body = oa['hasBody']
+            annBy = oa['annotatedBy']
+
             # add preamble
             query = DEFAULT_PREFIXES + u'\nINSERT DATA {\n'
+
+            # http://www.w3.org/TR/sparql11-update/#updateLanguage
             query += u'GRAPH <{}>'.format(neonion.ANNOTATION_STORE_GRAPH)
             query += u' {\n'
 
-            # TODO create general statement about annotation according OA
-            # http://www.w3.org/TR/sparql11-update/#updateLanguage
+            # general statement about annotation according to OA
+            # add target property
+            query += u'\n<{}> oa:hasTarget <{}>;'.format(annotation['uri'], target['type'])
 
             if 'hasBody' in annotation['oa']:
-                if annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.semanticTag.value:
+
+                # add body property
+                query += u'\noa:hasBody "{}";'.format(body['type'])
+
+                # for semantic annotation
+                if body['type'] == OpenAnnotation.TagTypes.semanticTag.value:
                     query += Annotation.substatement_body_semantic_tag(annotation)
 
                 # for free text annotation
-                elif annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.tag.value:
+                elif body['type'] == OpenAnnotation.TagTypes.tag.value:
                     query += Annotation.substatement_body_tag(annotation)
 
-            # add motivation
-            query += u'\noa:motivatedBy "{}";'.format(oa['motivatedBy'])
+            # free text specific
+            if 'rdf' not in annotation:
+                query += u'\noa:motivatedBy "{}";'.format('oa:commenting')
+                query += u'\nrdfs:comment "{}";'.format(annotation['text'])
+            else:
+                # add identifying/commenting motivation property
+                query += u'\noa:motivatedBy "{}";'.format(oa['motivatedBy'])
 
             # add origin (creator)
-            query += u'\noa:annotatedBy "{}";'.format(oa['annotatedBy'])
+            query += u'\noa:annotatedBy "{}".'.format(annBy)
+
+            # add type of annotatedBy
+            query += u'\n<{}> rdf:type <{}>;'.format(annBy, annBy['type'])
+
+            # add id of annotatedBy
+            query += u'\nfoaf:openid <{}>;'.format(annBy['id'])
+
+            # add email of annotatedBy
+            query += u'\nfoaf:mbox <{}>.'.format(annBy['email'])
 
             # end of statement
             query += u'.\n}\n}'

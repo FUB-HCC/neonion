@@ -33,6 +33,7 @@ h2 {
   height: 100vh;
   position: fixed;
   width: 5*$column + 4*$column-gap;
+  min-width: 12em;
   z-index: 100;
 
   .logo {
@@ -90,6 +91,7 @@ h2 {
 .main {
   margin-left: 5*$column + 4*$column-gap;
   width: 19*$column + 19*$column-gap;
+  min-width: 20em;
   .header {
     height: 4*$baseline + $half-baseline;
   }

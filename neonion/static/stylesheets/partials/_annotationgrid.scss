@@ -10,6 +10,7 @@
     margin-right: $column-gap;
     margin-bottom: $baseline;
     width: 3*$column + 2*$column-gap;
+    min-width: 8em;
 
     div {
       color: $ship-gray;

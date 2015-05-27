@@ -5,7 +5,7 @@
   cursor: pointer;
   display: inline-block;
   font-size: $base-font-size;
-  padding: ($half-baseline/2 - 1px) ($column-gap - 1px);
+  padding: $half-baseline/2 $column-gap;
   text-decoration: none;
   text-align: center;
   width: 3*$column + 2*$column-gap;
@@ -34,11 +34,11 @@
 }
 
 .button-big {
-  padding: ($half-baseline - 1px) ($column-gap - 1px);
+  padding: $half-baseline $column-gap;
 }
 
 .button-small {
-  padding: 0 ($column-gap - 1px);
+  padding: 0 $column-gap;
   border: 0;
 }
 

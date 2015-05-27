@@ -10,6 +10,7 @@
     margin-right: $column-gap;
     margin-bottom: $baseline;
     width: 3*$column + 2*$column-gap;
+    min-width: 8.75em;
     text-align: center;
 
     &:hover { border-color: $manatee; }
@@ -37,8 +38,8 @@
         span{
           color: $tangerine;
           display: block;
-          font-size: 42px;
-          line-height: 3*$baseline;
+          font-size: 1.8em;
+          line-height: 3em;
         }
       }
     }
@@ -70,7 +71,7 @@
   @include list-reset;
 
   li {
-    padding: ($half-baseline - 1px) $column-gap;
+    padding: $half-baseline $column-gap;
     background-color: $white;
     color: $dove-gray;
     border: 1px solid $silver;

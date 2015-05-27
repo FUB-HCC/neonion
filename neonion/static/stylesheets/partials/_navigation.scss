@@ -30,7 +30,7 @@
   li {
     position: relative;
     a {
-      border-left: $column-gap/2 solid $white;
+      border-left: 0.3em solid $white;
       display: block;
       font-size: 20px;
       padding: $half-baseline 0 $half-baseline ($column - $column-gap/2);

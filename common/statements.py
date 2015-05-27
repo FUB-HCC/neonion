@@ -25,6 +25,9 @@ class Annotation:
     def create_annotation_statement(annotation):
         if 'oa' in annotation:
             oa = annotation['oa']
+            target = oa['hasTarget']
+            body = oa['hasBody']
+            annBy = oa['annotatedBy']
 
             # add preamble
             query = DEFAULT_PREFIXES + u'\nINSERT DATA {\n'
@@ -35,36 +38,46 @@ class Annotation:
 
             # general statement about annotation according to OA
             # add target property
-            query += u'\noa:hasTarget "{}";'.format(oa['hasTarget'])
+            query += u'\n<{}> oa:hasTarget <{}>;'.format(annotation['uri'], target['type'])
 
             # add body property if existing
             if 'hasBody' in annotation['oa']:
 
                 # add body property
-                query += u'\noa:hasBody "{}";'.format(oa['hasBody'])
+                query += u'\noa:hasBody "{}";'.format(body['type'])
 
                 # for semantic annotation
-                if annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.semanticTag.value:
+                if body['type'] == OpenAnnotation.TagTypes.semanticTag.value:
                     query += Annotation.substatement_body_semantic_tag(annotation)
 
-                    # add identifying motivation property
-                    query += u'\noa:motivatedBy "{}";'.format(oa['motivatedBy'])
-
                 # for free text annotation
-                elif annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.tag.value:
+                elif body['type'] == OpenAnnotation.TagTypes.tag.value:
                     query += Annotation.substatement_body_tag(annotation)
 
-                    # add tagging motivation property
-                    query += u'\noa:motivatedBy "{}";'.format(oa['motivatedBy'])
+            # free text specific
+            if 'rdf' not in annotation:
+                query += u'\noa:motivatedBy "{}";'.format('oa:commenting')
+                query += u'\nrdfs:comment "{}";'.format(annotation['text'])
+            else:
+                # add identifying/commenting motivation property
+                query += u'\noa:motivatedBy "{}";'.format(oa['motivatedBy'])
 
             # add origin (creator)
-            query += u'\noa:annotatedBy "{}";'.format(oa['annotatedBy'])
+            query += u'\noa:annotatedBy "{}".'.format(annBy)
+
+            # add type of annotatedBy
+            query += u'\n<{}> rdf:type <{}>;'.format(annBy, annBy['type'])
+
+            # add id of annotatedBy
+            query += u'\nfoaf:openid <{}>;'.format(annBy['id'])
+
+            # add email of annotatedBy
+            query += u'\nfoaf:mbox <{}>.'.format(annBy['email'])
 
             # end of statement
             query += u'.\n}\n}'
 
             return query
-
         else:
             raise NoSemanticAnnotationError(annotation)
 

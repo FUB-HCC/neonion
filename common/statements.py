@@ -38,8 +38,9 @@ class Annotation:
 
             # general statement about annotation according to OA
             # add target property
-            query += u'\n<{}> oa:hasTarget <{}>;'.format(annotation['uri'], target['type'])
+            query += u'\n"{}" oa:hasTarget <{}>;'.format(annotation['uri'], target['type'])
 
+            # add body property if existing
             if 'hasBody' in annotation['oa']:
 
                 # add body property
@@ -62,16 +63,16 @@ class Annotation:
                 query += u'\noa:motivatedBy "{}";'.format(oa['motivatedBy'])
 
             # add origin (creator)
-            query += u'\noa:annotatedBy "{}".'.format(annBy)
+            query += u'\noa:annotatedBy "{}".'.format(annBy['email'])
 
             # add type of annotatedBy
-            query += u'\n<{}> rdf:type <{}>;'.format(annBy, annBy['type'])
+            query += u'\n"{}" rdf:type "{}";'.format(annBy['email'], annBy['type'])
 
             # add id of annotatedBy
-            query += u'\nfoaf:openid <{}>;'.format(annBy['id'])
+            query += u'\nfoaf:openid "{}";'.format(annBy['id'])
 
             # add email of annotatedBy
-            query += u'\nfoaf:mbox <{}>.'.format(annBy['email'])
+            query += u'\nfoaf:mbox "{}"'.format(annBy['email'])
 
             # end of statement
             query += u'.\n}\n}'
@@ -126,7 +127,6 @@ class Annotation:
             return query
         else:
             raise NoSemanticAnnotationError(annotation)
-
 
 def metadata_statement(document):
     document_uri = "http://neonion.org/document/" + document.id

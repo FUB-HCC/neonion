@@ -12,7 +12,6 @@
     width: 22*$column + 22*$column-gap;
 
     .header {
-      background: $gallery;
       border-bottom: $baseline solid $white;
       height: 4*$baseline;
       margin-left:  2*$column + 3*$column-gap;
@@ -32,8 +31,53 @@
     .annotator_menu {
       position: fixed;
       right: 1em;
+      z-index: 1;
     }
 
+    #annotate-space:-webkit-full-screen div {
+      width: 85%;
+      margin-left: 5%;
+      overflow: auto;
+
+      .annotator_menu {
+        width: 10%;
+        float: right;
+      }
+    }
+
+    #annotate-space:-moz-full-screen div {
+      width: 85%;
+      margin-left: 5%;
+      overflow: auto;
+
+      .annotator_menu {
+        width: 10%;
+        float: right;
+      }
+    }
+
+    #annotate-space:-moz-full-screen {
+      background-color: white;
+      width: 85%;
+      margin-left: 5%;
+      overflow: auto;
+
+      .annotator_menu {
+        width: 10%;
+        float: right;
+      }
+    }
+
+    #annotate-space:fullscreen div {
+      width: 85%;
+      margin-left: 5%;
+      overflow: auto;
+
+      .annotator_menu {
+        width: 10%;
+        float: right;
+      }
+    }
   }
 
   p {

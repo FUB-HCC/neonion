@@ -1,7 +1,14 @@
 from rest_framework import serializers
 from accounts.models import User, WorkingGroup, Membership
-from documents.models import Document
+from documents.models import Document, File
 from annotationsets.models import AnnotationSet, Concept, LinkedConcept
+
+
+# Serializers for file representation.
+class FileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = File
+        fields = ('id', 'name', 'origin_url', 'content_type')
 
 
 # Serializers for document representation.
@@ -13,9 +20,11 @@ class DocumentSerializer(serializers.ModelSerializer):
 
 # Serializers for full document representation representation.
 class DocumentDetailedSerializer(DocumentSerializer):
+    attached_file = FileSerializer()
+
     class Meta:
         model = Document
-        fields = ('id', 'title', 'content', 'created', 'updated', 'workinggroup_set')
+        fields = ('id', 'title', 'created', 'updated', 'attached_file', 'workinggroup_set')
 
 
 # Serializer for user representation.

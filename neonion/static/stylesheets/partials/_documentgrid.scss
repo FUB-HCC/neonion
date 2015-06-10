@@ -3,12 +3,11 @@
   @include clearfix;
 
   li {
-    
     background-color: $white;
     border: 1px solid $silver;
     float: left;
     height: 7*$baseline;
-    margin-left: $column-gap;
+    margin-right: $column-gap;
     margin-bottom: $baseline;
     width: 3*$column + 2*$column-gap;
     text-align: center;

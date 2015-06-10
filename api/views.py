@@ -30,7 +30,7 @@ class AnnotationListView(APIView):
         annotation = json.loads(request.body)
 
         if 'oa' in annotation and 'hasBody' in annotation['oa']:
-            if annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.semanticTag.value:
+            if annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.semanticTag:
                 try:
                     add_resource_uri(annotation)
                 except InvalidResourceTypeError:
@@ -46,7 +46,7 @@ class AnnotationListView(APIView):
             try:
                 #print(Annotation.create_annotation_statement(annotation))
                 #insert_data(Annotation.create_annotation_statement(annotation))
-                if annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.semanticTag.value:
+                if annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.semanticTag:
                     insert_data(Annotation.statement_about_resource(annotation))
             except Exception as e:
                 print(e.message)

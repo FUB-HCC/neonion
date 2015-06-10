@@ -255,7 +255,7 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', 'SearchService'
 
     $http.get('/api/store/filter').success(function (data) {
         var occurrences = {};
-        var filterUserData = data.rows;
+        var filterUserData = data.rows.filter($scope.isSemanticAnnotation);
 
         filterUserData.forEach(function (a) {
             var rdf = a.rdf;
@@ -288,6 +288,13 @@ neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', 'SearchService'
             return occurrences[k];
         });
     });
+
+    $scope.isSemanticAnnotation = function(annotation) {
+        if (annotation.hasOwnProperty("rdf")) {
+            return true;
+        }
+        return false;
+    };
 
     $scope.filterAnnotations = function (occurrence) {
         if ($scope.search.query.length > 0) {
@@ -377,182 +384,105 @@ neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function (
 /**
  * Annotator controller
  */
-neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', 'AccountService', function ($scope, $http, $location, AccountService) {
-    "use strict";
+neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 'AccountService', 'AnnotatorService', 'DocumentService',
+    function ($scope, $http, $location, $sce, AccountService, AnnotatorService, DocumentService) {
+        "use strict";
 
-    $scope.contributors = [];
+        $scope.initialize = function (params) {
+            $scope.params = params;
 
-    $scope.initialize = function (params) {
-        AccountService.getCurrentUser().then(function (result) {
-            params.agent = {
-                id: result.data.id,
-                email: result.data.email
-            };
-            $scope.setupAnnotator(params);
-        });
-    };
-
-    $scope.setupAnnotator = function (params) {
-        var queryParams = $location.search();
-
-        $("#document-body").annotator()
-            // add store plugin
-            .annotator('addPlugin', 'Store', {
-                prefix: '/api/store',
-                showViewPermissionsCheckbox: false,
-                showEditPermissionsCheckbox: false,
-                annotationData: {
-                    uri: params.docID
-                },
-                loadFromSearch: {'limit': 0}
-            })
-            // add neonion plugin
-            .annotator('addPlugin', 'Neonion', {
-                uri: params.docID,
-                agent: params.agent,
-                workspace: queryParams.workspace
-            })
-            // add NER plugin
-            .annotator('addPlugin', 'NER', {
-                uri: params.docID,
-                service: params.nerUrl,
-                auth: params.nerAuth
-            });
-
-
-        // get annotator instance and subscribe to events
-        $scope.annotator = $("#document-body").data("annotator");
-        $scope.annotator
-            .subscribe("annotationCreated", $scope.handleAnnotationEvent)
-            .subscribe("annotationUpdated", $scope.handleAnnotationEvent)
-            .subscribe("annotationDeleted", $scope.handleAnnotationEvent)
-            .subscribe('annotationsLoaded', function (annotations) {
-                $scope.$apply(function () {
-                    $scope.contributors = $scope.getContributors();
-                    // colorize each annotation
-                    annotations.forEach($scope.colorizeAnnotation);
+            DocumentService.getDocument(params.docID)
+                .then(function (document) {
+                    $scope.document = document.data;
+                    if ($scope.document.hasOwnProperty("attached_file")) {
+                        $scope.documentUrl = "/documents/viewer/" + $scope.document.attached_file.id;
+                    }
                 });
+        };
 
-                // go to annotation given by hash
-                if (queryParams.hasOwnProperty("annotation")) {
-                    $scope.scrollToAnnotation(queryParams.annotation);
+        $scope.setupAnnotator = function (params) {
+            AccountService.getCurrentUser()
+                .then(function (user) {
+                    params.agent = {
+                        id: user.data.id,
+                        email: user.data.email
+                    };
+                })
+                .then(function() {
+                    var queryParams = $location.search();
+
+                    $("#document-body").annotator()
+                        // add store plugin
+                        .annotator('addPlugin', 'Store', {
+                            prefix: '/api/store',
+                            showViewPermissionsCheckbox: false,
+                            showEditPermissionsCheckbox: false,
+                            annotationData: {
+                                uri: params.docID
+                            },
+                            loadFromSearch: {'limit': 0}
+                        })
+                        // add neonion plugin
+                        .annotator('addPlugin', 'Neonion', {
+                            uri: params.docID,
+                            agent: params.agent,
+                            workspace: queryParams.workspace
+                        })
+                        // add NER plugin
+                        .annotator('addPlugin', 'NER', {
+                            uri: params.docID,
+                            service: params.nerUrl,
+                            auth: params.nerAuth
+                        });
+
+
+                    // get annotator instance and subscribe to events
+                    $scope.annotator = $("#document-body").data("annotator");
+                    AnnotatorService.annotator($scope.annotator);
+                    $scope.annotator
+                        .subscribe("annotationCreated", $scope.handleAnnotationEvent)
+                        .subscribe("annotationUpdated", $scope.handleAnnotationEvent)
+                        .subscribe("annotationDeleted", $scope.handleAnnotationEvent)
+                        .subscribe('annotationsLoaded', function (annotations) {
+                            $scope.$apply(function () {
+                                AnnotatorService.refreshContributors();
+                                // colorize each annotation
+                                annotations.forEach(AnnotatorService.colorizeAnnotation);
+                            });
+
+                            // go to annotation given by hash
+                            if (queryParams.hasOwnProperty("annotation")) {
+                                $scope.scrollToAnnotation(queryParams.annotation);
+                            }
+                        });
+                })
+                .then($scope.loadAnnotationSet)
+        };
+
+        $scope.loadAnnotationSet = function () {
+            $http.get('/api/annotationsets').success(function (data) {
+                $scope.annotationsets = data;
+                if ($scope.annotationsets.length > 0) {
+                    var sets = {};
+                    // TODO just take the first AS
+                    $scope.annotationsets[0].concepts.forEach(function (item) {
+                        sets[item.uri] = {
+                            label: item.label
+                        };
+                    });
+
+                    $scope.annotator.plugins.Neonion.annotationSets(sets);
                 }
             });
+        };
 
-        $scope.loadAnnotationSet();
-    };
-
-    $scope.loadAnnotationSet = function () {
-        $http.get('/api/annotationsets').success(function (data) {
-            $scope.annotationsets = data;
-            if ($scope.annotationsets.length > 0) {
-                var sets = {};
-                // TODO just take the first AS
-                $scope.annotationsets[0].concepts.forEach(function (item) {
-                    sets[item.uri] = {
-                        label: item.label
-                    };
-                });
-
-                $scope.annotator.plugins.Neonion.annotationSets(sets);
-            }
-        });
-    };
-
-    $scope.scrollToAnnotation = function (annotation) {
-        // check if just the annotation id was passed
-        if (typeof annotation == 'string') {
-            var annotations = $scope.annotator.plugins.Neonion.getAnnotationObjects();
-            annotation = annotations.find(function (element) {
-                return (element.id == $location.hash());
+        $scope.handleAnnotationEvent = function (annotation) {
+            $scope.$apply(function () {
+                AnnotatorService.refreshContributors();
+                AnnotatorService.colorizeAnnotation(annotation);
             });
-        }
-        if (annotation) {
-            var target = $(annotation.highlights[0]);
-            $('html, body').stop().animate({
-                    'scrollTop': target.offset().top - 200
-                },
-                1000,
-                'easeInOutQuart'
-            );
-            // blink for more attention
-            for (var i = 0; i < 2; i++) {
-                $(target).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
-            }
-        }
-    };
-
-    $scope.scrollToLastAnnotation = function () {
-        var annotation = $scope.annotator.plugins.Neonion.getLastAnnotation();
-        if (annotation) {
-            $scope.scrollToAnnotation(annotation);
-        }
-    };
-
-    $scope.toggleContributor = function (contributor) {
-        var annotations = $scope.annotator.plugins.Neonion.getUserAnnotations(contributor.user);
-        if (contributor.showAnnotation) {
-            annotations.forEach(function (item) {
-                $scope.annotator.plugins.Neonion.showAnnotation(item);
-                $scope.colorizeAnnotation(item);
-            });
-        } else {
-            annotations.forEach($scope.annotator.plugins.Neonion.hideAnnotation);
-        }
-    };
-
-    $scope.makeColor = function (colorNum, colors) {
-        if (colors < 1) {
-            // defaults to one color - avoid divide by zero
-            colors = 1;
-        }
-        return ( colorNum * (360 / colors) ) % 360;
-    };
-
-    $scope.handleAnnotationEvent = function (annotation) {
-        $scope.$apply(function () {
-            $scope.contributors = $scope.getContributors();
-            $scope.colorizeAnnotation(annotation);
-        });
-    };
-
-    $scope.colorizeAnnotation = function (annotation) {
-        if (annotation.creator) {
-            var idx = $scope.contributors.map(function (x) {
-                return x.user;
-            }).indexOf(annotation.creator.email);
-            if (idx !== -1) {
-                var color = $scope.contributors[idx].color;
-                annotation.highlights.forEach(function (highlight) {
-                    $(highlight).css("backgroundColor", color);
-                });
-            }
-        }
-    };
-
-    $scope.getContributors = function () {
-        var users = $scope.annotator.plugins.Neonion.getContributors();
-        var items = [];
-
-        users.forEach(function (user, index) {
-            var idx = $scope.contributors.map(function (x) {
-                return x.user;
-            }).indexOf(user);
-            var showAnnotation = idx !== -1 ? $scope.contributors[idx].showAnnotation : true;
-            var lastAnnotation = $scope.annotator.plugins.Neonion.getLastAnnotation(user);
-            var isoUpated = lastAnnotation.updated ? lastAnnotation.updated : new Date().toISOString();
-            items.push({
-                user: user, // creator of annotation
-                updated: isoUpated, // date when annotation was updated
-                showAnnotation: showAnnotation,
-                color: "hsla( " + $scope.makeColor(index, users.length) + ", 100%, 50%, 0.3 )"
-            });
-        });
-
-        return items;
-    };
-
-}]);
+        };
+    }]);
 
 /**
  * SPARQL query form controller
@@ -595,12 +525,36 @@ neonionApp.controller('NamedEntityCtrl', ['$scope', function ($scope) {
             identifier: "Standard",
             parameters: [
                 {label: "Name", type: "string", restriction: "must be unique", default: "Standard", updatable: false},
-                {label: "Stanford Model", type: "string", restriction: "available model in classifiers", default: "dewac_175m_600", updatable: true},
-                {label: "Learn-network: number of hidden layer components", type: "integer", restriction: "", default: 10, updatable: false},
-                {label: "Learn-Network: Initialize", type: "string", restriction: "Random or Standard", default: "Standard", updatable: false},
+                {
+                    label: "Stanford Model",
+                    type: "string",
+                    restriction: "available model in classifiers",
+                    default: "dewac_175m_600",
+                    updatable: true
+                },
+                {
+                    label: "Learn-network: number of hidden layer components",
+                    type: "integer",
+                    restriction: "",
+                    default: 10,
+                    updatable: false
+                },
+                {
+                    label: "Learn-Network: Initialize",
+                    type: "string",
+                    restriction: "Random or Standard",
+                    default: "Standard",
+                    updatable: false
+                },
                 {label: "Predictor: Learn", type: "boolean", restriction: "", default: false, updatable: true},
                 {label: "Learn-Network: Learn", type: "boolean", restriction: "", default: false, updatable: true},
-                {label: "Predictor: Inverse of Regularization Strength", type: "float", restriction: "> 0", default: 1000, updatable: false}
+                {
+                    label: "Predictor: Inverse of Regularization Strength",
+                    type: "float",
+                    restriction: "> 0",
+                    default: 1000,
+                    updatable: false
+                }
             ]
         }
     ];
@@ -610,38 +564,114 @@ neonionApp.controller('MetaDataCtrl', ['$scope', '$http', function ($scope, $htt
     "use strict";
     $scope.primaryMetaData = ['Title', 'Creator', 'Type'];
 
-    $scope.secondaryMetaData  = ['Contributor', 'Coverage', 'Date', 'Description',
-                            'Format', 'Identifier', 'Language', 'Publisher', 'Relation',
-                            'Rights', 'Source', 'Subject'];
+    $scope.secondaryMetaData = ['Contributor', 'Coverage', 'Date', 'Description',
+        'Format', 'Identifier', 'Language', 'Publisher', 'Relation',
+        'Rights', 'Source', 'Subject'];
 
     $scope.metaDataValues = {};
 
     var metaData = $scope.primaryMetaData.concat($scope.secondaryMetaData);
 
-    var definitions = {'Title': 'A name given to the resource.',
-         'Creator': 'An entity primarily responsible for making the resource.',
-         'Type': 'The nature or genre of the resource.',
-         'Contributor': 'An entity responsible for making contributions to the resource.',
-         'Coverage': 'The spatial or temporal topic of the resource, the spatial applicability of the resource, or the jurisdiction under which the resource is relevant.',
-         'Date': 'A point or period of time associated with an event in the lifecycle of the resource.',
-         'Description': 'An account of the resource.',
-         'Format': 'The file format, physical medium, or dimensions of the resource.',
-         'Identifier': 'An unambiguous reference to the resource within a given context.',
-         'Language': 'A language of the resource.',
-         'Publisher': 'An entity responsible for making the resource available.',
-         'Relation': 'A related resource.',
-         'Rights': 'Information about rights held in and over the resource.',
-         'Source': 'A related resource from which the described resource is derived.',
-         'Subject': 'The topic of the resource.'};
+    var definitions = {
+        'Title': 'A name given to the resource.',
+        'Creator': 'An entity primarily responsible for making the resource.',
+        'Type': 'The nature or genre of the resource.',
+        'Contributor': 'An entity responsible for making contributions to the resource.',
+        'Coverage': 'The spatial or temporal topic of the resource, the spatial applicability of the resource, or the jurisdiction under which the resource is relevant.',
+        'Date': 'A point or period of time associated with an event in the lifecycle of the resource.',
+        'Description': 'An account of the resource.',
+        'Format': 'The file format, physical medium, or dimensions of the resource.',
+        'Identifier': 'An unambiguous reference to the resource within a given context.',
+        'Language': 'A language of the resource.',
+        'Publisher': 'An entity responsible for making the resource available.',
+        'Relation': 'A related resource.',
+        'Rights': 'Information about rights held in and over the resource.',
+        'Source': 'A related resource from which the described resource is derived.',
+        'Subject': 'The topic of the resource.'
+    };
 
     metaData.forEach(function (entry) {
-       $scope.metaDataValues[entry] = {};
-       $scope.metaDataValues[entry].value = "";
-       $scope.metaDataValues[entry].checked = false;
-       $scope.metaDataValues[entry].definition = definitions[entry];
+        $scope.metaDataValues[entry] = {};
+        $scope.metaDataValues[entry].value = "";
+        $scope.metaDataValues[entry].checked = false;
+        $scope.metaDataValues[entry].definition = definitions[entry];
     });
 
-    $scope.fileLoad = function($files) {
+    $scope.fileLoad = function ($files) {
         /* TODO */
     }
+}]);
+
+/**
+ * AnnotatorMenu controller
+ */
+neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$http', 'AnnotatorService', function ($scope, $http, AnnotatorService) {
+    "use strict";
+
+    $scope.annotatorService = AnnotatorService;
+    $scope.active = -1;
+    $scope.mode = {
+        freetext: Annotator.Plugin.Neonion.prototype.annotationModes.freeTextAnnotation,
+        semantic: Annotator.Plugin.Neonion.prototype.annotationModes.semanticAnnotation
+      };
+
+    // for closing the submenu if clicked anywere except the menu itself
+    angular.element(document).ready(function () {
+        $(document).mouseup(function (e) {
+            var navigation = $(".nav-vertical");
+            if ( !navigation.is(e.target) && navigation.has(e.target).length === 0) {
+                $scope.closeSubMenus();
+                $scope.$apply();
+            }
+        });
+    });
+
+    $scope.scrollToLastAnnotation = function () {
+        var annotation = AnnotatorService.annotator().plugins.Neonion.getLastAnnotation();
+        if (annotation) {
+            AnnotatorService.scrollToAnnotation(annotation);
+        }
+    };
+
+    $scope.toggleSubMenu = function (index) {
+        if (index == $scope.active) {
+            $scope.closeSubMenus();
+        } else {
+            $scope.active = index;
+        }
+    };
+
+    $scope.closeSubMenus = function () {
+        $scope.active = -1;
+    }
+
+    $scope.getAnnotationMode = function () {
+        if(Annotator && Annotator._instances.length >= 1) {
+            return Annotator._instances[0].plugins.Neonion.annotationMode();
+        }
+        else {
+            return 1;
+        }
+    }
+
+    $scope.setAnnotationMode = function (mode) {
+        Annotator._instances[0].plugins.Neonion.annotationMode(mode);
+        $scope.closeSubMenus();
+    };
+
+    $scope.toggleContributor = function (contributor) {
+        var annotations = Annotator._instances[0].plugins.Neonion.getUserAnnotations(contributor.user);
+        if (!contributor.showAnnotation) {
+            annotations.forEach(function (item) {
+                Annotator._instances[0].plugins.Neonion.showAnnotation(item);
+                AnnotatorService.colorizeAnnotation(item);
+            });
+            contributor.showAnnotation = true;
+
+        } else {
+            annotations.forEach(Annotator._instances[0].plugins.Neonion.hideAnnotation);
+            contributor.showAnnotation = false;
+        }
+    };
+
 }]);

@@ -22,8 +22,6 @@ def render_annotator(request, doc_id):
 
     data = {
         'doc_id': doc_id,
-        'title': doc.title,
-        'content': doc.content,
         'ner_url': settings.NER_SERVICE_URL,
         'ner_auth': 'WCZZYjnOQFUYfJIN2ShH1iD24UHo58A6TI'
     }

@@ -1,6 +1,8 @@
 from argparse import ArgumentParser
 import config
 import logging
+import calendar
+
 from json import loads
 from os import path
 from bz2 import BZ2File
@@ -45,6 +47,23 @@ def import_json_into_es(types, inputfolder, logger):
             line = line.strip()
             item = loads(line)
             item['uri'] = 'http://wikidata.org/wiki/' + item['id']
+
+            if 'birth' in item and isinstance(item['birth'], basestring):
+                item['birth'] = item['birth'].replace('-00','-01')
+                item['birth'] = item['birth'].replace('-02-30','-02-29')
+                item['birth'] = item['birth'].replace('-02-31','-02-29')
+                item['birth'] = item['birth'].replace('-04-31','-04-30')
+                item['birth'] = item['birth'].replace('-06-31','-06-30')
+                item['birth'] = item['birth'].replace('-09-31','-09-30')
+                item['birth'] = item['birth'].replace('-11-31','-11-30')
+
+                if item['birth'][-5:] == '02-29':
+                    year = item['birth'][:4]
+                    if not calendar.isleap(int(year)):
+                        item['birth'] = year+'-02-28'
+
+                if item['birth'][-2:] == '-0':
+                    del item['birth']
 
             items.append(item)
             done += 1

@@ -1,11 +1,13 @@
 from django.test import TestCase
 from uri import generate_uri
-from statements import statement_about_resource
+from statements import Annotation
 from annotation import add_resource_uri
 from exceptions import NoSemanticAnnotationError, InvalidResourceTypeError
 from vocab import neonion
 from cms import ContentSystem
 from django.core.validators import URLValidator
+from documents.tests import create_test_document
+from common.statements import metadata_statement
 
 
 class UriTestCase(TestCase):
@@ -45,6 +47,7 @@ class StatementsTestCase(TestCase):
 
         self.semanticAnnotationWithoutURI = {
             "quote": "Otto Hahn",
+            "oa": {},
             "rdf": {
                 "label": "Name of resource",
                 "typeof": "http://neonion.org/concept/person"
@@ -53,6 +56,7 @@ class StatementsTestCase(TestCase):
 
         self.semanticAnnotation = {
             "quote": "Otto Hahn",
+            "oa": {},
             "rdf": {
                 "label": "Name of resource",
                 "uri": "http://neonion.org/person/123456",
@@ -62,6 +66,7 @@ class StatementsTestCase(TestCase):
 
         self.semanticAnnotationWithSameAs = {
             "quote": "Otto Hahn",
+            "oa": {},
             "rdf": {
                 "label": "Name of resource",
                 "uri": 'http://neonion.org/person/123456',
@@ -70,16 +75,18 @@ class StatementsTestCase(TestCase):
             }
         }
 
+        self.test_general_document = create_test_document()
+
     def test_no_semantic_annotation(self):
-        self.assertRaises(NoSemanticAnnotationError, statement_about_resource, self.noSemanticAnnotation)
+        self.assertRaises(NoSemanticAnnotationError, Annotation.statement_about_resource, self.noSemanticAnnotation)
 
     def test_semantic_annotation(self):
-        statement = statement_about_resource(self.semanticAnnotation)
+        statement = Annotation.statement_about_resource(self.semanticAnnotation)
         self.assertTrue("rdf:type" in statement)
         self.assertTrue("rdfs:label" in statement)
 
     def test_semantic_annotation_with_same_as(self):
-        statement = statement_about_resource(self.semanticAnnotationWithSameAs)
+        statement = Annotation.statement_about_resource(self.semanticAnnotationWithSameAs)
         self.assertTrue("owl:sameAs" in statement)
 
     def test_add_uri_to_invalid_annotation(self):
@@ -91,6 +98,11 @@ class StatementsTestCase(TestCase):
         annotation = add_resource_uri(self.semanticAnnotationWithoutURI)
         self.assertTrue("uri" in annotation['rdf'])
 
+    def test_general_document(self):
+        statement = metadata_statement(self.test_general_document)
+        self.assertTrue("dc:title" in statement)
+        self.assertTrue("dc:creator" in statement)
+        self.assertTrue("dc:type" in statement)
 
 class VocabTestCase(TestCase):
 

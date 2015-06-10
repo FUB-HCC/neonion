@@ -33,6 +33,7 @@ h2 {
   height: 100vh;
   position: fixed;
   width: 5*$column + 4*$column-gap;
+  z-index: 100;
 
   .logo {
     background: url(../img/logo.png) no-repeat;
@@ -46,43 +47,37 @@ h2 {
 }
 
 .header {
+  background-color: $tangerine;
   height: 2*$baseline;
 
   #search-form {
-    width: 9*$column;
-    height: $column + $column-gap;
-    margin: $column + ($column-gap/4) 0 $column-gap $column + ($column-gap/4);
-    padding: $half-baseline ($column - $column-gap/2) 0 ($column - $column-gap/2);
-    display: inline-block;
+    padding-top: $baseline + $half-baseline;
+    padding-left: $column + $column-gap;
     position: relative;
-  }
-
-  #search-icon {
-    float: left;
-    position: absolute;
-    padding: 12px 0 0 12px;
-    color: $ship-gray;
-    border: none;
-    background-color: transparent;
-  }
-
-  #search-icon:focus {
-    outline: 0;
   }
 
   #search {
     border: 0 none;
-    float: left;
+    padding-left: $column;
     width: 12*$column + 11*$column-gap;
-    height: $baseline + (3/4)*$base-font-size;
-    padding:($base-font-size/2 + $base-font-size/8) $base-font-size ($base-font-size/2) $column;
+    height: 2*$baseline;
     background-color: $white;
   }
-  ::-webkit-input-placeholder {
-    color: $mid-gray;
+
+  #search-icon {
+    line-height: $baseline;
+    position: absolute;
+    padding: $half-baseline 0 0 $column-gap;
+    color: $manatee;
+    border: none;
+    background-color: transparent;
+
+    &:focus {
+      outline: 0;
+    }
   }
 
-  ::-moz-placeholder {  /* Firefox 19+ */
+  ::-webkit-input-placeholder, ::-moz-placeholder {
     color: $mid-gray;
   }
 

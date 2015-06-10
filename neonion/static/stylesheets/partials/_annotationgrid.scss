@@ -1,22 +1,18 @@
 .annotation-grid {
   @include list-reset;
+  @include clearfix;
 
   li {
-    display: block;
+    background-color: $white;
+    border: 1px solid $silver;
+    float: left;
+    height: 7*$baseline;
+    margin-right: $column-gap;
+    margin-bottom: $baseline;
+    width: 3*$column + 2*$column-gap;
 
     div {
-      background-color: $white;
-      border: 1px solid $silver;
       color: $ship-gray;
-
-      float: left;
-      display: block;
-      margin-left: $column-gap;
-      margin-bottom: $baseline;
-
-      width: 3*$column + 2*$column-gap;
-      height: 7*$baseline;
-
       font-size: $base-font-size;
       line-height: $baseline;
       font-weight: 300;
@@ -25,12 +21,10 @@
         text-overflow: ellipsis;
         overflow: hidden;
         text-align: center;
-
         height: $baseline;
         width: 3*$column + 2*$column-gap;
-
-        font-size: 16px;
-        margin: 0px 0px 0px 0px;
+        font-size: $base-font-size;
+        margin: 0;
         border: none;
         text-decoration: none;
 

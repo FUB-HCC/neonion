@@ -1,24 +1,21 @@
 <table id="meta-table" ng-controller="MetaDataCtrl">
 
     <thead>
-        <th>Active</th>
         <th>Property</th>
-        <th>Entry</th>
         <th>Definition</th>
+        <th>Entry</th>
     </thead>
 
     <tbody id="metadata">
         <tr ng-repeat="(key, value) in metaDataValues">
-            <td class="checkbox" ng-model="metaDataValues[key].checked">
-                <input type="checkbox" ng-model="metaDataValues[key].checked"/>
-            </td>
             <td>{{ key }}</td>
+            <td>{{ value.definition }}</td>
             <td>
-                <form ng-submit="metaDataValues[key].checked=true">
-                    <input class="fieldSettings" id="meta-{{$index}}" type="text" placeholder="There is no {{ key }}">
+                <form ng-submit="submit()">
+                    <input class="fieldSettings" id="meta-{{$index}}" type="text"
+                            ng-model="value.value">
                 </form>
             </td>
-            <td>{{ value.definition }}</td>
         </tr>
     </tbody>
 

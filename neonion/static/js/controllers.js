@@ -597,6 +597,10 @@ neonionApp.controller('MetaDataCtrl', ['$scope', '$http', function ($scope, $htt
         $scope.metaDataValues[entry].definition = definitions[entry];
     });
 
+    $scope.submit = function() {
+        $("input[type=text]").blur();
+    }
+
     $scope.fileLoad = function ($files) {
         /* TODO */
     }

@@ -333,8 +333,8 @@ neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function 
                             ann_occur[key].title = docs[a.uri];
                             ann_occur[key].created = date;
                             ann_occur[key].ann = ann;
-                            ann_occur[key].contextRight = contextRight + "[...]";
-                            ann_occur[key].contextLeft = "[...]" + contextLeft;
+                            ann_occur[key].contextRight = contextRight + " [...]";
+                            ann_occur[key].contextLeft = "[...] " + contextLeft;
                         }
                         ;
                     });

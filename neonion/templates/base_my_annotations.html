@@ -9,11 +9,7 @@
 {% block content %}
 
     <div>
-        {% url 'neonion.views.annotations_occurrences' as url_annotations_occurrences %}
-        {% url 'neonion.views.ann_documents' as url_ann_documents %}
-
         <h2>My Annotations</h2>
-
         <ul id="annotation-table" class="annotation-grid" ng-controller="AnnotationStoreCtrl" ng-cloak>
 
             {% verbatim %}
@@ -42,4 +38,5 @@
 
         </ul>
     </div>
+
 {% endblock %}

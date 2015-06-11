@@ -19,9 +19,6 @@
             </form>
 
             <div id="import-metadata" ng-controller="MetaDataCtrl" ng-show="meta">
-                <h3>Document properties</h3>
-                <div><i>Please choose the properties you want to consider for this document,</i></div>
-                <div><i>which correspond to the Dublin Core Metadata Element Set</i></div>
                 <ng-include src="'{% static 'partials/meta_data.html' %}'"></ng-include>
             </div>
         </div>

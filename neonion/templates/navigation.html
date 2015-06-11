@@ -3,11 +3,10 @@
     {% if request.user.is_authenticated %}
         {% url 'neonion.views.render_home' as url_home %}
         {% url 'neonion.views.my_annotations' as url_my_annotations %}
-        {% url 'neonion.views.annotations_occurrences' as url_occurrences %}
-        {% url 'neonion.views.ann_documents' as url_ann_documents %}
         {% url 'neonion.views.import_document' as url_import %}
         {% url 'neonion.views.render_settings' as url_settings %}
         {% url 'accounts.views.logout' as url_logout %}
+        {% with url_occurrences="/annotations_occurrences/" url_ann_documents="/ann_documents/"%}
 
         {# My neonion #}
         <li {% if request.path == url_home %}class="active"{% endif %}>
@@ -16,7 +15,7 @@
             </a>
         </li>
         {# My Annotations #}
-        <li {% if request.path == url_my_annotations or request.path ==  url_occurrences or request.path == url_ann_documents%}
+        <li {% if request.path == url_my_annotations or url_occurrences in request.path or  url_ann_documents in request.path %}
             class="active"{% endif %}>
             <a href="{{ url_my_annotations }}">
                 <span class="fa fa-bookmark fa-fw"></span>My annotations
@@ -52,7 +51,7 @@
                 </a>
             </li>
         {% endif %}
-
+        {% endwith %}
         {# Logout #}
         <li {% if request.path == url_logout %}class="active"{% endif %}>
             <a href="{{ url_logout }}">

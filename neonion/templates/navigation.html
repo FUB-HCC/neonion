@@ -16,9 +16,7 @@
             </a>
         </li>
         {# My Annotations #}
-        <li {% if request.path == url_my_annotations
-                    or request.path ==  url_occurrences
-                    or request.path == url_ann_documents%}
+        <li {% if request.path == url_my_annotations or request.path ==  url_occurrences or request.path == url_ann_documents%}
             class="active"{% endif %}>
             <a href="{{ url_my_annotations }}">
                 <span class="fa fa-bookmark fa-fw"></span>My annotations

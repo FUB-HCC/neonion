@@ -1,7 +1,8 @@
 $baseline:          1.625em;              //26px;
 $half-baseline:     $baseline/2;
 $base-font-size:    1em;
-$column:            38px;
-$column-gap:        16px;
-$column-fluid:      2.9320987654320988%;  //38px;
-$column-gap-fluid:  1.2345679012345679%;  //16px;
+$unit:              38px;
+$unit-gap:          16px;
+$column:            2.9320987654320988%;  //38px;
+$column-gap:        1.2345679012345679%;  //16px;
+$total-width:       100%                  //1296px;

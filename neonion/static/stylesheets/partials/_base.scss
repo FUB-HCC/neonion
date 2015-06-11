@@ -91,7 +91,8 @@ h2 {
 .main {
   margin-left: 5*$column + 4*$column-gap;
   width: 19*$column + 19*$column-gap;
-  min-width: 20em;
+  min-width: 24em;
+
   .header {
     height: 4*$baseline + $half-baseline;
   }

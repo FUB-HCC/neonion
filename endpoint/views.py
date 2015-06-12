@@ -11,13 +11,14 @@ def query(request):
     sparql_output = 'json'
 
     if request.method == 'POST':
-        if 'query' in request.POST: sparql_query = request.POST['query']
-        if 'output' in request.POST: sparql_output = request.POST['output']
+        sparql_query = request.POST.get('query')
+        sparql_output = request.POST.get('output')
     elif request.method == 'GET':
         if 'query' in request.GET: sparql_query = request.GET['query']
         if 'output' in request.GET: sparql_output = request.GET['output']
 
     try:
+        print(request.POST)
         # execute query
         return JsonResponse(execute_query(sparql_query, sparql_output))
     except Exception as e:

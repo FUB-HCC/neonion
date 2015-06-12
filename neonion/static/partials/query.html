@@ -1,0 +1,32 @@
+<form ng-controller="QueryCtrl" ng-cloak="">
+    <div>
+        <span>Subject&nbsp;</span>
+        <select ng-model="form.selectedSubject"
+                ng-options="item.label.value for item in form.subjects"
+                ng-change="assembleQuery()">
+            <option value=""></option>
+        </select>
+    </div>
+    <div>
+        <span>Predicate&nbsp;</span>
+        <select ng-model="form.selectedPredicate"
+                ng-options="item.predicate.value for item in form.predicates"
+                ng-change="assembleQuery()">
+            <option value=""></option>
+        </select>
+    </div>
+    <div>
+        <span>Object&nbsp;</span>
+        <select ng-model="form.selectedObject"
+                ng-options="item.object.value for item in form.objects"
+                ng-change="assembleQuery()">
+            <option value=""></option>
+        </select>
+    </div>
+    <pre id="query-prefixes">{{ form.prefixes }}</pre>
+    <textarea ng-model="form.query" rows="10">
+        {{ form.query }}
+    </textarea>
+    <input type="submit" class="button button-primary pull-right" ng-click="executeQuery()" />
+    <div id="query-result"></div>
+</form>

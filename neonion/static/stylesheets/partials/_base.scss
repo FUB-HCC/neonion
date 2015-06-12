@@ -89,7 +89,7 @@ h2 {
 
 // right content area, this is the main content area
 .main {
-  margin-left: 5*$column + 4*$column-gap;
+  margin-left: 5*$unit + 4*$unit-gap;
   width: 19*$column + 19*$column-gap;
   min-width: 24em;
 

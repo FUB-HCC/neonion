@@ -1,4 +1,14 @@
 // Inverted colors and smaller navigation and bigger content area
+
+.document-title {
+  padding-top: $baseline;
+  font-weight: normal;
+  span {
+    font-weight: 300;
+    padding-left: $column-gap;
+  }
+}
+
 #page-annotator {
   background: $white;
 
@@ -15,6 +25,7 @@
       border-bottom: $baseline solid $white;
       height: 4*$baseline;
       margin-left:  2*$column + 3*$column-gap;
+      padding: 0px $column-gap/2;
       position: fixed;
       width: 20*$column + 19*$column-gap;
       z-index: 100;

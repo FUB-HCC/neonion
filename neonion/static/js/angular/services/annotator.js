@@ -15,6 +15,13 @@ neonionApp.factory('AnnotatorService', [function () {
         return annotator;
     };
 
+    factory.getNumberOfTotalAnnotations = function() {
+      if(annotator) {
+        var annotations = annotator.plugins.Neonion.getAnnotationObjects();
+        return annotations.length;
+      }
+    };
+
     factory.scrollToAnnotation = function (annotation) {
         // check if just the annotation id was passed
         if (typeof annotation == 'string') {

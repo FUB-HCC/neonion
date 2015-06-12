@@ -6,6 +6,21 @@
 {% block title %}Annotator{% endblock %}
 {% block page_id %}annotator{% endblock %}
 
+{% block header %}
+    
+    <div ng-controller="ContextInfoCtrl">
+      <ul class="context-list">
+      {% verbatim %}
+          <li><i class="fa fa-bookmark"></i>{{ annotatorService.getNumberOfTotalAnnotations() }} Annotations</li>
+          <li><i class="fa fa-users"></i>{{ annotatorService.contributors.length }} Contributer</li>
+          <li class="loggedin"><i class="fa fa-user"></i>{{ user.email }}</li>
+      </ul>
+      <div class="document-title" ng-cloak>{{ getTitle() }}<span class="list-icon"><i class="fa fa-circle-o"></i>{{ getGroup() }}</span></div>
+      {% endverbatim %}
+    </div>
+    
+{% endblock %}
+
 {% block left %}
 <div class="sidebar">
     <ng-include src="'{% static 'partials/annotator-navigation.html' %}'"></ng-include>

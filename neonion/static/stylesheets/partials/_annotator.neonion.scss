@@ -14,6 +14,7 @@
 // Kommentarfeld
 #annotator-field-0 {
   @extend %basefontsize;
+  min-height: 4 * $baseline;
   background: $white;
 }
 

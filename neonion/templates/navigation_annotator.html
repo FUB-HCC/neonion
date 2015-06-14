@@ -26,7 +26,7 @@
                         <div class="content">{{ contrib.user }}
                             <small class="content-time"><i class="fa fa-clock-o"></i>{{ contrib.updated | date: 'short' }}</small>
                         </div>
-                        <div class="content-color" style="background-color:{{ contrib.color }}"></div>
+                        <div class="content-color" ng-class="{'invisible': !contrib.showAnnotation }"style="background-color:{{ contrib.color }}"></div>
                     </li>
                 </ul>
             </div>

@@ -7,9 +7,9 @@
     border: 1px solid $silver;
     float: left;
     height: 7*$baseline;
-    margin-right: $column-gap;
+    margin-right: $unit-gap;
     margin-bottom: $baseline;
-    width: 3*$column + 2*$column-gap;
+    width: 3*$unit + 2*$unit-gap;
 
     div {
       color: $ship-gray;
@@ -22,7 +22,7 @@
         overflow: hidden;
         text-align: center;
         height: $baseline;
-        width: 3*$column + 2*$column-gap;
+        width: 3*$unit + 2*$unit-gap;
         font-size: $base-font-size;
         margin: 0;
         border: none;

@@ -8,6 +8,8 @@ padding and border, but not the margin
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 body {
@@ -20,12 +22,18 @@ p {
   margin: $half-baseline 0 ;
 }
 
+h2 {
+  padding-top: 0.5em;
+  padding-bottom: 1.1em;
+}
+
 // left Sidebar containing navigation and logo
 .sidebar {
   background-color: $white;
   height: 100vh;
   position: fixed;
   width: 5*$column + 4*$column-gap;
+  min-width: 16em;
   z-index: 100;
 
   .logo {
@@ -81,8 +89,10 @@ p {
 
 // right content area, this is the main content area
 .main {
-  margin-left: 5*$column + 4*$column-gap;
+  margin-left: 5*$unit + 4*$unit-gap;
   width: 19*$column + 19*$column-gap;
+  min-width: 24em;
+
   .header {
     height: 4*$baseline + $half-baseline;
   }

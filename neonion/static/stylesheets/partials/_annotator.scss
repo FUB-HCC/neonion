@@ -5,6 +5,8 @@
   .sidebar {
     background: $gallery;
     width: 2*$column + $column-gap;
+    min-width: 4em;
+    text-align: center;
   }
 
   .main {
@@ -16,14 +18,17 @@
       height: 4*$baseline;
       margin-left:  2*$column + 3*$column-gap;
       position: fixed;
+      left: 2*$column + 1*$column-gap;
       width: 20*$column + 19*$column-gap;
+      min-width: 26em;
       z-index: 100;
     }
 
     .content {
       padding-top: 3*$baseline + $baseline;
-      margin-left: 2*$column + 3*$column-gap;
+      margin-left: 2*$column + 4*$column-gap;
       width: 11*$column + 10*$column-gap;
+      min-width: 26em;
     }
 
     /* TODO @Alexa need review */

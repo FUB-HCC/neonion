@@ -8,5 +8,9 @@ ENDPOINT_UPDATE = 'http://localhost:8080/openrdf-sesame/repositories/neonion/sta
 NER_SERVICE_URL = 'http://localhost:5000'
 DEFAULT_USER_ACTIVE_STATE = True
 
+# set environment
+DEBUG = True
+#STATIC_ROOT = '/tmp/neonion/static/'
+
 # Path to a class which inherits from common.cms.Contentsystem
 #CONTENT_SYSTEM_CLASS = 'plugins.mpi.euler.Euler'

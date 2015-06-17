@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% load staticfiles %}
+{% load pipeline %}
 
 {% block title %}Annotator{% endblock %}
 {% block page_id %}annotator{% endblock %}
@@ -18,10 +19,7 @@
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript" src="{% static 'js/annotator.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/annotator.neonion.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/annotator.ner.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/annotator.store.min.js' %}"></script>
+    {% javascript 'annotator' %}
 
     <script language="javascript">
         "use strict";

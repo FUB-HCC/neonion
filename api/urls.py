@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from rest_framework import routers
 from api import views
 from viewsets import UserViewSet, WorkingGroupViewSet, DocumentViewSet, AnnotationSetViewSet
@@ -10,7 +10,7 @@ router.register(r'groups', WorkingGroupViewSet)
 router.register(r'documents', DocumentViewSet)
 router.register(r'annotationsets', AnnotationSetViewSet)
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^', include(router.urls)),
 
     # AnnotationStore proxy API
@@ -19,4 +19,4 @@ urlpatterns = patterns('',
     url(r'^store/search$', 'api.views.store_search'),
     url(r'^store/annotations$', views.AnnotationListView.as_view()),
     url(r'^store/annotations/(?P<pk>.+)$', views.AnnotationDetailView.as_view()),
-)
+]

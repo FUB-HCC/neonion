@@ -1,4 +1,4 @@
-var neonionApp = angular.module('neonionApp', ['ngAnimate'])
+var neonionApp = angular.module('neonionApp', [])
 .config(['$httpProvider', '$locationProvider',
     function($httpProvider, $locationProvider) {
         "use strict";

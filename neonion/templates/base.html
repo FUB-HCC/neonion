@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, maximum-scale=1, minimum-scale=1" />
     <title>Neonion - {% block title %}{% endblock %}</title>
     {% load staticfiles %}
+    {% load pipeline %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}" type="text/css" media="screen" />
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
 </head>
@@ -37,14 +38,8 @@
         </div>
     </div>
 {% endblock %}
-
-    <script src="{% static 'js/jquery.min.js' %}"></script>
-    <script src="{% static 'js/jquery-ui.min.js' %}"></script>
-    <script src="{% static 'js/angular.min.js' %}"></script>
-    <script src="{% static 'js/angular-animate.min.js' %}"></script>
-    <script src="{% static 'js/app.js' %}"></script>
-    <script src="{% static 'js/services.js' %}"></script>
-    <script src="{% static 'js/controllers.js' %}"></script>
+    {% javascript 'stats' %}
+    {% javascript 'angular_app' %}
 
     <!-- Include the hashgrid script -->
     <script type="text/javascript" src="{% static 'js/hashgrid.js' %}"></script>

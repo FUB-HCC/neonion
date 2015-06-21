@@ -1,4 +1,8 @@
 /**
+ * Deprecated: put controllers in separate file under /angular/services
+ */
+
+/**
  * Service for on page search
  */
 neonionApp.factory('SearchService', function () {

@@ -1,5 +1,9 @@
 /*jshint jquery:true */
 
+/**
+ * Deprecated: put controllers in separate file under /angular/controllers
+ */
+
 neonionApp.controller('MainCtrl', ['$scope', '$http', 'SearchService', 'AccountService', function ($scope, $http, SearchService, AccountService) {
     "use strict";
     $scope.search = SearchService;

@@ -1,9 +1,12 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib import admin
+from django.conf import settings
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf.urls.static import static
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^$', 'neonion.views.render_home'),
     url(r'^my_annotations/$', 'neonion.views.my_annotations'),
     url(r'^annotations_occurrences/(?P<quote>.+)$', 'neonion.views.annotations_occurrences'),
@@ -27,4 +30,7 @@ urlpatterns = patterns('',
 
     # Django rest
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-)
+]
+
+urlpatterns += staticfiles_urlpatterns()
+#urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

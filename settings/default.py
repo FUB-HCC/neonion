@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'pipeline',
     'neonion',
     'api',
     'plugins',
@@ -99,20 +100,59 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
-
-
 # Static asset configuration
-import os
 # go one folder up from current directory (settings)
 PROJECT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
-STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # STATICFILES_DIRS = (
 #     os.path.join(PROJECT_PATH, 'staticfiles'),
 # )
-# STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# django pipeline
+# PIPELINE_ENABLED = True
+
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+    'pipeline.finders.CachedFileFinder',
+)
+# PIPELINE_COMPILERS = (
+#     'pipeline.compilers.sass.SASSCompiler',
+# )
+
+PIPELINE_JS = {
+    'stats': {
+        'source_filenames': (
+            'js/jquery.min.js',
+            'js/jquery-ui.min.js',
+            'js/angular.min.js',
+        ),
+        'output_filename': 'js/stats.js',
+    },
+    'annotator': {
+        'source_filenames': (
+            'js/annotator.min.js',
+            'js/annotator.neonion.js',
+            'js/annotator.ner.js',
+            'js/annotator.store.min.js'
+        ),
+        'output_filename': 'js/annotator.js',
+    },
+    'angular_app': {
+        'source_filenames': (
+            'js/angular/app.js',
+            'js/angular/services/*.js',
+            'js/angular/controllers/**/*.js',
+        ),
+        'output_filename': 'js/angular_app.js',
+    }
+}
+
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",

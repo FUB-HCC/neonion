@@ -139,7 +139,8 @@ PIPELINE_JS = {
             'js/annotator.min.js',
             'js/annotator.neonion.js',
             'js/annotator.ner.js',
-            'js/annotator.store.min.js'
+            'js/annotator.store.min.js',
+            'js/pdf.js'
         ),
         'output_filename': 'js/annotator.js',
     },

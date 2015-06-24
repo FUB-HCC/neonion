@@ -25,8 +25,8 @@
         "use strict";
 
         $(document).ready(function () {
-            $('#nav-anotate').click(function() {
-                var span = $('#nav-anotate>span');
+            $('#nav-annotate').click(function() {
+                var span = $('#nav-annotate>span');
                 if (!span.hasClass('fa-spin')) {
                     span.addClass('fa-spin');
                     Annotator._instances[0].plugins.NER.recognize({

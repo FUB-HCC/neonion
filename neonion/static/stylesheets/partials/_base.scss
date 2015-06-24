@@ -20,13 +20,6 @@ p {
   margin: $half-baseline 0 ;
 }
 
-h2 {
-  @include heading-reset;
-
-  margin-top: 0.5em;
-  padding-bottom: $base-font-size;
-}
-
 // left Sidebar containing navigation and logo
 .sidebar {
   background-color: $white;

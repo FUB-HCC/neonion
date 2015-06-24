@@ -4,6 +4,13 @@ h1 {
   margin: 0 0 $baseline 0;
 }
 
+h2 {
+  @include heading-reset;
+
+  margin-top: 0.5em;
+  padding-bottom: $base-font-size;
+}
+
 h3 {
   font-size: 18px;
   line-height: $baseline;

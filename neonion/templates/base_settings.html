@@ -13,8 +13,8 @@
             <ul>
                 <li ng-class="{active:tab===1}"><a href="" ng-click="tab = 1">Annotation Sets</a></li>
                 <li ng-class="{active:tab===2}"><a href="" ng-click="tab = 2">Properties</a></li>
-                <li ng-class="{active:tab===3}"><a href="" ng-click="tab = 3" >NER Settings</a></li>
-            </ul></br>
+                <li ng-class="{active:tab===3}"><a href="" ng-click="tab = 3">NER Settings</a></li>
+            </ul>
         </nav>
 
         <div class="wrapper" ng-switch="tab">
@@ -22,7 +22,7 @@
                 <ng-include src="'{% static 'partials/annotationsets_list.html' %}'"></ng-include>
             </div>
             <div ng-switch-when="2">
-                <ng-include src="'{% static 'partials/meta_data.html' %}'"></ng-include>
+                <ng-include src="'{% static 'partials/meta_data_in_properties.html' %}'"></ng-include>
             </div>
             <div ng-switch-when="3">
                 <ng-include src="'{% static 'partials/ner_models.html' %}'"></ng-include>

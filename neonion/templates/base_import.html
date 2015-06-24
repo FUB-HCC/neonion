@@ -6,63 +6,26 @@
 {% block page_id %}import{% endblock %}
 
 {% block content %}
-{% if use_file_upload %}
-<div id="import-main">
-    <h3>Import files</h3>
-    <form method="post" action="{% url 'documents.views.upload_file' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input id="file-upload" name="file-upload" type="file" multiple change="fileLoad($files)"
-               ng-click="meta=true" ng-init="meta=false">
-        <input class="button button-primary button-import pull-right" type="submit" />
-    </form>
-</div>
+    {% if use_file_upload %}
+        <div>
+            <h2>Import</h2>
 
-<div class="side-view" ng-controller="MetaDataCtrl" ng-show="meta">
-    <h3>Document properties</h3>
-    <div>Please specify the properties of the </div>
-    <div>document you are about to upload</div>
+            <form method="post" action="{% url 'documents.views.upload_file' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="file-upload-wrapper">
+                    <button class="button button-small"/>Upload File</button>
+                    <input id="file-upload" name="file-upload"
+                       type="file" multiple change="fileLoad($files)"
+                       ng-click="meta=true" ng-init="meta=false">
+                </div>
+                <input class="button button-primary button-import pull-right" type="submit"/>
+            </form>
 
-    <table ng-controller="MetaDataCtrl">
-        {% verbatim %}
-        <tbody id="metadata">
-            <tr ng-repeat="primary in primaryMetaData">
-                <td class="checkbox-import">
-                    <input id="checkProperty" type="checkbox" ng-model="metaDataValues[primary].checked">
-                </td>
-                <td>{{ primary }}:</td>
-                <td>
-                    <form ng-submit="metaDataValues[primary].checked=true">
-                        <input id="property" class="field" type="text" ng-model="metaDataValues[primary].value"
-                               placeholder="There is no {{ primary }}">
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-        {% endverbatim %}
-    </table>
-    <table ng-controller="MetaDataCtrl">
-        {% verbatim %}
-        <tbody id="metadata" ng-show="moreMetaData">
-            <tr ng-repeat="secondary in secondaryMetaData">
-                <td class="checkbox-import">
-                    <input id="checkProperty" type="checkbox" ng-model="metaDataValues[secondary].checked"/>
-                </td>
-                <td>{{ secondary }}:</td>
-                <td>
-                    <form ng-submit="metaDataValues[secondary].checked=true">
-                        <input id="property" class="field" type="text" ng-model="metaDataValues[secondary].value"
-                            placeholder="There is no {{ secondary }}">
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-        {% endverbatim %}
-    </table>
-    <input id="meta" value="More Properties" class="button button-primary button-import pull-left"
-           ng-click="moreMetaData=true" ng-init="false"/>
-</div>
-
-{% else %}
-<ng-include src="'{% static 'partials/upload_cms.html' %}'"></ng-include>
-{% endif %}
+            <div id="import-metadata" ng-controller="MetaDataCtrl" ng-show="meta">
+                <ng-include src="'{% static 'partials/meta_data.html' %}'"></ng-include>
+            </div>
+        </div>
+    {% else %}
+        <ng-include src="'{% static 'partials/upload_cms.html' %}'"></ng-include>
+    {% endif %}
 {% endblock %}

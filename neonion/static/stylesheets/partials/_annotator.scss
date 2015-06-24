@@ -16,7 +16,8 @@
       height: 4*$baseline;
       margin-left:  2*$column + 3*$column-gap;
       position: fixed;
-      width: 20*$column + 19*$column-gap;
+      width: 100%;
+      max-width: 20*$column + 19*$column-gap;
       z-index: 100;
     }
 

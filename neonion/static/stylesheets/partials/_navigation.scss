@@ -25,6 +25,8 @@
 
 // vertical menu
 .nav-vertical {
+  ul { @include list-reset; }
+
   padding-top: $half-baseline;
 
   li {

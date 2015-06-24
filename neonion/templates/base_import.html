@@ -12,9 +12,12 @@
 
             <form method="post" action="{% url 'documents.views.upload_file' %}" enctype="multipart/form-data">
                 {% csrf_token %}
-                <input id="file-upload" name="file-upload"
+                <div class="file-upload-wrapper">
+                    <button class="button button-small"/>Upload File</button>
+                    <input id="file-upload" name="file-upload"
                        type="file" multiple change="fileLoad($files)"
                        ng-click="meta=true" ng-init="meta=false">
+                </div>
                 <input class="button button-primary button-import pull-right" type="submit"/>
             </form>
 

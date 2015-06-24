@@ -53,3 +53,19 @@
 #meta {
   outline: none;
 }
+
+.file-upload-wrapper {
+  overflow: hidden;
+  position: relative;
+}
+
+.file-upload-wrapper > input[type="file"] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  opacity: 0;
+}
+
+.file-upload-wrapper > .button {
+    display: inline-block;
+  }

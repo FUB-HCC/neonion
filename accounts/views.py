@@ -1,6 +1,5 @@
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as django_login, authenticate, logout as django_logout
 from accounts.forms import AuthenticationForm, RegistrationForm
 
@@ -43,14 +42,6 @@ def register(request):
     return render_to_response('register.html', {
         'form': form, 'success': success, 'show_activation_info': show_activation_info
     }, context_instance=RequestContext(request))
-
-
-@login_required
-def profile(request, user):
-    """
-    profile view.
-    """
-    return render_to_response('profile.html', context_instance=RequestContext(request))
 
 
 def logout(request):

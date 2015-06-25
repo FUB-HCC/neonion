@@ -3,6 +3,7 @@ from models import WorkingGroup, Membership
 from backends import EmailAuthBackend
 from accounts.models import User
 from django.core.urlresolvers import reverse
+from accounts import views
 
 
 def create_test_user(email='test@neonin.org'):
@@ -24,7 +25,6 @@ def create_test_group(group_name):
 
 
 class AccountsTestCase(TestCase):
-
     def setUp(self):
         self.test_user = create_test_user()
         self.test_group = create_test_group('Closed')
@@ -47,7 +47,6 @@ class AccountsTestCase(TestCase):
 
 
 class AuthenticationTestCase(TestCase):
-
     def setUp(self):
         self.test_user = create_test_user()
 
@@ -79,15 +78,27 @@ class AuthenticationTestCase(TestCase):
 
 
 class ViewTestCase(TestCase):
-
     def setUp(self):
         self.test_user = create_test_user()
 
+    def test_login(self):
+        # get login page
+        response = self.client.get(reverse(views.login))
+        self.assertEqual(response.status_code, 200)
+
+        # post login credentials
+        response = self.client.post(reverse(views.login),
+                                    data={
+                                        "email": self.test_user.email,
+                                        "password": "tester"
+                                    })
+        self.assertRedirects(response, "/")
+
     def test_logout(self):
         self.assertTrue(self.client.login(email='test@neonin.org', password='tester'))
-        url = reverse('accounts.views.logout')
-        response = self.client.get(url, follow=True)
+
+        response = self.client.get(reverse(views.logout), follow=True)
         # check if redirection works
-        self.assertRedirects(response, reverse('accounts.views.login'))
+        self.assertRedirects(response, reverse(views.login))
         # check if user successfully logged out
         self.assertNotIn('_auth_user_id', self.client.session)

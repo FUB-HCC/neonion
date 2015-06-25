@@ -5,4 +5,8 @@ from models import AnnotationSet, LinkedConcept, Concept
 class AnnotationSetsTestCase(TestCase):
 
     def setUp(self):
-        pass
+        test_set = {
+        'uri': 'http://neonion.org/',
+        'label': 'Test Document',
+        }
+        self.annotation_set = AnnotationSet.objects.create(**test_set)

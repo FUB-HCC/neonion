@@ -6,19 +6,10 @@
 
 {% block content %}
     <h3>Query form</h3>
-    <form ng-controller="QueryCtrl" ng-cloak="">
-        {% verbatim %}
-        <pre id="query-prefixes">{{ form.prefixes }}</pre>
-        <textarea ng-model="form.query" rows="10">
-            {{ form.query }}
-        </textarea>
-        <input type="submit" class="button button-primary pull-right" ng-click="executeQuery()" />
-        <div id="query-result"></div>
-        {% endverbatim %}
-    </form>
+    <ng-include src="'{% static 'partials/query.html' %}'"></ng-include>
 {% endblock %}
 
 {% block scripts %}
-<script type="text/javascript" src="{% static 'js/sgvizler.min.js' %}"></script>
-<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="{% static 'js/sgvizler.min.js' %}"></script>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
 {% endblock %}

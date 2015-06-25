@@ -1,0 +1,37 @@
+<form ng-controller="QueryCtrl" ng-cloak="">
+    <fieldset>
+        <legend>Tiple Composer</legend>
+        <div>
+            <label for="subject">Subject</label>
+            <select name="subject" ng-model="form.selectedSubject"
+                    ng-options="item.label.value for item in form.subjects"
+                    ng-change="assembleQuery()">
+                <option value=""></option>
+            </select>
+        </div>
+
+        <div>
+            <label for="predicate">Predicate</label>
+            <select name="predicate" ng-model="form.selectedPredicate"
+                    ng-options="item.predicate.value for item in form.predicates"
+                    ng-change="assembleQuery()">
+                <option value=""></option>
+            </select>
+        </div>
+
+        <div>
+            <label for="object">Object</label>
+            <select name="object" ng-model="form.selectedObject"
+                    ng-options="item.object.value for item in form.objects"
+                    ng-change="assembleQuery()">
+                <option value=""></option>
+            </select>
+        </div>
+    </fieldset>
+    <pre id="query-prefixes">{{ form.prefixes }}</pre>
+    <textarea ng-model="form.query" rows="10">
+        {{ form.query }}
+    </textarea>
+    <input type="submit" class="button button-primary pull-right" ng-click="executeQuery()" />
+    <div id="query-result"></div>
+</form>

@@ -47,7 +47,11 @@ class StatementsTestCase(TestCase):
 
         self.semanticAnnotationWithoutURI = {
             "quote": "Otto Hahn",
-            "oa": {},
+            "oa": {
+                "hasBody": {
+                    "type": "oa:SemanticTag"
+                }
+            },
             "rdf": {
                 "label": "Name of resource",
                 "typeof": "http://neonion.org/concept/person"
@@ -56,7 +60,11 @@ class StatementsTestCase(TestCase):
 
         self.semanticAnnotation = {
             "quote": "Otto Hahn",
-            "oa": {},
+            "oa": {
+                "hasBody": {
+                    "type": "oa:SemanticTag"
+                }
+            },
             "rdf": {
                 "label": "Name of resource",
                 "uri": "http://neonion.org/person/123456",
@@ -103,6 +111,7 @@ class StatementsTestCase(TestCase):
         self.assertTrue("dc:title" in statement)
         self.assertTrue("dc:creator" in statement)
         self.assertTrue("dc:type" in statement)
+
 
 class VocabTestCase(TestCase):
 

@@ -12,6 +12,11 @@ class DocumentAPITestCase(TestCase):
         # create test document
         self.test_document = create_test_document()
 
+    def test_get_documents(self):
+        self.assertTrue(self.client.login(email='test@neonin.org', password='tester'))
+        response = self.client.get('/api/documents')
+        self.assertTrue(len(response.data) == 1)
+
     def test_get_document(self):
         self.assertTrue(self.client.login(email='test@neonin.org', password='tester'))
 

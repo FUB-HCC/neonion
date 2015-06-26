@@ -8,7 +8,7 @@
 
 {% block left %}
 <div class="sidebar">
-    {% include "navigation_annotator.html" %}
+    <ng-include src="'{% static 'partials/annotator-navigation.html' %}'"></ng-include>
 </div>
 {% endblock %}
 
@@ -20,48 +20,4 @@
 
 {% block scripts %}
     {% javascript 'annotator' %}
-
-    <script language="javascript">
-        "use strict";
-
-        $(document).ready(function () {
-            $('#nav-annotate').click(function() {
-                var span = $('#nav-annotate>span');
-                if (!span.hasClass('fa-spin')) {
-                    span.addClass('fa-spin');
-                    Annotator._instances[0].plugins.NER.recognize({
-                        success : function (data) {
-                            span.removeClass('fa-spin');
-                        },
-                        error : function () {
-                            span.removeClass('fa-spin');
-                        }
-                    });
-                }
-                return false;
-            });
-
-            $('#nav-fullscreen').click(function(){
-                enableFullscreen( document.getElementById( 'annotate-space' ) );
-            });
-        });
-
-        // Find the right method, call on correct element
-        function enableFullscreen(element) {
-
-            if(element.requestFullscreen) {
-                element.requestFullscreen();
-
-            } else if(element.mozRequestFullScreen) {
-                element.mozRequestFullScreen();
-
-            } else if(element.webkitRequestFullscreen) {
-                element.webkitRequestFullscreen();
-
-            } else if(element.msRequestFullscreen) {
-                element.msRequestFullscreen();
-            }
-        }
-        
-    </script>
 {% endblock %}

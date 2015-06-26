@@ -1,7 +1,7 @@
 /**
  * Service for accounts
  */
-neonionApp.factory('AccountService', ['$http', function ($http) {
+neonionApp.factory('UserService', ['$http', function ($http) {
     "use strict";
     var factory = {};
 

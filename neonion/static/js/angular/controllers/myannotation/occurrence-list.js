@@ -1,4 +1,4 @@
-neonionApp.controller('AnnOccurCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
+neonionApp.controller('MyAnnotationOccurrenceListCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
     "use strict";
 
     var docs = {};

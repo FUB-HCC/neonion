@@ -131,6 +131,7 @@ PIPELINE_JS = {
             'js/jquery.min.js',
             'js/jquery-ui.min.js',
             'js/angular.min.js',
+            'js/angular-resource.min.js'
         ),
         'output_filename': 'js/stats.js',
     },
@@ -147,6 +148,7 @@ PIPELINE_JS = {
     'angular_app': {
         'source_filenames': (
             'js/angular/app.js',
+            'js/angular/filters.js',
             'js/angular/services/*.js',
             'js/angular/controllers/**/*.js',
         ),

@@ -6,5 +6,4 @@ urlpatterns = [
 
     url(r'^cms/import$', 'documents.views.cms_import'),
     url(r'^cms/list$', 'documents.views.cms_list'),
-    #url(r'^euler/hocr$', 'documents.views.euler_hocr'),
 ]

@@ -3,34 +3,33 @@
 /**
  * Annotator controller
  */
-neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 'AccountService', 'AnnotatorService', 'DocumentService',
-    function ($scope, $http, $location, $sce, AccountService, AnnotatorService, DocumentService) {
+neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 'UserService', 'AnnotatorService', 'DocumentService',
+    function ($scope, $http, $location, $sce, UserService, AnnotatorService, DocumentService) {
         "use strict";
 
         $scope.initialize = function (params) {
             $scope.params = params;
 
-            DocumentService.getDocument(params.docID)
-                .then(function (document) {
-                    $scope.document = document.data;
-                    if ($scope.document.hasOwnProperty("attached_file")) {
-                        $scope.documentUrl = "/documents/viewer/" + $scope.document.attached_file.id;
-                    }
-                });
+            DocumentService.get({docId: params.docID}, function (document) {
+                $scope.document = document;
+                if ($scope.document.hasOwnProperty("attached_file")) {
+                    $scope.documentUrl = "/documents/viewer/" + $scope.document.attached_file.id;
+                }
+            });
         };
 
         $scope.setupAnnotator = function (params) {
-            AccountService.getCurrentUser()
+            UserService.getCurrentUser()
                 .then(function (user) {
                     params.agent = {
                         id: user.data.id,
                         email: user.data.email
                     };
                 })
-                .then(function() {
+                .then(function () {
                     var queryParams = $location.search();
 
-                    $("#document-body").annotator()
+                    angular.element("#document-body").annotator()
                         // add store plugin
                         .annotator('addPlugin', 'Store', {
                             prefix: '/api/store',
@@ -56,7 +55,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
 
 
                     // get annotator instance and subscribe to events
-                    $scope.annotator = $("#document-body").data("annotator");
+                    $scope.annotator = angular.element("#document-body").data("annotator");
                     AnnotatorService.annotator($scope.annotator);
                     $scope.annotator
                         .subscribe("annotationCreated", $scope.handleAnnotationEvent)
@@ -87,7 +86,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
                 //console.log(pdf, pdf.numPages);
                 // Using promise to fetch the page
                 var numPages = Math.min(pdf.numPages, 10); // for testing limit pages
-                for(var i = 1; i <= numPages; i++) {
+                for (var i = 1; i <= numPages; i++) {
                     pdf.getPage(i).then($scope.renderPage);
                     // TODO render async
                 }
@@ -99,24 +98,24 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
             var viewport = page.getViewport(scale);
 
             // Prepare canvas using PDF page dimensions
-            var canvas = $("<canvas/>");
-            $("#document-body").append(canvas);
+            var canvas = angular.element("<canvas/>");
+            angular.element("#document-body").append(canvas);
             var context = canvas.get(0).getContext('2d');
             canvas.get(0).height = viewport.height;
             canvas.get(0).width = viewport.width;
 
             // Render PDF page into canvas context
             /*var canvasOffset = canvas.offset();
-            var $textLayerDiv = $("<div />")
-                .addClass("textLayer")
-                .css("height", viewport.height + "px")
-                .css("width", viewport.width + "px")
-                .offset({
-                    top: canvasOffset.top,
-                    left: canvasOffset.left
-                });
+             var $textLayerDiv = angular.element("<div />")
+             .addClass("textLayer")
+             .css("height", viewport.height + "px")
+             .css("width", viewport.width + "px")
+             .offset({
+             top: canvasOffset.top,
+             left: canvasOffset.left
+             });
 
-            $("#document-body").append($textLayerDiv);*/
+             angular.element("#document-body").append($textLayerDiv);*/
 
             var renderContext = {
                 canvasContext: context,
@@ -125,19 +124,19 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
             page.render(renderContext);
 
             /*page.getTextContent().then(function (textContent) {
-                //The second zero is an index identifying the page. It is set to page.number - 1.
-                //var textLayer = new TextLayerBuilder($textLayerDiv.get(0), 0);
-                var textLayer = new TextLayerBuilder({ textLayerDiv : $textLayerDiv.get(0), pageIndex : 0 });
-                textLayer.setTextContent(textContent);
-                //console.log(textContent);
-                var renderContext = {
-                    canvasContext: context,
-                    textLayer: textLayer,
-                    viewport: viewport
-                };
+             //The second zero is an index identifying the page. It is set to page.number - 1.
+             //var textLayer = new TextLayerBuilder($textLayerDiv.get(0), 0);
+             var textLayer = new TextLayerBuilder({ textLayerDiv : $textLayerDiv.get(0), pageIndex : 0 });
+             textLayer.setTextContent(textContent);
+             //console.log(textContent);
+             var renderContext = {
+             canvasContext: context,
+             textLayer: textLayer,
+             viewport: viewport
+             };
 
-                page.render(renderContext);
-            });*/
+             page.render(renderContext);
+             });*/
         }
 
         $scope.loadAnnotationSet = function () {
@@ -163,4 +162,10 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
                 AnnotatorService.colorizeAnnotation(annotation);
             });
         };
+
+        $scope.$on('$destroy', function () {
+            // TODO release resources, cancel request...
+            console.log("Destroy annotator");
+        });
+
     }]);

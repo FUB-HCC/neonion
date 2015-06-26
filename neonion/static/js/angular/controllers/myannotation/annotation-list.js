@@ -1,8 +1,8 @@
-neonionApp.controller('AnnotationStoreCtrl', ['$scope', '$http', 'SearchService', function ($scope, $http, SearchService) {
+neonionApp.controller('MyAnnotationListCtrl', ['$scope', '$http', 'CommonService', function ($scope, $http, CommonService) {
     "use strict";
 
-    SearchService.enabled = true;
-    $scope.search = SearchService;
+    CommonService.enabled = true;
+    $scope.search = CommonService;
 
     $http.get('/api/store/filter').success(function (data) {
         var occurrences = {};

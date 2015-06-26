@@ -22,6 +22,9 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$http', 'AnnotatorService
         });
     });
 
+    /**
+     * Scrolls the view port to the last annotation.
+     */
     $scope.scrollToLastAnnotation = function () {
         var annotation = AnnotatorService.annotator().plugins.Neonion.getLastAnnotation();
         if (annotation) {
@@ -67,6 +70,40 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$http', 'AnnotatorService
         } else {
             annotations.forEach(Annotator._instances[0].plugins.Neonion.hideAnnotation);
             contributor.showAnnotation = false;
+        }
+    };
+
+    $scope.startNamedEntityRecognition = function () {
+        var span = angular.element('#nav-annotate>span');
+        if (!span.hasClass('fa-spin')) {
+            span.addClass('fa-spin');
+            AnnotatorService.annotator().plugins.NER.recognize({
+                success: function (data) {
+                    span.removeClass('fa-spin');
+                },
+                error: function () {
+                    span.removeClass('fa-spin');
+                }
+            });
+        }
+    };
+
+    /**
+     * Find the right method, call on correct element.
+     */
+    $scope.enableFullscreen = function() {
+        var element = angular.element('annotate-space')
+        if(element.requestFullscreen) {
+            element.requestFullscreen();
+
+        } else if(element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+
+        } else if(element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+
+        } else if(element.msRequestFullscreen) {
+            element.msRequestFullscreen();
         }
     };
 

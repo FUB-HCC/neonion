@@ -1,7 +1,7 @@
 /**
  * SPARQL query form controller
  */
-neonionApp.controller('QueryCtrl', ['$scope', '$http', function ($scope, $http) {
+neonionApp.controller('AnalyzeQueryCtrl', ['$scope', '$http', function ($scope, $http) {
     "use strict";
 
     $scope.form = {

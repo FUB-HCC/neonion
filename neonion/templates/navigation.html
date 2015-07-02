@@ -8,17 +8,17 @@
         {% url 'accounts.views.logout' as url_logout %}
         {% with url_occurrences="/annotations_occurrences/" url_ann_documents="/ann_documents/"%}
 
-        {# My neonion #}
+        {# Documents #}
         <li {% if request.path == url_home %}class="active"{% endif %}>
             <a href="{{ url_home }}">
-                <span class="fa fa-home fa-fw"></span>My neonion
+                <span class="fa fa-home fa-fw"></span>Documents
             </a>
         </li>
-        {# My Annotations #}
+        {# Annotations #}
         <li {% if request.path == url_my_annotations or url_occurrences in request.path or  url_ann_documents in request.path %}
             class="active"{% endif %}>
             <a href="{{ url_my_annotations }}">
-                <span class="fa fa-bookmark fa-fw"></span>My annotations
+                <span class="fa fa-bookmark fa-fw"></span>Annotations
             </a>
         </li>
         {# Import #}

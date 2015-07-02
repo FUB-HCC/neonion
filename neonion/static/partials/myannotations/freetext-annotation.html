@@ -1,0 +1,26 @@
+<ul class="list-reset" ng-controller="MyAnnotationListCtrl" ng-cloak>
+    <li ng-repeat="document in freetextAnnotations">
+        <h3 ng-if="documents[document.id]">
+            <a href="/annotator/{{document.id}}#?workspace={{ document.visibility }}" target="blank">{{ documents[document.id] }}</a>
+        </h3>
+        <h3 ng-if="!documents[document.id]">Document was deleted</h3>
+        <small ng-if="groups[document.visibility]"><i class="fa fa-circle-o"></i> {{ groups[document.visibility] }}</small>
+        <small ng-if="!groups[document.visibility]"><i class="fa fa-circle-o"></i> Private</small>
+        <table class="table-freetext-annotation">
+            <thead>
+                <tr>
+                  <th class="context">Context</th>
+                  <th class="annotation">Annotation</th>
+                  <th class="date">Creation Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="anno in document.annotations">
+                    <td class="context">{{ anno.contextLeft | truncate:'left' }}&nbsp;<a class="mark" href="/annotator/{{document.id}}#?workspace={{ document.visibility }}" target="blank">{{ anno.context }}&nbsp;<i class="fa fa-external-link"></i></a>&nbsp;{{ anno.contextRight | truncate:'right' }}</td>
+                    <td class="annotation">{{ anno.annotation }}</td>
+                    <td class="date">{{ anno.date }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </li>
+</ul>

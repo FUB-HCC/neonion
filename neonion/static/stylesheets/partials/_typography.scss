@@ -26,3 +26,25 @@ hr {
   border: solid $silver;
   border-width: 1px 0 0;
 }
+
+.mark, mark {
+  background-color: transparentize($tangerine, 0.7);
+}
+
+a {
+  color: $ship-gray;
+  text-decoration: underline;
+
+  &:hover,
+  &:focus {
+    color: $black;
+  }
+
+  &.mark {
+    text-decoration: none;
+
+    &:hover {
+      background-color: $tangerine;
+    }
+  }
+}

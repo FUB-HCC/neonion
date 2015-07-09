@@ -11,11 +11,25 @@
     <div ng-controller="ContextInfoCtrl">
       <ul class="context-list">
       {% verbatim %}
-          <li><i class="fa fa-bookmark"></i>{{ annotatorService.getNumberOfTotalAnnotations() }} Annotations</li>
-          <li><i class="fa fa-users"></i>{{ annotatorService.contributors.length }} Contributer</li>
+          <li><i class="fa fa-bookmark"></i>
+                <ng-pluralize count="annotatorService.getNumberOfTotalAnnotations()"
+                when="{'0': 'No Annotations',
+                       'one': '1 Annotation',
+                       'other': '{} Annotations'}">
+                </ng-pluralize>
+          </li>
+          <li><i class="fa fa-users"></i>
+                <ng-pluralize count="annotatorService.contributors.length"
+                when="{'0': 'Nobody has contributed',
+                       'one': '1 Contributor',
+                       'other': '{} Contributors'}">
+                </ng-pluralize>
+          </li>
           <li class="loggedin"><i class="fa fa-user"></i>{{ user.email }}</li>
       </ul>
-      <div class="document-title" ng-cloak>{{ getTitle() }}<span class="list-icon"><i class="fa fa-circle-o"></i>{{ getGroup() }}</span></div>
+      <div class="document-title" ng-cloak>
+          {{ document.title }}<span class="list-icon"><i class="fa fa-circle-o"></i>{{ group.name }}</span>
+      </div>
       {% endverbatim %}
     </div>
     

@@ -26,16 +26,10 @@ class DocumentManager(models.Manager):
         'application/pdf'
     ]
 
-    def create_document(self, id, title, content, creator=None, type=None, contributor=None, coverage=None,
-                        description=None, format=None, identifier=None, language=None, publisher=None, relation=None,
-                        rights=None, source=None, subject=None, created=None, updated=None):
+    def create_document(self, id, title, content):
+        return self.create(id=id, title=title, content=content)
 
-        return self.create(id=id, title=title, content=content, creator=creator, type=type, contributor=contributor,
-                           coverage=coverage, description=description, format=format, identifier=identifier,
-                           language=language, publisher=publisher, relation=relation, rights=rights, source=source,
-                           subject=subject, created=created, updated=updated)
-
-    def create_document_from_file(self, file):
+    def create_document_from_file(self, file, **kwargs):
         if file.content_type in DocumentManager.SUPPORTED_TYPES:
             file_name = file.name.encode('utf-8')
             doc_title = str(' '.join(splitext(basename(file_name))[0].split()))
@@ -56,7 +50,8 @@ class DocumentManager(models.Manager):
                 return self.create(
                     id=doc_id,
                     title=doc_title,
-                    attached_file=uploaded_file)
+                    attached_file=uploaded_file,
+                    **{key: value for key, value in kwargs.items()})
 
         return None
 
@@ -68,7 +63,6 @@ class Document(models.Model):
     id = models.CharField('id', primary_key=True, max_length=200)
     title = models.CharField('name', max_length=500)
     attached_file = models.OneToOneField(File, null=True)
-
     creator = models.CharField('creator', max_length=500, default='', null=True)
     type = models.CharField('type', max_length=500, default='', null=True)
     contributor = models.CharField('contributor', max_length=500, default='', null=True)

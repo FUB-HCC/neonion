@@ -12,18 +12,17 @@
 
             <form method="post" action="{% url 'documents.views.upload_file' %}" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="file-upload-wrapper">
-                    <button class="button button-small"/>Upload File</button>
-                    <input id="file-upload" name="file-upload"
+
+                <input id="file-upload" name="file-upload"
                        type="file" multiple change="fileLoad($files)"
                        ng-click="meta=true" ng-init="meta=false">
-                </div>
+
                 <input class="button button-primary button-import pull-right" type="submit"/>
+                <div id="import-metadata" ng-controller="MetaDataCtrl" ng-show="meta">
+                    <ng-include src="'{% static 'partials/import-meta-data.html' %}'"></ng-include>
+                </div>
             </form>
 
-            <div id="import-metadata" ng-controller="MetaDataCtrl" ng-show="meta">
-                <ng-include src="'{% static 'partials/import-meta-data.html' %}'"></ng-include>
-            </div>
         </div>
     {% else %}
         <ng-include src="'{% static 'partials/import-cms.html' %}'"></ng-include>

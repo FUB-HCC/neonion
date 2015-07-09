@@ -14,9 +14,18 @@ from django.shortcuts import get_object_or_404
 @login_required
 @require_POST
 def upload_file(request):
+    docProperties = {}
+    docModels = ["creator", "type", "contributor", "coverage", "description", "format", "identifier",
+                 "language", "publisher", "relation", "rights", "source", "subject"]
+
+    for m in docModels:
+        docProperties[m] = request.POST.get(m, None)        # fetches value or provides default if it does not exist
+
     for upload_field in request.FILES:
         for f in request.FILES.getlist(upload_field):
-            document = Document.objects.create_document_from_file(f)
+            document = Document.objects.create_document_from_file(f, **docProperties)
+            document.save()
+ 
             if document is not None:
                 # import document into workspace
                 request.user.owned_documents.add(document)

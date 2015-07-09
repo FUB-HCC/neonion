@@ -1,4 +1,4 @@
-neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
+neonionApp.controller('MyAnnotationDocumentListCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
     "use strict";
     var ann_docs = {};
     var url = $location.absUrl().split('/');

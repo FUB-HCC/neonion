@@ -1,8 +1,8 @@
 /**
  * Group management controller
  */
-neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'AccountService', 'DocumentService',
-    function ($scope, $http, GroupService, AccountService, DocumentService) {
+neonionApp.controller('GroupListCtrl', ['$scope', '$http', 'GroupService', 'UserService', 'DocumentService',
+    function ($scope, $http, GroupService, UserService, DocumentService) {
         "use strict";
 
         $scope.groups = [];
@@ -12,17 +12,14 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'Account
             groupName: "",
             selectedGroup: -1
         };
+        $scope.documents = DocumentService.query();
 
         GroupService.getGroups().then(function (result) {
             $scope.groups = result.data;
         });
 
-        AccountService.getAccounts().then(function (result) {
+        UserService.getAccounts().then(function (result) {
             $scope.users = result.data;
-        });
-
-        DocumentService.getDocuments().then(function (result) {
-            $scope.documents = result.data;
         });
 
         $scope.showMembership = function (group) {

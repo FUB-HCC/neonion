@@ -22,10 +22,10 @@
             </form>
 
             <div id="import-metadata" ng-controller="MetaDataCtrl" ng-show="meta">
-                <ng-include src="'{% static 'partials/meta_data.html' %}'"></ng-include>
+                <ng-include src="'{% static 'partials/import-meta-data.html' %}'"></ng-include>
             </div>
         </div>
     {% else %}
-        <ng-include src="'{% static 'partials/upload_cms.html' %}'"></ng-include>
+        <ng-include src="'{% static 'partials/import-cms.html' %}'"></ng-include>
     {% endif %}
 {% endblock %}

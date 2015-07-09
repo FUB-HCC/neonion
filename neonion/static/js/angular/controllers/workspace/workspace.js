@@ -1,12 +1,12 @@
 /**
  * Workspace controller
  */
-neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'AccountService', 'WorkspaceService', 'SearchService',
-    function ($scope, $http, AccountService, WorkspaceService, SearchService) {
+neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'UserService', 'WorkspaceService', 'CommonService',
+    function ($scope, $http, UserService, WorkspaceService, CommonService) {
         "use strict";
 
-        SearchService.enabled = true;
-        $scope.search = SearchService;
+        CommonService.enabled = true;
+        $scope.search = CommonService;
 
         $scope.allowRemove = false;
         $scope.allowImport = false;
@@ -15,16 +15,16 @@ neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'AccountService', 'Wo
         $scope.initPrivateWorkspace = function () {
             $scope.allowRemove = true;
             $scope.allowImport = true;
-            AccountService.getCurrentUser().then(function (result) {
+            UserService.getCurrentUser().then(function (result) {
                 $scope.user = result.data;
                 $scope.workspaces = [{id: $scope.user.email, name: 'Private', documents: result.data.owned_documents}];
             });
         };
 
         $scope.initPublicWorkspace = function () {
-            AccountService.getCurrentUser().then(function (result) {
+            UserService.getCurrentUser().then(function (result) {
                 var user = result.data;
-                AccountService.getEntitledDocuments(user).then(function (result) {
+                UserService.getEntitledDocuments(user).then(function (result) {
                     // filter for group public
                     $scope.workspaces = result.data.filter(function (element) {
                         return element.id == 1;
@@ -35,9 +35,9 @@ neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'AccountService', 'Wo
 
         $scope.initGroupWorkspace = function () {
             $scope.showWorkspaceName = true;
-            AccountService.getCurrentUser().then(function (result) {
+            UserService.getCurrentUser().then(function (result) {
                 var user = result.data;
-                AccountService.getEntitledDocuments(user).then(function (result) {
+                UserService.getEntitledDocuments(user).then(function (result) {
                     $scope.workspaces = result.data.filter(function (element) {
                         return element.id != 1;
                     });

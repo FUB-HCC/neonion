@@ -4,12 +4,12 @@
  * Deprecated: put controllers in separate file under /angular/controllers
  */
 
-neonionApp.controller('MainCtrl', ['$scope', '$http', 'SearchService', 'AccountService', function ($scope, $http, SearchService, AccountService) {
+neonionApp.controller('MainCtrl', ['$scope', '$http', 'SearchService', 'UserService', function ($scope, $http, SearchService, UserService) {
     "use strict";
     $scope.search = SearchService;
 
     // get current user
-    AccountService.getCurrentUser().then(function (result) {
+    UserService.getCurrentUser().then(function (result) {
         $scope.user = result.data;
     });
 
@@ -18,24 +18,24 @@ neonionApp.controller('MainCtrl', ['$scope', '$http', 'SearchService', 'AccountS
 /**
  * Accounts management controller
  */
-neonionApp.controller('AccountsCtrl', ['$scope', '$http', 'AccountService', function ($scope, $http, AccountService) {
+neonionApp.controller('AccountsCtrl', ['$scope', '$http', 'UserService', function ($scope, $http, UserService) {
     "use strict";
 
     $scope.users = [];
 
-    AccountService.getAccounts().then(function (result) {
+    UserService.getAccounts().then(function (result) {
         $scope.users = result.data;
     });
 
     $scope.updateUser = function (user, field, value) {
         if (user.hasOwnProperty(field) && user[field] != value) {
             user[field] = value;
-            AccountService.updateUser(user);
+            UserService.updateUser(user);
         }
     };
 
     $scope.deleteUser = function (user) {
-        AccountService.deleteUser(user).then(function (result) {
+        UserService.deleteUser(user).then(function (result) {
             var idx = $scope.users.indexOf(user);
             $scope.users.splice(idx, 1);
         });
@@ -46,8 +46,8 @@ neonionApp.controller('AccountsCtrl', ['$scope', '$http', 'AccountService', func
 /**
  * Group management controller
  */
-neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'AccountService', 'DocumentService',
-    function ($scope, $http, GroupService, AccountService, DocumentService) {
+neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'UserService', 'DocumentService',
+    function ($scope, $http, GroupService, UserService, DocumentService) {
         "use strict";
 
         $scope.groups = [];
@@ -62,7 +62,7 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'Account
             $scope.groups = result.data;
         });
 
-        AccountService.getAccounts().then(function (result) {
+        UserService.getAccounts().then(function (result) {
             $scope.users = result.data;
         });
 
@@ -151,8 +151,8 @@ neonionApp.controller('GroupsCtrl', ['$scope', '$http', 'GroupService', 'Account
 /**
  * Workspace controller
  */
-neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'AccountService', 'WorkspaceService', 'SearchService',
-    function ($scope, $http, AccountService, WorkspaceService, SearchService) {
+neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'UserService', 'WorkspaceService', 'SearchService',
+    function ($scope, $http, UserService, WorkspaceService, SearchService) {
         "use strict";
 
         SearchService.enabled = true;
@@ -165,16 +165,16 @@ neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'AccountService', 'Wo
         $scope.initPrivateWorkspace = function () {
             $scope.allowRemove = true;
             $scope.allowImport = true;
-            AccountService.getCurrentUser().then(function (result) {
+            UserService.getCurrentUser().then(function (result) {
                 $scope.user = result.data;
                 $scope.workspaces = [{id: $scope.user.email, name: 'Private', documents: result.data.owned_documents}];
             });
         };
 
         $scope.initPublicWorkspace = function () {
-            AccountService.getCurrentUser().then(function (result) {
+            UserService.getCurrentUser().then(function (result) {
                 var user = result.data;
-                AccountService.getEntitledDocuments(user).then(function (result) {
+                UserService.getEntitledDocuments(user).then(function (result) {
                     // filter for group public
                     $scope.workspaces = result.data.filter(function (element) {
                         return element.id == 1;
@@ -185,9 +185,9 @@ neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'AccountService', 'Wo
 
         $scope.initGroupWorkspace = function () {
             $scope.showWorkspaceName = true;
-            AccountService.getCurrentUser().then(function (result) {
+            UserService.getCurrentUser().then(function (result) {
                 var user = result.data;
-                AccountService.getEntitledDocuments(user).then(function (result) {
+                UserService.getEntitledDocuments(user).then(function (result) {
                     $scope.workspaces = result.data.filter(function (element) {
                         return element.id != 1;
                     });
@@ -388,8 +388,8 @@ neonionApp.controller('AnnDocsCtrl', ['$scope', '$http', '$location', function (
 /**
  * Annotator controller
  */
-neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 'AccountService', 'AnnotatorService', 'DocumentService',
-    function ($scope, $http, $location, $sce, AccountService, AnnotatorService, DocumentService) {
+neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 'UserService', 'AnnotatorService', 'DocumentService',
+    function ($scope, $http, $location, $sce, UserService, AnnotatorService, DocumentService) {
         "use strict";
 
         $scope.initialize = function (params) {
@@ -405,7 +405,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
         };
 
         $scope.setupAnnotator = function (params) {
-            AccountService.getCurrentUser()
+            UserService.getCurrentUser()
                 .then(function (user) {
                     params.agent = {
                         id: user.data.id,

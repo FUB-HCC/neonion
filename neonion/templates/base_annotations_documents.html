@@ -5,24 +5,7 @@
 {% block title %}Documents{% endblock %}
 {% block page_id %}Documents{% endblock %}
 
-
 {% block content %}
-    <div>
-        <h2>Annotated Documents</h2>
-    </div>
-
-    <ul id="document-table" class="document-grid" ng-controller="AnnDocsCtrl" ng-cloak>
-
-        {% verbatim %}
-        <li ng-repeat="doc in ann_docs track by $index | orderBy:'-created'">
-            <a href="/annotator/{{ doc.id }}" class="document-grid-content">
-                <div>{{ doc.title }}</div>
-            </a>
-            <div class="document-grid-actions">
-                <span class="fa fa-trash-o" ng-click="removeDocument(document)"></span>
-            </div>
-        </li>
-        {% endverbatim %}
-
-    </ul>
+    <h2>Annotated Documents</h2>
+    <ng-include src="'{% static 'partials/myannotation-document-list.html' %}'"></ng-include>
 {% endblock %}

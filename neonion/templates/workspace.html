@@ -23,19 +23,19 @@
                 <ng-include
                     ng-controller="WorkspaceCtrl"
                     onload="initPrivateWorkspace()"
-                    src="'{% static 'partials/document_grid.html' %}'"></ng-include>
+                    src="'{% static 'partials/workspace-document-list.html' %}'"></ng-include>
             </div>
             <div ng-switch-when="2">
                 <ng-include
                     ng-controller="WorkspaceCtrl"
                     onload="initPublicWorkspace()"
-                    src="'{% static 'partials/document_grid.html' %}'"></ng-include>
+                    src="'{% static 'partials/workspace-document-list.html' %}'"></ng-include>
             </div>
             <div ng-switch-when="3">
                 <ng-include
                     ng-controller="WorkspaceCtrl"
                     onload="initGroupWorkspace()"
-                    src="'{% static 'partials/document_grid.html' %}'"></ng-include>
+                    src="'{% static 'partials/workspace-document-list.html' %}'"></ng-include>
             </div>
         </div>
     </div>

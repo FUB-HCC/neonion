@@ -5,27 +5,7 @@
 {% block title %}All Occurrences{% endblock %}
 {% block page_id %}allOccurrences{% endblock %}
 
-
 {% block content %}
-    <div>
-	    <h2>All Occurrences</h2>
-        <table>
-    	    <thead>
-    	        <tr>
-    	            <th>Annotation Context</th>
-    	            <th>Document</th>
-    	            <th>Created</th>
-                </tr>
-            </thead>
-            <tbody ng-controller="AnnOccurCtrl" ng-cloak>
-            {% verbatim %}
-                <tr ng-repeat="occur in ann_occur | orderBy:'-created'">
-                    <td> {{ occur.contextLeft }} <strong>{{ occur.ann }} </strong> {{ occur.contextRight }}</td>
-                    <td> {{ occur.title }}</td>
-                    <td> {{ occur.created | date : "MM/dd/yyyy 'at' h:mma" }} </td>
-                </tr>
-            {% endverbatim %}
-            </tbody>
-        </table>
-	</div>
+    <h2>All Occurrences</h2>
+    <ng-include src="'{% static 'partials/myannotation-occurrence-list.html' %}'"></ng-include>
 {% endblock %}

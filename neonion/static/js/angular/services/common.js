@@ -1,7 +1,7 @@
 /**
  * Service for on page search
  */
-neonionApp.factory('SearchService', function () {
+neonionApp.factory('CommonService', function () {
     "use strict";
     return {
         query: "",

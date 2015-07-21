@@ -16,6 +16,20 @@ th, tr {
   vertical-align: top;
 }
 
+.table-freetext-annotation {
+  table-layout: fixed;
+  word-wrap:break-word;
+
+  th, td {
+    &.context { width: 45%; }
+    &.annotation { width: 40%; }
+    &.date {
+      width: 15%;
+      text-align: right;
+    }
+  }
+}
+
 .checkbox {
   width: 2*$column;
   height: $baseline;

@@ -1,10 +1,60 @@
-neonionApp.controller('MyAnnotationListCtrl', ['$scope', '$http', 'CommonService', function ($scope, $http, CommonService) {
+neonionApp.controller('MyAnnotationListCtrl', ['$scope', '$http', 'CommonService', 'DocumentService', 'GroupService',
+    function ($scope, $http, CommonService, DocumentService, GroupService) {
     "use strict";
 
     CommonService.enabled = true;
     $scope.search = CommonService;
 
     $http.get('/api/store/filter').success(function (data) {
+
+        // make all freetext annotations available
+        var annosSortedByDoc = {};
+        var freetextData = data.rows.filter($scope.isFreetextAnnotation);
+
+        // get all titles
+        DocumentService.query(function(documents) {
+
+            var documentList = {}
+            documents.forEach(function(doc) {
+                documentList[doc.id] = doc.title;
+            });
+            $scope.documents = documentList;
+        });
+
+        // get all groups
+        GroupService.getGroups().then(function (result) {
+
+            var groupListe = {}
+            result.data.forEach(function(group) {
+                groupListe[group.id] = group.name;
+            });
+            $scope.groups = groupListe;
+        });
+
+        // create an object for each document: id, visibilty and list of annotations
+        // and fill the list of annotations
+        freetextData.forEach(function(anno) {
+            var key = anno.uri + " " + anno.permissions.read;
+            if (!(key in annosSortedByDoc)) {
+                annosSortedByDoc[key] = {
+                    id: anno.uri,
+                    visibility: anno.permissions.read[0],
+                    annotations: {}
+                };
+            }
+
+            annosSortedByDoc[key].annotations[anno.id] = {
+                context: anno.quote,
+                contextLeft: anno.context.left,
+                contextRight: anno.context.right,
+                annotation: anno.text,
+                date: new Date(Date.parse(anno.created)).toLocaleString()
+            }
+        });
+        $scope.freetextAnnotations = annosSortedByDoc;
+
+
+        // make all semantic annotations available
         var occurrences = {};
         var filterUserData = data.rows.filter($scope.isSemanticAnnotation);
 
@@ -45,6 +95,13 @@ neonionApp.controller('MyAnnotationListCtrl', ['$scope', '$http', 'CommonService
             return true;
         }
         return false;
+    };
+
+    $scope.isFreetextAnnotation = function (annotation) {
+        if (annotation.hasOwnProperty("rdf")) {
+            return false;
+        }
+        return true;
     };
 
     $scope.filterAnnotations = function (occurrence) {

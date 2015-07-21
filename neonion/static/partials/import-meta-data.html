@@ -15,8 +15,8 @@
             <td>{{ key }}</td>
             <td>{{ value.definition }}</td>
             <td>
-                <form ng-submit="submit()">
-                    <input class="fieldSettings" id="meta-{{$index}}" type="text"
+                <form method="post" ng-submit="submit()">
+                    <input name="{{ key }}" class="fieldSettings" id="meta-{{$index}}" type="text"
                             ng-model="value.value">
                 </form>
             </td>

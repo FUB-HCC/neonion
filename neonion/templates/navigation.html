@@ -5,6 +5,7 @@
         {% url 'neonion.views.my_annotations' as url_my_annotations %}
         {% url 'neonion.views.import_document' as url_import %}
         {% url 'neonion.views.render_settings' as url_settings %}
+        {% url 'neonion.views.render_vocabulary' as url_vocabulary %}
         {% url 'accounts.views.logout' as url_logout %}
         {% with url_occurrences="/annotations_occurrences/" url_ann_documents="/ann_documents/"%}
 
@@ -25,6 +26,12 @@
         <li {% if request.path == url_import %}class="active"{% endif %}>
             <a href="{{ url_import }}">
                 <span class="fa fa-upload fa-fw"></span>Import
+            </a>
+        </li>
+        {# Vocabulary #}
+        <li {% if request.path == url_vocabulary %}class="active"{% endif %}>
+            <a href="{{ url_vocabulary }}">
+                <span class="fa fa-book fa-fw"></span>Vocabulary
             </a>
         </li>
         {# Settings #}

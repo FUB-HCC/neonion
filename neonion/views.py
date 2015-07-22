@@ -46,6 +46,11 @@ def ann_documents(request, quote):
 
 
 @login_required
+def render_vocabulary(request):
+    return render_to_response('base_vocabulary.html', context_instance=RequestContext(request))
+
+
+@login_required
 def render_settings(request):
     return render_to_response('base_settings.html', context_instance=RequestContext(request))
 

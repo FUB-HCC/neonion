@@ -32,7 +32,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     owned_documents = models.ManyToManyField(Document, blank=True, null=True)
     hidden_documents = models.ManyToManyField(Document, related_name='hidden_documents', blank=True, null=True)
-    active_annotationset = models.OneToOneField(AnnotationSet, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
 
@@ -80,6 +79,7 @@ class WorkingGroup(models.Model):
     owner = models.ForeignKey(User, related_name="group_owner", null=True, unique=False)
     members = models.ManyToManyField(User, through='Membership', related_name="group_members")
     documents = models.ManyToManyField(Document)
+    annotation_set = models.ForeignKey(AnnotationSet, blank=True, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name

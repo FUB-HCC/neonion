@@ -3,9 +3,14 @@
 /**
  * Annotator controller
  */
-neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 'UserService', 'AnnotatorService', 'DocumentService',
-    function ($scope, $http, $location, $sce, UserService, AnnotatorService, DocumentService) {
+neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 'UserService',
+    'AnnotatorService', 'DocumentService', 'AnnotationSetService', 'ConceptService', 'PropertyService',
+    function ($scope, $http, $location, $sce, UserService, AnnotatorService, DocumentService,
+    AnnotationSetService, ConceptService, PropertyService) {
         "use strict";
+
+        $scope.concepts = ConceptService.query();
+        $scope.properties = PropertyService.query();
 
         $scope.initialize = function (params) {
             $scope.params = params;
@@ -140,19 +145,19 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
         }
 
         $scope.loadAnnotationSet = function () {
-            $http.get('/api/annotationsets').success(function (data) {
-                $scope.annotationsets = data;
-                if ($scope.annotationsets.length > 0) {
-                    var sets = {};
-                    // TODO just take the first AS
-                    $scope.annotationsets[0].concepts.forEach(function (item) {
-                        sets[item.uri] = {
-                            label: item.label
-                        };
-                    });
+            $scope.annotationSet = AnnotationSetService.get({annotationSetId: "default"}, function () {
+                var sets = {};
+                $scope.concepts.filter(
+                    function (item) {
+                        return $scope.annotationSet.concepts.indexOf(item.id) != -1;
+                    }
+                ).forEach(
+                    function (item) {
+                        sets[item.uri] = item;
+                    }
+                );
 
-                    $scope.annotator.plugins.Neonion.annotationSets(sets);
-                }
+                $scope.annotator.plugins.Neonion.annotationSets(sets);
             });
         };
 

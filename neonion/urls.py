@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^annotations_occurrences/(?P<quote>.+)$', 'neonion.views.annotations_occurrences'),
     url(r'^ann_documents/(?P<quote>.+)$', 'neonion.views.ann_documents'),
     url(r'^import/$', 'neonion.views.import_document'),
+    url(r'^vocabulary/$', 'neonion.views.render_vocabulary'),
     url(r'^settings/$', 'neonion.views.render_settings'),
     url(r'^query$', 'neonion.views.render_query'),
 

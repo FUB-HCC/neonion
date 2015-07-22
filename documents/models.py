@@ -5,6 +5,8 @@ from os.path import splitext, basename
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from common.vocab import neonion
+from common.mixins import ResourceMixin
 from common.sparql import insert_data
 from common.statements import metadata_statement
 
@@ -59,8 +61,7 @@ class DocumentManager(models.Manager):
         return None
 
 
-class Document(models.Model):
-    id = models.CharField('id', primary_key=True, max_length=200)
+class Document(ResourceMixin, models.Model):
     title = models.CharField('name', max_length=500)
     attached_file = models.OneToOneField(File, null=True)
     creator = models.CharField('creator', max_length=500, default='', null=True)
@@ -81,14 +82,13 @@ class Document(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    class_uri = neonion.DOCUMENT
+
     # assign manager
     objects = DocumentManager()
 
     def __unicode__(self):
         return self.id
-
-    class Meta:
-        ordering = ('title',)
 
 
 # Signal which ensures that metadata gets saved automatically after newly created document

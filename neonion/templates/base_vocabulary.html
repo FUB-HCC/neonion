@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Vocabulary{% endblock %}
+{% block page_id %}vocabulary{% endblock %}
+
+{% block content %}
+	<div ng-init="tab = 1" ng-cloak>
+		<h2>Vocabulary</h2>
+
+        <nav class="nav-horizontal">
+            <ul>
+                <li ng-class="{active:tab===1}"><a href="" ng-click="tab = 1">Annotation Sets</a></li>
+                <li ng-class="{active:tab===2}"><a href="" ng-click="tab = 2">Concepts</a></li>
+                <li ng-class="{active:tab===3}"><a href="" ng-click="tab = 3">Properties</a></li>
+            </ul>
+        </nav>
+
+        <div class="wrapper" ng-switch="tab">
+            <div ng-switch-when="1">
+                <ng-include
+                    src="'{% static 'partials/generic-resource-list.html' %}'"
+                    ng-controller="AnnotationSetListCtrl" ></ng-include>
+            </div>
+            <div ng-switch-when="2">
+                <ng-include
+                    src="'{% static 'partials/generic-resource-list.html' %}'"
+                    ng-controller="ConceptListCtrl" ></ng-include>
+            </div>
+            <div ng-switch-when="3">
+                <ng-include
+                    src="'{% static 'partials/generic-resource-list.html' %}'"
+                    ng-controller="PropertyListCtrl" ></ng-include>
+            </div>
+        </div>
+	</div>
+{% endblock %}

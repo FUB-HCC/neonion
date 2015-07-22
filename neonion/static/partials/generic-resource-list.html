@@ -1,0 +1,16 @@
+<button type="button" >
+    <i class="fa fa-plus"></i>&nbsp;{{ locales.create }}
+</button>
+<table>
+    <tr ng-repeat="resource in resources | orderBy : 'label'">
+        <td>
+            <b ng-bind-html="getItemHeader(resource)"></b>
+            <span ng-show="getItemSubHeader" ng-bind-html="getItemSubHeader(resource)"></span>
+            <p ng-show="getItemDescription" ng-bind-html="getItemDescription(resource)"></p>
+            <p ng-show="getItemFooter" ng-bind-html="getItemFooter(resource)"></p>
+        </td>
+        <td>
+            <span class="fa fa-trash-o"></span>
+        </td>
+    </tr>
+</table>

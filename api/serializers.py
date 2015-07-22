@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from accounts.models import User, WorkingGroup, Membership
 from documents.models import Document, File
-from annotationsets.models import AnnotationSet, Concept, LinkedConcept
+from annotationsets.models import AnnotationSet, Concept, LinkedConcept, Property, LinkedProperty
 
 
 # Serializers for file representation.
@@ -31,7 +31,7 @@ class DocumentDetailedSerializer(DocumentSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'is_superuser')
+        fields = ('id', 'email', 'is_active', 'is_superuser')
 
 
 # Serializer for user representation.
@@ -67,28 +67,38 @@ class WorkingGroupDocumentSerializer(serializers.ModelSerializer):
 
 
 # Serializers for linked concept representation.
+class LinkedPropertySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LinkedProperty
+        fields = ('id', 'uri', 'label', 'comment', 'linked_property')
+
+
+# Serializers for concept representation.
+class PropertySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Property
+        fields = ('id', 'uri', 'label', 'comment', 'inverse_property', 'range', 'linked_properties')
+
+
+# Serializers for linked concept representation.
 class LinkedConceptSerializer(serializers.ModelSerializer):
     class Meta:
         model = LinkedConcept
-        fields = ('uri', 'label', 'comment', 'linked_type', 'type', 'provider_class')
+        fields = ('id', 'uri', 'label', 'comment', 'linked_type')
 
 
 # Serializers for concept representation.
 class ConceptSerializer(serializers.ModelSerializer):
-    linked_concepts = LinkedConceptSerializer(many=True)
 
     class Meta:
         model = Concept
-        fields = ('uri', 'label', 'comment', 'additional_type', 'type', 'linked_concepts')
+        fields = ('id', 'uri', 'label', 'comment', 'properties', 'linked_concepts')
 
 
 # Serializers for annotation set representation.
 class AnnotationSetSerializer(serializers.ModelSerializer):
-    concepts = ConceptSerializer(many=True)
 
     class Meta:
         model = AnnotationSet
-        fields = ('uri', 'label', 'comment', 'type', 'concepts')
-
-    def create(self, validated_data):
-        return AnnotationSet.objects.create_set(**validated_data)
+        fields = ('id', 'uri', 'label', 'comment', 'concepts')

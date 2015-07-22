@@ -1,7 +1,8 @@
 from django.conf.urls import url, include
 from rest_framework import routers
 from api import views
-from viewsets import UserViewSet, WorkingGroupViewSet, DocumentViewSet, AnnotationSetViewSet
+from viewsets import UserViewSet, WorkingGroupViewSet, DocumentViewSet, AnnotationSetViewSet, ConceptViewSet, \
+    PropertyViewSet, LinkedConceptViewSet
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter(trailing_slash=False)
@@ -9,6 +10,9 @@ router.register(r'users', UserViewSet)
 router.register(r'groups', WorkingGroupViewSet)
 router.register(r'documents', DocumentViewSet)
 router.register(r'annotationsets', AnnotationSetViewSet)
+router.register(r'concepts', ConceptViewSet)
+router.register(r'linkedconcepts', LinkedConceptViewSet)
+router.register(r'properties', PropertyViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),

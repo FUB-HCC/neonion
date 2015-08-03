@@ -7,8 +7,8 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$http', 'AnnotatorService
     $scope.annotatorService = AnnotatorService;
     $scope.active = -1;
     $scope.mode = {
-        freetext: Annotator.Plugin.Neonion.prototype.annotationModes.freeTextAnnotation,
-        semantic: Annotator.Plugin.Neonion.prototype.annotationModes.semanticAnnotation
+        commenting: Annotator.Plugin.Neonion.prototype.annotationModes.commenting,
+        conceptTagging: Annotator.Plugin.Neonion.prototype.annotationModes.conceptTagging
     };
 
     // for closing the submenu if clicked anywere except the menu itself

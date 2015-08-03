@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import BaseUserManager, Permission
 from django.conf import settings
 from documents.models import Document
-from annotationsets.models import AnnotationSet
+from annotationsets.models import ConceptSet
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.db import transaction
@@ -79,7 +79,7 @@ class WorkingGroup(models.Model):
     owner = models.ForeignKey(User, related_name="group_owner", null=True, unique=False)
     members = models.ManyToManyField(User, through='Membership', related_name="group_members")
     documents = models.ManyToManyField(Document)
-    annotation_set = models.ForeignKey(AnnotationSet, blank=True, null=True, on_delete=models.SET_NULL)
+    concept_set = models.ForeignKey(ConceptSet, blank=True, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name

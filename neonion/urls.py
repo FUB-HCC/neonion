@@ -6,9 +6,9 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'^$', 'neonion.views.render_home'),
-    url(r'^my_annotations/$', 'neonion.views.my_annotations'),
-    url(r'^annotations_occurrences/(?P<quote>.+)$', 'neonion.views.annotations_occurrences'),
-    url(r'^ann_documents/(?P<quote>.+)$', 'neonion.views.ann_documents'),
+    url(r'^annotations/$', 'neonion.views.annotations'),
+    url(r'^annotation_occurrences$', 'neonion.views.annotation_occurrences'),
+    url(r'^annotation_documents$', 'neonion.views.annotation_documents'),
     url(r'^import/$', 'neonion.views.import_document'),
     url(r'^vocabulary/$', 'neonion.views.render_vocabulary'),
     url(r'^settings/$', 'neonion.views.render_settings'),

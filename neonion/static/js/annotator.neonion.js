@@ -30,7 +30,7 @@
         this.annotationSets = function (sets) {
             if (sets) {
                 this.compositor = sets;
-                if (this.editorState.annotationMode == this.annotationModes.semanticAnnotation) {
+                if (this.editorState.annotationMode == this.annotationModes.conceptTagging) {
                     // apply if annotation mode equals semantic annotation mode
                     this.applyAnnotationSets();
                 }   
@@ -42,10 +42,10 @@
             if (mode && $.isNumeric(mode)) {
                 this.editorState.annotationMode = mode;
                 switch(mode) {
-                    case this.annotationModes.semanticAnnotation:
+                    case this.annotationModes.conceptTagging:
                         this.applyAnnotationSets();
                         break;
-                    case this.annotationModes.freeTextAnnotation:
+                    case this.annotationModes.commenting:
                         this.adder.html(this.templates.emptyAdder);
                         break;
                 }
@@ -64,7 +64,7 @@
                 editor: this.initEditorField()
             };
             this.editorState = {
-                annotationMode : this.annotationModes.freeTextAnnotation,
+                annotationMode : this.annotationModes.commenting,
                 selectedType : "",
                 selectedItem : -1,
                 resultSet : []
@@ -140,12 +140,12 @@
          */
         this.initEditorField = function () {
             return {
-                freeTextField : this.initFreeTextField(),
-                semanticAnnotationField : this.initSemanticAnnotationField()
+                commentField : this.initCommentField(),
+                conceptTaggingField : this.initConceptTaggingField()
             };
         };
 
-        this.initFreeTextField = function() {
+        this.initCommentField = function() {
             var field = this.annotator.editor.fields[0].element;
             // add controls 
             $(field).append(
@@ -154,7 +154,7 @@
             return field;
         };
 
-        this.initSemanticAnnotationField = function() {
+        this.initConceptTaggingField = function() {
             // add field containing the suggested resources
             var field = this.annotator.editor.addField({
                 load: $.proxy(this.loadEditorField, this),
@@ -237,8 +237,9 @@
         },
 
         annotationModes : {
-            freeTextAnnotation : 1,
-            semanticAnnotation : 2
+            commenting : 1,
+            highlighting : 2,
+            conceptTagging : 3
         },
 
         options: {
@@ -356,9 +357,9 @@
 
             // set type of body
             switch(this.editorState.annotationMode) {
-                case this.annotationModes.semanticAnnotation:
+                case this.annotationModes.conceptTagging:
                     annotation.oa.hasBody.type = this.oa.types.tag.semanticTag; break;
-                case this.annotationModes.freeTextAnnotation:
+                case this.annotationModes.commenting:
                     annotation.oa.hasBody.type = this.oa.types.tag.tag; break;
             }
 
@@ -382,15 +383,15 @@
                 // visibility of fields depends on type of body
                 switch (annotation.oa.hasBody.type) {
                     case this.oa.types.tag.tag:
-                        this.showField(this.fields.editor.freeTextField);
-                        var textarea = $(this.fields.editor.freeTextField).find("textarea");
+                        this.showField(this.fields.editor.commentField);
+                        var textarea = $(this.fields.editor.commentField).find("textarea");
                         // transfer quote to text input
                         textarea.val(annotation.quote);
                         // preselect text
                         textarea.select();
                         break;
                     case this.oa.types.tag.semanticTag:
-                        this.showField(this.fields.editor.semanticAnnotationField);
+                        this.showField(this.fields.editor.conceptTaggingField);
                         break;
                 }
             }
@@ -488,7 +489,7 @@
         },
 
         loadEditorField : function (field, annotation) {
-            if (this.annotationMode() == this.annotationModes.semanticAnnotation) {
+            if (this.annotationMode() == this.annotationModes.conceptTagging) {
                 // restore type from annotation if provided
                 this.editorState.selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : this.editorState.selectedType;
 
@@ -500,7 +501,7 @@
         },
 
         submitEditorField : function (field, annotation) {
-               if (this.annotationMode() == this.annotationModes.semanticAnnotation) {
+               if (this.annotationMode() == this.annotationModes.conceptTagging) {
                    if (annotation.oa.hasBody.type == this.oa.types.tag.semanticTag) {
                        // add rdf data
                        annotation.rdf = {
@@ -521,7 +522,7 @@
         },
 
         updateResourceList : function(searchTerm) {
-            var list = $(this.fields.editor.semanticAnnotationField).find("#resource-list");
+            var list = $(this.fields.editor.conceptTaggingField).find("#resource-list");
             // replace list with spinner while loading
             list.html(this.templates.spinner);
             // lookup resource by search term

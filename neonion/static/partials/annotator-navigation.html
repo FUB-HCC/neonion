@@ -55,18 +55,18 @@
                     </i>
                 </div>
                 <ul class="submenu-content">
-                    <li ng-click="setAnnotationMode(mode.freetext)"
+                    <li ng-click="setAnnotationMode(mode.commenting)"
                         class="icon-left"><span>
                         <i class="fa fa-check fa-fw"
-                           ng-class="{invisible: getAnnotationMode()!==mode.freetext}">
+                           ng-class="{invisible: getAnnotationMode()!==mode.commenting}">
 
-                        </i>Free Text Annotation</span>
+                        </i>Commenting</span>
                     </li>
-                    <li ng-click="setAnnotationMode(mode.semantic)" class="icon-left"><span><i
+                    <li ng-click="setAnnotationMode(mode.conceptTagging)" class="icon-left"><span><i
                             class="fa fa-check fa-fw"
 
-                            ng-class="{invisible: getAnnotationMode()!==mode.semantic}"
-                            ></i>Semantic Annotation</span>
+                            ng-class="{invisible: getAnnotationMode()!==mode.conceptTagging}"
+                            ></i>Concept Annotation</span>
                     </li>
                 </ul>
             </div>

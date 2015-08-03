@@ -1,5 +1,5 @@
 from django.test import TestCase
-from models import AnnotationSet, LinkedConcept, Concept
+from models import ConceptSet, LinkedConcept, Concept
 
 
 class AnnotationSetsTestCase(TestCase):
@@ -9,4 +9,4 @@ class AnnotationSetsTestCase(TestCase):
         'uri': 'http://neonion.org/',
         'label': 'Test Document',
         }
-        self.annotation_set = AnnotationSet.objects.create(**test_set)
+        self.annotation_set = ConceptSet.objects.create(**test_set)

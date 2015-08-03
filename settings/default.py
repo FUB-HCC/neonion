@@ -131,7 +131,9 @@ PIPELINE_JS = {
             'js/jquery.min.js',
             'js/jquery-ui.min.js',
             'js/angular.min.js',
-            'js/angular-resource.min.js'
+            'js/angular-resource.min.js',
+            'js/angular-filter.min.js',
+            'js/bootstrap.min.js'
         ),
         'output_filename': 'js/stats.js',
     },

@@ -35,3 +35,26 @@ neonionApp.factory('GroupService', ['$http', function ($http) {
 
     return factory;
 }]);
+
+/**
+ * New group service; TODO replace project wide
+ */
+neonionApp.factory('Group1Service', ['$resource',
+    function ($resource) {
+        return $resource('/api/groups/:groupId',
+            {groupId: '@id'},
+            {
+                'queryGroupNames': {
+                    method: 'GET',
+                    params: {},
+                    transformResponse: function (data, header) {
+                        var jsonData = angular.fromJson(data);
+                        var names = {};
+                        angular.forEach(jsonData, function (item) {
+                            names[item.id] = item.name;
+                        });
+                        return names;
+                    }
+                }
+            });
+    }]);

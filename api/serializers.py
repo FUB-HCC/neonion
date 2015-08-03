@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from accounts.models import User, WorkingGroup, Membership
 from documents.models import Document, File
-from annotationsets.models import AnnotationSet, Concept, LinkedConcept, Property, LinkedProperty
+from annotationsets.models import ConceptSet, Concept, LinkedConcept, Property, LinkedProperty
 
 
 # Serializers for file representation.
@@ -96,9 +96,9 @@ class ConceptSerializer(serializers.ModelSerializer):
         fields = ('id', 'uri', 'label', 'comment', 'properties', 'linked_concepts')
 
 
-# Serializers for annotation set representation.
-class AnnotationSetSerializer(serializers.ModelSerializer):
+# Serializers for concept set representation.
+class ConceptSetSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = AnnotationSet
+        model = ConceptSet
         fields = ('id', 'uri', 'label', 'comment', 'concepts')

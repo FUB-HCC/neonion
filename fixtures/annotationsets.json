@@ -121,14 +121,14 @@
   },
   {
     "fields": {
-      "comment": "",
+      "comment": "The default concept set",
       "concepts": [
         "institution",
         "person"
       ],
       "label": "Default"
     },
-    "model": "annotationsets.annotationset",
+    "model": "annotationsets.conceptset",
     "pk": "default"
   }
 ]

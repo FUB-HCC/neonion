@@ -1,0 +1,16 @@
+<table>
+    <thead>
+    <tr>
+        <th>Annotation Context</th>
+        <th>Document</th>
+        <th>Created</th>
+    </tr>
+    </thead>
+    <tbody ng-controller="AnnotationOccurrenceListCtrl" ng-cloak>
+        <tr ng-repeat="annotation in annotations | orderBy:'-created'">
+            <td> {{ annotation.context.left }} <strong>{{ annotation.quote }} </strong> {{ annotation.context.right }}</td>
+            <td> {{ documentTitles[annotation.uri] }}</td>
+            <td> {{ annotation.created | date : "MM/dd/yyyy 'at' h:mma" }} </td>
+        </tr>
+    </tbody>
+</table>

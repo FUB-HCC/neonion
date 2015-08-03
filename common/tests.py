@@ -2,7 +2,7 @@ from django.test import TestCase
 from uri import generate_uri
 from statements import Annotation
 from annotation import add_resource_uri
-from exceptions import NoSemanticAnnotationError, InvalidResourceTypeError
+from exceptions import NoConceptAnnotationError, InvalidResourceTypeError
 from vocab import neonion
 from cms import ContentSystem
 from django.core.validators import URLValidator
@@ -41,11 +41,11 @@ class UriTestCase(TestCase):
 class StatementsTestCase(TestCase):
 
     def setUp(self):
-        self.noSemanticAnnotation = {
+        self.noConceptAnnotation = {
             "quote": "Otto Hahn"
         }
 
-        self.semanticAnnotationWithoutURI = {
+        self.conceptAnnotationWithoutURI = {
             "quote": "Otto Hahn",
             "oa": {
                 "hasBody": {
@@ -58,7 +58,7 @@ class StatementsTestCase(TestCase):
             }
         }
 
-        self.semanticAnnotation = {
+        self.conceptAnnotation = {
             "quote": "Otto Hahn",
             "oa": {
                 "hasBody": {
@@ -72,7 +72,7 @@ class StatementsTestCase(TestCase):
             }
         }
 
-        self.semanticAnnotationWithSameAs = {
+        self.conceptAnnotationWithSameAs = {
             "quote": "Otto Hahn",
             "oa": {},
             "rdf": {
@@ -86,24 +86,24 @@ class StatementsTestCase(TestCase):
         self.test_general_document = create_test_document()
 
     def test_no_semantic_annotation(self):
-        self.assertRaises(NoSemanticAnnotationError, Annotation.statement_about_resource, self.noSemanticAnnotation)
+        self.assertRaises(NoConceptAnnotationError, Annotation.statement_about_resource, self.noConceptAnnotation)
 
     def test_semantic_annotation(self):
-        statement = Annotation.statement_about_resource(self.semanticAnnotation)
+        statement = Annotation.statement_about_resource(self.conceptAnnotation)
         self.assertTrue("rdf:type" in statement)
         self.assertTrue("rdfs:label" in statement)
 
     def test_semantic_annotation_with_same_as(self):
-        statement = Annotation.statement_about_resource(self.semanticAnnotationWithSameAs)
+        statement = Annotation.statement_about_resource(self.conceptAnnotationWithSameAs)
         self.assertTrue("owl:sameAs" in statement)
 
     def test_add_uri_to_invalid_annotation(self):
-        self.assertRaises(NoSemanticAnnotationError, add_resource_uri, self.noSemanticAnnotation)
+        self.assertRaises(NoConceptAnnotationError, add_resource_uri, self.noConceptAnnotation)
 
     def test_add_uri_to_valid_annotation(self):
-        annotation = self.semanticAnnotationWithoutURI
+        annotation = self.conceptAnnotationWithoutURI
         self.assertFalse("uri" in annotation['rdf'])
-        annotation = add_resource_uri(self.semanticAnnotationWithoutURI)
+        annotation = add_resource_uri(self.conceptAnnotationWithoutURI)
         self.assertTrue("uri" in annotation['rdf'])
 
     def test_general_document(self):

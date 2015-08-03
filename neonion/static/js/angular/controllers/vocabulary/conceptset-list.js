@@ -1,12 +1,12 @@
-neonionApp.controller('AnnotationSetListCtrl', ['$scope', '$http', '$sce', 'AnnotationSetService', 'ConceptService',
-    function ($scope, $http, $sce, AnnotationSetService, ConceptService) {
+neonionApp.controller('ConceptSetListCtrl', ['$scope', '$http', '$sce', 'ConceptSetService', 'ConceptService',
+    function ($scope, $http, $sce, ConceptSetService, ConceptService) {
     "use strict";
 
     $scope.locales = {
         // TODO localize
-        create : "New Annotation Set"
+        create : "New Concept Set"
     };
-    $scope.resources = AnnotationSetService.query();
+    $scope.resources = ConceptSetService.query();
     $scope.concepts = ConceptService.query();
 
     $scope.getItemHeader = function(resource) {

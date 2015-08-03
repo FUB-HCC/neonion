@@ -1,5 +1,5 @@
 from common.uri import generate_uri
-from exceptions import NoSemanticAnnotationError
+from exceptions import NoConceptAnnotationError
 
 
 def add_resource_uri(annotation):
@@ -9,6 +9,6 @@ def add_resource_uri(annotation):
             if uri is not None:
                 annotation['rdf']['uri'] = uri
     else:
-        raise NoSemanticAnnotationError(annotation)
+        raise NoConceptAnnotationError(annotation)
 
     return annotation

@@ -3,7 +3,7 @@ from enum import Enum
 
 
 class neonion:
-    ANNOTATION_SET = settings.NEONION['BASE_NAMESPACE'].rstrip('/') + '/ontology/annotationset'
+    CONCEPT_SET = settings.NEONION['BASE_NAMESPACE'].rstrip('/') + '/ontology/conceptset'
     CONCEPT = settings.NEONION['BASE_NAMESPACE'].rstrip('/') + '/ontology/concept'
     LINKED_CONCEPT = settings.NEONION['BASE_NAMESPACE'].rstrip('/') + '/ontology/linkedconcept'
     PROPERTY = settings.NEONION['BASE_NAMESPACE'].rstrip('/') + '/ontology/property'

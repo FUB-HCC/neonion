@@ -1,6 +1,6 @@
 
 
-class NoSemanticAnnotationError(Exception):
+class NoConceptAnnotationError(Exception):
 
     def __init__(self, value):
         self.value = value

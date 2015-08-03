@@ -29,20 +29,18 @@ def render_annotator(request, doc_id):
 
 
 @login_required
-def my_annotations(request):
-    return render_to_response('base_my_annotations.html', context_instance=RequestContext(request))
+def annotations(request):
+    return render_to_response('base_annotations.html', context_instance=RequestContext(request))
 
 
 @login_required
-def annotations_occurrences(request, quote):
-    data = {'annotation': quote}
-    return render_to_response('base_annotations_occurrences.html', data, context_instance=RequestContext(request))
+def annotation_occurrences(request):
+    return render_to_response('base_annotations_occurrences.html', context_instance=RequestContext(request))
 
 
 @login_required
-def ann_documents(request, quote):
-    data = {'annotation': quote}
-    return render_to_response('base_annotations_documents.html', data, context_instance=RequestContext(request))
+def annotation_documents(request):
+    return render_to_response('base_annotations_documents.html', context_instance=RequestContext(request))
 
 
 @login_required

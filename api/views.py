@@ -21,16 +21,20 @@ class AnnotationListView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, format=None):
-        """Returns a list of all annotations"""
-        response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations')
-        return JsonResponse(response.json(), safe=False)
+        if 'private' in request.query_params:
+            """Returns a list of all annotations filtered by current user"""
+            response = requests.get(settings.ANNOTATION_STORE_URL + '/search?creator.email=' + request.user.email + "&limit=9999")
+            return JsonResponse(response.json()['rows'], safe=False)
+        else:
+            """Returns a list of all annotations"""
+            response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations')
+            return JsonResponse(response.json(), safe=False)
 
     def post(self, request, format=None):
         """Creates a new annotation"""
         annotation = json.loads(request.body)
-
-        if 'oa' in annotation and 'hasBody' in annotation['oa']:
-            if annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.semanticTag:
+        if 'oa' in annotation and 'hasBody' in annotation['oa'] and 'type' in annotation['oa']['hasBody']:
+            if annotation['oa']['hasBody']['type'] == OpenAnnotation.TagTypes.semanticTag.value:
                 try:
                     add_resource_uri(annotation)
                 except InvalidResourceTypeError:
@@ -84,13 +88,6 @@ def store_root(request):
 
 
 @api_view(["GET"])
-def store_filter_annotations(request):
-    response = requests.get(settings.ANNOTATION_STORE_URL + '/search?creator.email=' + request.user.email + "&limit=9999")
-    return JsonResponse(response.json(), safe=False)
-
-
-@api_view(["GET"])
 def store_search(request):
-    ##print(request.GET.urlencode())
     response = requests.get(settings.ANNOTATION_STORE_URL + '/search?' + request.GET.urlencode())
     return JsonResponse(response.json(), safe=False)

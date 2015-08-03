@@ -38,8 +38,8 @@ class Concept(ResourceMixin, models.Model):
     class_uri = neonion.CONCEPT
 
 
-class AnnotationSet(ResourceMixin, models.Model):
+class ConceptSet(ResourceMixin, models.Model):
     # list of concepts associated with set
     concepts = models.ManyToManyField("Concept", null=True, blank=True)
 
-    class_uri = neonion.ANNOTATION_SET
+    class_uri = neonion.CONCEPT_SET

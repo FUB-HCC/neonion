@@ -1,11 +1,11 @@
 from django.http import HttpResponseForbidden
 from documents.models import Document
-from annotationsets.models import AnnotationSet, Concept, Property, LinkedConcept, LinkedProperty
+from annotationsets.models import ConceptSet, Concept, Property, LinkedConcept, LinkedProperty
 from rest_framework import viewsets, status
 from accounts.models import User, WorkingGroup
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
-from api.serializers import UserSerializer, UserDetailedSerializer, WorkingGroupSerializer, AnnotationSetSerializer, \
+from api.serializers import UserSerializer, UserDetailedSerializer, WorkingGroupSerializer, ConceptSetSerializer, \
     DocumentSerializer, DocumentDetailedSerializer, WorkingGroupDocumentSerializer, ConceptSerializer, \
     PropertySerializer, LinkedConceptSerializer, LinkedPropertySerializer
 
@@ -39,10 +39,10 @@ class LinkedConceptViewSet(viewsets.ModelViewSet):
     serializer_class = LinkedConceptSerializer
 
 
-# ViewSets for annotation sets.
-class AnnotationSetViewSet(viewsets.ModelViewSet):
-    queryset = AnnotationSet.objects.all()
-    serializer_class = AnnotationSetSerializer
+# ViewSets for concept sets.
+class ConceptSetViewSet(viewsets.ModelViewSet):
+    queryset = ConceptSet.objects.all()
+    serializer_class = ConceptSetSerializer
     #lookup_value_regex
 
 

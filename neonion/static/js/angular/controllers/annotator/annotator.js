@@ -4,9 +4,9 @@
  * Annotator controller
  */
 neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 'UserService',
-    'AnnotatorService', 'DocumentService', 'AnnotationSetService', 'ConceptService', 'PropertyService',
+    'AnnotatorService', 'DocumentService', 'ConceptSetService', 'ConceptService', 'PropertyService',
     function ($scope, $http, $location, $sce, UserService, AnnotatorService, DocumentService,
-    AnnotationSetService, ConceptService, PropertyService) {
+    ConceptSetService, ConceptService, PropertyService) {
         "use strict";
 
         $scope.concepts = ConceptService.query();
@@ -79,7 +79,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
                             }
                         });
                 })
-                .then($scope.loadAnnotationSet)
+                .then($scope.loadConceptSet)
         };
 
         /**
@@ -144,12 +144,12 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
              });*/
         }
 
-        $scope.loadAnnotationSet = function () {
-            $scope.annotationSet = AnnotationSetService.get({annotationSetId: "default"}, function () {
+        $scope.loadConceptSet = function () {
+            $scope.conceptSet = ConceptSetService.get({conceptSetId: "default"}, function () {
                 var sets = {};
                 $scope.concepts.filter(
                     function (item) {
-                        return $scope.annotationSet.concepts.indexOf(item.id) != -1;
+                        return $scope.conceptSet.concepts.indexOf(item.id) != -1;
                     }
                 ).forEach(
                     function (item) {

@@ -1,5 +1,5 @@
 var neonionApp = angular.module('neonionApp', [
-    'ngResource'
+    'ngResource', 'angular.filter'
 ])
 .config(['$httpProvider', '$locationProvider',
     function($httpProvider, $locationProvider) {

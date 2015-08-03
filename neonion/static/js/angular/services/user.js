@@ -31,3 +31,18 @@ neonionApp.factory('UserService', ['$http', function ($http) {
 
     return factory;
 }]);
+
+neonionApp.factory('User1Service', ['$resource',
+    function ($resource) {
+        return $resource('/api/users/:userId',
+            {userId: '@id'},
+            {
+                'current': {
+                    method: 'GET',
+                    params: {},
+                    isArray: false,
+                    url: '/api/users/current'
+                }
+            }
+        );
+    }]);

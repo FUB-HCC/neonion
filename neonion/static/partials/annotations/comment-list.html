@@ -1,5 +1,5 @@
 <div ng-controller="AnnotationListCtrl" ng-cloak>
-    <ul ng-repeat="(documentKey, annotationByDocument) in annotations | filterByCommentAnnotation | filter:filterAnnotations | groupBy: 'uri'"
+    <ul ng-repeat="(documentKey, annotationByDocument) in annotations | filterByCommentAnnotation | filter:filterCommentAnnotations | groupBy: 'uri'"
         class="list-reset">
         <li ng-repeat="(groupKey, annotationByGroup) in annotationByDocument | groupBy: 'permissions.read[0]'">
             <h3 ng-if="documentTitles[documentKey]">

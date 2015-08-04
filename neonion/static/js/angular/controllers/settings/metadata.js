@@ -1,4 +1,5 @@
-neonionApp.controller('MetaDataCtrl', ['$scope', '$http', function ($scope, $http) {
+neonionApp.controller('MetaDataCtrl', ['$scope',
+    function ($scope) {
     "use strict";
     $(document).ready(function() {
         $(window).keydown(function(event){

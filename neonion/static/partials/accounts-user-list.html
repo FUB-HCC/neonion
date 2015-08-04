@@ -11,29 +11,29 @@
             <td>
                 <a ng-show="user.is_superuser" 
                 class="button button-small button-wide" 
-                ng-click="updateUser(user,'is_superuser', false)">
+                ng-click="update(user,'is_superuser', false)">
                     Make user
                 </a>
                 <a ng-hide="user.is_superuser" 
                 class="button button-small button-wide" 
-                ng-click="updateUser(user,'is_superuser', true)">
+                ng-click="update(user,'is_superuser', true)">
                     Make admin
                 </a>
 
                 <a ng-show="user.is_active" 
                 class="button button-small button-wide" 
-                ng-click="updateUser(user,'is_active', false)">
+                ng-click="update(user,'is_active', false)">
                     Deactivate
                 </a>
                 <a ng-hide="user.is_active" 
                 class="button button-small button-wide" 
-                ng-click="updateUser(user,'is_active', true)">
+                ng-click="update(user,'is_active', true)">
                     Activate
                 </a>
 
                 <a ng-hide="user.is_superuser" 
                 class="button button-small" 
-                ng-click="deleteUser(user)">
+                ng-click="delete(user)">
                     Delete
                 </a>
             </td>

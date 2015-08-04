@@ -44,6 +44,7 @@ neonionApp.factory('Group1Service', ['$resource',
         return $resource('/api/groups/:groupId',
             {groupId: '@id'},
             {
+                'update': {method: 'PUT'},
                 'queryGroupNames': {
                     method: 'GET',
                     params: {},

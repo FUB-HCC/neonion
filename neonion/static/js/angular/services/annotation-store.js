@@ -19,4 +19,5 @@ neonionApp.factory('AnnotationStoreService', ['$resource',
                 }
             }
         );
-    }]);
+    }]
+);

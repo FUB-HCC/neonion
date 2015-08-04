@@ -1,23 +1,46 @@
-neonionApp.controller('PropertyListCtrl', ['$scope', '$http', '$sce', 'PropertyService',
-    function ($scope, $http, $sce, PropertyService) {
-    "use strict";
+neonionApp.controller('PropertyListCtrl', ['$scope', '$sce', 'CommonService', 'PropertyService',
+        function ($scope, $sce, CommonService, PropertyService) {
+            "use strict";
 
-    $scope.locales = {
-        // TODO localize
-        create : "New Property"
-    };
-    $scope.resources = PropertyService.query();
+            CommonService.enabled = true;
+            $scope.search = CommonService;
 
-    $scope.getItemHeader = function(resource) {
-        return $sce.trustAsHtml(resource.label);
-    }
+            $scope.style = {
+                compact: true
+            }
+            $scope.locales = {
+                // TODO localize
+                create: "New Property"
+            };
 
-    $scope.getItemSubHeader = function(resource) {
-        return "";
-    }
+            $scope.queryProperties = function () {
+                return PropertyService.query(function (data) {
+                    $scope.resources = data;
+                }).$promise;
+            };
 
-    $scope.getItemDescription = function(resource) {
-        return $sce.trustAsHtml(resource.comment);
-    }
+            $scope.getItemHeader = function (resource) {
+                return $sce.trustAsHtml(resource.label);
+            }
 
-}]);
+            $scope.getItemSubHeader = function (resource) {
+                return "";
+            }
+
+            $scope.getItemDescription = function (resource) {
+                return $sce.trustAsHtml(resource.comment);
+            }
+
+            $scope.filterResources = function (resource) {
+                if ($scope.search.query.length > 0) {
+                    return resource.label.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
+                    ;
+                }
+                return true;
+            }
+
+            // execute promise chain
+            $scope.queryProperties();
+
+        }]
+);

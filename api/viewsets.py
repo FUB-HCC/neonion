@@ -43,7 +43,6 @@ class LinkedConceptViewSet(viewsets.ModelViewSet):
 class ConceptSetViewSet(viewsets.ModelViewSet):
     queryset = ConceptSet.objects.all()
     serializer_class = ConceptSetSerializer
-    #lookup_value_regex
 
 
 # ViewSets for users.

@@ -3,34 +3,40 @@
 /**
  * Annotator controller
  */
-neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 'UserService',
-    'AnnotatorService', 'DocumentService', 'ConceptSetService', 'ConceptService', 'PropertyService',
-    function ($scope, $http, $location, $sce, UserService, AnnotatorService, DocumentService,
-    ConceptSetService, ConceptService, PropertyService) {
+neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce', 'cookieKeys',
+    'UserService', 'AnnotatorService', 'DocumentService', 'ConceptSetService', 'ConceptService',
+    function ($scope, $cookies, $location, $sce, cookieKeys, UserService, AnnotatorService, DocumentService,
+              ConceptSetService, ConceptService) {
         "use strict";
-
-        $scope.concepts = ConceptService.query();
-        $scope.properties = PropertyService.query();
 
         $scope.initialize = function (params) {
             $scope.params = params;
 
-            DocumentService.get({docId: params.docID}, function (document) {
-                $scope.document = document;
-                if ($scope.document.hasOwnProperty("attached_file")) {
-                    $scope.documentUrl = "/documents/viewer/" + $scope.document.attached_file.id;
-                }
-            });
+            ConceptService.query(function (data) {
+                $scope.concepts = data;
+            }).$promise
+                .then(function () {
+                    return DocumentService.get({docId: params.docID}, function (document) {
+                        $scope.document = document;
+                        if ($scope.document.hasOwnProperty("attached_file")) {
+                            $scope.documentUrl = "/documents/viewer/" + $scope.document.attached_file.id;
+                        }
+                    }).$promise;
+                });
         };
 
+        $scope.getAnnotationModeCookie = function() {
+            var value = $cookies.get(cookieKeys.annotationMode);
+            return value ? parseInt($cookies.get(cookieKeys.annotationMode)) : 1;
+        }
+
         $scope.setupAnnotator = function (params) {
-            UserService.getCurrentUser()
-                .then(function (user) {
-                    params.agent = {
-                        id: user.data.id,
-                        email: user.data.email
-                    };
-                })
+            UserService.current(function (user) {
+                params.agent = {
+                    id: user.id,
+                    email: user.email
+                };
+            }).$promise
                 .then(function () {
                     var queryParams = $location.search();
 
@@ -49,7 +55,8 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
                         .annotator('addPlugin', 'Neonion', {
                             uri: params.docID,
                             agent: params.agent,
-                            workspace: queryParams.workspace
+                            workspace: queryParams.workspace,
+                            annotationMode : $scope.getAnnotationModeCookie()
                         })
                         // add NER plugin
                         .annotator('addPlugin', 'NER', {

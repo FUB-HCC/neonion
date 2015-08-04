@@ -2,12 +2,13 @@
     <ul>
     {% if request.user.is_authenticated %}
         {% url 'neonion.views.render_home' as url_home %}
-        {% url 'neonion.views.annotations' as url_annotations %}
         {% url 'neonion.views.import_document' as url_import %}
         {% url 'neonion.views.render_settings' as url_settings %}
         {% url 'neonion.views.render_vocabulary' as url_vocabulary %}
         {% url 'accounts.views.logout' as url_logout %}
-        {% with url_occurrences="/annotations_occurrences/" url_ann_documents="/ann_documents/"%}
+        {% url 'neonion.views.annotations' as url_annotations %}
+        {% url 'neonion.views.annotation_occurrences' as url_annotations_occurrence %}
+        {% url 'neonion.views.annotation_documents' as url_annotations_documents %}
 
         {# Documents #}
         <li {% if request.path == url_home %}class="active"{% endif %}>
@@ -16,7 +17,8 @@
             </a>
         </li>
         {# Annotations #}
-        <li {% if request.path == url_annotations or url_occurrences in request.path or  url_ann_documents in request.path %}
+        <li
+            {% if request.path == url_annotations or request.path == url_annotations_occurrence or request.path == url_annotations_documents %}
             class="active"{% endif %}>
             <a href="{{ url_annotations }}">
                 <span class="fa fa-bookmark fa-fw"></span>Annotations
@@ -58,7 +60,6 @@
                 </a>
             </li>
         {% endif %}
-        {% endwith %}
         {# Logout #}
         <li {% if request.path == url_logout %}class="active"{% endif %}>
             <a href="{{ url_logout }}">

@@ -1,7 +1,7 @@
 /**
  * Service for Annotator
  */
-neonionApp.factory('AnnotatorService', ['$http', function ($http) {
+neonionApp.factory('AnnotatorService', [function () {
     "use strict";
     var factory = {};
     var annotator;
@@ -38,8 +38,57 @@ neonionApp.factory('AnnotatorService', ['$http', function ($http) {
         }
     };
 
+    factory.getAnnotationHighlights = function () {
+        return $(".annotator-hl:not(.annotator-hl-temporary),." + Annotator.Plugin.Neonion.prototype.classes.hide);
+    };
+
+    factory.getAnnotationObjects = function () {
+        var highlights = factory.getAnnotationHighlights();
+        var annotations = [];
+        highlights.each(function () {
+            var annotation = $(this).data("annotation");
+            annotations.push(annotation);
+        });
+        return annotations;
+    };
+
+    factory.getUserAnnotations = function (userId) {
+        var annotations = factory.getAnnotationObjects();
+        return annotations.filter(function (element) {
+            return element.creator.email == userId;
+        });
+    };
+
+    factory.getLastAnnotation = function (userId) {
+        var annotations;
+        if (userId) {
+            annotations = factory.getUserAnnotations(userId);
+        }
+        else {
+            annotations = factory.getAnnotationObjects();
+        }
+        if (annotations.length > 0) {
+            annotations.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByUpdated);
+            return annotations[annotations.length - 1];
+        }
+        return null;
+    };
+
+    factory.getContributors = function () {
+        var highlights = factory.getAnnotationHighlights();
+        var contributors = [];
+        highlights.each(function () {
+            var annotation = $(this).data("annotation");
+            var userId = annotation.creator.email;
+            if (contributors.indexOf(userId) === -1) {
+                contributors.push(userId);
+            }
+        });
+        return contributors;
+    };
+
     factory.refreshContributors = function () {
-        var users = annotator.plugins.Neonion.getContributors();
+        var users = this.getContributors();
         var items = [];
 
         users.forEach(function (user, index) {
@@ -47,7 +96,7 @@ neonionApp.factory('AnnotatorService', ['$http', function ($http) {
                 return x.user;
             }).indexOf(user);
             var showAnnotation = idx !== -1 ? factory.contributors[idx].showAnnotation : true;
-            var lastAnnotation = annotator.plugins.Neonion.getLastAnnotation(user);
+            var lastAnnotation = factory.getLastAnnotation(user);
             var isoUpated = lastAnnotation.updated ? lastAnnotation.updated : new Date().toISOString();
             items.push({
                 user: user, // creator of annotation
@@ -58,6 +107,19 @@ neonionApp.factory('AnnotatorService', ['$http', function ($http) {
         });
 
         factory.contributors = items;
+    };
+
+    factory.showAnnotation = function (annotation) {
+        annotation.highlights.forEach(function (entry) {
+            entry.className = Annotator.Plugin.Neonion.prototype.classes.visible;
+        });
+    };
+
+    factory.hideAnnotation = function (annotation) {
+        annotation.highlights.forEach(function (entry) {
+            entry.className = Annotator.Plugin.Neonion.prototype.classes.hide;
+            entry.style.backgroundColor = "";
+        });
     };
 
     factory.makeColor = function (colorNum, colors) {

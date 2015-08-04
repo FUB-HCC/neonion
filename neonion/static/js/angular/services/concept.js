@@ -1,6 +1,10 @@
 neonionApp.factory('ConceptService', ['$resource',
-    function ($resource) {
-        return $resource('/api/concepts/:conceptId',
-            {conceptId: '@id'},
-            {});
-    }]);
+        function ($resource) {
+            return $resource('/api/concepts/:conceptId',
+                {conceptId: '@id'},
+                {
+                    'update': {method: 'PUT'},
+                }
+            );
+        }]
+);

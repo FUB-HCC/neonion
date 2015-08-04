@@ -1,41 +1,52 @@
-neonionApp.controller('ConceptListCtrl', ['$scope', '$http', '$sce', 'ConceptService', 'PropertyService',
-    function ($scope, $http, $sce, ConceptService, PropertyService) {
-    "use strict";
+neonionApp.controller('ConceptListCtrl', ['$scope', '$sce', 'CommonService', 'ConceptService', 'PropertyService',
+        function ($scope, $sce, CommonService, ConceptService, PropertyService) {
+            "use strict";
 
-    $scope.locales = {
-        // TODO localize
-        create : "New Concept"
-    };
-    $scope.resources = ConceptService.query();
-    $scope.properties = PropertyService.query();
+            CommonService.enabled = true;
+            $scope.search = CommonService;
 
-    $scope.getItemHeader = function(resource) {
-        return $sce.trustAsHtml(resource.label);
-    }
+            $scope.style = {
+                compact: true
+            }
+            $scope.locales = {
+                // TODO localize
+                create: "New Concept"
+            };
 
-    $scope.getItemSubHeader = function(resource) {
-        return "";
-    }
+            $scope.queryConcepts = function () {
+                return ConceptService.query(function (data) {
+                    $scope.resources = data;
+                }).$promise;
+            };
 
-    $scope.getItemDescription = function(resource) {
-        return $sce.trustAsHtml(resource.comment);
-    }
+            $scope.queryProperties = function () {
+                return PropertyService.query(function (data) {
+                    $scope.properties = data;
+                }).$promise;
+            };
 
-    $scope.getItemFooter = function(resource) {
-        if ($scope.properties) {
-            var propertyNames = $scope.properties.filter(
-                function (item) {
-                    return resource.properties.indexOf(item.id) != -1;
+            $scope.getItemHeader = function (resource) {
+                return $sce.trustAsHtml(resource.label);
+            };
+
+            $scope.getItemSubHeader = function (resource) {
+                return "";
+            };
+
+            $scope.getItemDescription = function (resource) {
+                return $sce.trustAsHtml(resource.comment);
+            };
+
+            $scope.filterResources = function (resource) {
+                if ($scope.search.query.length > 0) {
+                    return resource.label.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
+                    ;
                 }
-            ).map(
-                function (item) {
-                    return item.label;
-                }
-            );
+                return true;
+            }
 
-            return $sce.trustAsHtml(propertyNames.join(" | "));
-        }
-        return "";
-    }
+            // execute promise chain
+            $scope.queryConcepts();
 
-}]);
+        }]
+);

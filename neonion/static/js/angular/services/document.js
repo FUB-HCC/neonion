@@ -16,4 +16,5 @@ neonionApp.factory('DocumentService', ['$resource',
                     }
                 }
             });
-    }]);
+    }]
+);

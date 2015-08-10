@@ -3,12 +3,16 @@
 /**
  * ContextInfo controller
  */
-neonionApp.controller('ContextInfoCtrl', ['$scope', '$http' ,'$location', 'AnnotatorService', 'DocumentService', 'Group1Service',
-    function ($scope, $http, $location, AnnotatorService, DocumentService, Group1Service) {
+neonionApp.controller('ContextInfoCtrl', ['$scope', '$http' ,'$location', 'CommonService', 'AnnotatorService', 'DocumentService', 'Group1Service',
+    function ($scope, $http, $location, CommonService, AnnotatorService, DocumentService, Group1Service) {
         "use strict";
 
-        $scope.annotatorService = AnnotatorService;
-        $scope.document = DocumentService.get({docId : $location.search().docId });
-        $scope.group = Group1Service.get({groupId : $location.search().workspace });
-
+        CommonService.getCurrentUser(function(user) {
+            $scope.user = user;
+        })
+        .$promise.then(function() {
+            $scope.annotatorService = AnnotatorService;
+            $scope.document = DocumentService.get({id : $location.search().docId });
+            $scope.group = Group1Service.get({id : $location.search().workspace });
+        });
 }]);

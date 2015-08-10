@@ -1,0 +1,30 @@
+<div ng-controller="PropertyDetailCtrl" ng-cloak>
+    <button type="button" ng-click="saveChanges()">Save</button>
+    <button type="button">Cancel</button>
+</div>
+<form>
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="label">Label</label>
+                <input type="text" class="form-control" id="label" placeholder=""
+                       ng-model="property.label" autocomplete="off">
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="uri">URI</label>
+                <input type="text" class="form-control" id="uri" placeholder=""
+                       ng-model="property.uri" readonly="true">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" class="form-control" rows="3"
+                      ng-model="property.comment"></textarea>
+        </div>
+    </div>
+    <ng-include src="'/static/partials/vocabulary/multiselect.html'"></ng-include>
+</form>

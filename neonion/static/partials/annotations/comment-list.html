@@ -1,0 +1,40 @@
+<div ng-controller="AnnotationListCtrl" ng-cloak>
+    <ul ng-repeat="(documentKey, annotationByDocument) in annotations | filterByCommentAnnotation | filter:filterCommentAnnotations | groupBy: 'uri'"
+        class="list-reset">
+        <li ng-repeat="(groupKey, annotationByGroup) in annotationByDocument | groupBy: 'permissions.read[0]'">
+            <h3 ng-if="documentTitles[documentKey]">
+                <a href="/annotator/{{ documentKey }}#?workspace={{ groupKey }}"
+                   target="blank">{{ documentTitles[documentKey] }}</a>
+            </h3>
+            <h3 ng-if="!documentTitles[documentKey]">Document was deleted</h3>
+            <small ng-if="groupNames[groupKey]">
+                <i class="fa fa-circle-o"></i> {{ groupNames[groupKey] }}
+            </small>
+            <small ng-if="!groupNames[groupKey]">
+                <i class="fa fa-circle-o"></i> Private
+            </small>
+            <table class="table-freetext-annotation">
+                <thead>
+                <tr>
+                    <th class="context">Context</th>
+                    <th class="annotation">Annotation</th>
+                    <th class="date">Creation Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="annotation in annotationByGroup">
+                    <td class="context">
+                        {{ annotation.context.left | truncate:'left' }}&nbsp;
+                        <a class="mark"
+                           href="/annotator/{{ documentKey }}#?docId={{ documentKey }}&annotationId={{ annotation.id }}&workspace={{ groupKey }}"
+                           target="blank">{{ annotation.quote }}&nbsp;<i class="fa fa-external-link"></i>
+                        </a>&nbsp;{{ annotation.context.left | truncate:'right' }}
+                    </td>
+                    <td class="annotation">{{ annotation.text }}</td>
+                    <td class="date">{{ annotation.created | date : "MM/dd/yyyy 'at' h:mma" }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </li>
+    </ul>
+</div>

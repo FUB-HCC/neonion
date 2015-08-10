@@ -1,13 +1,13 @@
 from django.http import HttpResponseForbidden
 from documents.models import Document
-from annotationsets.models import AnnotationSet
+from annotationsets.models import ConceptSet, Concept, Property, LinkedConcept, LinkedProperty
 from rest_framework import viewsets, status
 from accounts.models import User, WorkingGroup
-from django.db import transaction
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
-from api.serializers import UserSerializer, UserDetailedSerializer, WorkingGroupSerializer, AnnotationSetSerializer, \
-    DocumentSerializer, DocumentDetailedSerializer, WorkingGroupDocumentSerializer
+from api.serializers import UserSerializer, UserDetailedSerializer, WorkingGroupSerializer, ConceptSetSerializer, \
+    DocumentSerializer, DocumentDetailedSerializer, WorkingGroupDocumentSerializer, ConceptSerializer, \
+    PropertySerializer, LinkedConceptSerializer, LinkedPropertySerializer
 
 
 # ViewSets for document.
@@ -21,10 +21,28 @@ class DocumentViewSet(viewsets.ModelViewSet):
             return DocumentSerializer
 
 
-# ViewSets for annotation sets.
-class AnnotationSetViewSet(viewsets.ModelViewSet):
-    queryset = AnnotationSet.objects.all()
-    serializer_class = AnnotationSetSerializer
+# ViewSets for properties.
+class PropertyViewSet(viewsets.ModelViewSet):
+    queryset = Property.objects.all()
+    serializer_class = PropertySerializer
+
+
+# ViewSets for concepts.
+class ConceptViewSet(viewsets.ModelViewSet):
+    queryset = Concept.objects.all()
+    serializer_class = ConceptSerializer
+
+
+# ViewSets for linked concepts.
+class LinkedConceptViewSet(viewsets.ModelViewSet):
+    queryset = LinkedConcept.objects.all()
+    serializer_class = LinkedConceptSerializer
+
+
+# ViewSets for concept sets.
+class ConceptSetViewSet(viewsets.ModelViewSet):
+    queryset = ConceptSet.objects.all()
+    serializer_class = ConceptSetSerializer
 
 
 # ViewSets for users.

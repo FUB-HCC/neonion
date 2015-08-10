@@ -1,0 +1,27 @@
+<ul class="annotation-grid" ng-controller="AnnotationListCtrl" ng-cloak>
+    <li ng-repeat="(key, annotationByConcept) in annotations | filterByConceptAnnotation | filter:filterConceptAnnotations | orderBy: 'rdf.label' | groupBy: 'rdf.uri'">
+        <div>
+            <div class="ann-header">
+                {{ (annotationByConcept | first).rdf.label }}
+            </div>
+            <div class="sub-info">
+                is {{ toConceptName((annotationByConcept | first).rdf.typeof) }}
+            </div>
+            <div></div>
+            <div>
+                <a href="/annotation_occurrences#?rdf.uri={{ key | escape }}&oa.annotatedBy.email={{ user.email }}">
+                    {{ annotationByConcept.length }} Occurrences
+                </a>
+            </div>
+            <div>
+                <a href="/annotation_documents#?rdf.uri={{ key | escape }}&oa.annotatedBy.email={{ user.email }}">
+                    {{ (annotationByConcept | unique : 'uri').length }} Documents
+                </a>
+            </div>
+            <div></div>
+            <div class="sub-info">
+                {{ (annotationByConcept | last).created | date : "MM/dd/yyyy 'at' h:mma" }}
+            </div>
+        </div>
+    </li>
+</ul>

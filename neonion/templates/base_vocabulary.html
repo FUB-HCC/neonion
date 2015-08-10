@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Vocabulary{% endblock %}
+{% block page_id %}vocabulary{% endblock %}
+
+{% block content %}
+    <div ng-init="tab = 1" ng-cloak>
+        <h2>Vocabulary</h2>
+
+        <nav class="nav-horizontal">
+            <ul>
+                <li ng-class="{active:tab===1}"><a href="" ng-click="tab = 1">Concept Sets</a></li>
+                <li ng-class="{active:tab===2}"><a href="" ng-click="tab = 2">Concepts</a></li>
+                <li ng-class="{active:tab===3}"><a href="" ng-click="tab = 3">Properties</a></li>
+            </ul>
+        </nav>
+
+        <div class="wrapper" ng-switch="tab">
+            <div ng-switch-when="1">
+                <ng-include
+                        src="'{% static 'partials/generic-resource-list.html' %}'"
+                        ng-controller="ConceptSetListCtrl"></ng-include>
+
+                <ng-include
+                        src="'{% static 'partials/vocabulary/conceptset-detail.html' %}'"
+                        ng-controller="ConceptSetDetailCtrl"></ng-include>
+            </div>
+            <div ng-switch-when="2">
+                <ng-include
+                        src="'{% static 'partials/generic-resource-list.html' %}'"
+                        ng-controller="ConceptListCtrl"></ng-include>
+
+                <ng-include
+                        src="'{% static 'partials/vocabulary/concept-detail.html' %}'"
+                        ng-controller="ConceptDetailCtrl"></ng-include>
+            </div>
+            <div ng-switch-when="3">
+                <ng-include
+                        src="'{% static 'partials/generic-resource-list.html' %}'"
+                        ng-controller="PropertyListCtrl"></ng-include>
+
+                <ng-include
+                        src="'{% static 'partials/vocabulary/property-detail.html' %}'"
+                        ng-controller="PropertyDetailCtrl"></ng-include>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-theme.min.css' %}" type="text/css" media="screen"/>
+{% endblock %}

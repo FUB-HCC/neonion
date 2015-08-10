@@ -1,14 +1,15 @@
 /**
  * AnnotatorMenu controller
  */
-neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$http', 'AnnotatorService', function ($scope, $http, AnnotatorService) {
+neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$cookies', 'cookieKeys', 'AnnotatorService',
+    function ($scope, $cookies, cookieKeys, AnnotatorService) {
     "use strict";
 
     $scope.annotatorService = AnnotatorService;
     $scope.active = -1;
     $scope.mode = {
-        freetext: Annotator.Plugin.Neonion.prototype.annotationModes.freeTextAnnotation,
-        semantic: Annotator.Plugin.Neonion.prototype.annotationModes.semanticAnnotation
+        commenting: Annotator.Plugin.Neonion.prototype.annotationModes.commenting,
+        conceptTagging: Annotator.Plugin.Neonion.prototype.annotationModes.conceptTagging
     };
 
     // for closing the submenu if clicked anywere except the menu itself
@@ -26,7 +27,7 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$http', 'AnnotatorService
      * Scrolls the view port to the last annotation.
      */
     $scope.scrollToLastAnnotation = function () {
-        var annotation = AnnotatorService.annotator().plugins.Neonion.getLastAnnotation();
+        var annotation = AnnotatorService.getLastAnnotation();
         if (annotation) {
             AnnotatorService.scrollToAnnotation(annotation);
         }
@@ -54,21 +55,22 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$http', 'AnnotatorService
     }
 
     $scope.setAnnotationMode = function (mode) {
+        $cookies.put(cookieKeys.annotationMode, mode);
         Annotator._instances[0].plugins.Neonion.annotationMode(mode);
         $scope.closeSubMenus();
     };
 
     $scope.toggleContributor = function (contributor) {
-        var annotations = Annotator._instances[0].plugins.Neonion.getUserAnnotations(contributor.user);
+        var annotations = AnnotatorService.getUserAnnotations(contributor.user);
         if (!contributor.showAnnotation) {
             annotations.forEach(function (item) {
-                Annotator._instances[0].plugins.Neonion.showAnnotation(item);
+                AnnotatorService.showAnnotation(item);
                 AnnotatorService.colorizeAnnotation(item);
             });
             contributor.showAnnotation = true;
 
         } else {
-            annotations.forEach(Annotator._instances[0].plugins.Neonion.hideAnnotation);
+            annotations.forEach(AnnotatorService.hideAnnotation);
             contributor.showAnnotation = false;
         }
     };

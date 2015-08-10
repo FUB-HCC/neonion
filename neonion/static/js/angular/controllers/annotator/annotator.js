@@ -3,29 +3,40 @@
 /**
  * Annotator controller
  */
-neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 'UserService', 'AnnotatorService', 'DocumentService',
-    function ($scope, $http, $location, $sce, UserService, AnnotatorService, DocumentService) {
+neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce', 'cookieKeys',
+    'UserService', 'AnnotatorService', 'DocumentService', 'ConceptSetService', 'ConceptService',
+    function ($scope, $cookies, $location, $sce, cookieKeys, UserService, AnnotatorService, DocumentService,
+              ConceptSetService, ConceptService) {
         "use strict";
 
         $scope.initialize = function (params) {
             $scope.params = params;
 
-            DocumentService.get({docId: params.docID}, function (document) {
-                $scope.document = document;
-                if ($scope.document.hasOwnProperty("attached_file")) {
-                    $scope.documentUrl = "/documents/viewer/" + $scope.document.attached_file.id;
-                }
-            });
+            ConceptService.query(function (data) {
+                $scope.concepts = data;
+            }).$promise
+                .then(function () {
+                    return DocumentService.get({id: params.docID}, function (document) {
+                        $scope.document = document;
+                        if ($scope.document.hasOwnProperty("attached_file")) {
+                            $scope.documentUrl = "/documents/viewer/" + $scope.document.attached_file.id;
+                        }
+                    }).$promise;
+                });
         };
 
+        $scope.getAnnotationModeCookie = function() {
+            var value = $cookies.get(cookieKeys.annotationMode);
+            return value ? parseInt($cookies.get(cookieKeys.annotationMode)) : 1;
+        }
+
         $scope.setupAnnotator = function (params) {
-            UserService.getCurrentUser()
-                .then(function (user) {
-                    params.agent = {
-                        id: user.data.id,
-                        email: user.data.email
-                    };
-                })
+            UserService.current(function (user) {
+                params.agent = {
+                    id: user.id,
+                    email: user.email
+                };
+            }).$promise
                 .then(function () {
                     var queryParams = $location.search();
 
@@ -44,7 +55,8 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
                         .annotator('addPlugin', 'Neonion', {
                             uri: params.docID,
                             agent: params.agent,
-                            workspace: queryParams.workspace
+                            workspace: queryParams.workspace,
+                            annotationMode : $scope.getAnnotationModeCookie()
                         })
                         // add NER plugin
                         .annotator('addPlugin', 'NER', {
@@ -74,7 +86,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
                             }
                         });
                 })
-                .then($scope.loadAnnotationSet)
+                .then($scope.loadConceptSet)
         };
 
         /**
@@ -139,20 +151,20 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$http', '$location', '$sce', 
              });*/
         }
 
-        $scope.loadAnnotationSet = function () {
-            $http.get('/api/annotationsets').success(function (data) {
-                $scope.annotationsets = data;
-                if ($scope.annotationsets.length > 0) {
-                    var sets = {};
-                    // TODO just take the first AS
-                    $scope.annotationsets[0].concepts.forEach(function (item) {
-                        sets[item.uri] = {
-                            label: item.label
-                        };
-                    });
+        $scope.loadConceptSet = function () {
+            $scope.conceptSet = ConceptSetService.get({id: "default"}, function () {
+                var sets = {};
+                $scope.concepts.filter(
+                    function (item) {
+                        return $scope.conceptSet.concepts.indexOf(item.id) != -1;
+                    }
+                ).forEach(
+                    function (item) {
+                        sets[item.uri] = item;
+                    }
+                );
 
-                    $scope.annotator.plugins.Neonion.annotationSets(sets);
-                }
+                $scope.annotator.plugins.Neonion.annotationSets(sets);
             });
         };
 

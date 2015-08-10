@@ -1,24 +1,21 @@
 /**
- * Accounts management controller
+ * User list controller
  */
-neonionApp.controller('UserListCtrl', ['$scope', '$http', 'UserService', function ($scope, $http, UserService) {
+neonionApp.controller('UserListCtrl', ['$scope', 'UserService',
+    function ($scope, UserService) {
     "use strict";
 
-    $scope.users = [];
+    $scope.users = UserService.query();
 
-    UserService.getAccounts().then(function (result) {
-        $scope.users = result.data;
-    });
-
-    $scope.updateUser = function (user, field, value) {
+    $scope.update = function (user, field, value) {
         if (user.hasOwnProperty(field) && user[field] != value) {
             user[field] = value;
-            UserService.updateUser(user);
+            user.$update();
         }
     };
 
-    $scope.deleteUser = function (user) {
-        UserService.deleteUser(user).then(function (result) {
+    $scope.delete = function (user) {
+        user.$delete().then(function () {
             var idx = $scope.users.indexOf(user);
             $scope.users.splice(idx, 1);
         });

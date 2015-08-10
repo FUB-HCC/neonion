@@ -30,22 +30,22 @@
         this.annotationSets = function (sets) {
             if (sets) {
                 this.compositor = sets;
-                if (this.editorState.annotationMode == this.annotationModes.semanticAnnotation) {
+                if (this.editorState.annotationMode == this.annotationModes.conceptTagging) {
                     // apply if annotation mode equals semantic annotation mode
                     this.applyAnnotationSets();
-                }   
+                }
             }
             return this.compositor;
         };
 
-        this.annotationMode = function(mode) {
+        this.annotationMode = function (mode) {
             if (mode && $.isNumeric(mode)) {
                 this.editorState.annotationMode = mode;
-                switch(mode) {
-                    case this.annotationModes.semanticAnnotation:
+                switch (mode) {
+                    case this.annotationModes.conceptTagging:
                         this.applyAnnotationSets();
                         break;
-                    case this.annotationModes.freeTextAnnotation:
+                    case this.annotationModes.commenting:
                         this.adder.html(this.templates.emptyAdder);
                         break;
                 }
@@ -63,11 +63,12 @@
                 viewer: this.initViewerField(),
                 editor: this.initEditorField()
             };
+
             this.editorState = {
-                annotationMode : this.annotationModes.freeTextAnnotation,
-                selectedType : "",
-                selectedItem : -1,
-                resultSet : []
+                annotationMode: this.options.annotationMode,
+                selectedType: "",
+                selectedItem: -1,
+                resultSet: []
             };
 
             // create compositor from provided annotation sets
@@ -77,7 +78,7 @@
             else {
                 this.compositor = {};
             }
-            
+
             // bind events on document
             $(document).bind({
                 mouseup: $.proxy(function (e) {
@@ -88,7 +89,7 @@
                         if (childBtn.length === 1) {
                             this.annotator.ignoreMouseup = true;
                             childBtn.click();
-                        } 
+                        }
                     }
                     else {
                         // otherwise check whether a click on the document should close the editor
@@ -140,12 +141,12 @@
          */
         this.initEditorField = function () {
             return {
-                freeTextField : this.initFreeTextField(),
-                semanticAnnotationField : this.initSemanticAnnotationField()
+                commentField: this.initCommentField(),
+                conceptTaggingField: this.initConceptTaggingField()
             };
         };
 
-        this.initFreeTextField = function() {
+        this.initCommentField = function () {
             var field = this.annotator.editor.fields[0].element;
             // add controls 
             $(field).append(
@@ -154,7 +155,7 @@
             return field;
         };
 
-        this.initSemanticAnnotationField = function() {
+        this.initConceptTaggingField = function () {
             // add field containing the suggested resources
             var field = this.annotator.editor.addField({
                 load: $.proxy(this.loadEditorField, this),
@@ -217,6 +218,7 @@
             resourceList.on("click", "button", $.proxy(function (e) {
                 var source = $(e.currentTarget);
                 var itemIndex = parseInt(source.val());
+                itemIndex = !isNaN(itemIndex) ? itemIndex : -1;
                 // store selected resource in editor state
                 this.editorState.selectedItem = itemIndex;
                 this.annotator.editor.submit();
@@ -236,9 +238,10 @@
             annotationViewerTextField: "annotationViewerTextField"
         },
 
-        annotationModes : {
-            freeTextAnnotation : 1,
-            semanticAnnotation : 2
+        annotationModes: {
+            commenting: 1,
+            highlighting: 2,
+            conceptTagging: 3
         },
 
         options: {
@@ -249,7 +252,8 @@
             urls: {
                 search: "search"
             },
-            paginationSize: 5
+            paginationSize: 5,
+            annotationMode : 1 // commenting
         },
 
         templates: {
@@ -257,11 +261,11 @@
             spinner: "<span style='margin:5px;' class='fa fa-spinner fa-spin'></span>",
             noResults: "<div class='empty'>No results found.</div>",
             editorLine: "<div class='annotator-linie'></div>",
-            searchItem : "<i class='fa fa-search'></i>",
-            cancelItem : "<a href='#' data-action='annotator-cancel'><i class='fa fa-times'></i></a>",
-            submitItem : "<a href='#' data-action='annotator-submit'><i class='fa fa-check'></i></a>",
-            unknownItem : "<button class='unknown' data-action='annotator-submit'>Unknown Resource</button>",
-            emptyAdder : "<button></button>"
+            searchItem: "<i class='fa fa-search'></i>",
+            cancelItem: "<a data-action='annotator-cancel'><i class='fa fa-times'></i></a>",
+            submitItem: "<a data-action='annotator-submit'><i class='fa fa-check'></i></a>",
+            unknownItem: "<button class='unknown' data-action='annotator-submit'>Unknown Resource</button>",
+            emptyAdder: "<button></button>"
         },
 
         /**
@@ -292,12 +296,14 @@
 
         oa: {
             motivation: {
+                commenting: "oa:commenting",
+                highlighting: "oa:highlighting",
                 classifying: "oa:classifying",
                 identifying: "oa:identifying",
                 linking: "oa:linking",
                 questioning: "oa:questioning"
             },
-            types : {
+            types: {
                 agent: {
                     person: "foaf:person",
                     software: "prov:SoftwareAgent"
@@ -324,7 +330,7 @@
             },
             private: function (params) {
                 var query = Annotator.Plugin.Neonion.prototype.annotationLayers.unspecified(params);
-                query["creator.email"] = params.agent.email;
+                query["oa.annotatedBy.email"] = params.agent.email;
                 return query;
             },
             group: function (params) {
@@ -342,9 +348,7 @@
          * Called before an annotation is created.
          * @param annotation
          */
-        beforeAnnotationCreated : function (annotation) {
-            // add user to annotation
-            annotation.creator = this.options.agent;
+        beforeAnnotationCreated: function (annotation) {
             // create a child element to store Open Annotation data
             annotation.oa = {
                 annotatedBy: $.extend(this.options.agent, {type: this.oa.types.agent.person}),
@@ -355,11 +359,13 @@
             };
 
             // set type of body
-            switch(this.editorState.annotationMode) {
-                case this.annotationModes.semanticAnnotation:
-                    annotation.oa.hasBody.type = this.oa.types.tag.semanticTag; break;
-                case this.annotationModes.freeTextAnnotation:
-                    annotation.oa.hasBody.type = this.oa.types.tag.tag; break;
+            switch (this.editorState.annotationMode) {
+                case this.annotationModes.conceptTagging:
+                    annotation.oa.hasBody.type = this.oa.types.tag.semanticTag;
+                    break;
+                case this.annotationModes.commenting:
+                    annotation.oa.hasBody.type = this.oa.types.tag.tag;
+                    break;
             }
 
             // set permission according current workspace
@@ -375,35 +381,35 @@
             //console.log(annotation);
         },
 
-        annotationEditorShown: function(editor, annotation) {
+        annotationEditorShown: function (editor, annotation) {
             this.placeEditorBesidesAnnotation(annotation);
 
             if (annotation.hasOwnProperty("oa")) {
                 // visibility of fields depends on type of body
                 switch (annotation.oa.hasBody.type) {
                     case this.oa.types.tag.tag:
-                        this.showField(this.fields.editor.freeTextField);
-                        var textarea = $(this.fields.editor.freeTextField).find("textarea");
+                        this.showField(this.fields.editor.commentField);
+                        var textarea = $(this.fields.editor.commentField).find("textarea");
                         // transfer quote to text input
                         textarea.val(annotation.quote);
                         // preselect text
                         textarea.select();
                         break;
                     case this.oa.types.tag.semanticTag:
-                        this.showField(this.fields.editor.semanticAnnotationField);
+                        this.showField(this.fields.editor.conceptTaggingField);
                         break;
                 }
             }
         },
 
-        annotationEditorHidden: function() {
+        annotationEditorHidden: function () {
             // clear prior editor state
             this.editorState.selectedItem = -1;
             this.editorState.resultSet = [];
             this.editorState.selectedType = "";
         },
 
-        annotationViewerTextField: function(field, annotation) {
+        annotationViewerTextField: function (field, annotation) {
             if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("hasBody") &&
                 annotation.oa.hasBody.type == this.oa.types.tag.tag) {
                 $(field).show();
@@ -413,7 +419,7 @@
             }
         },
 
-        annotationEditorSubmit: function(editor, annotation) {
+        annotationEditorSubmit: function (editor, annotation) {
             // add context
             annotation.context = this.extractSurroundedContent(annotation);
         },
@@ -421,7 +427,7 @@
         /**
          * Restores annotations if an uri is provided
          */
-        applyLayer : function (layer) {
+        applyLayer: function (layer) {
             if (this.annotator.plugins.Store && this.options.hasOwnProperty("uri")) {
                 var query = layer(this.options);
                 this.annotator.plugins.Store.loadAnnotationsFromSearch(query);
@@ -432,9 +438,9 @@
          * Shows the specified field and hides the other ones.
          * @param field
          */
-        showField: function(field) {
+        showField: function (field) {
             // hide all fields first
-            for(var key in this.fields.editor) {
+            for (var key in this.fields.editor) {
                 $(this.fields.editor[key]).hide();
             }
             // show specified field
@@ -445,7 +451,7 @@
          * Overrides the adder according provided types
          * @returns {*|jQuery|HTMLElement}
          */
-        overrideAdder : function () {
+        overrideAdder: function () {
             var adder = $(this.annotator.adder[0]);
 
             // catch submit event
@@ -460,7 +466,7 @@
             return adder;
         },
 
-        viewerLoadResourceField : function (field, annotation) {
+        viewerLoadResourceField: function (field, annotation) {
             if (annotation.hasOwnProperty("rdf")) {
                 var ref = annotation.rdf.hasOwnProperty('sameAs') ? annotation.rdf.sameAs : '#';
                 var fieldValue = "<a href='" + ref + "' target='blank'>" + annotation.rdf.label + "</a>";
@@ -479,16 +485,16 @@
             }
         },
 
-        viewerLoadAgentField : function (field, annotation) {
+        viewerLoadAgentField: function (field, annotation) {
             var userField = this.literals['en'].unknown;
-            if (annotation.hasOwnProperty('oa')) {
+            if (annotation.hasOwnProperty('oa') && annotation.oa.hasOwnProperty('annotatedBy')) {
                 userField = annotation.oa.annotatedBy.email;
             }
             field.innerHTML = this.literals['en'].agent + ":&nbsp;" + userField;
         },
 
-        loadEditorField : function (field, annotation) {
-            if (this.annotationMode() == this.annotationModes.semanticAnnotation) {
+        loadEditorField: function (field, annotation) {
+            if (this.annotationMode() == this.annotationModes.conceptTagging) {
                 // restore type from annotation if provided
                 this.editorState.selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : this.editorState.selectedType;
 
@@ -499,29 +505,29 @@
             }
         },
 
-        submitEditorField : function (field, annotation) {
-               if (this.annotationMode() == this.annotationModes.semanticAnnotation) {
-                   if (annotation.oa.hasBody.type == this.oa.types.tag.semanticTag) {
-                       // add rdf data
-                       annotation.rdf = {
-                           typeof: this.editorState.selectedType,
-                           label: annotation.quote
-                       };
-                       annotation.oa.motivatedBy = this.oa.motivation.classifying;
+        submitEditorField: function (field, annotation) {
+            if (this.annotationMode() == this.annotationModes.conceptTagging) {
+                if (annotation.oa.hasBody.type == this.oa.types.tag.semanticTag) {
+                    // add rdf data
+                    annotation.rdf = {
+                        typeof: this.editorState.selectedType,
+                        label: annotation.quote
+                    };
+                    annotation.oa.motivatedBy = this.oa.motivation.classifying;
 
-                       // add extra semantic data from identified resource
-                       if (this.editorState.selectedItem > 0) {
-                           var dataItem = this.editorState.resultSet[this.editorState.selectedItem];
-                           annotation.rdf.sameAs = dataItem.uri + '';
-                           annotation.rdf.label = dataItem.label;
-                           annotation.oa.motivatedBy = this.oa.motivation.identifying;
-                       }
-                   }
-               }
+                    // add extra semantic data from identified resource
+                    if (this.editorState.selectedItem >= 0 && this.editorState.selectedItem < this.editorState.resultSet.length) {
+                        var dataItem = this.editorState.resultSet[this.editorState.selectedItem];
+                        annotation.rdf.sameAs = dataItem.uri + '';
+                        annotation.rdf.label = dataItem.label;
+                        annotation.oa.motivatedBy = this.oa.motivation.identifying;
+                    }
+                }
+            }
         },
 
-        updateResourceList : function(searchTerm) {
-            var list = $(this.fields.editor.semanticAnnotationField).find("#resource-list");
+        updateResourceList: function (searchTerm) {
+            var list = $(this.fields.editor.conceptTaggingField).find("#resource-list");
             // replace list with spinner while loading
             list.html(this.templates.spinner);
             // lookup resource by search term
@@ -632,68 +638,6 @@
             }
         },
 
-        getAnnotationHighlights: function () {
-            return $(".annotator-hl:not(.annotator-hl-temporary),." + Annotator.Plugin.Neonion.prototype.classes.hide);
-        },
-
-        showAnnotation: function (annotation) {
-            annotation.highlights.forEach(function (entry) {
-                entry.className = Annotator.Plugin.Neonion.prototype.classes.visible;
-            });
-        },
-
-        hideAnnotation: function (annotation) {
-            annotation.highlights.forEach(function (entry) {
-                entry.className = Annotator.Plugin.Neonion.prototype.classes.hide;
-                entry.style.backgroundColor = "";
-            });
-        },
-
-        getContributors: function () {
-            var highlights = Annotator.Plugin.Neonion.prototype.getAnnotationHighlights();
-            var constributors = [];
-            highlights.each(function () {
-                var annotation = $(this).data("annotation");
-                var userId = annotation.creator.email;
-                if (constributors.indexOf(userId) === -1) {
-                    constributors.push(userId);
-                }
-            });
-            return constributors;
-        },
-
-        getAnnotationObjects: function () {
-            var highlights = Annotator.Plugin.Neonion.prototype.getAnnotationHighlights();
-            var annotations = [];
-            highlights.each(function () {
-                var annotation = $(this).data("annotation");
-                annotations.push(annotation);
-            });
-            return annotations;
-        },
-
-        getUserAnnotations: function (userId) {
-            var annotations = Annotator.Plugin.Neonion.prototype.getAnnotationObjects();
-            return annotations.filter(function (element) {
-                return element.creator.email == userId;
-            });
-        },
-
-        getLastAnnotation: function (userId) {
-            var annotations;
-            if (userId) {
-                annotations = Annotator.Plugin.Neonion.prototype.getUserAnnotations(userId);
-            }
-            else {
-                annotations = Annotator.Plugin.Neonion.prototype.getAnnotationObjects();
-            }
-            if (annotations.length > 0) {
-                annotations.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByUpdated);
-                return annotations[annotations.length - 1];
-            }
-            return null;
-        },
-
         createListItems: function (offset, list, formatter) {
             list = list.slice(offset, offset + this.options.paginationSize);
             var items = [];
@@ -710,7 +654,7 @@
         },
 
         updateScoreAccordingOccurrence: function (items) {
-            var highlights = this.getAnnotationHighlights();
+            var highlights = $(".annotator-hl:not(.annotator-hl-temporary),." + Annotator.Plugin.Neonion.prototype.classes.hide);
             var occurrence = {};
             // count occurrence of each resource
             highlights.each(function () {

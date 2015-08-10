@@ -1,0 +1,19 @@
+<button type="button" >
+    <i class="fa fa-plus"></i>&nbsp;{{ locales.create }}
+</button>
+<div ng-switch on="style.compact">
+    <div ng-switch-when="true" class="list-group">
+        <button button type="button" class="list-group-item" ng-repeat="resource in resources | filter:filterResources | orderBy : 'label'">
+            <b ng-bind-html="getItemHeader(resource)"></b>
+            <p ng-show="getItemDescription" ng-bind-html="getItemDescription(resource)"></p>
+        </button>
+    </div>
+    <div ng-switch-default class="panel panel-default" ng-repeat="resource in resources | filter:filterResources | orderBy : 'label'">
+        <div class="panel-body">
+            <b ng-bind-html="getItemHeader(resource)"></b>
+            <span ng-show="getItemSubHeader" ng-bind-html="getItemSubHeader(resource)"></span>
+            <p ng-show="getItemDescription" ng-bind-html="getItemDescription(resource)"></p>
+            <p ng-show="getItemFooter" ng-bind-html="getItemFooter(resource)"></p>
+        </div>
+    </div>
+</div>

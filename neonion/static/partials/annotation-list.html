@@ -1,0 +1,17 @@
+<div ng-init="tab = 1" ng-cloak>
+    <nav class="nav-horizontal">
+        <ul>
+            <li ng-class="{active:tab===1}"><a href="" ng-click="tab = 1">Concept Tags</a></li>
+            <li ng-class="{active:tab===2}"><a href="" ng-click="tab = 2">Comments</a></li>
+        </ul>
+    </nav>
+
+    <div class="wrapper" ng-switch="tab">
+        <div ng-switch-when="1">
+            <ng-include src="'/static/partials/annotations/concept-list.html'"></ng-include>
+        </div>
+        <div ng-switch-when="2">
+            <ng-include src="'/static/partials/annotations/comment-list.html'"></ng-include>
+        </div>
+    </div>
+</div>

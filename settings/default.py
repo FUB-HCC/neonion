@@ -130,8 +130,11 @@ PIPELINE_JS = {
         'source_filenames': (
             'js/jquery.min.js',
             'js/jquery-ui.min.js',
-            'js/angular.min.js',
-            'js/angular-resource.min.js'
+            'js/angular/lib/angular.min.js',
+            'js/angular/lib/angular-cookies.min.js',
+            'js/angular/lib/angular-resource.min.js',
+            'js/angular/lib/angular-filter.min.js',
+            'js/bootstrap.min.js'
         ),
         'output_filename': 'js/stats.js',
     },
@@ -149,6 +152,7 @@ PIPELINE_JS = {
         'source_filenames': (
             'js/angular/app.js',
             'js/angular/filters.js',
+            'js/angular/root.js',
             'js/angular/services/*.js',
             'js/angular/controllers/**/*.js',
         ),

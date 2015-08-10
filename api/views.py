@@ -8,11 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions
 from authentication import UnsafeSessionAuthentication
-from common.annotation import add_resource_uri
-from common.sparql import insert_data
-from common.statements import Annotation
-from common.exceptions import InvalidResourceTypeError
-from common.vocab import OpenAnnotation
+from common.annotation import pre_process_annotation, post_process_annotation
 
 
 class AnnotationListView(APIView):
@@ -21,35 +17,27 @@ class AnnotationListView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, format=None):
-        """Returns a list of all annotations"""
-        response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations')
-        return JsonResponse(response.json(), safe=False)
+        if 'private' in request.query_params:
+            """Returns a list of all annotations filtered by current user"""
+            response = requests.get(settings.ANNOTATION_STORE_URL + '/search?oa.annotatedBy.email=' + request.user.email)
+            return JsonResponse(response.json()['rows'], safe=False)
+        else:
+            """Returns a list of all annotations"""
+            response = requests.get(settings.ANNOTATION_STORE_URL + '/annotations')
+            return JsonResponse(response.json(), safe=False)
 
     def post(self, request, format=None):
         """Creates a new annotation"""
         annotation = json.loads(request.body)
 
-        if 'oa' in annotation and 'hasBody' in annotation['oa']:
-            if annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.semanticTag:
-                try:
-                    add_resource_uri(annotation)
-                except InvalidResourceTypeError:
-                    pass
+        pre_process_annotation(annotation)
 
-        # forward request to anntation store
+        # forward request to annotation store
         headers = {'content-type': 'application/json'}
         response = requests.post(settings.ANNOTATION_STORE_URL + '/annotations',
                                  data=json.dumps(annotation), headers=headers)
 
-        # extract data from annotation and insert in triple store
-        if 'oa' in annotation and 'hasBody' in annotation['oa']:
-            try:
-                #print(Annotation.create_annotation_statement(annotation))
-                #insert_data(Annotation.create_annotation_statement(annotation))
-                if annotation['oa']['hasBody'] == OpenAnnotation.TagTypes.semanticTag:
-                    insert_data(Annotation.statement_about_resource(annotation))
-            except Exception as e:
-                print(e.message)
+        post_process_annotation(annotation)
 
         return JsonResponse(response.json(), status=201, safe=False)
 
@@ -84,13 +72,6 @@ def store_root(request):
 
 
 @api_view(["GET"])
-def store_filter_annotations(request):
-    response = requests.get(settings.ANNOTATION_STORE_URL + '/search?creator.email=' + request.user.email + "&limit=9999")
-    return JsonResponse(response.json(), safe=False)
-
-
-@api_view(["GET"])
 def store_search(request):
-    ##print(request.GET.urlencode())
     response = requests.get(settings.ANNOTATION_STORE_URL + '/search?' + request.GET.urlencode())
     return JsonResponse(response.json(), safe=False)

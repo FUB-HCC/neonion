@@ -12,37 +12,44 @@ neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'UserService', 'Works
         $scope.allowImport = false;
         $scope.showWorkspaceName = false;
 
+        $scope.getCurrentUser = function () {
+            return CommonService.getCurrentUser(function (data) {
+                $scope.user = data;
+            }).$promise;
+        };
+
         $scope.initPrivateWorkspace = function () {
             $scope.allowRemove = true;
             $scope.allowImport = true;
-            UserService.getCurrentUser().then(function (result) {
-                $scope.user = result.data;
-                $scope.workspaces = [{id: $scope.user.email, name: 'Private', documents: result.data.owned_documents}];
+            return $scope.getCurrentUser().then(function () {
+                $scope.workspaces = [{id: $scope.user.email, name: 'Private', documents: $scope.user.owned_documents}];
             });
         };
 
         $scope.initPublicWorkspace = function () {
-            UserService.getCurrentUser().then(function (result) {
-                var user = result.data;
-                UserService.getEntitledDocuments(user).then(function (result) {
-                    // filter for group public
-                    $scope.workspaces = result.data.filter(function (element) {
-                        return element.id == 1;
-                    });
+            return $scope.getCurrentUser()
+                .then(function () {
+                    // TODO make 'entitled_documents' service method
+                    return $http.get("/api/users/" + $scope.user.id + "/entitled_documents").then(function (result) {
+                        // filter for group public
+                        $scope.workspaces = result.data.filter(function (element) {
+                            return element.id == 1;
+                        });
+                    }).$promise;
                 });
-            });
         };
 
         $scope.initGroupWorkspace = function () {
             $scope.showWorkspaceName = true;
-            UserService.getCurrentUser().then(function (result) {
-                var user = result.data;
-                UserService.getEntitledDocuments(user).then(function (result) {
-                    $scope.workspaces = result.data.filter(function (element) {
-                        return element.id != 1;
-                    });
+            return $scope.getCurrentUser()
+                .then(function () {
+                    // TODO make 'entitled_documents' service method
+                    return $http.get("/api/users/" + $scope.user.id + "/entitled_documents").then(function (result) {
+                        $scope.workspaces = result.data.filter(function (element) {
+                            return element.id != 1;
+                        });
+                    }).$promise;
                 });
-            });
         };
 
         $scope.removeDocument = function (workspace, document) {

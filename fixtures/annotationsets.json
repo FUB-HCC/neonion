@@ -1,48 +1,134 @@
 [
-   {
-      "fields":{
-         "comment":"",
-         "linked_type":"http://wikidata.org/q5",
-         "provider_class":"common.knowledge.wikidata.provider",
-         "label":"Person@Wikidata"
-      },
-      "model":"annotationsets.linkedconcept",
-      "pk":"http://neonion.org/linkedconcept/wikidata/person"
-   },
-   {
-      "fields":{
-         "comment":"",
-         "additional_type":"http://schema.org/person",
-         "linked_concepts":[
-            "http://neonion.org/linkedconcept/wikidata/person"
-         ],
-         "label":"Person"
-      },
-      "model":"annotationsets.concept",
-      "pk":"http://neonion.org/concept/person"
-   },
-   {
-      "fields":{
-         "comment":"",
-         "additional_type":"http://schema.org/organization",
-         "linked_concepts":[
-
-         ],
-         "label":"Institute"
-      },
-      "model":"annotationsets.concept",
-      "pk":"http://neonion.org/concept/institute"
-   },
-   {
-      "fields":{
-         "comment":"",
-         "concepts":[
-            "http://neonion.org/concept/person",
-            "http://neonion.org/concept/institute"
-         ],
-         "label":"Default"
-      },
-      "model":"annotationsets.annotationset",
-      "pk":"http://neonion.org/annotationset/default"
-   }
+  {
+    "fields": {
+      "comment": "",
+      "linked_properties": [],
+      "range": [],
+      "inverse_property": null,
+      "label": "has role"
+    },
+    "model": "annotationsets.property",
+    "pk": "0bfccb86dbfff233c5dd1ab9c1bd51f1e4acd568"
+  },
+  {
+    "fields": {
+      "comment": "To be brought to an end; be annulled or terminated",
+      "linked_properties": [],
+      "range": [
+        "eb9a4bc1c0c153e4e4b042a79113b815b7e3021d"
+      ],
+      "inverse_property": null,
+      "label": "dissolved"
+    },
+    "model": "annotationsets.property",
+    "pk": "1feada59550df37c7477da53c66cef1f4294fbc0"
+  },
+  {
+    "fields": {
+      "comment": "",
+      "linked_properties": [],
+      "range": [
+        "person"
+      ],
+      "inverse_property": null,
+      "label": "member"
+    },
+    "model": "annotationsets.property",
+    "pk": "6467baa3b187373e3931422e2a8ef22f3e447d77"
+  },
+  {
+    "fields": {
+      "comment": "",
+      "linked_properties": [],
+      "range": [
+        "institution"
+      ],
+      "inverse_property": "6467baa3b187373e3931422e2a8ef22f3e447d77",
+      "label": "member of"
+    },
+    "model": "annotationsets.property",
+    "pk": "802a285ebbca797bb970c555ce13e1806a748f02"
+  },
+  {
+    "fields": {
+      "comment": "To establish or set up, especially with provision for continuing existence",
+      "linked_properties": [],
+      "range": [],
+      "inverse_property": null,
+      "label": "founded"
+    },
+    "model": "annotationsets.property",
+    "pk": "dfc1045fd2fd94b4fdae63a37ecbecc2b7fe5f15"
+  },
+  {
+    "fields": {
+      "comment": "",
+      "properties": [],
+      "linked_concepts": [],
+      "label": "Person Function"
+    },
+    "model": "annotationsets.concept",
+    "pk": "6ae182157fb6dd4dba5107b36ca189e5abfb9613"
+  },
+  {
+    "fields": {
+      "comment": "A cooperative arrangement among groups or institutions",
+      "properties": [
+        "1feada59550df37c7477da53c66cef1f4294fbc0",
+        "6467baa3b187373e3931422e2a8ef22f3e447d77",
+        "dfc1045fd2fd94b4fdae63a37ecbecc2b7fe5f15"
+      ],
+      "linked_concepts": [],
+      "label": "Consortium"
+    },
+    "model": "annotationsets.concept",
+    "pk": "769eaabb3e574ac0f8611881e7d6e3235195b9eb"
+  },
+  {
+    "fields": {
+      "comment": "A particular point or period of time at which something happened or existed, or is expected to happen",
+      "properties": [],
+      "linked_concepts": [],
+      "label": "Date"
+    },
+    "model": "annotationsets.concept",
+    "pk": "eb9a4bc1c0c153e4e4b042a79113b815b7e3021d"
+  },
+  {
+    "fields": {
+      "comment": "An established organization or foundation, especially one dedicated to education, public service, or culture",
+      "properties": [
+        "6467baa3b187373e3931422e2a8ef22f3e447d77"
+      ],
+      "linked_concepts": [],
+      "label": "Institution"
+    },
+    "model": "annotationsets.concept",
+    "pk": "institution"
+  },
+  {
+    "fields": {
+      "comment": "An individual human being",
+      "properties": [
+        "0bfccb86dbfff233c5dd1ab9c1bd51f1e4acd568",
+        "802a285ebbca797bb970c555ce13e1806a748f02"
+      ],
+      "linked_concepts": [],
+      "label": "Person"
+    },
+    "model": "annotationsets.concept",
+    "pk": "person"
+  },
+  {
+    "fields": {
+      "comment": "The default concept set",
+      "concepts": [
+        "institution",
+        "person"
+      ],
+      "label": "Default"
+    },
+    "model": "annotationsets.conceptset",
+    "pk": "default"
+  }
 ]

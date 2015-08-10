@@ -1,4 +1,4 @@
-from exceptions import NoSemanticAnnotationError
+from exceptions import NoConceptAnnotationError
 from common.vocab import OpenAnnotation, neonion
 
 DEFAULT_PREFIXES = '''PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
@@ -79,7 +79,7 @@ class Annotation:
 
             return query
         else:
-            raise NoSemanticAnnotationError(annotation)
+            raise NoConceptAnnotationError(annotation)
 
     @staticmethod
     def delete_annotation_statement(annotation):
@@ -87,7 +87,7 @@ class Annotation:
         if 'oa' in annotation:
             return ''
         else:
-            raise NoSemanticAnnotationError(annotation)
+            raise NoConceptAnnotationError(annotation)
 
     @staticmethod
     def substatement_body_tag(annotation):
@@ -95,7 +95,7 @@ class Annotation:
         if 'oa' in annotation:
             return ''
         else:
-            raise NoSemanticAnnotationError(annotation)
+            raise NoConceptAnnotationError(annotation)
 
     @staticmethod
     def substatement_body_semantic_tag(annotation):
@@ -103,7 +103,7 @@ class Annotation:
         if 'oa' in annotation:
             return ''
         else:
-            raise NoSemanticAnnotationError(annotation)
+            raise NoConceptAnnotationError(annotation)
 
     @staticmethod
     def statement_about_resource(annotation):
@@ -126,7 +126,7 @@ class Annotation:
 
             return query
         else:
-            raise NoSemanticAnnotationError(annotation)
+            raise NoConceptAnnotationError(annotation)
 
 def metadata_statement(document):
     document_uri = "http://neonion.org/document/" + document.id

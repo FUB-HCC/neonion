@@ -11,20 +11,16 @@
 
         <nav class="nav-horizontal">
             <ul>
-                <li ng-class="{active:tab===1}"><a href="" ng-click="tab = 1">Annotation Sets</a></li>
-                <li ng-class="{active:tab===2}"><a href="" ng-click="tab = 2">Properties</a></li>
-                <li ng-class="{active:tab===3}"><a href="" ng-click="tab = 3">NER Settings</a></li>
+                <li ng-class="{active:tab===1}"><a href="" ng-click="tab = 1">Properties</a></li>
+                <li ng-class="{active:tab===2}"><a href="" ng-click="tab = 2">NER Settings</a></li>
             </ul>
         </nav>
 
         <div class="wrapper" ng-switch="tab">
             <div ng-switch-when="1">
-                <ng-include src="'{% static 'partials/settings-annotationset-list.html' %}'"></ng-include>
-            </div>
-            <div ng-switch-when="2">
                 <ng-include src="'{% static 'partials/meta_data_in_properties.html' %}'"></ng-include>
             </div>
-            <div ng-switch-when="3">
+            <div ng-switch-when="2">
                 <ng-include src="'{% static 'partials/settings-ner-model-list.html' %}'"></ng-include>
             </div>
         </div>

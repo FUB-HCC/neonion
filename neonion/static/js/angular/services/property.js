@@ -1,7 +1,7 @@
 neonionApp.factory('PropertyService', ['$resource',
     function ($resource) {
-        return $resource('/api/properties/:propertyId',
-            {propertyId: '@id'},
+        return $resource('/api/properties/:id',
+            {id: '@id'},
             {
                 'update': {method: 'PUT'},
             }

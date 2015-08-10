@@ -54,8 +54,13 @@ neonionApp.factory('AnnotatorService', [function () {
 
     factory.getUserAnnotations = function (userId) {
         var annotations = factory.getAnnotationObjects();
-        return annotations.filter(function (element) {
-            return element.creator.email == userId;
+        return annotations.filter(function (annotation) {
+            if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("annotatedBy")) {
+                return annotation.oa.annotatedBy.email == userId;
+            }
+            else {
+                return false;
+            }
         });
     };
 
@@ -79,9 +84,11 @@ neonionApp.factory('AnnotatorService', [function () {
         var contributors = [];
         highlights.each(function () {
             var annotation = $(this).data("annotation");
-            var userId = annotation.creator.email;
-            if (contributors.indexOf(userId) === -1) {
-                contributors.push(userId);
+            if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("annotatedBy")) {
+                var userId = annotation.oa.annotatedBy.email;
+                if (contributors.indexOf(userId) === -1) {
+                    contributors.push(userId);
+                }
             }
         });
         return contributors;
@@ -131,10 +138,10 @@ neonionApp.factory('AnnotatorService', [function () {
     };
 
     factory.colorizeAnnotation = function (annotation) {
-        if (annotation.creator) {
+        if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("annotatedBy")) {
             var idx = factory.contributors.map(function (x) {
                 return x.user;
-            }).indexOf(annotation.creator.email);
+            }).indexOf(annotation.oa.annotatedBy.email);
             if (idx !== -1) {
                 var color = factory.contributors[idx].color;
                 annotation.highlights.forEach(function (highlight) {

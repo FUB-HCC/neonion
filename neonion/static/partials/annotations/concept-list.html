@@ -1,4 +1,4 @@
-<ul id="annotation-table" class="annotation-grid" ng-controller="AnnotationListCtrl" ng-cloak>
+<ul class="annotation-grid" ng-controller="AnnotationListCtrl" ng-cloak>
     <li ng-repeat="(key, annotationByConcept) in annotations | filterByConceptAnnotation | filter:filterConceptAnnotations | orderBy: 'rdf.label' | groupBy: 'rdf.uri'">
         <div>
             <div class="ann-header">

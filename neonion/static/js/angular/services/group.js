@@ -41,8 +41,8 @@ neonionApp.factory('GroupService', ['$http', function ($http) {
  */
 neonionApp.factory('Group1Service', ['$resource',
     function ($resource) {
-        return $resource('/api/groups/:groupId',
-            {groupId: '@id'},
+        return $resource('/api/groups/:id',
+            {id: '@id'},
             {
                 'update': {method: 'PUT'},
                 'queryGroupNames': {

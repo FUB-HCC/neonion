@@ -16,7 +16,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                 $scope.concepts = data;
             }).$promise
                 .then(function () {
-                    return DocumentService.get({docId: params.docID}, function (document) {
+                    return DocumentService.get({id: params.docID}, function (document) {
                         $scope.document = document;
                         if ($scope.document.hasOwnProperty("attached_file")) {
                             $scope.documentUrl = "/documents/viewer/" + $scope.document.attached_file.id;
@@ -152,7 +152,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
         }
 
         $scope.loadConceptSet = function () {
-            $scope.conceptSet = ConceptSetService.get({conceptSetId: "default"}, function () {
+            $scope.conceptSet = ConceptSetService.get({id: "default"}, function () {
                 var sets = {};
                 $scope.concepts.filter(
                     function (item) {

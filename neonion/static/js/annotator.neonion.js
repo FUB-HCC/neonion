@@ -218,6 +218,7 @@
             resourceList.on("click", "button", $.proxy(function (e) {
                 var source = $(e.currentTarget);
                 var itemIndex = parseInt(source.val());
+                itemIndex = !isNaN(itemIndex) ? itemIndex : -1;
                 // store selected resource in editor state
                 this.editorState.selectedItem = itemIndex;
                 this.annotator.editor.submit();
@@ -261,8 +262,8 @@
             noResults: "<div class='empty'>No results found.</div>",
             editorLine: "<div class='annotator-linie'></div>",
             searchItem: "<i class='fa fa-search'></i>",
-            cancelItem: "<a href='#' data-action='annotator-cancel'><i class='fa fa-times'></i></a>",
-            submitItem: "<a href='#' data-action='annotator-submit'><i class='fa fa-check'></i></a>",
+            cancelItem: "<a data-action='annotator-cancel'><i class='fa fa-times'></i></a>",
+            submitItem: "<a data-action='annotator-submit'><i class='fa fa-check'></i></a>",
             unknownItem: "<button class='unknown' data-action='annotator-submit'>Unknown Resource</button>",
             emptyAdder: "<button></button>"
         },
@@ -329,7 +330,7 @@
             },
             private: function (params) {
                 var query = Annotator.Plugin.Neonion.prototype.annotationLayers.unspecified(params);
-                query["creator.email"] = params.agent.email;
+                query["oa.annotatedBy.email"] = params.agent.email;
                 return query;
             },
             group: function (params) {
@@ -348,8 +349,6 @@
          * @param annotation
          */
         beforeAnnotationCreated: function (annotation) {
-            // add user to annotation
-            annotation.creator = this.options.agent;
             // create a child element to store Open Annotation data
             annotation.oa = {
                 annotatedBy: $.extend(this.options.agent, {type: this.oa.types.agent.person}),
@@ -488,7 +487,7 @@
 
         viewerLoadAgentField: function (field, annotation) {
             var userField = this.literals['en'].unknown;
-            if (annotation.hasOwnProperty('oa')) {
+            if (annotation.hasOwnProperty('oa') && annotation.oa.hasOwnProperty('annotatedBy')) {
                 userField = annotation.oa.annotatedBy.email;
             }
             field.innerHTML = this.literals['en'].agent + ":&nbsp;" + userField;
@@ -517,7 +516,7 @@
                     annotation.oa.motivatedBy = this.oa.motivation.classifying;
 
                     // add extra semantic data from identified resource
-                    if (this.editorState.selectedItem > 0) {
+                    if (this.editorState.selectedItem >= 0 && this.editorState.selectedItem < this.editorState.resultSet.length) {
                         var dataItem = this.editorState.resultSet[this.editorState.selectedItem];
                         annotation.rdf.sameAs = dataItem.uri + '';
                         annotation.rdf.label = dataItem.label;
@@ -655,7 +654,7 @@
         },
 
         updateScoreAccordingOccurrence: function (items) {
-            var highlights = this.getAnnotationHighlights();
+            var highlights = $(".annotator-hl:not(.annotator-hl-temporary),." + Annotator.Plugin.Neonion.prototype.classes.hide);
             var occurrence = {};
             // count occurrence of each resource
             highlights.each(function () {

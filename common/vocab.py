@@ -19,3 +19,10 @@ class OpenAnnotation:
     class TagTypes(Enum):
         tag = 'oa:Tag'
         semanticTag = 'oa:SemanticTag'
+
+    class Motivations(Enum):
+        commenting = 'oa:commenting'
+        highlighting = 'oa:highlighting'
+        tagging = 'oa:tagging'
+        classifying = 'oa:classifying'
+        identifying = 'oa:identifying'

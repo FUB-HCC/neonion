@@ -1,7 +1,7 @@
 neonionApp.factory('LinkedConceptService', ['$resource',
         function ($resource) {
-            return $resource('/api/linkedconcepts/:linkedConceptId',
-                {linkedConceptId: '@id'},
+            return $resource('/api/linkedconcepts/:id',
+                {id: '@id'},
                 {
                     'update': {method: 'PUT'},
                 }

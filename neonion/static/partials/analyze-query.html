@@ -22,7 +22,7 @@
         <div>
             <label for="object">Object</label>
             <select name="object" ng-model="form.selectedObject"
-                    ng-options="item.object.value for item in form.objects"
+                    ng-options="item.label for item in form.concepts"
                     ng-change="assembleQuery()">
                 <option value=""></option>
             </select>

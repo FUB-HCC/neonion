@@ -60,7 +60,7 @@
 
         annotationDeleted : function (annotation) {
             // check if deleted annotation is automatic annotation
-            /*if (annotation.hasOwnProperty('creator') && annotation.creator.email == this.options.agent.email) {
+            /*if (annotation.hasOwnProperty('creator') && annotation.oa.annotatedBy.email == this.options.agent.email) {
                 // TODO raise NER event
             }*/
         },
@@ -119,7 +119,6 @@
                     var path = this.convertToXPath(tokenList[i]);
                     var annotation = this.annotator.createAnnotation();
                     // additional properties to identify automatic annotations
-                    annotation.creator = this.options.agent;
                     annotation.rdf = {
                         typeof: 'http://neonion.org/concept/person', // tokenList[i].type,
                         label: tokenList[i].text

@@ -26,7 +26,7 @@
                     <td class="context">
                         {{ annotation.context.left | truncate:'left' }}&nbsp;
                         <a class="mark"
-                           href="/annotator/{{ documentKey }}#?workspace={{ groupKey }}"
+                           href="/annotator/{{ documentKey }}#?docId={{ documentKey }}&annotationId={{ annotation.id }}&workspace={{ groupKey }}"
                            target="blank">{{ annotation.quote }}&nbsp;<i class="fa fa-external-link"></i>
                         </a>&nbsp;{{ annotation.context.left | truncate:'right' }}
                     </td>

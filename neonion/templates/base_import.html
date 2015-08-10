@@ -14,7 +14,7 @@
                 {% csrf_token %}
 
                 <input id="file-upload" name="file-upload"
-                       type="file" multiple change="fileLoad($files)"
+                       type="file" change="fileLoad($files)"
                        ng-click="meta=true" ng-init="meta=false">
 
                 <input class="button button-primary button-import pull-right" type="submit"/>

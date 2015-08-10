@@ -1,7 +1,7 @@
 neonionApp.factory('DocumentService', ['$resource',
     function ($resource) {
-        return $resource('/api/documents/:docId',
-            {docId: '@id'},
+        return $resource('/api/documents/:id',
+            {id: '@id'},
             {
                 'queryTitles': {
                     method: 'GET',

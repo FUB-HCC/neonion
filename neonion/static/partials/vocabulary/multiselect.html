@@ -1,0 +1,30 @@
+<div class="row">
+    <div class="col-xs-6">
+        <b>{{ literals.multiselect.assigned }}</b>
+    </div>
+    <div class="col-xs-6">
+        <input type="text" class="form-control" id="label"
+               placeholder="{{ literals.multiselect.placeholder }}"
+               ng-model="form.multiselect.query" autocomplete="off">
+    </div>
+</div>
+<div class="row">
+    <ul class="list-group">
+        <li button type="button" class="list-group-item"
+            ng-repeat="item in assignableItems | filter:filterByQuery | filter:filterAssignedItems | orderBy : 'label'">
+            <span class="badge" ng-click="unassignItem(item)"><i class="glyphicon glyphicon-minus"></i></span>
+            <b>{{ item.label }}</b>
+            <p>{{ item.comment }}</p>
+        </li>
+    </ul>
+</div>
+<div class="row">
+    <ul class="list-group">
+        <li button type="button" class="list-group-item"
+            ng-repeat="item in assignableItems | filter:filterByQuery | filter:filterAssignableItems | orderBy : 'label'">
+            <span class="badge" ng-click="assignItem(item)"><i class="glyphicon glyphicon-plus"></i></span>
+            <b>{{ item.label }}</b>
+            <p>{{ item.comment }}</p>
+        </li>
+    </ul>
+</div>

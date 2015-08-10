@@ -3,8 +3,8 @@
  */
 neonionApp.factory('UserService', ['$resource',
     function ($resource) {
-        return $resource('/api/users/:userId',
-            {userId: '@id'},
+        return $resource('/api/users/:id',
+            {id: '@id'},
             {
                 'update': {method: 'PUT'},
                 'current': {

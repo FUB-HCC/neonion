@@ -15,6 +15,9 @@
                 <li ng-class="{active:tab===1}"><a ng-click="tab = 1">My</a></li>
                 <li ng-class="{active:tab===2}"><a ng-click="tab = 2">Public</a></li>
                 <li ng-class="{active:tab===3}"><a ng-click="tab = 3">Groups</a></li>
+                <li class="filter">
+                    <input type="text" autocomplete="off" ng-model="search.query" placeholder="filter for label">
+                </li>
             </ul>
         </nav>
 

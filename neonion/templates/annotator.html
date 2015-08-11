@@ -8,7 +8,7 @@
 
 {% block header %}
     
-    <div ng-controller="ContextInfoCtrl">
+    <div ng-controller="ContextInfoCtrl" ng-cloak>
       <ul class="context-list">
       {% verbatim %}
           <li><i class="fa fa-bookmark"></i>
@@ -27,7 +27,7 @@
           </li>
           <li class="loggedin"><i class="fa fa-user"></i>{{ user.email }}</li>
       </ul>
-      <div class="document-title" ng-cloak>
+      <div class="document-title">
           {{ document.title }}<span class="list-icon"><i class="fa fa-circle-o"></i>{{ group.name }}</span>
       </div>
       {% endverbatim %}

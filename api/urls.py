@@ -2,11 +2,12 @@ from django.conf.urls import url, include
 from rest_framework import routers
 from api import views
 from viewsets import UserViewSet, WorkingGroupViewSet, DocumentViewSet, ConceptSetViewSet, ConceptViewSet, \
-    PropertyViewSet, LinkedConceptViewSet
+    PropertyViewSet, LinkedConceptViewSet, MembershipViewSet
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'users', UserViewSet)
+router.register(r'memberships', MembershipViewSet)
 router.register(r'groups', WorkingGroupViewSet)
 router.register(r'documents', DocumentViewSet)
 router.register(r'conceptsets', ConceptSetViewSet)

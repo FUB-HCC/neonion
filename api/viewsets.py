@@ -1,13 +1,12 @@
-from django.http import HttpResponseForbidden
 from documents.models import Document
 from annotationsets.models import ConceptSet, Concept, Property, LinkedConcept, LinkedProperty
 from rest_framework import viewsets, status
-from accounts.models import User, WorkingGroup
+from accounts.models import User, WorkingGroup, Membership
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from api.serializers import UserSerializer, UserDetailedSerializer, WorkingGroupSerializer, ConceptSetSerializer, \
     DocumentSerializer, DocumentDetailedSerializer, WorkingGroupDocumentSerializer, ConceptSerializer, \
-    PropertySerializer, LinkedConceptSerializer, LinkedPropertySerializer
+    PropertySerializer, LinkedConceptSerializer, LinkedPropertySerializer, MembershipSerializer
 
 
 # ViewSets for document.
@@ -76,12 +75,17 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class WorkingGroupViewSet(viewsets.ReadOnlyModelViewSet):
+# ViewSets for memberships.
+class MembershipViewSet(viewsets.ModelViewSet):
+    queryset = Membership.objects.all()
+    serializer_class = MembershipSerializer
+
+
+class WorkingGroupViewSet(viewsets.ModelViewSet):
     queryset = WorkingGroup.objects.all()
     serializer_class = WorkingGroupSerializer
 
-    @list_route(methods=['post'])
-    def create_group(self, request):
+    def create(self, request):
         # create new group where the owner is the current user
         new_group = WorkingGroup.objects.create(owner=self.request.user, **request.data)
         new_group.save()
@@ -89,70 +93,3 @@ class WorkingGroupViewSet(viewsets.ReadOnlyModelViewSet):
         self.request.user.join_group(new_group)
         # response
         return Response(self.get_serializer(new_group).data, status=status.HTTP_201_CREATED)
-
-    @detail_route(methods=['post'])
-    def rename_group(self, request, pk):
-        # get group
-        group = WorkingGroup.objects.get(pk=pk)
-        if self.request.user.is_superuser or group.owner == self.request.user:
-            group.name = request.data['name']
-            group.save()
-            return Response(self.get_serializer(group).data, status=status.HTTP_204_NO_CONTENT)
-        else:
-            return HttpResponseForbidden()
-
-    @detail_route(methods=['delete'])
-    def delete_group(self, request, pk):
-        # get group
-        group = WorkingGroup.objects.get(pk=pk)
-        if self.request.user.is_superuser or group.owner == self.request.user:
-            group.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            return HttpResponseForbidden()
-
-    @detail_route(methods=['post'])
-    def add_member(self, request, pk):
-        # get group
-        group = WorkingGroup.objects.get(pk=pk)
-        if self.request.user.is_superuser or group.owner == self.request.user:
-            user = User.objects.get(pk=request.data['id'])
-            user.join_group(group)
-            return Response(self.get_serializer(group).data, status=status.HTTP_200_OK)
-        else:
-            return HttpResponseForbidden()
-
-    @detail_route(methods=['post'])
-    def remove_member(self, request, pk):
-        # get group
-        group = WorkingGroup.objects.get(pk=pk)
-        if self.request.user.is_superuser or group.owner == self.request.user:
-            user = User.objects.get(pk=request.data['id'])
-            user.unjoin_group(group)
-            return Response(self.get_serializer(group).data, status=status.HTTP_200_OK)
-        else:
-            return HttpResponseForbidden()
-
-    @detail_route(methods=['post'])
-    def add_document(self, request, pk):
-        # get group
-        group = WorkingGroup.objects.get(pk=pk)
-        if self.request.user.is_superuser or group.owner == self.request.user:
-            document = Document.objects.get(pk=request.data['id'])
-            group.documents.add(document)
-            group.save()
-            return Response(self.get_serializer(group).data, status=status.HTTP_200_OK)
-        else:
-            return HttpResponseForbidden()
-
-    @detail_route(methods=['post'])
-    def remove_document(self, request, pk):
-        # get group
-        group = WorkingGroup.objects.get(pk=pk)
-        if self.request.user.is_superuser or group.owner == self.request.user:
-            document = Document.objects.get(pk=request.data['id'])
-            group.documents.remove(document)
-            group.save()
-            return Response(self.get_serializer(group).data, status=status.HTTP_200_OK)
-        else:
-            return HttpResponseForbidden()

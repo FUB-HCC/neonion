@@ -47,7 +47,7 @@ class UserDetailedSerializer(serializers.ModelSerializer):
 class MembershipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Membership
-        fields = ('user', 'group')
+        fields = ('id', 'user', 'group', 'invite_reason')
 
 
 # Serializer for working group representation
@@ -55,6 +55,7 @@ class WorkingGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkingGroup
         fields = ('id', 'name', 'owner', 'members', 'documents')
+        read_only_fields = ('owner', 'members')
 
 
 # Serializer for working group representation
@@ -75,7 +76,6 @@ class LinkedPropertySerializer(serializers.ModelSerializer):
 
 # Serializers for concept representation.
 class PropertySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Property
         fields = ('id', 'uri', 'label', 'comment', 'inverse_property', 'range', 'linked_properties')
@@ -90,7 +90,6 @@ class LinkedConceptSerializer(serializers.ModelSerializer):
 
 # Serializers for concept representation.
 class ConceptSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Concept
         fields = ('id', 'uri', 'label', 'comment', 'properties', 'linked_concepts')
@@ -98,7 +97,6 @@ class ConceptSerializer(serializers.ModelSerializer):
 
 # Serializers for concept set representation.
 class ConceptSetSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = ConceptSet
         fields = ('id', 'uri', 'label', 'comment', 'concepts')

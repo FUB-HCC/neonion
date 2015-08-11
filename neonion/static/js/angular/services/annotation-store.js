@@ -1,7 +1,7 @@
 neonionApp.factory('AnnotationStoreService', ['$resource',
         function ($resource) {
             return $resource('/api/store/annotations/:id',
-                {id: '@id'},
+                {id: '@id', limit: 999999},
                 {
                     'queryPrivate': {
                         method: 'GET',

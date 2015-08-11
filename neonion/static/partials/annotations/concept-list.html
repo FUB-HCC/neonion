@@ -1,34 +1,35 @@
 <div ng-controller="AnnotationListCtrl" ng-cloak>
     <div ng-repeat="(concept, annotationByConceptType) in annotations | filterByConceptAnnotation | filter:filterConceptAnnotations | orderBy: 'rdf.typeof' | groupBy: 'rdf.typeof'">
-        <div class="concept-annotation-header">
-            <h3>{{ (annotationByConceptType | first).rdf.conceptLabel }}</h3>
-            <a class="button button-small" target="blank"
+        <h4>
+            {{ (annotationByConceptType | first).rdf.conceptLabel }}
+            <a class="btn btn-primary pull-right" target="blank"
                ng-click="downloadConceptTags(annotationByConceptType, 'csv')">
-                <span class="fa fa-download fa-fw"></span>Download
+                <i class="fa fa-download fa-fw"></i>Download
             </a>
-        </div>
-
-        <ul class="annotation-grid">
-            <li ng-repeat="(key, annotationByConcept) in annotationByConceptType | orderBy: 'rdf.label' | groupBy: 'rdf.uri'">
-                <div>
-                    <div class="ann-header">
-                        {{ (annotationByConcept | first).rdf.label }}
-                    </div>
-                    <div>
-                        <a href="/annotation_occurrences#?rdf.uri={{ key | escape }}&oa.annotatedBy.email={{ user.email }}">
-                            {{ annotationByConcept.length }} Occurrences
-                        </a>
-                    </div>
-                    <div>
-                        <a href="/annotation_documents#?rdf.uri={{ key | escape }}&oa.annotatedBy.email={{ user.email }}">
-                            {{ (annotationByConcept | unique : 'uri').length }} Documents
-                        </a>
-                    </div>
-                    <div class="sub-info">
-                        {{ (annotationByConcept | last).created | date : "MM/dd/yyyy 'at' h:mma" }}
-                    </div>
-                </div>
-            </li>
-        </ul>
+        </h4>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Concept Name</th>
+                <th>Details</th>
+                <th>Last Created</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="(key, annotationByConcept) in annotationByConceptType | orderBy: 'rdf.label' | groupBy: 'rdf.uri'">
+                <td class="col-md-6">{{ (annotationByConcept | first).rdf.label }}</td>
+                <td class="col-md-4">
+                    <a href="/annotation_occurrences#?rdf.uri={{ key | escape }}&oa.annotatedBy.email={{ user.email }}">
+                        {{ annotationByConcept.length }} Occurrences
+                    </a>
+                    in
+                    <a href="/annotation_documents#?rdf.uri={{ key | escape }}&oa.annotatedBy.email={{ user.email }}">
+                        {{ (annotationByConcept | unique : 'uri').length }} Documents
+                    </a>
+                </td>
+                <td class="col-md-2">{{ (annotationByConcept | last).created | date : "MM/dd/yyyy 'at' h:mma" }}</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </div>

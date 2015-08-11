@@ -1,12 +1,14 @@
-<table ng-controller='GroupListCtrl'>
+<table class="table" ng-controller='GroupListCtrl'>
     <thead>
         <tr>
             <td>
-                <input type="text" name="input" ng-model="form.groupName" required ng-trim="true" />
+                <form class="navbar-form navbar-right pull-left" role="search">
+                     <input class="form-control" type="text" ng-model="form.groupName" required ng-trim="true" />
+                </form>
             </td>
             <td>
-                <a class="button button-small" ng-click="createGroup()">
-                    <span class="fa fa-plus fa-fw"></span>Create
+                <a class="btn btn-primary" ng-click="createGroup()">
+                    <i class="fa fa-plus fa-fw"></i>Create
                 </a>
             </td>
         </tr>
@@ -19,16 +21,16 @@
     </thead>
     <tbody>
          <tr ng-repeat="group in groups | orderBy:'name'">
-            <td>{{ group.name }}</td>
-            <td>
-                <a class="button button-small" ng-click="showMembership(group)">
-                    <span class="fa fa-users fa-fw"></span>Membership
+            <td class="col-md-3">{{ group.name }}</td>
+            <td class="col-md-9">
+                <a class="btn btn-primary" ng-click="showMembership(group)">
+                    <i class="fa fa-users fa-fw"></i>Membership
                 </a>
-                <a ng-show="group.owner != null" class="button button-small" ng-click="deleteGroup(group)">
-                    <span class="fa fa-times fa-fw"></span>Delete
+                <a ng-show="group.owner != null" class="btn btn-primary" ng-click="deleteGroup(group)">
+                    <i class="fa fa-times fa-fw"></i>Delete
                 </a>
                 <div ng-show="group.id == form.selectedGroup">
-                    <table>
+                    <table class="table">
                         <tr>
                             <th>User</th>
                             <th>Document</th>

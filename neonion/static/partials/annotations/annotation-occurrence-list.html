@@ -1,10 +1,10 @@
-<table>
+<table class="table gap-top">
     <thead>
-    <tr>
-        <th>Annotation Context</th>
-        <th>Document</th>
-        <th>Created</th>
-    </tr>
+        <tr>
+            <th>Annotation Context</th>
+            <th>Document</th>
+            <th>Created</th>
+        </tr>
     </thead>
     <tbody ng-controller="AnnotationOccurrenceListCtrl" ng-cloak>
         <tr ng-repeat="annotation in annotations | orderBy:'-created'">

@@ -126,13 +126,15 @@
             switch (annotation.oa.motivatedBy) {
                 case scope.oa.motivation.classifying:
                 case scope.oa.motivation.identifying:
-                    var linkedAnnotations = factory.getLinkedAnnotationsWithSubject(annotation.rdf.uri);
+                    var linkedAnnotations = factory.getLinkedAnnotationsWithSubject(scope.helper.getSemanticTag(annotation).uri);
                     if (linkedAnnotations.length > 0) {
                         linkedAnnotations.forEach(function (statement) {
                             var object = factory.getAnnotationById(statement.oa.hasTarget.target);
                             // ensure the target annotation was found
                             if (object) {
-                                $(field).append(factory.createStatementHTML(annotation.rdf, statement.oa.hasBody.rdf, object.rdf, statement.id));
+                                $(field).append(factory.createStatementHTML(scope.helper.getSemanticTag(annotation),
+                                    scope.helper.getSemanticTag(statement),
+                                    scope.helper.getSemanticTag(object), statement.id));
                             }
                         });
                         $(field).wrapInner("<ul></ul>").show();
@@ -160,7 +162,7 @@
          */
         factory.getLinkedAnnotationsWithSubject = function (subject) {
             return factory.linkedAnnotations.filter(function (annotation) {
-                return annotation.oa.hasBody.rdf.subject == subject;
+                return scope.helper.getSemanticTag(annotation).subject == subject;
             });
         };
 
@@ -229,10 +231,15 @@
             switch (annotation.oa.motivatedBy) {
                 case scope.oa.motivation.classifying:
                 case scope.oa.motivation.identifying:
-                    var conceptDefinition = scope.getConcept(annotation.rdf.typeof);
+                    var conceptDefinition = scope.getConcept(scope.helper.getSemanticTag(annotation).typeof);
                     if (conceptDefinition && conceptDefinition.properties.length > 0) {
                         conceptDefinition.properties.forEach(function (property, index) {
-                            $(field).append(factory.createPropertyItemHTML(property, index));
+                            var propertyBtn = $(factory.createPropertyItemHTML(property, index));
+                            if (!factory.hasSuitableAnnotations(property)) {
+                                // disable button if there are no suitable instances
+                                propertyBtn.prop('disabled', true);
+                            }
+                            $(field).append(propertyBtn);
                         });
                         factory.focusedAnnotation = annotation;
                         $(field).show();
@@ -241,9 +248,32 @@
             }
         };
 
+        /**
+         * Checks whether the page contains annotations with suitable concept types for the given property.
+         * @param property
+         */
+        factory.hasSuitableAnnotations = function (property) {
+            // get tne URIs of all suitable concepts
+            var matchingConcepts = scope.concepts.
+                filter(function (concept) {
+                    return property.range.indexOf(concept.id) != -1;
+                })
+                .map(function (concept) {
+                    return concept.uri;
+                });
+
+            return scope.getAnnotations().some(function (annotation) {
+                if (scope.helper.getMotivationEquals(annotation, scope.oa.motivation.classifying) ||
+                    scope.helper.getMotivationEquals(annotation, scope.oa.motivation.identifying)) {
+                    return matchingConcepts.indexOf(scope.helper.getSemanticTag(annotation).typeof) != -1;
+                }
+                return false;
+            });
+        };
+
         factory.onCreateProperty = function (e) {
             if (factory.focusedAnnotation) {
-                var concept = scope.getConcept(factory.focusedAnnotation.rdf.typeof);
+                var concept = scope.getConcept(scope.helper.getSemanticTag(factory.focusedAnnotation).typeof);
                 if (concept) {
                     // get index of property from target value
                     var propertyIdx = parseInt($(e.target).val());
@@ -262,25 +292,22 @@
                     // group annotations by their uri and cache result in factory
                     factory.groupedObjects = scope.groupAnnotationBy(annotations,
                         function (annotation) {
-                            return annotation.rdf.uri;
+                            return scope.helper.getSemanticTag(annotation).uri;
                         }
                     );
 
-                    factory.showDialog(factory.focusedAnnotation.rdf, factory.selectedProperty, factory.groupedObjects);
+                    factory.showDialog(scope.helper.getSemanticTag(factory.focusedAnnotation), factory.selectedProperty, factory.groupedObjects);
                 }
             }
         };
 
         factory.setupDialog = function () {
             factory.dialog = document.createElement("dialog");
-            factory.dialogSection = $("<section class='annotator-item'></section>");
+            factory.dialogSection = $("<section></section>");
+            factory.dialogSection.appendTo(factory.dialog);
 
-            var form = $("<form method='dialog'></form>").appendTo(factory.dialog);
-            form.append(factory.dialogSection);
-            form.append("<menu><button type='button' data-action='dialog-close'><i class='fa fa-times'></i></button></menu>");
-
-            form.on("click", "[data-action='dialog-close']", factory.closeDialog);
-            form.on("click", "[data-action='dialog-submit']", factory.submitDialog);
+            factory.dialogSection.on("click", "[data-action='dialog-close']", factory.closeDialog);
+            factory.dialogSection.on("click", "[data-action='dialog-submit']", factory.submitDialog);
 
             scope.annotator.wrapper[0].appendChild(factory.dialog);
         };
@@ -291,7 +318,7 @@
             for (var key in objects) {
                 items.push({
                     uri: key,
-                    label: objects[key][0].rdf.label
+                    label: scope.helper.getSemanticTag(objects[key][0]).label
                 });
             }
             // sort items by label alphabetically
@@ -299,12 +326,17 @@
 
             // add heading to dialog
             factory.dialogSection.empty()
-                .append("<p>" + subject.label + "&nbsp;" + property.label + ":</p>");
+                .append("<a class='pull-right' data-action='dialog-close'><i class='fa fa-times'></i></a>")
+                .append("<h5>" + subject.label + "&nbsp;" + property.label + ":</h5>");
+
+            factory.itemSection = $("<div class='list-group'></div>");
 
             // add item to dialog
+            var group = $("<div class='btn-group-vertical' role='group'></div>");
             items.forEach(function (item) {
-                factory.dialogSection.append(factory.createInstanceItemHTML(item));
+                group.append(factory.createInstanceItemHTML(item));
             });
+            factory.dialogSection.append(group);
 
             // update interface
             scope.annotator.viewer.hide();
@@ -348,12 +380,12 @@
         };
 
         factory.createInstanceItemHTML = function (instance) {
-            return "<button type='button' data-action='dialog-submit' value='" +
+            return "<button type='button' class='btn btn-default' data-action='dialog-submit' value='" +
                 instance.uri + "'>" + instance.label + "</button>";
         };
 
         factory.createPropertyItemHTML = function (property, index) {
-            return "<button data-action='create-property' type='button' value='" + index + "'>" +
+            return "<button class='btn btn-secondary btn-xs btn-spacing' data-action='create-property' type='button' value='" + index + "'>" +
                 property.label + "</button>";
         };
 

@@ -6,20 +6,34 @@
 {% block title %}Annotator{% endblock %}
 {% block page_id %}annotator{% endblock %}
 
-{% block header %}
-    <ng-include src="'{% static 'partials/annotator/annotator-context.html' %}'"></ng-include>
+{% block left %}
+<div class="sidebar col-md-1">
+    <div class="row">
+        <ng-include src="'{% static 'partials/annotator/annotator-navigation.html' %}'"></ng-include>
+    </div>
+</div>
 {% endblock %}
 
-{% block left %}
-<div class="sidebar">
-    <ng-include src="'{% static 'partials/annotator/annotator-navigation.html' %}'"></ng-include>
+{% block right %}
+<div class="col-md-10 col-md-offset-1">
+    <div class="row">
+        <div class="header col-md-12">
+            {% block header %}
+                <ng-include src="'{% static 'partials/annotator/annotator-context.html' %}'"></ng-include>
+            {% endblock %}
+        </div>
+        <div class="content content-inverted col-md-12">
+            <div class="row">
+                <div class="col-md-6" id="annotate-space" ng-controller="AnnotatorCtrl"
+                    ng-include="'{% static 'partials/annotator/annotator.html' %}'"
+                    onload="initialize({ docID:'{{ doc_id }}', nerUrl:'{{ ner_url }}', nerAuth:'{{ ner_auth }}'})"></div>
+            </div>
+        </div>
+    </div>  
 </div>
 {% endblock %}
 
 {% block content %}
-    <div id="annotate-space" ng-controller="AnnotatorCtrl"
-        ng-include="'{% static 'partials/annotator/annotator.html' %}'"
-        onload="initialize({ docID:'{{ doc_id }}', nerUrl:'{{ ner_url }}', nerAuth:'{{ ner_auth }}'})"></div>
 {% endblock %}
 
 {% block scripts %}

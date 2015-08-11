@@ -3,25 +3,21 @@
 {% load staticfiles %}
 
 {% block title %}Documents{% endblock %}
-{% block page_id %}workspace{% endblock %}
 
 {% block content %}
-    <div>
-        <h2>Documents</h2>
-    </div>
     <div ng-init="tab = 1" ng-cloak>
-        <div class="top-navigation clearfix">
-            <nav class="nav-horizontal">
-                <ul>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
                     <li ng-class="{active:tab===1}"><a ng-click="tab = 1">My</a></li>
                     <li ng-class="{active:tab===2}"><a ng-click="tab = 2">Public</a></li>
                     <li ng-class="{active:tab===3}"><a ng-click="tab = 3">Groups</a></li>
                 </ul>
-            </nav>
-            <div class="top-navigation-filter">
-                <ng-include src="'/static/partials/common/filter.html'"></ng-include>
+                <form class="navbar-form navbar-right" role="search">
+                    <ng-include src="'/static/partials/common/filter.html'"></ng-include>
+                </form>
             </div>
-
+        </nav>
         <div ng-switch="tab">
             <div ng-switch-when="1">
                 <ng-include

@@ -5,30 +5,34 @@
 {% block title %}Sign In{% endblock %}
 {% block page_id %}signin{% endblock %}
 
-{% block header %}
-<div class="content">
-  {% for error in form.non_field_errors %}
-    <div class="message message-error">{{ error|escape }}</div>
-  {% endfor %}
-</div>
-{% endblock %}
-
 {% block registration %}
-<p>Please Sign In before using neonion.</p>
-    <form action="" method="post">
-        {% csrf_token %}
-        <div class="form-group {% if form.email.errors %}error{% endif %}">
-            {{ form.email }}
-            <label>{{ form.email.label }}</label>
-            {{ form.email.errors }}
-        </div>
-        <div class="form-group {% if form.password.errors %}error{% endif %}">
-            {{ form.password }}
-            <label>{{ form.password.label }}</label>
-        </div>
-        <div class="form-buttons">
-            <button class="button pull-right">Sign in</button>
-            <a href="/" class="button button-secondary button-wide pull-right">Forgot password?</a>
-        </div> 
-    </form>
+<div class="row">
+    <div class="col-md-4">
+        <form action="" method="post" class="gap-top">
+            {% csrf_token %}
+            <fieldset>
+                <p>Please Sign In before using neonion.</p>
+                <div class="form-group {% if form.email.errors %}has-error{% endif %}">
+                    <label class="control-label" for="{{ form.email.auto_id }}">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}
+                        <div class="has-error"><span class="help-block">{{ error|escape }}</span></div>
+                    {% endfor %}
+                </div>
+                <div class="form-group {% if form.password.errors %}has-error{% endif %}">
+                    <label class="control-label" for="{{ form.password.auto_id }}">{{ form.password.label }}</label>
+                    {{ form.password }}
+                </div>
+                <div class="form-group pull-right">
+                    <button type="button" class="btn btn-link">Forgot password?</button>
+                    <button class="btn btn-primary">Sign in</button>
+                </div>
+            </fieldset>
+        </form>
+
+        {% for error in form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">{{ error|escape }}</div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

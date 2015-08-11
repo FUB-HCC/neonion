@@ -154,7 +154,7 @@
             var field = this.annotator.editor.fields[0].element;
             // add controls submit and cancel buttons
             $(field).append(
-                "<div class='resource-controles'>" + this.templates.submitItem + this.templates.cancelItem + "</div>");
+                "<div class='resource-controls'>" + this.templates.submitItem + this.templates.cancelItem + "</div>");
 
             return field;
         };
@@ -168,7 +168,7 @@
 
             // replace filed with custom content
             $(field).children((":first")).replaceWith(
-                "<div class='resource-controles'>" + this.templates.cancelItem + "</div>" +
+                "<div class='resource-controls'>" + this.templates.cancelItem + "</div>" +
                 "<form id='resource-form'>" + this.templates.searchItem + "</form>" +
                 "<div id='resource-list'>" + this.templates.unknownItem + "</div>"
             );
@@ -239,6 +239,7 @@
             annotationEditorShown: "annotationEditorShown",
             annotationEditorHidden: "annotationEditorHidden",
             annotationEditorSubmit: "annotationEditorSubmit",
+            annotationViewerShown: "annotationViewerShown",
             annotationViewerTextField: "annotationViewerTextField",
             linkedAnnotationCreated: "linkedAnnotationCreated",
             linkedAnnotationDeleted: "linkedAnnotationDeleted"
@@ -269,13 +270,13 @@
         widgets : {},
 
         templates: {
-            showMore: "<button data-action='annotator-more'>Show more results&nbsp;&#8230;</button>",
+            showMore: "<button class='more' data-action='annotator-more'>Show more results&nbsp;&#8230;</button>",
             spinner: "<span style='margin:5px;' class='fa fa-spinner fa-spin'></span>",
             noResults: "<div class='empty'>No results found.</div>",
             editorLine: "<div class='annotator-line'></div>",
             searchItem: "<i class='fa fa-search'></i>",
-            cancelItem: "<a data-action='annotator-cancel'><i class='fa fa-times'></i></a>",
-            submitItem: "<a data-action='annotator-submit'><i class='fa fa-check'></i></a>",
+            cancelItem: "<a data-action='annotator-cancel'><i class='fa fa-times fa-fw'></i></a>",
+            submitItem: "<a data-action='annotator-submit'><i class='fa fa-check fa-fw'></i></a>",
             unknownItem: "<button type='button' class='unknown' data-action='annotator-submit'>Unknown Resource</button>",
             emptyAdder: "<button></button>"
         },
@@ -368,10 +369,10 @@
                     annotatedBy: $.extend(this.options.agent, {type: this.oa.types.agent.person}),
                     hasBody: {
                         rdf : {
-                            subject: annotationSubject.rdf.uri,
+                            subject: this.helper.getSemanticTag(annotationSubject).uri,
                             predicate: predicate.uri,
                             predicateLabel: predicate.label,
-                            object: annotationObject.rdf.uri
+                            object: this.helper.getSemanticTag(annotationObject).uri
                         },
                         type: this.oa.types.tag.semanticTag
                     },
@@ -477,8 +478,8 @@
                         break;
                     case this.oa.motivation.classifying:
                     case this.oa.motivation.identifying:
-                        var concept = this.getConcept(this.editorState.selectedConcept);
-                        if (this.helper.conceptHasReferrals(concept)) {
+                        var concept = this.getConcept(this.helper.getSemanticTag(annotation).typeof);
+                        if (concept && this.helper.conceptHasReferrals(concept)) {
                             this.showEditorField(this.fields.editor.conceptTaggingField);
                             // focus search field
                             $(this.fields.editor.conceptTaggingField).find("#resource-search").focus();
@@ -499,6 +500,15 @@
             this.editorState.selectedItem = -1;
             this.editorState.resultSet = [];
             this.editorState.selectedConcept = "";
+        },
+
+        annotationViewerShown: function (viewer, annotations) {
+            if (this.helper.getMotivationEquals(annotations[0], this.oa.motivation.highlighting)) {
+                $(viewer.element).find(".annotator-edit").hide();
+            }
+            else {
+                $(viewer.element).find(".annotator-edit").show();
+            }
         },
 
         annotationViewerTextField: function (field, annotation) {
@@ -562,11 +572,12 @@
         viewerLoadResourceField: function (field, annotation) {
             if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
                 this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
-                var ref = annotation.rdf.hasOwnProperty('sameAs') ? annotation.rdf.sameAs : '#';
-                var fieldValue = "<a href='" + ref + "' target='blank'>" + annotation.rdf.label + "</a>";
+                var semanticTag = this.helper.getSemanticTag(annotation);
+                var ref = semanticTag.hasOwnProperty('sameAs') ? semanticTag.sameAs : '#';
+                var fieldValue = "<a href='" + ref + "' target='blank'>" + semanticTag.label + "</a>";
                 var fieldCaption = '';
-                if (annotation.rdf.hasOwnProperty('conceptLabel')) {
-                    fieldCaption = annotation.rdf.conceptLabel + ":&nbsp;";
+                if (semanticTag.hasOwnProperty('conceptLabel')) {
+                    fieldCaption = semanticTag.conceptLabel + ":&nbsp;";
                 }
                 field.innerHTML = fieldCaption + fieldValue;
                 $(field).show();
@@ -587,9 +598,6 @@
         loadEditorConceptField: function (field, annotation) {
             if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
                 this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
-                // restore type from annotation if provided
-                this.editorState.selectedConcept = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : this.editorState.selectedConcept;
-
                 $(field).show();
                 $(field).find("#resource-search").val(annotation.quote);
                 $(field).find("#resource-search").attr("autofocus", "autofocus");
@@ -602,14 +610,15 @@
                 this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
                 if (annotation.oa.hasBody.type == this.oa.types.tag.semanticTag) {
                     // add extra semantic data from identified resource
+                    var semanticTag = this.helper.getSemanticTag(annotation);
                     if (this.editorState.selectedItem >= 0 && this.editorState.selectedItem < this.editorState.resultSet.length) {
                         var dataItem = this.editorState.resultSet[this.editorState.selectedItem];
-                        annotation.rdf.sameAs = dataItem.uri + '';
-                        annotation.rdf.label = dataItem.label;
+                        semanticTag.sameAs = dataItem.uri + '';
+                        semanticTag.label = dataItem.label;
                         annotation.oa.motivatedBy = this.oa.motivation.identifying;
                     }
                     else {
-                        annotation.rdf.label = annotation.quote;
+                        semanticTag.label = annotation.quote;
                         annotation.oa.motivatedBy = this.oa.motivation.classifying;
                     }
                 }
@@ -666,7 +675,7 @@
                 .filter($.proxy(function (annotation) {
                     if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
                         this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
-                        return concepts.indexOf(annotation.rdf.typeof) != -1;
+                        return concepts.indexOf(this.helper.getSemanticTag(annotation).typeof) != -1;
                     }
                     return false;
                 }, this));
@@ -695,18 +704,18 @@
          */
         updateResourceList: function (searchTerm) {
             var list = $(this.fields.editor.conceptTaggingField).find("#resource-list");
-            var concept = this.getConcept(this.editorState.selectedConcept);
+            var concept = this.getConcept(this.helper.getSemanticTag(this.annotator.editor.annotation).typeof);
 
             // replace list with spinner while loading
             list.html(this.templates.spinner);
 
             // check if the concept is connected to concepts from a knowledge provider
-            if (this.helper.conceptHasReferrals(concept)) {
+            if (concept && this.helper.conceptHasReferrals(concept)) {
                 var indexName = this.helper.getIndexName(concept.linked_concepts[0].endpoint);
                 // lookup resource by search term and provided index
                 this.search(concept.id, searchTerm, indexName)
                     .done($.proxy(function (items) {
-                        var formatter = this.formatter[this.editorState.selectedConcept] || this.formatter['default'];
+                        var formatter = this.formatter[concept.uri] || this.formatter['default'];
                         // store last result set
                         this.editorState.resultSet = items;
                         // update score
@@ -756,18 +765,18 @@
         },
 
         updateScoreAccordingOccurrence: function (items) {
-            var highlights = $(".annotator-hl:not(.annotator-hl-temporary),." + Annotator.Plugin.Neonion.prototype.classes.hide);
+            var annotations = this.getAnnotations();
             var occurrence = {};
             // count occurrence of each resource
-            highlights.each(function () {
-                var annotation = $(this).data("annotation");
-                if (annotation.rdf && annotation.rdf.sameAs) {
-                    if (!occurrence[annotation.rdf.sameAs]) {
-                        occurrence[annotation.rdf.sameAs] = 0;
+            for (var i = 0; i < annotations.length; i++) {
+                var semanticTag = this.helper.getSemanticTag(annotations[i]);
+                if (semanticTag && semanticTag.hasOwnProperty("sameAs")) {
+                    if (!occurrence[semanticTag.sameAs]) {
+                        occurrence[semanticTag.sameAs] = 0;
                     }
-                    occurrence[annotation.rdf.sameAs]++;
+                    occurrence[semanticTag.sameAs]++;
                 }
-            });
+            }
             // calculate score
             for (var i = 0; i < items.length; i++) {
                 var uri = items[i].uri;
@@ -783,6 +792,23 @@
         },
 
         helper: {
+
+            /**
+             * Returns the RDF object associated with the semantic tag.
+             * @param annotation
+             * @returns {*}
+             */
+            getSemanticTag: function (annotation) {
+                switch (annotation.oa.motivatedBy) {
+                    case Annotator.Plugin.Neonion.prototype.oa.motivation.classifying:
+                    case Annotator.Plugin.Neonion.prototype.oa.motivation.identifying:
+                        return annotation.rdf;
+                    case Annotator.Plugin.Neonion.prototype.oa.motivation.linking:
+                        return annotation.oa.hasBody.rdf;
+                    default:
+                        return null;
+                }
+            },
 
             /**
              * Indicates whether the given concept provides a search for referrals.

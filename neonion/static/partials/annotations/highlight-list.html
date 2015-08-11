@@ -1,33 +1,30 @@
 <div ng-controller="AnnotationListCtrl" ng-cloak>
-    <ul ng-repeat="(documentKey, annotationByDocument) in annotations | filterByHighlightAnnotation | filter:filterHighlightAnnotation | groupBy: 'uri'"
-        class="list-unstyled">
-        <li ng-repeat="(groupKey, annotationByGroup) in annotationByDocument | groupBy: 'permissions.read[0]'">
-            <div class="table-annotation-header">
-                <h3>
-                    <a href="/annotator/{{ documentKey }}#?workspace={{ groupKey }}">
-                        {{ documentTitles[documentKey] }}</a>
-                </h3>
+    <div ng-repeat="(documentKey, annotationByDocument) in annotations | filterByHighlightAnnotation | filter:filterHighlightAnnotation | groupBy: 'uri'">
+        <div ng-repeat="(groupKey, annotationByGroup) in annotationByDocument | groupBy: 'permissions.read[0]'">
+            <h4>
+                <a href="/annotator/{{ documentKey }}#?workspace={{ groupKey }}">
+                    {{ documentTitles[documentKey] }}</a>
                 <small ng-if="groupNames[groupKey]">
                     <i class="fa fa-circle-o"></i> {{ groupNames[groupKey] }}
                 </small>
                 <small ng-if="!groupNames[groupKey]">
                     <i class="fa fa-circle-o"></i> Private
                 </small>
-                <a class="button button-small pull-right" target="blank"
+                <a class="btn btn-primary pull-right" target="blank"
                    ng-click="downloadHighlights(annotationByGroup, 'csv')">
-                    <span class="fa fa-download fa-fw"></span>Download
+                    <i class="fa fa-download fa-fw"></i>Download
                 </a>
-            </div>
-            <table class="table-freetext-annotation">
+            </h4>
+            <table class="table">
                 <thead>
                 <tr>
-                    <th class="highlight">Highlight</th>
-                    <th class="date">Annotated&nbsp;by</th>
+                    <th>Highlight</th>
+                    <th>Annotated&nbsp;by</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="annotation in annotationByGroup">
-                    <td class="highlight">
+                    <td class="highlight col-md-10">
                         {{ annotation.context.left | truncate:'left' }}
                         <a class="mark"
                            href="/annotator/{{ documentKey }}#?docId={{ documentKey }}&annotationId={{ annotation.id }}&workspace={{ groupKey }}">
@@ -35,10 +32,11 @@
                         </a>
                         {{ annotation.context.right | truncate:'right' }}
                     </td>
-                    <td class="date">{{ annotation.oa.annotatedBy.email }}<br>{{ annotation.created | date : "MM/dd/yyyy 'at' h:mma" }}</td>
+                    <td class="date col-md-2">{{ annotation.oa.annotatedBy.email }}<br>{{ annotation.created | date : "MM/dd/yyyy 'at' h:mma" }}
+                    </td>
                 </tr>
                 </tbody>
             </table>
-        </li>
-    </ul>
+        </div>
+    </div>
 </div>

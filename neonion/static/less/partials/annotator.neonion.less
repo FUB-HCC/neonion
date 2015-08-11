@@ -1,0 +1,272 @@
+// the "*" resets everything inside all child elements, that is why we
+// sometimes have to set "font-family: 'FontAwesome'" again
+// dont no how to do it differently
+.annotator-notice *,
+.annotator-adder *, 
+.annotator-filter *,
+.annotator-widget *{
+  &:extend(.annotator-basefontsize);
+  &:extend(.annotator-font);
+  color: @ship-gray;
+}
+
+.annotator-editor .annotator-resize,
+.annotator-editor .annotator-controls {
+  display: none;
+}
+
+// Kommentarfeld
+#annotator-field-0 {
+  &:extend(.annotator-basefontsize);
+  background: @white;
+}
+
+.annotator-adder,
+.annotator-editor .annotator-item {
+  &:extend(.shadow);
+
+  & > div:first-of-type {
+    overflow: auto;
+    max-height: 30vh;
+  }
+
+  .empty {
+    &:extend(.annotator-basefontsize);
+    padding: 0 @gap-h;
+    background-color: @white;
+    border-top: 1px solid @silver;
+  }
+
+  button {
+    &:extend(.annotator-basefontsize);
+    background: @white;
+    border: none;
+    border-top: 1px solid @silver;
+    color: @black;
+    display: block;
+    outline: 0;
+    padding: 0 @gap-h;
+    text-align: left;
+    text-indent: 0;
+    width: 100%;
+
+    &:hover {
+      background-color: @tangerine;
+      color: @white;
+      span, i { color: @gallery; }
+    }
+    span { font-size: 14px; }
+
+    i:hover {color: @black;}
+
+    &.unknown {
+      background-image: url("img/unknown.png");
+      background-repeat: no-repeat;
+      background-position: @gap-h;
+      padding-left: @gap-h + 30px + 8px;
+    }
+
+    &.more {
+      background-color: @silver;
+    }
+  }
+}
+
+/* Annotator Adder
+-------------------------------------------------------------------- */
+.annotator-adder {
+  width: auto;
+  height: auto;
+  button { white-space: nowrap; }
+}
+
+/* Annotator Outer
+-------------------------------------------------------------------- */
+// Override the CSS(top/left), which was set by JS
+.annotator-editor[style] {
+  right: -120px !important;
+  left: inherit !important;
+}
+
+/* Annotator Widget
+-------------------------------------------------------------------- */
+.annotator-editor {
+
+  .annotator-item textarea {
+    min-height: 90px !important;
+    resize: vertical;
+  }
+
+  .annotator-widget {
+    border: 0px;
+    left: 0px;
+    top: -45px;
+    width: 400px;
+
+    &:after {
+      content: none;
+    }
+
+    .resource-controls {
+      left: -47px;
+      position: absolute;
+      top: 0px;
+      z-index: -100;
+
+      i {
+        color: @ship-gray;
+        font-family: 'FontAwesome' !important;
+        font-size: @font-size-base;
+
+        &:hover {
+          color: @black;
+        }
+      }
+
+      a {
+        display: block;
+        padding: @lh/2 @gap-h;
+        border-radius: 0;
+        background-color: @gallery;
+        cursor: pointer;
+      }
+    }
+
+    #resource-form {
+      background-color: @white;
+
+      i {
+        &:extend(.annotator-basefontsize);
+        color: @manatee;
+        font-family: 'FontAwesome' !important;
+        position: absolute;
+        padding: @lh/2 @gap-h;
+      }
+
+      input[type=text] {
+        &:extend(.annotator-basefontsize);
+        color: @black;
+        font-weight: bold;
+        padding: @lh/2 @gap-h @lh/2 @gap-h + 30px; //$column 
+
+        &:focus {
+          background-color: transparent;
+          box-shadow: 0 0 5px 1px fade(@tangerine, 50%);
+          border-color: fade(@tangerine, 0%);
+        }
+      }
+    }
+  }
+}
+
+/* Annotator Item Links
+-------------------------------------------------------------------- */
+.annotator-editor a {
+  &:extend(.annotator-basefontsize);
+  background-color: transparent;
+  background-image: none;
+  border: 0;
+  box-shadow: none;
+  color: @black;
+  display: inline;
+  margin-left: @gap-h/2;
+  padding: 0;
+  text-shadow: none;
+
+  &:after {
+    content: none;
+  }
+
+  &:hover, &:active, &:focus {
+    background-color: transparent;
+    background-image: none;
+    color: @tangerine;
+    text-shadow: none;
+  }
+
+  i { font-family: 'FontAwesome' !important; }
+}
+
+.annotator-viewer {
+  border: 0px;
+  z-index: 100;
+  &:extend(.shadow);
+
+  div {
+    border: 0px;
+  }
+
+  .annotator-widget {
+    border: 0px;
+    border-radius: 0px;
+
+    .annotator-controls {
+      right: 5px;
+      padding: @lh/2 @gap-h @lh/2 0;
+      position: absolute;
+      margin: 0px;
+
+      button {
+        padding: 0 0 0 0;
+
+        &:hover {
+          padding: 0px;
+          background-color: @white;
+        }
+      }
+    }
+  }
+
+  .annotator-item div {
+    border-bottom: 1px solid @silver;
+    font-style: normal;
+    padding: @lh/2 @gap-h;
+    &:extend(.annotator-basefontsize);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+// Annotator Line
+.annotator-line {
+  box-shadow: inset 1px 1px 0px @manatee;
+  position: absolute;
+  width: 500px;
+  z-index: -100;
+}
+
+// Modalbox for choosing linked annotation item
+dialog {
+  border: 1px solid @silver;
+  padding: 0px;
+  &:extend(.shadow);
+  h5 { white-space: nowrap; }
+
+  section {
+    padding: 10px;
+
+    .btn-group-vertical {
+      width: 100%;
+    }
+  }
+}
+
+// Override Path for images form annotator
+
+.annotator-adder {
+  background-image: url(img/annotator-icon-sprite.png);
+  background-repeat: no-repeat;
+}
+
+.annotator-resize,
+.annotator-widget::after,
+.annotator-editor a::after,
+.annotator-viewer .annotator-controls button,
+.annotator-viewer .annotator-controls a,
+.annotator-filter .annotator-filter-navigation button::after,
+.annotator-filter .annotator-filter-property .annotator-filter-clear {
+  background-image: url(img/annotator-glyph-sprite.png);
+  background-repeat: no-repeat;
+}

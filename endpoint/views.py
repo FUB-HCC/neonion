@@ -22,5 +22,4 @@ def query(request):
         # execute query
         return JsonResponse(execute_query(sparql_query, sparql_output))
     except Exception as e:
-        print(e.message)
         return HttpResponseForbidden()

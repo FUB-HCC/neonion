@@ -1,0 +1,28 @@
+// Buttons
+//
+// We are using the same buttons as in bootstrap, look [here](http://getbootstrap.com/css/#buttons).
+//
+//
+// markup:
+// <a class="btn btn-primary" href="#">this is a btn-primary</a>
+// <a class="btn btn-primary" href="#">
+//   <i class="fa fa-file-text-o fa-fw"></i>
+//   this is a button btn-primary with an icon
+// </a>
+// <a class="btn btn-default" href="#">this is a btn-default</a>
+//
+// sg-wrapper:
+// <div class="sg grey-bg margin">
+//   <sg-wrapper-content/>
+// </div>
+//
+// Styleguide 3.7
+
+.btn-secondary {
+  .button-variant(@btn-secondary-color; @btn-secondary-bg; @btn-secondary-border);
+}
+
+.btn-spacing {
+  margin-left: @gap-h/2;
+  margin-right: @gap-h/2;
+}

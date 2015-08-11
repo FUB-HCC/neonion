@@ -1,53 +1,57 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" ng-app="neonionApp">
+
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, maximum-scale=1, minimum-scale=1" />
     <title>Neonion - {% block title %}{% endblock %}</title>
     {% load staticfiles %}
     {% load pipeline %}
-    <link rel="stylesheet" href="{% static 'css/main.css' %}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{% static 'main.css' %}" type="text/css" media="screen" />
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
-</head>
-<body id="page-{% block page_id %}general{% endblock %}" ng-controller="MainCtrl as main">
-{% csrf_token %}
-{% block left %}
-    <div class="sidebar">
-        <div class="logo-wrapper">
-            <div class="logo"></div>
-        </div>
-        {% include "navigation.html" %}
-    </div>
-{% endblock %}
-
-{% block right %}
-    <div class="main">
-        <div class="header">
-
-        {% block header %}
-            {# Search field #}
-            <div id="search-form" ng-show="common.search.enabled" ng-model="common.search.query" ng-cloak>
-                <button id="search-icon" class="fa fa-search"></button>
-                <input id="search" type="text" autocomplete="off"/>
-            </div>
-        {% endblock %}
-
-        </div>
-        <div class="content">
-              {% block content %}{% endblock %}
-        </div>
-    </div>
-{% endblock %}
     {% javascript 'stats' %}
-    {% javascript 'angular_app' %}
+</head>
 
-    <!-- Include the hashgrid script -->
-    <script type="text/javascript" src="{% static 'js/hashgrid.js' %}"></script>
+<body id="page-{% block page_id %}general{% endblock %}" ng-controller="MainCtrl as main">
+    <div class="container-fluid">
+        <div class="row">
+            {% csrf_token %}
 
-    <!-- Kick hashgrid into action -->
-    <script type="text/javascript">
-      var grid = new hashgrid({ numberOfGrids: 2 });
-    </script>
+            {% block left %}
+            <div class="sidebar col-md-1">
+                <div class="logo-wrapper">
+                    <div class="logo"></div>
+                </div>
+                {% include "navigation.html" %}
+            </div>
+            {% endblock %}
 
-    {% block scripts %}{% endblock %}
+            {% block right %}
+            <div class="col-md-10 col-md-offset-1">
+              <div class="row">
+                <div class="header col-md-12">
+                    {% block header %}
+                    {# Search field #}
+                    <div id="search-form" ng-show="search.enabled" ng-model="common.search.query" ng-cloak>
+                        <button id="search-icon" class="fa fa-search"></button>
+                        <input id="search" type="text" autocomplete="off" />
+                    </div>
+                    {% endblock %}
+                </div>
+                <div class="content col-md-12">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+              </div>  
+            </div>
+            {% endblock %}
+
+            {% javascript 'angular_app' %}
+
+            {% block scripts %}
+            {% endblock %}
+        </div>
+    </div>
 </body>
+
+</html>

@@ -1,5 +1,5 @@
 /**
- * Service for groups
+ * @deprecated Service for groups
  */
 neonionApp.factory('GroupService', ['$http', function ($http) {
     "use strict";

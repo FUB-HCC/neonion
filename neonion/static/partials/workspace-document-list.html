@@ -7,8 +7,8 @@
             </a>
         </li>
         <li ng-repeat="document in workspace.documents | filter:filterDocuments | orderBy:'-created'">
-            <a ng-href="/annotator/{{document.id}}#?workspace={{ workspace.id }}" class="document-grid-content">
-                <div>{{document.title}}</div>
+            <a ng-href="/annotator/{{ document.id }}#?docId={{document.id}}&workspace={{ workspace.id }}" class="document-grid-content">
+                <div>{{ document.title }}</div>
             </a>
             <div class="document-grid-actions">
                 <span ng-show="allowRemove" class="fa fa-trash-o" ng-click="removeDocument(workspace, document)"></span>

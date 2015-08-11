@@ -1,3 +1,7 @@
+//
+// Typography
+// --------------------------------------------------
+
 h1 {
   font-size: 26px;
   line-height: 2*$baseline; 
@@ -46,5 +50,45 @@ a {
     &:hover {
       background-color: $tangerine;
     }
+  }
+}
+
+// Lists
+// -------------------------
+
+// Unstyled keeps list items block level, just removes default browser padding and list-style
+.list-unstyled {
+  @include list-reset;
+}
+
+// Inline turns list items into inline-block
+.list-inline {
+  @extend .list-unstyled;
+
+  > li {
+    display: inline-block;
+    margin-right: $column-gap;
+    padding-right: $column-gap;
+  }
+}
+
+// List having icons do have proper margin
+.list-icon {
+  i { margin-right: $column-gap/2; }
+}
+
+// Special list for context area having lines inbetween items and last element floats right
+.context-list {
+  @extend .list-inline;
+  @extend .list-icon;
+
+  > li {
+    &:not(:nth-last-child(-n+2)) { border-right: 1px solid; }
+  }
+
+  .loggedin {
+    @extend .pull-right;
+    padding: 0px;
+    margin: 0px;
   }
 }

@@ -15,10 +15,17 @@ neonionApp.factory('AnnotatorService', [function () {
         return annotator;
     };
 
+    factory.getNumberOfTotalAnnotations = function() {
+      if(annotator) {
+        var annotations = factory.getAnnotationObjects();
+        return annotations.length;
+      }
+    };
+
     factory.scrollToAnnotation = function (annotation) {
         // check if just the annotation id was passed
         if (typeof annotation == 'string') {
-            var annotations = annotator.plugins.Neonion.getAnnotationObjects();
+            var annotations = factory.getAnnotationObjects();
             annotation = annotations.find(function (element) {
                 return (element.id == $location.hash());
             });

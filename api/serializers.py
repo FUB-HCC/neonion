@@ -85,7 +85,7 @@ class PropertySerializer(serializers.ModelSerializer):
 class LinkedConceptSerializer(serializers.ModelSerializer):
     class Meta:
         model = LinkedConcept
-        fields = ('id', 'uri', 'label', 'comment', 'linked_type')
+        fields = ('id', 'uri', 'label', 'comment', 'endpoint', 'linked_type')
 
 
 # Serializers for concept representation.
@@ -99,4 +99,23 @@ class ConceptSerializer(serializers.ModelSerializer):
 class ConceptSetSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConceptSet
+        fields = ('id', 'uri', 'label', 'comment', 'concepts')
+
+
+# Serializers for a detailed concept set representation.
+class ConceptSetDeepSerializer(serializers.ModelSerializer):
+
+    class ConceptDeepSerializer(ConceptSerializer):
+        properties = PropertySerializer(many=True)
+        linked_concepts = LinkedConceptSerializer(many=True)
+
+        class Meta:
+            model = Concept
+            fields = ('id', 'uri', 'label', 'comment', 'properties', 'linked_concepts')
+
+    concepts = ConceptDeepSerializer(many=True)
+
+    class Meta:
+        model = ConceptSet
+        depth = 3
         fields = ('id', 'uri', 'label', 'comment', 'concepts')

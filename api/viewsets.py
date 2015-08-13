@@ -4,7 +4,8 @@ from rest_framework import viewsets, status
 from accounts.models import User, WorkingGroup, Membership
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
-from api.serializers import UserSerializer, UserDetailedSerializer, WorkingGroupSerializer, ConceptSetSerializer, \
+from api.serializers import UserSerializer, UserDetailedSerializer, WorkingGroupSerializer, \
+    ConceptSetSerializer, ConceptSetDeepSerializer, \
     DocumentSerializer, DocumentDetailedSerializer, WorkingGroupDocumentSerializer, ConceptSerializer, \
     PropertySerializer, LinkedConceptSerializer, LinkedPropertySerializer, MembershipSerializer
 
@@ -41,7 +42,13 @@ class LinkedConceptViewSet(viewsets.ModelViewSet):
 # ViewSets for concept sets.
 class ConceptSetViewSet(viewsets.ModelViewSet):
     queryset = ConceptSet.objects.all()
-    serializer_class = ConceptSetSerializer
+
+    def get_serializer_class(self):
+        # allow a deep serialisation on retrieve
+        if self.action == 'retrieve' and 'deep' in self.request.query_params:
+            return ConceptSetDeepSerializer
+        else:
+            return ConceptSetSerializer
 
 
 # ViewSets for users.

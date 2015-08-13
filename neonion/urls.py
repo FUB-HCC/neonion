@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^vocabulary/$', 'neonion.views.render_vocabulary'),
     url(r'^settings/$', 'neonion.views.render_settings'),
     url(r'^query$', 'neonion.views.render_query'),
+    url(r'^workbench$', 'neonion.views.render_workbench'),
 
     url(r'^management/?$', 'neonion.views.accounts_management'),
 
@@ -24,8 +25,6 @@ urlpatterns = [
     url(r'^documents/', include('documents.urls')),
     url(r'^endpoint/', include('endpoint.urls')),
 
-    # Elasticsearch proxy
-    url(r'^search$', 'neonion.views.resource_search'),
 
     # Django rest
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))

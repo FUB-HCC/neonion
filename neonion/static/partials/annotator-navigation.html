@@ -20,7 +20,7 @@
             </a>
 
             <div class="submenu ng-cloak" ng-show="active === 0">
-                <div class="submenu-heading icon-right">Toggle Contributers<i class="fa fa-times"
+                <div class="submenu-heading icon-right">Toggle Contributors<i class="fa fa-times"
                                                                               ng-click="toggleSubMenu(0)"></i>
                 </div>
                 <ul class="submenu-content">
@@ -59,14 +59,19 @@
                         class="icon-left"><span>
                         <i class="fa fa-check fa-fw"
                            ng-class="{invisible: getAnnotationMode()!==mode.commenting}">
-
                         </i>Commenting</span>
                     </li>
-                    <li ng-click="setAnnotationMode(mode.conceptTagging)" class="icon-left"><span><i
-                            class="fa fa-check fa-fw"
-
-                            ng-class="{invisible: getAnnotationMode()!==mode.conceptTagging}"
-                            ></i>Concept Tagging</span>
+                    <li ng-click="setAnnotationMode(mode.highlighting)"
+                        class="icon-left"><span>
+                        <i class="fa fa-check fa-fw"
+                           ng-class="{invisible: getAnnotationMode()!==mode.highlighting}">
+                        </i>Highlighting</span>
+                    </li>
+                    <li ng-click="setAnnotationMode(mode.conceptTagging)"
+                        class="icon-left"><span>
+                        <i class="fa fa-check fa-fw"
+                           ng-class="{invisible: getAnnotationMode()!==mode.conceptTagging}">
+                        </i>Concept Tagging</span>
                     </li>
                 </ul>
             </div>

@@ -23,4 +23,8 @@ urlpatterns = [
     url(r'^store/search$', 'api.views.store_search'),
     url(r'^store/annotations$', views.AnnotationListView.as_view()),
     url(r'^store/annotations/(?P<pk>.+)$', views.AnnotationDetailView.as_view()),
+
+    # ElasticSearch proxy
+    url(r'^es/search/(?P<index>.+)$', 'api.views.es_search'),
+    url(r'^es/import/(?P<index>.+)$', 'api.views.es_bulk_import'),
 ]

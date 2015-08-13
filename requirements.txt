@@ -25,7 +25,7 @@ isodate==0.5.0
 itsdangerous==0.24
 jwt==0.3.2
 pycrypto==2.6.1
-pyelasticsearch==0.7.1
+pyelasticsearch==1.4
 pyparsing==2.0.3
 python-slugify==0.1.0
 rdflib==4.1.2

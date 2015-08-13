@@ -134,6 +134,8 @@ PIPELINE_JS = {
             'js/angular/lib/angular-cookies.min.js',
             'js/angular/lib/angular-resource.min.js',
             'js/angular/lib/angular-filter.min.js',
+            'js/angular/lib/ng-file-upload-shim.min.js',
+            'js/angular/lib/ng-file-upload.min.js',
             'js/bootstrap.min.js'
         ),
         'output_filename': 'js/stats.js',

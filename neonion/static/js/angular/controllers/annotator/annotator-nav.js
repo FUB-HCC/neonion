@@ -9,6 +9,7 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$cookies', 'cookieKeys', 
     $scope.active = -1;
     $scope.mode = {
         commenting: Annotator.Plugin.Neonion.prototype.annotationModes.commenting,
+        highlighting: Annotator.Plugin.Neonion.prototype.annotationModes.highlighting,
         conceptTagging: Annotator.Plugin.Neonion.prototype.annotationModes.conceptTagging
     };
 

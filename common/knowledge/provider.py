@@ -11,7 +11,7 @@ class Provider(object):
 
     @abstractmethod
     def index(self):
-        return 'wikidata' #raise NotImplementedError('No index for elastic search provided')
+        raise NotImplementedError('No index for elastic search provided')
 
     @abstractmethod
     def dump(self, types):
@@ -29,7 +29,10 @@ class Provider(object):
     def delete(self, uri):
         pass
 
-    def search(self, search_term, search_type, size=50):
+    def search(self, search_term, search_type, index=None, size=50):
+        if index is None:
+            index = self.index()
+
         query = {
             'query': {
                 'filtered': {
@@ -67,6 +70,6 @@ class Provider(object):
             }
         }
 
-        url = self.elastic_search_url + '/' + self.index() + '/_search?size='+str(size)+'&pretty=true&source={}'.format(json.dumps(query))
+        url = self.elastic_search_url + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format(json.dumps(query))
         print(url)
         return requests.get(url).json()

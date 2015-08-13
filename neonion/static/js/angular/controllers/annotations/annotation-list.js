@@ -39,12 +39,14 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
             }).$promise;
         };
 
-        $scope.queryAnnotations = function () {
-            return AnnotationStoreService.search($scope.getQueryParams($scope.pageNum++), function (annotations) {
+        $scope.queryAnnotations = function (pageNum) {
+            pageNum = pageNum | 0;
+            return AnnotationStoreService.search($scope.getQueryParams(pageNum), function (annotations) {
                 if (annotations.length > 0) {
                     $scope.annotations = $scope.annotations.concat(annotations.filter(function (item) {
                         return $scope.documentTitles.hasOwnProperty(item.uri);
                     }));
+                    $scope.queryAnnotations(pageNum + 1);
                 }
             }).$promise;
         };
@@ -69,8 +71,13 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
             }
         };
 
-        $scope.toConceptName = function (conceptUri) {
-            return conceptUri.split('/').pop();
+        $scope.toConceptName = function (annotation) {
+            if (annotation.hasOwnProperty('rdf')) {
+                if (annotation.rdf.hasOwnProperty('conceptLabel')) {
+                    return annotation.rdf.conceptLabel
+                }
+                return annotation.rdf.typeof.split('/').pop();
+            }
         }
 
         $scope.filterCommentAnnotations = function (annotation) {

@@ -8,7 +8,8 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
         $scope.annotations = [];
 
         $scope.exportProperties = {
-            conceptFields: ['id', 'uri', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy', 'rdf.label', 'rdf.uri', 'rdf.typeof', 'rdf.sameAs'],
+            conceptFields: ['id', 'uri', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy', 'rdf.label',
+                'rdf.uri', 'rdf.conceptLabel', 'rdf.typeof', 'rdf.sameAs'],
             commentFields: ['id', 'uri', 'quote', 'text', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy'],
             highlightFields: ['id', 'uri', 'quote', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy']
         };

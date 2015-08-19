@@ -10,6 +10,7 @@ neonionApp.factory('UserService', ['$resource',
                 'current': {
                     method: 'GET',
                     params: {},
+                    cache: true,
                     isArray: false,
                     url: '/api/users/current'
                 }

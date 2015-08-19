@@ -3,6 +3,7 @@ neonionApp.controller('PropertyDetailCtrl', ['$scope', 'ConceptService', 'Proper
             "use strict";
 
             $scope.form = {
+                isEditing: true,
                 multiselect: {
                     query: ""
                 }
@@ -10,26 +11,49 @@ neonionApp.controller('PropertyDetailCtrl', ['$scope', 'ConceptService', 'Proper
             $scope.literals = {
                 multiselect: {
                     assigned: "Assigned Concepts for Property Range",
-                    placeholder: "Type here to filter for concepts"
+                    assignable: "Assignable Concepts for Property Range",
+                    placeholder: "Type here to filter for concepts",
+                    nothingAssigned: "Nothing assigned",
+                    nothingAssignable: "Nothing to assign"
                 }
-            }
+            };
 
+            $scope.validate = function () {
+                return true;
+            };
 
             $scope.create = function () {
-                $scope.property = new PropertyService({
-                    label: "",
-                    comment: ""
-                });
-                return $scope.property.$save().$promise;
-            }
-
-            $scope.saveChanges = function () {
-
-            }
+                if ($scope.validate()) {
+                    if (!$scope.property.hasOwnProperty('id')) {
+                        // generate ID from label
+                        $scope.property.id = window.btoa($scope.property.label);
+                    }
+                    $scope.property.$save($scope.return);
+                }
+            };
 
             $scope.update = function () {
-                return $scope.property.$update().$promise;
+                if ($scope.validate()) {
+                    $scope.property.$update($scope.return);
+                }
+            };
+
+            $scope.delete = function () {
+                $scope.property.$delete($scope.return);
             }
+
+            $scope.return = function () {
+                $scope.$emit("returnEvent");
+            };
+
+            $scope.createProperty = function () {
+                $scope.property = new PropertyService({
+                    label: "",
+                    comment: "",
+                    inverse_property: null,
+                    range: []
+                });
+            };
 
             $scope.getProperty = function (id) {
                 return PropertyService.get({id: id}, function (data) {
@@ -45,36 +69,59 @@ neonionApp.controller('PropertyDetailCtrl', ['$scope', 'ConceptService', 'Proper
 
             $scope.queryConcepts = function () {
                 return ConceptService.query(function (data) {
-                    $scope.assignableItems = data;
+                    $scope.concepts = data;
+                    $scope.updateLists();
                 }).$promise;
+            };
+
+            $scope.updateLists = function () {
+                $scope.assignableItems = $scope.concepts.filter($scope.filterAssignableItems);
+                $scope.assignedItems = $scope.concepts.filter($scope.filterAssignedItems);
             };
 
             $scope.assignItem = function (item) {
                 $scope.property.range.push(item.id);
-            }
+                $scope.updateLists();
+            };
 
             $scope.unassignItem = function (item) {
                 var idx = $scope.property.range.indexOf(item.id);
                 $scope.property.range.splice(idx, 1);
-            }
+                $scope.updateLists();
+            };
 
             $scope.filterByQuery = function (item) {
                 if ($scope.form.multiselect.query.length > 0) {
                     return item.label.toLowerCase().indexOf($scope.form.multiselect.query.toLowerCase()) != -1;
                 }
                 return true;
-            }
+            };
 
             $scope.filterAssignedItems = function (item) {
                 return $scope.property.range.indexOf(item.id) > -1;
-            }
+            };
 
             $scope.filterAssignableItems = function (item) {
                 return $scope.property.range.indexOf(item.id) == -1;
-            }
+            };
 
-            $scope.getProperty("0bfccb86dbfff233c5dd1ab9c1bd51f1e4acd568")
-                .then($scope.queryConcepts);
+            var unbindCreateEvent = $scope.$on('createEvent', function (event) {
+                $scope.form.isEditing = false;
+                $scope.createProperty();
+                $scope.queryConcepts()
+                    .then($scope.queryProperties);
+            });
+
+            var unbindEditEvent = $scope.$on('editEvent', function (event, data) {
+                $scope.form.isEditing = true;
+                $scope.getProperty(data.id)
+                    .then($scope.queryConcepts)
+                    .then($scope.queryProperties);
+            });
+
+            // unbind events
+            $scope.$on('$destroy', unbindCreateEvent);
+            $scope.$on('$destroy', unbindEditEvent);
 
         }]
 );

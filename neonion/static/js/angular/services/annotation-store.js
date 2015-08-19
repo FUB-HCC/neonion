@@ -12,6 +12,7 @@ neonionApp.factory('AnnotationStoreService', ['$resource',
                         method: 'GET',
                         params: {limit: 999999},
                         isArray: true,
+                        cache: true,
                         url: '/api/store/search',
                         transformResponse: function (data, headersGetter) {
                             return angular.fromJson(data)['rows'];

@@ -13,4 +13,4 @@ var neonionApp = angular.module('neonionApp', [
     .constant("cookieKeys", {
         annotationMode: "neonion_annotationMode"
     }
-);
+)

@@ -19,7 +19,30 @@ class SemanticAnnotationValidator(object):
             self.message = message
 
     def __call__(self, annotation):
-        if not ('oa' in annotation and 'hasBody' in annotation['oa']):
+        throw_error = False
+        if self.has_motivation_field(annotation):
+            if self.has_body_field(annotation):
+                # check the motivation
+                if annotation['oa']['motivatedBy'] == OpenAnnotation.Motivations.commenting.value:
+                    # comments has body type text
+                    if not annotation['oa']['hasBody']['type'] == OpenAnnotation.DocumentTypes.text.value:
+                        throw_error = True
+                elif (annotation['oa']['motivatedBy'] == OpenAnnotation.Motivations.classifying.value or
+                        annotation['oa']['motivatedBy'] == OpenAnnotation.Motivations.identifying.value):
+                    # classifying and identifying motivated annotations has the body type semanticTag
+                    if not annotation['oa']['hasBody']['type'] == OpenAnnotation.TagTypes.semanticTag.value:
+                        throw_error = True
+                    else:
+                        if not self.has_typeof_field(annotation):
+                            throw_error = True
+            else:
+                # only highlights do not need a body
+                if not annotation['oa']['motivatedBy'] == OpenAnnotation.Motivations.highlighting.value:
+                    throw_error = True
+        else:
+            throw_error = True
+
+        if throw_error:
             raise ValidationError(self.message, code=self.code, params=annotation)
 
     def __eq__(self, other):
@@ -29,16 +52,29 @@ class SemanticAnnotationValidator(object):
             and (self.code == other.code)
         )
 
+    @classmethod
+    def has_motivation_field(cls, annotation):
+        return 'oa' in annotation and 'motivatedBy' in annotation['oa']
+
+    @classmethod
+    def has_body_field(cls, annotation):
+        return 'oa' in annotation and 'hasBody' in annotation['oa'] and 'type' in annotation['oa']['hasBody']
+
+    @classmethod
+    def has_typeof_field(cls, annotation):
+        return 'rdf' in annotation and 'typeof' in annotation['rdf']
+
 
 def pre_process_annotation(annotation):
     try:
-        if get_body_type(annotation) == OpenAnnotation.TagTypes.semanticTag.value:
+        if (motivation_equals(annotation, OpenAnnotation.Motivations.identifying) or
+                motivation_equals(annotation, OpenAnnotation.Motivations.classifying)):
             try:
                 add_resource_uri(annotation)
             except InvalidResourceTypeError:
                 pass
-    except ValidationError:
-        pass
+    except ValidationError as e:
+        print(e)
 
 
 def post_process_annotation(annotation):
@@ -46,24 +82,18 @@ def post_process_annotation(annotation):
     try:
         # print(Annotation.create_annotation_statement(annotation))
         # insert_data(Annotation.create_annotation_statement(annotation))
-        if get_body_type(annotation) == OpenAnnotation.TagTypes.semanticTag.value:
+        if (motivation_equals(annotation, OpenAnnotation.Motivations.identifying) or
+                motivation_equals(annotation, OpenAnnotation.Motivations.classifying)):
             insert_data(Annotation.statement_about_resource(annotation))
     except Exception as e:
         print(e.message)
 
 
-def get_body_type(annotation):
-    if SemanticAnnotationValidator(annotation) and 'type' in annotation['oa']['hasBody']:
-        return annotation['oa']['hasBody']['type']
+def motivation_equals(annotation, motivation):
+    if SemanticAnnotationValidator(annotation):
+        return annotation['oa']['motivatedBy'] == motivation.value
     else:
-        return None
-
-
-def get_motivation(annotation):
-    if SemanticAnnotationValidator(annotation) and 'motivation' in annotation['oa']:
-        return annotation['oa']['motivation']
-    else:
-        return None
+        False
 
 
 def add_resource_uri(annotation):

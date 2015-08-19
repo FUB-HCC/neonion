@@ -85,7 +85,9 @@ class PropertySerializer(serializers.ModelSerializer):
 class LinkedConceptSerializer(serializers.ModelSerializer):
     class Meta:
         model = LinkedConcept
-        fields = ('id', 'uri', 'label', 'comment', 'endpoint', 'linked_type')
+        fields = ('id', 'uri', 'label', 'comment', 'endpoint', 'linked_type',
+                  'custom_query', 'provider_class', 'retrieved_at')
+        read_only_fields = ('retrieved_at',)
 
 
 # Serializers for concept representation.
@@ -117,5 +119,5 @@ class ConceptSetDeepSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ConceptSet
-        depth = 3
         fields = ('id', 'uri', 'label', 'comment', 'concepts')
+        read_only_fields = ('id', 'uri', 'label', 'comment', 'concepts')

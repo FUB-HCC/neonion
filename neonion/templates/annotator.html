@@ -7,43 +7,18 @@
 {% block page_id %}annotator{% endblock %}
 
 {% block header %}
-    
-    <div ng-controller="ContextInfoCtrl" ng-cloak>
-      <ul class="context-list">
-      {% verbatim %}
-          <li><i class="fa fa-bookmark"></i>
-                <ng-pluralize count="annotatorService.getNumberOfTotalAnnotations()"
-                when="{'0': 'No Annotations',
-                       'one': '1 Annotation',
-                       'other': '{} Annotations'}">
-                </ng-pluralize>
-          </li>
-          <li><i class="fa fa-users"></i>
-                <ng-pluralize count="annotatorService.contributors.length"
-                when="{'0': 'Nobody has contributed',
-                       'one': '1 Contributor',
-                       'other': '{} Contributors'}">
-                </ng-pluralize>
-          </li>
-          <li class="loggedin"><i class="fa fa-user"></i>{{ user.email }}</li>
-      </ul>
-      <div class="document-title">
-          {{ document.title }}<span class="list-icon"><i class="fa fa-circle-o"></i>{{ group.name }}</span>
-      </div>
-      {% endverbatim %}
-    </div>
-    
+    <ng-include src="'{% static 'partials/annotator/annotator-context.html' %}'"></ng-include>
 {% endblock %}
 
 {% block left %}
 <div class="sidebar">
-    <ng-include src="'{% static 'partials/annotator-navigation.html' %}'"></ng-include>
+    <ng-include src="'{% static 'partials/annotator/annotator-navigation.html' %}'"></ng-include>
 </div>
 {% endblock %}
 
 {% block content %}
     <div id="annotate-space" ng-controller="AnnotatorCtrl"
-        ng-include="'{% static 'partials/annotator.html' %}'"
+        ng-include="'{% static 'partials/annotator/annotator.html' %}'"
         onload="initialize({ docID:'{{ doc_id }}', nerUrl:'{{ ner_url }}', nerAuth:'{{ ner_auth }}'})"></div>
 {% endblock %}
 

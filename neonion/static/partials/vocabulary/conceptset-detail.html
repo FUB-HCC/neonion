@@ -1,30 +1,42 @@
-<div ng-controller="ConceptSetDetailCtrl" ng-cloak>
-    <button type="button" ng-click="saveChanges()">Save</button>
-    <button type="button">Cancel</button>
-</div>
-<form>
-    <div class="row">
-        <div class="col-xs-6">
-            <div class="form-group">
+<form ng-controller="ConceptSetDetailCtrl">
+    <fieldset>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-toolbar pull-right">
+                    <button ng-hide="form.isEditing" class="btn btn-primary" type="button"
+                            ng-click="create()">Create
+                    </button>
+                    <button ng-show="form.isEditing" class="btn btn-primary" type="button"
+                            ng-click="update()">Save
+                    </button>
+                    <button class="btn btn-default" type="button"
+                            ng-click="return()">Cancel
+                    </button>
+                    <button ng-show="form.isEditing" class="btn btn-danger" type="button"
+                            ng-click="delete()">Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
                 <label for="label">Label</label>
                 <input type="text" class="form-control" id="label" placeholder=""
                        ng-model="conceptSet.label" autocomplete="off">
             </div>
-        </div>
-        <div class="col-xs-6">
-            <div class="form-group">
+            <div class="col-md-6" ng-show="conceptSet.uri">
                 <label for="uri">URI</label>
                 <input type="text" class="form-control" id="uri" placeholder=""
                        ng-model="conceptSet.uri" readonly="true">
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" class="form-control" rows="3"
-                      ng-model="conceptSet.comment"></textarea>
+        <div class="row">
+            <div class="col-md-12">
+                <label for="description">Description</label>
+                <textarea id="description" class="form-control" rows="3"
+                          ng-model="conceptSet.comment"></textarea>
+            </div>
         </div>
-    </div>
-    <ng-include src="'/static/partials/vocabulary/multiselect.html'"></ng-include>
+        <ng-include src="'/static/partials/vocabulary/multiselect.html'"></ng-include>
+    </fieldset>
 </form>

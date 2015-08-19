@@ -2,9 +2,12 @@ neonionApp.controller('ConceptSetListCtrl', ['$scope', '$sce', 'CommonService', 
         function ($scope, $sce, CommonService, ConceptSetService, ConceptService) {
             "use strict";
 
+            $scope.listModeEnabled = true;
             $scope.style = {
-                compact: false
-            }
+                compact: false,
+                allowCreate : true,
+                detailTemplateUrl : "/static/partials/vocabulary/conceptset-detail.html"
+            };
             $scope.locales = {
                 // TODO localize
                 create: "New Concept Set"
@@ -20,6 +23,16 @@ neonionApp.controller('ConceptSetListCtrl', ['$scope', '$sce', 'CommonService', 
                 return ConceptService.query(function (data) {
                     $scope.concepts = data;
                 }).$promise;
+            };
+
+            $scope.createItem = function() {
+                $scope.listModeEnabled = false;
+                $scope.$broadcast("createEvent")
+            };
+
+            $scope.editItem = function(item) {
+                $scope.listModeEnabled = false;
+                $scope.$broadcast("editEvent", item)
             };
 
             $scope.getItemHeader = function (resource) {
@@ -54,10 +67,16 @@ neonionApp.controller('ConceptSetListCtrl', ['$scope', '$sce', 'CommonService', 
             $scope.filterResources = function (resource) {
                 if (CommonService.filter.query.length > 0) {
                     return resource.label.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
-                    ;
                 }
                 return true;
-            }
+            };
+
+            var unbindReturnEvent = $scope.$on('returnEvent', function () {
+                $scope.queryConceptSets();
+                $scope.listModeEnabled = true;
+            });
+            // unbind event
+            $scope.$on('$destroy', unbindReturnEvent);
 
             // execute promise chain
             $scope.queryConceptSets()

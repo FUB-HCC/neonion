@@ -10,6 +10,7 @@ neonionApp.factory('GroupService', ['$resource',
                 'queryGroupNames': {
                     method: 'GET',
                     params: {},
+                    cache: true,
                     transformResponse: function (data, header) {
                         var jsonData = angular.fromJson(data);
                         var names = {};

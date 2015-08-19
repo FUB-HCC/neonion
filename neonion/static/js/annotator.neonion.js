@@ -350,7 +350,6 @@
             // create a child element to store Open Annotation data
             annotation.oa = {
                 annotatedBy: $.extend(this.options.agent, {type: this.oa.types.agent.person}),
-                hasBody: {},
                 hasTarget: {
                     type: this.oa.types.document.text
                 }
@@ -360,7 +359,7 @@
             switch (this.editorState.annotationMode) {
                 case this.annotationModes.conceptTagging:
                     annotation.oa.motivatedBy = this.oa.motivation.classifying;
-                    annotation.oa.hasBody.type = this.oa.types.tag.semanticTag;
+                    annotation.oa.hasBody = {type: this.oa.types.tag.semanticTag};
                     annotation.rdf = {
                         typeof: this.editorState.selectedConcept,
                         conceptLabel: this.getConcept(this.editorState.selectedConcept).label
@@ -368,7 +367,7 @@
                     break;
                 case this.annotationModes.commenting:
                     annotation.oa.motivatedBy = this.oa.motivation.commenting;
-                    annotation.oa.hasBody.type = this.oa.types.tag.tag;
+                    annotation.oa.hasBody = {type: this.oa.types.document.text};
                     break;
                 case this.annotationModes.highlighting:
                     annotation.oa.motivatedBy = this.oa.motivation.highlighting;
@@ -429,7 +428,7 @@
 
         annotationViewerTextField: function (field, annotation) {
             if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("hasBody") &&
-                annotation.oa.hasBody.type == this.oa.types.tag.tag) {
+                annotation.oa.hasBody.type == this.oa.types.document.text) {
                 $(field).show();
             }
             else {
@@ -441,6 +440,7 @@
             // add context
             annotation.context = this.helper.extractSurroundedContent(annotation, this.annotator);
             // TODO add OA start and end position to target
+            console.log(annotation);
         },
 
         /**
@@ -613,8 +613,8 @@
         },
 
         search: function (type, searchText, index) {
-            var url = this.options.prefix + this.options.urls.search + "/" + index + "?";
-            url += 'type=' + encodeURI(type) + '&q=' + encodeURI(searchText);
+            var url = this.options.prefix + this.options.urls.search +
+                "/" + encodeURI(index) + "/" + encodeURI(type) + "/" + encodeURI(searchText);
             return $.getJSON(url);
         },
 

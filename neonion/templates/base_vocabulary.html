@@ -22,28 +22,16 @@
                 <ng-include
                         src="'{% static 'partials/generic-resource-list.html' %}'"
                         ng-controller="ConceptSetListCtrl"></ng-include>
-
-                <ng-include
-                        src="'{% static 'partials/vocabulary/conceptset-detail.html' %}'"
-                        ng-controller="ConceptSetDetailCtrl"></ng-include>
             </div>
             <div ng-switch-when="2">
                 <ng-include
                         src="'{% static 'partials/generic-resource-list.html' %}'"
                         ng-controller="ConceptListCtrl"></ng-include>
-
-                <ng-include
-                        src="'{% static 'partials/vocabulary/concept-detail.html' %}'"
-                        ng-controller="ConceptDetailCtrl"></ng-include>
             </div>
             <div ng-switch-when="3">
                 <ng-include
                         src="'{% static 'partials/generic-resource-list.html' %}'"
                         ng-controller="PropertyListCtrl"></ng-include>
-
-                <ng-include
-                        src="'{% static 'partials/vocabulary/property-detail.html' %}'"
-                        ng-controller="PropertyDetailCtrl"></ng-include>
             </div>
         </div>
 

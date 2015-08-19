@@ -2,9 +2,12 @@ neonionApp.controller('ConceptListCtrl', ['$scope', '$sce', 'CommonService', 'Co
         function ($scope, $sce, CommonService, ConceptService, PropertyService) {
             "use strict";
 
+            $scope.listModeEnabled = true;
             $scope.style = {
-                compact: true
-            }
+                compact: true,
+                allowCreate : true,
+                detailTemplateUrl : "/static/partials/vocabulary/concept-detail.html"
+            };
             $scope.locales = {
                 // TODO localize
                 create: "New Concept"
@@ -22,12 +25,18 @@ neonionApp.controller('ConceptListCtrl', ['$scope', '$sce', 'CommonService', 'Co
                 }).$promise;
             };
 
-            $scope.getItemHeader = function (resource) {
-                return $sce.trustAsHtml(resource.label);
+            $scope.createItem = function() {
+                $scope.listModeEnabled = false;
+                $scope.$broadcast("createEvent")
             };
 
-            $scope.getItemSubHeader = function (resource) {
-                return "";
+            $scope.editItem = function(item) {
+                $scope.listModeEnabled = false;
+                $scope.$broadcast("editEvent", item)
+            };
+
+            $scope.getItemHeader = function (resource) {
+                return $sce.trustAsHtml(resource.label);
             };
 
             $scope.getItemDescription = function (resource) {
@@ -37,10 +46,15 @@ neonionApp.controller('ConceptListCtrl', ['$scope', '$sce', 'CommonService', 'Co
             $scope.filterResources = function (resource) {
                 if (CommonService.filter.query.length > 0) {
                     return resource.label.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
-                    ;
                 }
                 return true;
-            }
+            };
+
+            var unbindReturnEvent = $scope.$on('returnEvent', function () {
+                $scope.queryConcepts();
+                $scope.listModeEnabled = true;
+            });
+            $scope.$on('$destroy', unbindReturnEvent);
 
             // execute promise chain
             $scope.queryConcepts();

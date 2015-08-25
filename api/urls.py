@@ -26,5 +26,5 @@ urlpatterns = [
 
     # ElasticSearch proxy
     url(r'^es/search/(?P<index>.+)/(?P<type>.+)/(?P<term>.+)$', 'api.views.es_search'),
-    url(r'^es/import/(?P<index>.+)$', 'api.views.es_bulk_import'),
+    url(r'^es/import/(?P<index>.+)/(?P<type>.+)$', 'api.views.es_bulk_import'),
 ]

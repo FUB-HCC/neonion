@@ -5,9 +5,6 @@ neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'UserService', 'Works
     function ($scope, $http, UserService, WorkspaceService, CommonService) {
         "use strict";
 
-        CommonService.enabled = true;
-        $scope.search = CommonService;
-
         $scope.allowRemove = false;
         $scope.allowImport = false;
         $scope.showWorkspaceName = false;
@@ -63,9 +60,9 @@ neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'UserService', 'Works
         };
 
         $scope.filterDocuments = function (document) {
-            if ($scope.search.query.length > 0) {
-                // do something with $scope.search.query
-                return document.title.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
+            if (CommonService.filter.query.length > 0) {
+                // do something with CommonService.filter
+                return document.title.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
             }
             return true;
         };

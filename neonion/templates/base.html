@@ -26,9 +26,9 @@
 
         {% block header %}
             {# Search field #}
-            <div id="search-form" ng-show="search.enabled" ng-cloak>
+            <div id="search-form" ng-show="common.search.enabled" ng-model="common.search.query" ng-cloak>
                 <button id="search-icon" class="fa fa-search"></button>
-                <input id="search" type="text" autocomplete="off" ng-model=""/>
+                <input id="search" type="text" autocomplete="off"/>
             </div>
         {% endblock %}
 

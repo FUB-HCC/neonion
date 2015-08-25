@@ -50,7 +50,7 @@
 
         annotationCreated : function (annotation) {
             // TODO raise NER event
-            console.log(annotation, this);
+            //console.log(annotation, this);
         },
 
         annotationUpdated : function (annotation) {

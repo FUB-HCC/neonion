@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Workbench{% endblock %}
+{% block page_id %}workbench{% endblock %}
+
+{% block content %}
+    <div ng-init="tab = 1" ng-cloak>
+        <nav class="nav-horizontal">
+            <ul>
+                <li ng-class="{active:tab===1}"><a ng-click="tab = 1">Orphaned Annotations</a></li>
+                <li ng-class="{active:tab===2}"><a ng-click="tab = 2">ElasticSearch</a></li>
+            </ul>
+        </nav>
+
+        <div ng-switch="tab">
+            <div ng-switch-when="1">
+                <ng-include
+                    ng-controller="OrphanedAnnotationListCtrl"
+                    src="'{% static 'partials/workbench/orphaned-annotation-list.html' %}'"></ng-include>
+            </div>
+            <div ng-switch-when="2">
+                <ng-include src="'{% static 'partials/workbench/elasticsearch.html' %}'"></ng-include>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+{% endblock %}

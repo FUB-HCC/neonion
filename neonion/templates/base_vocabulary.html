@@ -22,28 +22,16 @@
                 <ng-include
                         src="'{% static 'partials/generic-resource-list.html' %}'"
                         ng-controller="ConceptSetListCtrl"></ng-include>
-
-                <ng-include
-                        src="'{% static 'partials/vocabulary/conceptset-detail.html' %}'"
-                        ng-controller="ConceptSetDetailCtrl"></ng-include>
             </div>
             <div ng-switch-when="2">
                 <ng-include
                         src="'{% static 'partials/generic-resource-list.html' %}'"
                         ng-controller="ConceptListCtrl"></ng-include>
-
-                <ng-include
-                        src="'{% static 'partials/vocabulary/concept-detail.html' %}'"
-                        ng-controller="ConceptDetailCtrl"></ng-include>
             </div>
             <div ng-switch-when="3">
                 <ng-include
                         src="'{% static 'partials/generic-resource-list.html' %}'"
                         ng-controller="PropertyListCtrl"></ng-include>
-
-                <ng-include
-                        src="'{% static 'partials/vocabulary/property-detail.html' %}'"
-                        ng-controller="PropertyDetailCtrl"></ng-include>
             </div>
         </div>
 
@@ -51,6 +39,6 @@
 {% endblock %}
 
 {% block scripts %}
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css" media="screen"/>
-    <link rel="stylesheet" href="{% static 'css/bootstrap-theme.min.css' %}" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 {% endblock %}

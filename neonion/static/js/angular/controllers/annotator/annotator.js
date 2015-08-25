@@ -4,28 +4,23 @@
  * Annotator controller
  */
 neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce', 'cookieKeys',
-    'UserService', 'AnnotatorService', 'DocumentService', 'ConceptSetService', 'ConceptService',
+    'UserService', 'AnnotatorService', 'DocumentService', 'ConceptSetService',
     function ($scope, $cookies, $location, $sce, cookieKeys, UserService, AnnotatorService, DocumentService,
-              ConceptSetService, ConceptService) {
+              ConceptSetService) {
         "use strict";
 
         $scope.initialize = function (params) {
             $scope.params = params;
 
-            ConceptService.query(function (data) {
-                $scope.concepts = data;
-            }).$promise
-                .then(function () {
-                    return DocumentService.get({id: params.docID}, function (document) {
-                        $scope.document = document;
-                        if ($scope.document.hasOwnProperty("attached_file")) {
-                            $scope.documentUrl = "/documents/viewer/" + $scope.document.attached_file.id;
-                        }
-                    }).$promise;
-                });
+            DocumentService.get({id: params.docID}, function (document) {
+                $scope.document = document;
+                if ($scope.document.hasOwnProperty("attached_file")) {
+                    $scope.documentUrl = "/documents/viewer/" + $scope.document.attached_file.id;
+                }
+            })
         };
 
-        $scope.getAnnotationModeCookie = function() {
+        $scope.getAnnotationModeCookie = function () {
             var value = $cookies.get(cookieKeys.annotationMode);
             return value ? parseInt($cookies.get(cookieKeys.annotationMode)) : 1;
         }
@@ -56,7 +51,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                             uri: params.docID,
                             agent: params.agent,
                             workspace: queryParams.workspace,
-                            annotationMode : $scope.getAnnotationModeCookie()
+                            annotationMode: $scope.getAnnotationModeCookie()
                         })
                         // add NER plugin
                         .annotator('addPlugin', 'NER', {
@@ -86,7 +81,13 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                             }
                         });
                 })
-                .then($scope.loadConceptSet)
+                .then($scope.getConceptSet)
+        };
+
+        $scope.getConceptSet = function () {
+            return ConceptSetService.getDeep({id: "default"}, function (conceptSet) {
+                $scope.annotator.plugins.Neonion.conceptSet(conceptSet.concepts);
+            }).$promise;
         };
 
         /**
@@ -150,23 +151,6 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
              page.render(renderContext);
              });*/
         }
-
-        $scope.loadConceptSet = function () {
-            $scope.conceptSet = ConceptSetService.get({id: "default"}, function () {
-                var sets = {};
-                $scope.concepts.filter(
-                    function (item) {
-                        return $scope.conceptSet.concepts.indexOf(item.id) != -1;
-                    }
-                ).forEach(
-                    function (item) {
-                        sets[item.uri] = item;
-                    }
-                );
-
-                $scope.annotator.plugins.Neonion.annotationSets(sets);
-            });
-        };
 
         $scope.handleAnnotationEvent = function (annotation) {
             $scope.$apply(function () {

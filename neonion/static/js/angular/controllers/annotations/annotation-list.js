@@ -1,11 +1,24 @@
 neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'DocumentService',
-    'Group1Service', 'AnnotationStoreService',
+    'GroupService', 'AnnotationStoreService',
     function ($scope, CommonService, DocumentService, GroupService, AnnotationStoreService) {
         "use strict";
 
-        $scope.getQueryParams = function () {
+        $scope.pageNum = 0;
+        $scope.stepSize = 50;
+        $scope.annotations = [];
+
+        $scope.exportProperties = {
+            conceptFields: ['id', 'uri', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy', 'rdf.label',
+                'rdf.uri', 'rdf.conceptLabel', 'rdf.typeof', 'rdf.sameAs'],
+            commentFields: ['id', 'uri', 'quote', 'text', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy'],
+            highlightFields: ['id', 'uri', 'quote', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy']
+        };
+
+        $scope.getQueryParams = function (pageNum) {
             return {
-                'oa.annotatedBy.email': $scope.user.email
+                'oa.annotatedBy.email': $scope.user.email,
+                'offset': pageNum * $scope.stepSize,
+                'limit': $scope.stepSize
             };
         }
 
@@ -27,16 +40,45 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
             }).$promise;
         };
 
-        $scope.queryAnnotations = function () {
-            return AnnotationStoreService.search($scope.getQueryParams(), function (annotations) {
-                $scope.annotations = annotations.filter(function (item) {
-                    return $scope.documentTitles.hasOwnProperty(item.uri);
-                });
+        $scope.queryAnnotations = function (pageNum) {
+            pageNum = pageNum | 0;
+            return AnnotationStoreService.search($scope.getQueryParams(pageNum), function (annotations) {
+                if (annotations.length > 0) {
+                    $scope.annotations = $scope.annotations.concat(annotations.filter(function (item) {
+                        return $scope.documentTitles.hasOwnProperty(item.uri);
+                    }));
+                    $scope.queryAnnotations(pageNum + 1);
+                }
             }).$promise;
         };
 
-        $scope.toConceptName = function (conceptUri) {
-            return conceptUri.split('/').pop();
+        $scope.downloadComments = function (data, format) {
+            $scope.download(data, $scope.exportProperties.commentFields, format);
+        }
+
+        $scope.downloadConceptTags = function (data, format) {
+            $scope.download(data, $scope.exportProperties.conceptFields, format);
+        }
+
+        $scope.download = function (data, properties, format) {
+            if (format.toLowerCase() === 'csv') {
+                var data = $scope.exportCSV(data, properties);
+                var fileName = 'annotations_' + new Date().getTime() + '.csv';
+                var link = document.createElement('a');
+                link.setAttribute('href', data);
+                link.setAttribute('target', '_blank');
+                link.setAttribute('download', fileName);
+                link.click();
+            }
+        };
+
+        $scope.toConceptName = function (annotation) {
+            if (annotation.hasOwnProperty('rdf')) {
+                if (annotation.rdf.hasOwnProperty('conceptLabel')) {
+                    return annotation.rdf.conceptLabel
+                }
+                return annotation.rdf.typeof.split('/').pop();
+            }
         }
 
         $scope.filterCommentAnnotations = function (annotation) {

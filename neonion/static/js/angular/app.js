@@ -1,5 +1,5 @@
 var neonionApp = angular.module('neonionApp', [
-    'ngResource', 'ngCookies', 'angular.filter'
+    'ngResource', 'ngCookies', 'angular.filter', 'ngFileUpload'
 ])
     .config(['$httpProvider', '$locationProvider',
         function ($httpProvider, $locationProvider) {
@@ -13,4 +13,4 @@ var neonionApp = angular.module('neonionApp', [
     .constant("cookieKeys", {
         annotationMode: "neonion_annotationMode"
     }
-);
+)

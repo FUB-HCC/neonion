@@ -1,13 +1,9 @@
-from django.http import HttpResponseBadRequest
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_GET
 from documents.models import Document
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from common.knowledge.provider import Provider
 
 
 # Create your views here.
@@ -64,6 +60,11 @@ def render_query(request):
 
 
 @login_required
+def render_workbench(request):
+    return render_to_response('workbench.html', context_instance=RequestContext(request))
+
+
+@login_required
 def import_document(request):
     data = {}
     if hasattr(settings, 'CONTENT_SYSTEM_CLASS'):
@@ -73,23 +74,3 @@ def import_document(request):
 
     return render_to_response('base_import.html', data, context_instance=RequestContext(request))
 
-
-@login_required
-@require_GET
-def resource_search(request):
-    if 'type' in request.GET and 'q' in request.GET:
-        resource_type = request.GET.get('type')
-        # extract from resource type
-        search_type = resource_type.rstrip('/').rsplit('/', 1)[1]
-        search_term = request.GET.get('q')
-        if search_term:
-            # call search method from provider
-            provider = Provider(settings.ELASTICSEARCH_URL)
-            result_set = provider.search(search_term, search_type)['hits']['hits']
-            result_set = map(lambda item: item['_source'], result_set)
-        else:
-            result_set = []
-
-        return JsonResponse(result_set, safe=False)
-    else:
-        return HttpResponseBadRequest()

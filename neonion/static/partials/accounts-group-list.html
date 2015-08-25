@@ -40,7 +40,7 @@
                                     type="checkbox"
                                     style="width:auto;"
                                     ng-click="toggleMembership(group, user)"
-                                    ng-checked="group.members.indexOf(user.id) != -1" />
+                                    ng-checked="userEntitled(group, user)" />
                                     <label>{{ user.email }}</label>
                                 </div>
                             </td>
@@ -50,7 +50,7 @@
                                     type="checkbox"
                                     style="width:auto;"
                                     ng-click="toggleDocumentAssignment(group, document)"
-                                    ng-checked="group.documents.indexOf(document.id) != -1" />
+                                    ng-checked="documentEntitled(group, document)" />
                                     <label>{{ document.title }}</label>
                                 </div>
                             </td>

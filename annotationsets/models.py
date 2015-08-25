@@ -21,11 +21,13 @@ class Property(ResourceMixin, models.Model):
 
 
 class LinkedConcept(ResourceMixin, models.Model):
-    endpoint = models.URLField('endpoint', blank=True, max_length=300)
+    endpoint = models.URLField('endpoint', null=True, blank=True, max_length=300)
     # URI to the concept in then external ontology
     linked_type = models.URLField('linked_type', blank=False, max_length=300)
     # path to the class which implements the knowledge extraction provider
-    provider_class = models.CharField('provider_class', max_length=100)
+    provider_class = models.CharField('provider_class', null=True, blank=True, max_length=100)
+    custom_query = models.CharField(null=True, blank=True, max_length=500)
+    retrieved_at = models.DateTimeField(null=True, blank=True)
 
     class_uri = neonion.LINKED_CONCEPT
 

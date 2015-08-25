@@ -6,6 +6,7 @@ neonionApp.factory('DocumentService', ['$resource',
                 'queryTitles': {
                     method: 'GET',
                     params: {},
+                    cache: true,
                     transformResponse: function (data, header) {
                         var jsonData = angular.fromJson(data);
                         var names = {};

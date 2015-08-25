@@ -20,7 +20,7 @@
             </a>
 
             <div class="submenu ng-cloak" ng-show="active === 0">
-                <div class="submenu-heading icon-right">Toggle Contributers<i class="fa fa-times"
+                <div class="submenu-heading icon-right">Toggle Contributors<i class="fa fa-times"
                                                                               ng-click="toggleSubMenu(0)"></i>
                 </div>
                 <ul class="submenu-content">
@@ -55,18 +55,26 @@
                     </i>
                 </div>
                 <ul class="submenu-content">
-                    <li ng-click="setAnnotationMode(mode.commenting)"
+                    <li ng-click="setAnnotationMode(mode.commenting.value)"
                         class="icon-left"><span>
                         <i class="fa fa-check fa-fw"
-                           ng-class="{invisible: getAnnotationMode()!==mode.commenting}">
-
+                           ng-class="{invisible: getAnnotationMode()!==mode.commenting.value}">
                         </i>Commenting</span>
+                        <small>{{ shortCutModifier.default.modifierText + mode.commenting.shortCut }}</small>
                     </li>
-                    <li ng-click="setAnnotationMode(mode.conceptTagging)" class="icon-left"><span><i
-                            class="fa fa-check fa-fw"
-
-                            ng-class="{invisible: getAnnotationMode()!==mode.conceptTagging}"
-                            ></i>Concept Tagging</span>
+                    <li ng-click="setAnnotationMode(mode.highlighting.value)"
+                        class="icon-left"><span>
+                        <i class="fa fa-check fa-fw"
+                           ng-class="{invisible: getAnnotationMode()!==mode.highlighting.value}">
+                        </i>Highlighting</span>
+                        <small>{{ shortCutModifier.default.modifierText + mode.highlighting.shortCut }}</small>
+                    </li>
+                    <li ng-click="setAnnotationMode(mode.conceptTagging.value)"
+                        class="icon-left"><span>
+                        <i class="fa fa-check fa-fw"
+                           ng-class="{invisible: getAnnotationMode()!==mode.conceptTagging.value}">
+                        </i>Concept Tagging</span>
+                        <small>{{ shortCutModifier.default.modifierText + mode.conceptTagging.shortCut }}</small>
                     </li>
                 </ul>
             </div>

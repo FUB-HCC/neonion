@@ -1,27 +1,42 @@
 [
   {
     "fields": {
-      "comment": "",
-      "linked_properties": [],
-      "range": [],
-      "inverse_property": null,
-      "label": "has role"
-    },
-    "model": "annotationsets.property",
-    "pk": "0bfccb86dbfff233c5dd1ab9c1bd51f1e4acd568"
-  },
-  {
-    "fields": {
       "comment": "To be brought to an end; be annulled or terminated",
       "linked_properties": [],
       "range": [
-        "eb9a4bc1c0c153e4e4b042a79113b815b7e3021d"
+        "date"
       ],
       "inverse_property": null,
       "label": "dissolved"
     },
     "model": "annotationsets.property",
-    "pk": "1feada59550df37c7477da53c66cef1f4294fbc0"
+    "pk": "dissolved"
+  },
+  {
+    "fields": {
+      "comment": "To establish or set up, especially with provision for continuing existence",
+      "linked_properties": [],
+      "range": [
+        "date"
+      ],
+      "inverse_property": null,
+      "label": "founded"
+    },
+    "model": "annotationsets.property",
+    "pk": "founded"
+  },
+  {
+    "fields": {
+      "comment": "",
+      "linked_properties": [],
+      "range": [
+        "person_function"
+      ],
+      "inverse_property": null,
+      "label": "has role"
+    },
+    "model": "annotationsets.property",
+    "pk": "has_role"
   },
   {
     "fields": {
@@ -30,59 +45,91 @@
       "range": [
         "person"
       ],
-      "inverse_property": null,
+      "inverse_property": "member_of",
       "label": "member"
     },
     "model": "annotationsets.property",
-    "pk": "6467baa3b187373e3931422e2a8ef22f3e447d77"
+    "pk": "member"
   },
   {
     "fields": {
       "comment": "",
       "linked_properties": [],
       "range": [
+        "consortium",
         "institution"
       ],
-      "inverse_property": "6467baa3b187373e3931422e2a8ef22f3e447d77",
+      "inverse_property": "member",
       "label": "member of"
     },
     "model": "annotationsets.property",
-    "pk": "802a285ebbca797bb970c555ce13e1806a748f02"
-  },
-  {
-    "fields": {
-      "comment": "To establish or set up, especially with provision for continuing existence",
-      "linked_properties": [],
-      "range": [],
-      "inverse_property": null,
-      "label": "founded"
-    },
-    "model": "annotationsets.property",
-    "pk": "dfc1045fd2fd94b4fdae63a37ecbecc2b7fe5f15"
+    "pk": "member_of"
   },
   {
     "fields": {
       "comment": "",
-      "properties": [],
-      "linked_concepts": [],
-      "label": "Person Function"
+      "endpoint": "http://dbpedia.org/sparql",
+      "custom_query": null,
+      "linked_type": "http://dbpedia.org/ontology/Scientist",
+      "retrieved_at": "2015-08-18T09:16:49.992Z",
+      "label": "Person@DBpedia",
+      "provider_class": "common.knowledge.dbpedia.DBpedia"
     },
-    "model": "annotationsets.concept",
-    "pk": "6ae182157fb6dd4dba5107b36ca189e5abfb9613"
+    "model": "annotationsets.linkedconcept",
+    "pk": "dbpedia_person"
+  },
+  {
+    "fields": {
+      "comment": "",
+      "endpoint": "http://mpiwg-berlin.mpg.de",
+      "custom_query": null,
+      "linked_type": "http://mpiwg-berlin.mpg.de/person",
+      "retrieved_at": null,
+      "label": "Person@MPIWG",
+      "provider_class": ""
+    },
+    "model": "annotationsets.linkedconcept",
+    "pk": "mpiwg_person"
+  },
+  {
+    "fields": {
+      "comment": "",
+      "endpoint": "https://www.wikidata.org",
+      "custom_query": null,
+      "linked_type": "https://www.wikidata.org/wiki/Q178706",
+      "retrieved_at": null,
+      "label": "Institution@Wikidata",
+      "provider_class": ""
+    },
+    "model": "annotationsets.linkedconcept",
+    "pk": "wikidata_institution"
+  },
+  {
+    "fields": {
+      "comment": "",
+      "endpoint": "https://www.wikidata.org",
+      "custom_query": null,
+      "linked_type": "https://www.wikidata.org/wiki/Q5",
+      "retrieved_at": null,
+      "label": "Person@Wikidata",
+      "provider_class": ""
+    },
+    "model": "annotationsets.linkedconcept",
+    "pk": "wikidata_person"
   },
   {
     "fields": {
       "comment": "A cooperative arrangement among groups or institutions",
       "properties": [
-        "1feada59550df37c7477da53c66cef1f4294fbc0",
-        "6467baa3b187373e3931422e2a8ef22f3e447d77",
-        "dfc1045fd2fd94b4fdae63a37ecbecc2b7fe5f15"
+        "dissolved",
+        "founded",
+        "member"
       ],
       "linked_concepts": [],
       "label": "Consortium"
     },
     "model": "annotationsets.concept",
-    "pk": "769eaabb3e574ac0f8611881e7d6e3235195b9eb"
+    "pk": "consortium"
   },
   {
     "fields": {
@@ -92,15 +139,19 @@
       "label": "Date"
     },
     "model": "annotationsets.concept",
-    "pk": "eb9a4bc1c0c153e4e4b042a79113b815b7e3021d"
+    "pk": "date"
   },
   {
     "fields": {
       "comment": "An established organization or foundation, especially one dedicated to education, public service, or culture",
       "properties": [
-        "6467baa3b187373e3931422e2a8ef22f3e447d77"
+        "dissolved",
+        "founded",
+        "member"
       ],
-      "linked_concepts": [],
+      "linked_concepts": [
+        "wikidata_institution"
+      ],
       "label": "Institution"
     },
     "model": "annotationsets.concept",
@@ -110,10 +161,12 @@
     "fields": {
       "comment": "An individual human being",
       "properties": [
-        "0bfccb86dbfff233c5dd1ab9c1bd51f1e4acd568",
-        "802a285ebbca797bb970c555ce13e1806a748f02"
+        "has_role",
+        "member_of"
       ],
-      "linked_concepts": [],
+      "linked_concepts": [
+        "wikidata_person"
+      ],
       "label": "Person"
     },
     "model": "annotationsets.concept",
@@ -121,10 +174,35 @@
   },
   {
     "fields": {
-      "comment": "The default concept set",
+      "comment": "",
+      "properties": [],
+      "linked_concepts": [],
+      "label": "Person Function"
+    },
+    "model": "annotationsets.concept",
+    "pk": "person_function"
+  },
+  {
+    "fields": {
+      "comment": "Just another concept set for testing",
       "concepts": [
+        "person",
+        "person_function"
+      ],
+      "label": "Another one"
+    },
+    "model": "annotationsets.conceptset",
+    "pk": "another"
+  },
+  {
+    "fields": {
+      "comment": "The default concept set for annotating documents",
+      "concepts": [
+        "consortium",
+        "date",
         "institution",
-        "person"
+        "person",
+        "person_function"
       ],
       "label": "Default"
     },

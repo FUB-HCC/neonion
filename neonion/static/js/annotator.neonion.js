@@ -27,15 +27,15 @@
          * @param sets
          * @returns {*}
          */
-        this.annotationSets = function (sets) {
-            if (sets) {
-                this.compositor = sets;
+        this.conceptSet = function (concepts) {
+            if (concepts) {
+                this.concepts = concepts;
                 if (this.editorState.annotationMode == this.annotationModes.conceptTagging) {
                     // apply if annotation mode equals semantic annotation mode
-                    this.applyAnnotationSets();
+                    this.helper.applyConceptSet(this.conceptSet(), this.adder);
                 }
             }
-            return this.compositor;
+            return this.concepts;
         };
 
         this.annotationMode = function (mode) {
@@ -43,9 +43,9 @@
                 this.editorState.annotationMode = mode;
                 switch (mode) {
                     case this.annotationModes.conceptTagging:
-                        this.applyAnnotationSets();
+                        this.helper.applyConceptSet(this.conceptSet(), this.adder);
                         break;
-                    case this.annotationModes.commenting:
+                    default:
                         this.adder.html(this.templates.emptyAdder);
                         break;
                 }
@@ -66,17 +66,17 @@
 
             this.editorState = {
                 annotationMode: this.options.annotationMode,
-                selectedType: "",
+                selectedConcept: "",
                 selectedItem: -1,
                 resultSet: []
             };
 
             // create compositor from provided annotation sets
-            if (this.options.hasOwnProperty("annotationSets")) {
-                this.compositor = this.options["annotationSets"];
+            if (this.options.hasOwnProperty("conceptSet")) {
+                this.concepts = this.options["conceptSet"];
             }
             else {
-                this.compositor = {};
+                this.concepts = [];
             }
 
             // bind events on document
@@ -112,7 +112,7 @@
             }, this));
 
             // closure
-            this.annotationSets(this.annotationSets());
+            this.conceptSet(this.conceptSet());
             this.applyLayer(this.annotationLayers.group);
         };
 
@@ -148,7 +148,7 @@
 
         this.initCommentField = function () {
             var field = this.annotator.editor.fields[0].element;
-            // add controls 
+            // add controls submit and cancel buttons
             $(field).append(
                 "<div class='resource-controles'>" + this.templates.submitItem + this.templates.cancelItem + "</div>");
 
@@ -158,8 +158,8 @@
         this.initConceptTaggingField = function () {
             // add field containing the suggested resources
             var field = this.annotator.editor.addField({
-                load: $.proxy(this.loadEditorField, this),
-                submit: $.proxy(this.submitEditorField, this)
+                load: $.proxy(this.loadEditorConceptField, this),
+                submit: $.proxy(this.submitEditorConceptField, this)
             });
 
             // replace filed with custom content
@@ -245,7 +245,7 @@
         },
 
         options: {
-            prefix: "/",
+            prefix: "/api/es/",
             agent: {
                 email: "unknown@neonion.org"
             },
@@ -260,11 +260,11 @@
             showMore: "<button data-action='annotator-more'>Show more results&nbsp;&#8230;</button>",
             spinner: "<span style='margin:5px;' class='fa fa-spinner fa-spin'></span>",
             noResults: "<div class='empty'>No results found.</div>",
-            editorLine: "<div class='annotator-linie'></div>",
+            editorLine: "<div class='annotator-line'></div>",
             searchItem: "<i class='fa fa-search'></i>",
             cancelItem: "<a data-action='annotator-cancel'><i class='fa fa-times'></i></a>",
             submitItem: "<a data-action='annotator-submit'><i class='fa fa-check'></i></a>",
-            unknownItem: "<button class='unknown' data-action='annotator-submit'>Unknown Resource</button>",
+            unknownItem: "<button type='button' class='unknown' data-action='annotator-submit'>Unknown Resource</button>",
             emptyAdder: "<button></button>"
         },
 
@@ -282,14 +282,12 @@
                 search: "Search",
                 searchText: "Search term",
                 unknown: "Not identified",
-                unknownResource: "Unknown resource",
                 agent: "Creator"
             },
             de: {
                 search: "Suchen",
                 searchText: "Suchtext",
                 unknown: "Unbekannt",
-                unknownResource: "Unbekannte Ressource",
                 agent: "Erfasser"
             }
         },
@@ -352,19 +350,27 @@
             // create a child element to store Open Annotation data
             annotation.oa = {
                 annotatedBy: $.extend(this.options.agent, {type: this.oa.types.agent.person}),
-                hasBody: {},
                 hasTarget: {
                     type: this.oa.types.document.text
                 }
             };
 
-            // set type of body
+            // prepare annotation according current annotation mode
             switch (this.editorState.annotationMode) {
                 case this.annotationModes.conceptTagging:
-                    annotation.oa.hasBody.type = this.oa.types.tag.semanticTag;
+                    annotation.oa.motivatedBy = this.oa.motivation.classifying;
+                    annotation.oa.hasBody = {type: this.oa.types.tag.semanticTag};
+                    annotation.rdf = {
+                        typeof: this.editorState.selectedConcept,
+                        conceptLabel: this.getConcept(this.editorState.selectedConcept).label
+                    };
                     break;
                 case this.annotationModes.commenting:
-                    annotation.oa.hasBody.type = this.oa.types.tag.tag;
+                    annotation.oa.motivatedBy = this.oa.motivation.commenting;
+                    annotation.oa.hasBody = {type: this.oa.types.document.text};
+                    break;
+                case this.annotationModes.highlighting:
+                    annotation.oa.motivatedBy = this.oa.motivation.highlighting;
                     break;
             }
 
@@ -378,25 +384,36 @@
                     admin: [this.options.agent.email]
                 };
             }
-            //console.log(annotation);
         },
 
         annotationEditorShown: function (editor, annotation) {
-            this.placeEditorBesidesAnnotation(annotation);
+            this.helper.placeEditorBesidesAnnotation(annotation, this.annotator);
 
             if (annotation.hasOwnProperty("oa")) {
-                // visibility of fields depends on type of body
-                switch (annotation.oa.hasBody.type) {
-                    case this.oa.types.tag.tag:
-                        this.showField(this.fields.editor.commentField);
+                // visibility of fields depends on the motivation
+                switch (annotation.oa.motivatedBy) {
+                    case this.oa.motivation.commenting:
+                        this.showEditorField(this.fields.editor.commentField);
                         var textarea = $(this.fields.editor.commentField).find("textarea");
                         // transfer quote to text input
                         textarea.val(annotation.quote);
                         // preselect text
                         textarea.select();
                         break;
-                    case this.oa.types.tag.semanticTag:
-                        this.showField(this.fields.editor.conceptTaggingField);
+                    case this.oa.motivation.highlighting:
+                        // submit editor automatically
+                        editor.submit();
+                        break;
+                    case this.oa.motivation.classifying:
+                    case this.oa.motivation.identifying:
+                        var concept = this.getConcept(this.editorState.selectedConcept);
+                        if (this.helper.conceptHasReferrals(concept)) {
+                            this.showEditorField(this.fields.editor.conceptTaggingField);
+                        }
+                        else {
+                            // submit editor automatically if there is to search
+                            editor.submit();
+                        }
                         break;
                 }
             }
@@ -406,12 +423,12 @@
             // clear prior editor state
             this.editorState.selectedItem = -1;
             this.editorState.resultSet = [];
-            this.editorState.selectedType = "";
+            this.editorState.selectedConcept = "";
         },
 
         annotationViewerTextField: function (field, annotation) {
             if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("hasBody") &&
-                annotation.oa.hasBody.type == this.oa.types.tag.tag) {
+                annotation.oa.hasBody.type == this.oa.types.document.text) {
                 $(field).show();
             }
             else {
@@ -421,11 +438,13 @@
 
         annotationEditorSubmit: function (editor, annotation) {
             // add context
-            annotation.context = this.extractSurroundedContent(annotation);
+            annotation.context = this.helper.extractSurroundedContent(annotation, this.annotator);
+            // TODO add OA start and end position to target
+            console.log(annotation);
         },
 
         /**
-         * Restores annotations if an uri is provided
+         * Restores annotations if an uri is provided.
          */
         applyLayer: function (layer) {
             if (this.annotator.plugins.Store && this.options.hasOwnProperty("uri")) {
@@ -438,13 +457,15 @@
          * Shows the specified field and hides the other ones.
          * @param field
          */
-        showField: function (field) {
+        showEditorField: function (field) {
             // hide all fields first
             for (var key in this.fields.editor) {
                 $(this.fields.editor[key]).hide();
             }
             // show specified field
-            $(field).show();
+            if (field) {
+                $(field).show();
+            }
         },
 
         /**
@@ -459,7 +480,7 @@
                 var sender = $(e.target);
                 if (sender.val()) {
                     // set selected type
-                    this.editorState.selectedType = sender.val();
+                    this.editorState.selectedConcept = sender.val();
                 }
                 return true;
             }, this));
@@ -470,14 +491,11 @@
             if (annotation.hasOwnProperty("rdf")) {
                 var ref = annotation.rdf.hasOwnProperty('sameAs') ? annotation.rdf.sameAs : '#';
                 var fieldValue = "<a href='" + ref + "' target='blank'>" + annotation.rdf.label + "</a>";
-                var fieldCaption;
-                if (this.compositor[annotation.rdf.typeof]) {
-                    fieldCaption = this.compositor[annotation.rdf.typeof].label;
+                var fieldCaption = '';
+                if (annotation.rdf.hasOwnProperty('conceptLabel')) {
+                    fieldCaption = annotation.rdf.conceptLabel + ":&nbsp;";
                 }
-                else {
-                    fieldCaption = this.literals['en'].unknownResource;
-                }
-                field.innerHTML = fieldCaption + ":&nbsp;" + fieldValue;
+                field.innerHTML = fieldCaption + fieldValue;
                 $(field).show();
             }
             else {
@@ -493,10 +511,10 @@
             field.innerHTML = this.literals['en'].agent + ":&nbsp;" + userField;
         },
 
-        loadEditorField: function (field, annotation) {
+        loadEditorConceptField: function (field, annotation) {
             if (this.annotationMode() == this.annotationModes.conceptTagging) {
                 // restore type from annotation if provided
-                this.editorState.selectedType = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : this.editorState.selectedType;
+                this.editorState.selectedConcept = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : this.editorState.selectedConcept;
 
                 $(field).show();
                 $(field).find("#resource-search").val(annotation.quote);
@@ -505,16 +523,9 @@
             }
         },
 
-        submitEditorField: function (field, annotation) {
+        submitEditorConceptField: function (field, annotation) {
             if (this.annotationMode() == this.annotationModes.conceptTagging) {
                 if (annotation.oa.hasBody.type == this.oa.types.tag.semanticTag) {
-                    // add rdf data
-                    annotation.rdf = {
-                        typeof: this.editorState.selectedType,
-                        label: annotation.quote
-                    };
-                    annotation.oa.motivatedBy = this.oa.motivation.classifying;
-
                     // add extra semantic data from identified resource
                     if (this.editorState.selectedItem >= 0 && this.editorState.selectedItem < this.editorState.resultSet.length) {
                         var dataItem = this.editorState.resultSet[this.editorState.selectedItem];
@@ -522,135 +533,89 @@
                         annotation.rdf.label = dataItem.label;
                         annotation.oa.motivatedBy = this.oa.motivation.identifying;
                     }
+                    else {
+                        annotation.rdf.label = annotation.quote;
+                        annotation.oa.motivatedBy = this.oa.motivation.classifying;
+                    }
                 }
             }
         },
 
+        /**
+         * Returns the label of the given concept identifier.
+         * @param concept
+         * @returns {*}
+         */
+        getConcept : function(concept) {
+            return this.conceptSet().filter(function(item) {
+                return item.uri == concept;
+            })[0];
+        },
+
+        /**
+         * Creates the list containing the suggested resources.
+         * @param searchTerm
+         */
         updateResourceList: function (searchTerm) {
             var list = $(this.fields.editor.conceptTaggingField).find("#resource-list");
+            var concept = this.getConcept(this.editorState.selectedConcept);
+
             // replace list with spinner while loading
             list.html(this.templates.spinner);
-            // lookup resource by search term
-            this.search(this.editorState.selectedType, searchTerm,
-                function (items) {
-                    var formatter = this.formatter[this.editorState.selectedType] || this.formatter['default'];
-                    // store last result set
-                    this.editorState.resultSet = items;
-                    // update score
-                    this.updateScoreAccordingOccurrence(items);
-                    // create and add items
-                    list.empty();
 
-                    if (items.length !== 0) {
-                        list.append(this.createListItems(0, items, formatter));
+            // check if the concept is connected to concepts from a knowledge provider
+            if (this.helper.conceptHasReferrals(concept)) {
+                var indexName = this.helper.getIndexName(concept.linked_concepts[0].endpoint);
+                // lookup resource by search term and provided index
+                this.search(concept.id, searchTerm, indexName)
+                    .done($.proxy(function (items) {
+                        var formatter = this.formatter[this.editorState.selectedConcept] || this.formatter['default'];
+                        // store last result set
+                        this.editorState.resultSet = items;
+                        // update score
+                        this.updateScoreAccordingOccurrence(items);
+                        // create and add items
+                        list.empty();
 
-                        // do we need pagination?
-                        if (items.length > this.options.paginationSize) {
-                            var idxOffset = this.options.paginationSize;
-                            var btnLoadMore = $(this.templates.showMore);
-                            list.append(btnLoadMore);
+                        if (items.length !== 0) {
+                            list.append(this.helper.createListItems(0, items, this.options.paginationSize, formatter));
 
-                            btnLoadMore.click($.proxy(function () {
-                                list.append(this.createListItems(idxOffset, items, formatter));
-                                idxOffset += this.options.paginationSize;
+                            // do we need pagination?
+                            if (items.length > this.options.paginationSize) {
+                                var idxOffset = this.options.paginationSize;
+                                var btnLoadMore = $(this.templates.showMore);
+                                list.append(btnLoadMore);
 
-                                if (idxOffset < items.length) {
-                                    // move button to end
-                                    btnLoadMore.parent().append(btnLoadMore);
-                                }
-                                else {
-                                    // hide button if all items are visible
-                                    btnLoadMore.hide();
-                                }
-                                return false;
-                            }, this));
+                                btnLoadMore.click($.proxy(function () {
+                                    list.append(this.helper.createListItems(idxOffset, items, this.options.paginationSize, formatter));
+                                    idxOffset += this.options.paginationSize;
+
+                                    if (idxOffset < items.length) {
+                                        // move button to end
+                                        btnLoadMore.parent().append(btnLoadMore);
+                                    }
+                                    else {
+                                        // hide button if all items are visible
+                                        btnLoadMore.hide();
+                                    }
+                                    return false;
+                                }, this));
+                            }
+                        } else {
+                            list.append(this.templates.noResults);
                         }
-                    } else {
-                        list.append(this.templates.noResults);
-                    }
-                    list.prepend(this.templates.unknownItem);
-                }
-            );
-        },
-
-        placeEditorBesidesAnnotation: function (annotation) {
-            var top = $(annotation.highlights[0]).position().top;
-            var left = $(annotation.highlights[0]).position().left;
-            var editor = $(this.annotator.editor.element[0]);
-            var annotator = $(this.annotator.element[0]);
-            var width = annotator.width();
-            editor.css("top", top);
-            editor.find(".annotator-linie").width(width - left + 378 + 108);
-            editor.find(".annotator-linie").css("left", -(width - left + 108));
-            $(annotation.highlights[0]).css("border-left", "1px solid #717171");
-
-            // Aotofocus wieder setzen:
-            editor.find("#resource-search").focus();
-        },
-
-        extractSurroundedContent: function (annotation) {
-            var length = 200;
-            var node, contentLeft = '', contentRight = '';
-            // left
-            node = annotation.highlights[0];
-            while (node != this.element[0] && contentLeft.length < length) {
-                if (node.previousSibling) {
-                    node = node.previousSibling;
-                    // prepend extracted text
-                    contentLeft = $(node).text() + contentLeft;
-                }
-                else {
-                    node = node.parentNode;
-                }
-            }
-
-            // right
-            node = annotation.highlights[annotation.highlights.length - 1];
-            while (node != this.element[0] && contentRight.length < length) {
-                if (node.nextSibling) {
-                    node = node.nextSibling;
-                    // append extracted text
-                    contentRight += $(node).text();
-                }
-                else {
-                    node = node.parentNode;
-                }
-            }
-            // replace line feed with space
-            contentLeft = contentLeft.replace(/(\r\n|\n|\r)/gm, " ");
-            contentRight = contentRight.replace(/(\r\n|\n|\r)/gm, " ");
-
-            var leftC = contentLeft.trimLeft().substr(-length);
-            var rightC = contentRight.trimRight().substr(0, length);
-
-            return {
-                left: leftC.substring(leftC.indexOf(" ") + 1),
-                right: rightC.substring(0, rightC.lastIndexOf(" "))
-            };
-        },
-
-        applyAnnotationSets: function () {
-            this.adder.html("");
-            for (var uri in this.compositor) {
-                if (this.compositor.hasOwnProperty(uri)) {
-                    this.adder.append("<button value='" + uri + "'>" + this.compositor[uri].label + "</button>");
-                }
+                        list.prepend(this.templates.unknownItem);
+                    }, this))
+                    .fail($.proxy(function () {
+                        list.html(this.templates.unknownItem);
+                    }, this));
             }
         },
 
-        createListItems: function (offset, list, formatter) {
-            list = list.slice(offset, offset + this.options.paginationSize);
-            var items = [];
-            for (var i = 0; i < list.length; i++) {
-                var label = formatter(list[i]);
-                items.push(
-                    "<button type='button' class='' value='" + (offset + i) + "'>" +
-                    label +
-                    "<a class='pull-right' href='" + list[i].uri + "' target='blank'><i class='fa fa-external-link'></i></a>" +
-                    "</button>"
-                );
-            }
-            return items;
+        search: function (type, searchText, index) {
+            var url = this.options.prefix + this.options.urls.search +
+                "/" + encodeURI(index) + "/" + encodeURI(type) + "/" + encodeURI(searchText);
+            return $.getJSON(url);
         },
 
         updateScoreAccordingOccurrence: function (items) {
@@ -678,7 +643,120 @@
             items.sort(function (a, b) {
                 return b.score - a.score;
             });
-            //console.log(items);
+        },
+
+        helper: {
+
+            /**
+             * Indicates whether the given concept provides a search for referrals.
+             * @param concept
+             * @returns {boolean}
+             */
+            conceptHasReferrals : function(concept) {
+                return concept.hasOwnProperty('linked_concepts') && concept.linked_concepts.length > 0;
+            },
+
+            /**
+             * Extracts the name of the index from the given endpoint URL
+             * @param endpoint
+             */
+            getIndexName : function(endpoint) {
+                // TODO rethink that
+                var element = document.createElement('a');
+                element.href = endpoint;
+                return element.hostname.split('.')[1];
+            },
+
+            /**
+             * Creates the adder according the provided concepts.
+             * @param concepts
+             * @param adder
+             */
+            applyConceptSet: function (concepts, adder) {
+                adder.html("");
+                for (var i = 0; i < concepts.length; i++) {
+                    adder.append("<button value='" + concepts[i].uri + "'>" + concepts[i].label + "</button>");
+                }
+            },
+
+            /**
+             * Creates a list of item according pagination and formatter.
+             * @param offset
+             * @param list
+             * @param pageSize
+             * @param formatter
+             * @returns {Array}
+             */
+            createListItems: function (offset, list, pageSize, formatter) {
+                list = list.slice(offset, offset + pageSize);
+                var items = [];
+                for (var i = 0; i < list.length; i++) {
+                    var label = formatter(list[i]);
+                    items.push(
+                        "<button type='button' class='' value='" + (offset + i) + "'>" +
+                        label +
+                        "<a class='pull-right' href='" + list[i].uri + "' target='blank'><i class='fa fa-external-link'></i></a>" +
+                        "</button>"
+                    );
+                }
+                return items;
+            },
+
+            placeEditorBesidesAnnotation: function (annotation, annotator) {
+                var top = $(annotation.highlights[0]).position().top;
+                var left = $(annotation.highlights[0]).position().left;
+                var editor = $(annotator.editor.element[0]);
+                var annotator = $(annotator.element[0]);
+                var width = annotator.width();
+                editor.css("top", top);
+                editor.find(".annotator-line").width(width - left + 378 + 108);
+                editor.find(".annotator-line").css("left", -(width - left + 108));
+                $(annotation.highlights[0]).css("border-left", "1px solid #717171");
+
+                // focus search field
+                editor.find("#resource-search").focus();
+            },
+
+            extractSurroundedContent: function (annotation, annotator) {
+                var length = 200;
+                var node, contentLeft = '', contentRight = '';
+                // left
+                node = annotation.highlights[0];
+                while (node != annotator.element[0] && contentLeft.length < length) {
+                    if (node.previousSibling) {
+                        node = node.previousSibling;
+                        // prepend extracted text
+                        contentLeft = $(node).text() + contentLeft;
+                    }
+                    else {
+                        node = node.parentNode;
+                    }
+                }
+
+                // right
+                node = annotation.highlights[annotation.highlights.length - 1];
+                while (node != annotator.element[0] && contentRight.length < length) {
+                    if (node.nextSibling) {
+                        node = node.nextSibling;
+                        // append extracted text
+                        contentRight += $(node).text();
+                    }
+                    else {
+                        node = node.parentNode;
+                    }
+                }
+                // replace line feed with space
+                contentLeft = contentLeft.replace(/(\r\n|\n|\r)/gm, " ");
+                contentRight = contentRight.replace(/(\r\n|\n|\r)/gm, " ");
+
+                var leftC = contentLeft.trimLeft().substr(-length);
+                var rightC = contentRight.trimRight().substr(0, length);
+
+                return {
+                    left: leftC.substring(leftC.indexOf(" ") + 1),
+                    right: rightC.substring(0, rightC.lastIndexOf(" "))
+                };
+            }
         },
 
         comparator: {
@@ -718,13 +796,8 @@
                 }
                 return label;
             }
-        },
-
-        search: function (type, searchText, callback) {
-            var url = this.options.prefix + this.options.urls.search + "?";
-            url += 'type=' + encodeURI(type) + '&q=' + encodeURI(searchText);
-            $.getJSON(url, $.proxy(callback, this));
         }
+
     });
 
 })();

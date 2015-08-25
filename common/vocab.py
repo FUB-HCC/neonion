@@ -16,6 +16,9 @@ class neonion:
 class OpenAnnotation:
     PREFIX = 'oa:<http://www.w3.org/ns/oa#>'
 
+    class DocumentTypes(Enum):
+        text = 'dctypes:Text'
+
     class TagTypes(Enum):
         tag = 'oa:Tag'
         semanticTag = 'oa:SemanticTag'

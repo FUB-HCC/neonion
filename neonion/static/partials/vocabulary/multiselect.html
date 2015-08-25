@@ -1,30 +1,41 @@
 <div class="row">
-    <div class="col-xs-6">
+    <div class="col-md-6">
         <b>{{ literals.multiselect.assigned }}</b>
     </div>
-    <div class="col-xs-6">
+    <div class="col-md-6">
         <input type="text" class="form-control" id="label"
                placeholder="{{ literals.multiselect.placeholder }}"
                ng-model="form.multiselect.query" autocomplete="off">
     </div>
 </div>
 <div class="row">
-    <ul class="list-group">
-        <li button type="button" class="list-group-item"
-            ng-repeat="item in assignableItems | filter:filterByQuery | filter:filterAssignedItems | orderBy : 'label'">
-            <span class="badge" ng-click="unassignItem(item)"><i class="glyphicon glyphicon-minus"></i></span>
-            <b>{{ item.label }}</b>
-            <p>{{ item.comment }}</p>
-        </li>
-    </ul>
+    <div class="col-md-12">
+        <ul class="list-group">
+            <li class="list-group-item"
+                ng-repeat="item in assignedItems | filter:filterByQuery | orderBy : 'label'">
+                <span class="badge" ng-click="unassignItem(item)"><i class="glyphicon glyphicon-minus"></i></span>
+                <b class="list-group-item-heading">{{ item.label }}</b>
+                <p class="list-group-item-text" ng-show="item.comment">{{ item.comment }}</p>
+            </li>
+            <li class="list-group-item" ng-hide="assignedItems.length">{{ literals.multiselect.nothingAssigned }}</li>
+        </ul>
+    </div>
 </div>
 <div class="row">
-    <ul class="list-group">
-        <li button type="button" class="list-group-item"
-            ng-repeat="item in assignableItems | filter:filterByQuery | filter:filterAssignableItems | orderBy : 'label'">
-            <span class="badge" ng-click="assignItem(item)"><i class="glyphicon glyphicon-plus"></i></span>
-            <b>{{ item.label }}</b>
-            <p>{{ item.comment }}</p>
-        </li>
-    </ul>
+    <div class="col-md-12">
+        <b>{{ literals.multiselect.assignable }}</b>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="list-group">
+            <li class="list-group-item"
+                ng-repeat="item in assignableItems | filter:filterByQuery | orderBy : 'label'">
+                <span class="badge" ng-click="assignItem(item)"><i class="glyphicon glyphicon-plus"></i></span>
+                <b class="list-group-item-heading">{{ item.label }}</b>
+                <p class="list-group-item-text" ng-show="item.comment">{{ item.comment }}</p>
+            </li>
+            <li class="list-group-item" ng-hide="assignableItems.length">{{ literals.multiselect.nothingAssignable }}</li>
+        </ul>
+    </div>
 </div>

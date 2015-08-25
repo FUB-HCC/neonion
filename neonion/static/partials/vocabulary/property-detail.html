@@ -1,30 +1,53 @@
-<div ng-controller="PropertyDetailCtrl" ng-cloak>
-    <button type="button" ng-click="saveChanges()">Save</button>
-    <button type="button">Cancel</button>
-</div>
-<form>
-    <div class="row">
-        <div class="col-xs-6">
-            <div class="form-group">
+<form ng-controller="PropertyDetailCtrl">
+    <fieldset>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-toolbar pull-right">
+                    <button ng-hide="form.isEditing" class="btn btn-primary" type="button"
+                            ng-click="create()">Create
+                    </button>
+                    <button ng-show="form.isEditing" class="btn btn-primary" type="button"
+                            ng-click="update()">Save
+                    </button>
+                    <button class="btn btn-default" type="button"
+                            ng-click="return()">Cancel
+                    </button>
+                    <button ng-show="form.isEditing" class="btn btn-danger" type="button"
+                            ng-click="delete()">Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
                 <label for="label">Label</label>
                 <input type="text" class="form-control" id="label" placeholder=""
                        ng-model="property.label" autocomplete="off">
             </div>
-        </div>
-        <div class="col-xs-6">
-            <div class="form-group">
+            <div class="col-md-6" ng-show="property.uri">
                 <label for="uri">URI</label>
                 <input type="text" class="form-control" id="uri" placeholder=""
                        ng-model="property.uri" readonly="true">
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" class="form-control" rows="3"
-                      ng-model="property.comment"></textarea>
+        <div class="row">
+            <div class="col-md-12">
+                <label for="description">Description</label>
+                <textarea id="description" class="form-control" rows="3"
+                          ng-model="property.comment"></textarea>
+            </div>
         </div>
-    </div>
-    <ng-include src="'/static/partials/vocabulary/multiselect.html'"></ng-include>
+        <div class="row">
+            <div class="col-md-12">
+                <label for="inverse-property">Inverse Property</label>
+                <select id="inverse-property" class="form-control"
+                        ng-model="property.inverse_property"
+                        ng-options="prop.id as prop.label for prop in properties">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+
+        <ng-include src="'/static/partials/vocabulary/multiselect.html'"></ng-include>
+    </fieldset>
 </form>

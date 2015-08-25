@@ -39,8 +39,8 @@ neonionApp.controller('ConceptDetailCtrl', ['$scope', 'ConceptService', 'Propert
             };
 
             $scope.delete = function() {
-                $scope.concept.$delete($scope.return);
-            }
+                //$scope.concept.$delete($scope.return);
+            };
 
             $scope.return = function () {
                 $scope.$emit("returnEvent");

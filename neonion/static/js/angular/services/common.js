@@ -1,13 +1,18 @@
 /**
- * Service for on page search
+ * Common Service to share data across controllers
  */
 neonionApp.factory('CommonService', ['UserService',
         function (UserService) {
             "use strict";
 
             var factory = {
-                query: "",
-                enabled: false
+                filter: {
+                    query: ""
+                },
+                search: {
+                    query: "",
+                    enabled: false
+                }
             };
 
             factory.getCurrentUser = function (onFulfilled) {

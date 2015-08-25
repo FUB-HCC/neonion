@@ -3,9 +3,6 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
     function ($scope, CommonService, DocumentService, GroupService, AnnotationStoreService) {
         "use strict";
 
-        CommonService.enabled = true;
-        $scope.search = CommonService;
-
         $scope.getQueryParams = function () {
             return {
                 'oa.annotatedBy.email': $scope.user.email
@@ -43,20 +40,20 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
         }
 
         $scope.filterCommentAnnotations = function (annotation) {
-            if ($scope.search.query.length > 0) {
+            if (CommonService.filter.query.length > 0) {
                 var show = false;
-                show |= annotation.quote.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
-                show |= annotation.text.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
+                show |= annotation.quote.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
+                show |= annotation.text.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
                 return show;
             }
             return true;
         };
 
         $scope.filterConceptAnnotations = function (annotation) {
-            if ($scope.search.query.length > 0) {
+            if (CommonService.filter.query.length > 0) {
                 var show = false;
-                show |= annotation.rdf.label.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
-                show |= annotation.rdf.typeof.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1
+                show |= annotation.rdf.label.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
+                show |= annotation.rdf.typeof.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1
                 return show;
             }
             return true;

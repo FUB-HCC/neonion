@@ -4,5 +4,5 @@
 neonionApp.controller('MainCtrl', ['$scope', 'CommonService',
     function ($scope, CommonService) {
     "use strict";
-    $scope.search = CommonService;
+    $scope.common = CommonService;
 }]);

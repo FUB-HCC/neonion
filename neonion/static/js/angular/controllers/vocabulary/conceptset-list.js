@@ -2,9 +2,6 @@ neonionApp.controller('ConceptSetListCtrl', ['$scope', '$sce', 'CommonService', 
         function ($scope, $sce, CommonService, ConceptSetService, ConceptService) {
             "use strict";
 
-            CommonService.enabled = true;
-            $scope.search = CommonService;
-
             $scope.style = {
                 compact: false
             }
@@ -55,8 +52,8 @@ neonionApp.controller('ConceptSetListCtrl', ['$scope', '$sce', 'CommonService', 
             };
 
             $scope.filterResources = function (resource) {
-                if ($scope.search.query.length > 0) {
-                    return resource.label.toLowerCase().indexOf($scope.search.query.toLowerCase()) != -1;
+                if (CommonService.filter.query.length > 0) {
+                    return resource.label.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
                     ;
                 }
                 return true;

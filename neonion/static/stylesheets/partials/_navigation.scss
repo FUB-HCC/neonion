@@ -158,3 +158,15 @@
     }
   }
 }
+
+// Combination of horizontal navigation and filter on the right
+// needs absolute/relative positioning combination
+.top-navigation {
+  position: relative;
+
+  .top-navigation-filter {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+  }
+}

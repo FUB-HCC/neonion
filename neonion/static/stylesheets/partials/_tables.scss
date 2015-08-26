@@ -16,7 +16,7 @@ th, tr {
   vertical-align: top;
 }
 
-.table-freetext-annotation-header {
+.table-annotation-header {
   position: relative;
 
   .button {
@@ -40,15 +40,17 @@ th, tr {
 }
 
 .table-freetext-annotation {
-  table-layout: fixed;
-  word-wrap:break-word;
+  table-layout: auto;
+  word-wrap: break-word;
 
   th, td {
-    &.context { width: 45%; }
-    &.annotation { width: 40%; }
-    &.date {
-      width: 15%;
-      text-align: right;
+    &.highlight { width: 100% }
+    &.context { width: 50%; }
+    &.annotation { width: 50%; }
+    &.date { text-align: right; }
+
+    &:last-child {
+      padding-right: 0px;
     }
   }
 }

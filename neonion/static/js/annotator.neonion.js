@@ -718,7 +718,8 @@
             },
 
             extractSurroundedContent: function (annotation, annotator) {
-                var length = 200;
+                var length = 70;
+                console.log("lenght" + length);
                 var node, contentLeft = '', contentRight = '';
                 // left
                 node = annotation.highlights[0];

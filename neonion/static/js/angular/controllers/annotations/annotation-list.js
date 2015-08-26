@@ -60,6 +60,10 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
             $scope.download(data, $scope.exportProperties.conceptFields, format);
         }
 
+        $scope.downloadHighlights = function (data, format) {
+            $scope.download(data, $scope.exportProperties.highlightFields, format);
+        }
+
         $scope.download = function (data, properties, format) {
             if (format.toLowerCase() === 'csv') {
                 var data = $scope.exportCSV(data, properties);
@@ -97,6 +101,13 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
                 show |= annotation.rdf.label.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
                 show |= annotation.rdf.typeof.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1
                 return show;
+            }
+            return true;
+        };
+
+        $scope.filterHighlightAnnotation = function (annotation) {
+            if (CommonService.filter.query.length > 0) {
+                return annotation.quote.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
             }
             return true;
         };

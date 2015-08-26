@@ -32,8 +32,25 @@ neonionApp
         return function (annotations) {
             if (!angular.isUndefined(annotations)) {
                 return annotations.filter(function (value) {
-                    // TODO better check for OA body type and motivation
-                    return !value.hasOwnProperty("rdf");
+                    if (value.oa.motivatedBy == "oa:commenting") {
+                        return true;
+                    }
+                    return false;
+                });
+            }
+            else {
+                return [];
+            }
+        };
+    })
+    .filter('filterByHighlightAnnotation', function () {
+        return function (annotations) {
+            if (!angular.isUndefined(annotations)) {
+                return annotations.filter(function (value) {
+                    if (value.oa.motivatedBy == "oa:highlighting") {
+                        return true;
+                    }
+                    return false;
                 });
             }
             else {

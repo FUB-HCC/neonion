@@ -16,6 +16,16 @@ th, tr {
   vertical-align: top;
 }
 
+.table-freetext-annotation-header {
+  position: relative;
+
+  .button {
+    position: absolute;
+    right: 0px;
+    top: $half-baseline;
+  }
+}
+
 .table-freetext-annotation {
   table-layout: fixed;
   word-wrap:break-word;

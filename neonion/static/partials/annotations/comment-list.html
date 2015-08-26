@@ -2,7 +2,7 @@
     <ul ng-repeat="(documentKey, annotationByDocument) in annotations | filterByCommentAnnotation | filter:filterCommentAnnotations | groupBy: 'uri'"
         class="list-unstyled">
         <li ng-repeat="(groupKey, annotationByGroup) in annotationByDocument | groupBy: 'permissions.read[0]'">
-            <div>
+            <div class="table-freetext-annotation-header">
                 <h3>
                     <a href="/annotator/{{ documentKey }}#?workspace={{ groupKey }}"
                        target="blank">{{ documentTitles[documentKey] }}</a>
@@ -13,11 +13,12 @@
                 <small ng-if="!groupNames[groupKey]">
                     <i class="fa fa-circle-o"></i> Private
                 </small>
-                <a class="button button-small pull-right" target="blank"
+                <a class="button button-small" target="blank"
                    ng-click="downloadComments(annotationByGroup, 'csv')">
                     <span class="fa fa-download fa-fw"></span>Download
                 </a>
             </div>
+
             <table class="table-freetext-annotation">
                 <thead>
                 <tr>

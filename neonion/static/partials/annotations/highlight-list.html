@@ -1,5 +1,5 @@
 <div ng-controller="AnnotationListCtrl" ng-cloak>
-    <ul ng-repeat="(documentKey, annotationByDocument) in annotations | filterByCommentAnnotation | filter:filterCommentAnnotations | groupBy: 'uri'"
+    <ul ng-repeat="(documentKey, annotationByDocument) in annotations | filterByHighlightAnnotation | filter:filterHighlightAnnotation | groupBy: 'uri'"
         class="list-unstyled">
         <li ng-repeat="(groupKey, annotationByGroup) in annotationByDocument | groupBy: 'permissions.read[0]'">
             <div class="table-annotation-header">
@@ -13,30 +13,27 @@
                 <small ng-if="!groupNames[groupKey]">
                     <i class="fa fa-circle-o"></i> Private
                 </small>
-                <a class="button button-small" target="blank"
-                   ng-click="downloadComments(annotationByGroup, 'csv')">
+                <a class="button button-small pull-right" target="blank"
+                   ng-click="downloadHighlights(annotationByGroup, 'csv')">
                     <span class="fa fa-download fa-fw"></span>Download
                 </a>
             </div>
-
             <table class="table-freetext-annotation">
                 <thead>
                 <tr>
-                    <th class="context">Context</th>
-                    <th class="annotation">Comment</th>
+                    <th class="highlight">Highlight</th>
                     <th class="date">Annotated&nbsp;by</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="annotation in annotationByGroup">
-                    <td class="context">
+                    <td class="highlight">
                         {{ annotation.context.left | truncate:'left' }}&nbsp;
                         <a class="mark"
                            href="/annotator/{{ documentKey }}#?docId={{ documentKey }}&annotationId={{ annotation.id }}&workspace={{ groupKey }}"
                            target="blank">{{ annotation.quote }}&nbsp;<i class="fa fa-external-link"></i>
                         </a>&nbsp;{{ annotation.context.left | truncate:'right' }}
                     </td>
-                    <td class="annotation">{{ annotation.text }}</td>
                     <td class="date">{{ annotation.oa.annotatedBy.email }}<br>{{ annotation.created | date : "MM/dd/yyyy 'at' h:mma" }}</td>
                 </tr>
                 </tbody>

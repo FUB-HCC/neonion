@@ -4,19 +4,22 @@
             <ul>
                 <li ng-class="{active:tab===1}"><a href="" ng-click="tab = 1">Concept Tags</a></li>
                 <li ng-class="{active:tab===2}"><a href="" ng-click="tab = 2">Comments</a></li>
+                <li ng-class="{active:tab===3}"><a href="" ng-click="tab = 3">Highlights</a></li>
             </ul>
         </nav>
         <div class="top-navigation-filter">
             <ng-include src="'/static/partials/common/filter.html'"></ng-include>
         </div>
     </div>
-
     <div class="wrapper" ng-switch="tab">
         <div ng-switch-when="1">
             <ng-include src="'/static/partials/annotations/concept-list.html'"></ng-include>
         </div>
         <div ng-switch-when="2">
             <ng-include src="'/static/partials/annotations/comment-list.html'"></ng-include>
+        </div>
+        <div ng-switch-when="3">
+            <ng-include src="'/static/partials/annotations/highlight-list.html'"></ng-include>
         </div>
     </div>
 </div>

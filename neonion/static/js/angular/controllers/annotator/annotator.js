@@ -23,7 +23,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
         $scope.getAnnotationModeCookie = function () {
             var value = $cookies.get(cookieKeys.annotationMode);
             return value ? parseInt($cookies.get(cookieKeys.annotationMode)) : 1;
-        }
+        };
 
         $scope.setupAnnotator = function (params) {
             UserService.current(function (user) {
@@ -76,8 +76,8 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                             });
 
                             // go to annotation given by hash
-                            if (queryParams.hasOwnProperty("annotation")) {
-                                $scope.scrollToAnnotation(queryParams.annotation);
+                            if (queryParams.hasOwnProperty("annotationId")) {
+                                AnnotatorService.scrollToAnnotation(queryParams.annotationId);
                             }
                         });
                 })

@@ -23,8 +23,7 @@ neonionApp.controller('BulkUploadCtrl', ['$scope', 'Upload',
                     $scope.form.upload.progress = 0;
 
                     $scope.upload = Upload.upload({
-                        url: 'api/es/import/' + $scope.form.index,
-                        fields: $scope.form,
+                        url: 'api/es/import/' + $scope.form.index + "/" + $scope.form.type,
                         file: file
                     }).progress(function (evt) {
                         var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);

@@ -15,6 +15,10 @@ neonionApp.factory('AnnotatorService', [function () {
         return annotator;
     };
 
+    /**
+     * Counts the annotation objects.
+     * @returns {Number}
+     */
     factory.getNumberOfTotalAnnotations = function() {
       if(annotator) {
         var annotations = factory.getAnnotationObjects();
@@ -22,13 +26,17 @@ neonionApp.factory('AnnotatorService', [function () {
       }
     };
 
+    /**
+     * Scrolls the viewport to the given annotation.
+     * @param annotation
+     */
     factory.scrollToAnnotation = function (annotation) {
         // check if just the annotation id was passed
         if (typeof annotation == 'string') {
             var annotations = factory.getAnnotationObjects();
-            annotation = annotations.find(function (element) {
-                return (element.id == $location.hash());
-            });
+            annotation = annotations.filter(function (element) {
+                return (element.id == annotation);
+            }).pop();
         }
         if (annotation) {
             var target = $(annotation.highlights[0]);
@@ -45,10 +53,18 @@ neonionApp.factory('AnnotatorService', [function () {
         }
     };
 
+    /**
+     * Returns a list of annotations as DOM elements.
+     * @returns {*|jQuery|HTMLElement}
+     */
     factory.getAnnotationHighlights = function () {
         return $(".annotator-hl:not(.annotator-hl-temporary),." + Annotator.Plugin.Neonion.prototype.classes.hide);
     };
 
+    /**
+     * Returns a list of annotation objects.
+     * @returns {Array<Annotation>}
+     */
     factory.getAnnotationObjects = function () {
         var highlights = factory.getAnnotationHighlights();
         var annotations = [];
@@ -59,6 +75,11 @@ neonionApp.factory('AnnotatorService', [function () {
         return annotations;
     };
 
+    /**
+     * Returns a list of annotation objects filtered by the user.
+     * @param userId
+     * @returns {Array<Annotation>}
+     */
     factory.getUserAnnotations = function (userId) {
         var annotations = factory.getAnnotationObjects();
         return annotations.filter(function (annotation) {
@@ -71,6 +92,11 @@ neonionApp.factory('AnnotatorService', [function () {
         });
     };
 
+    /**
+     * Returns the annotation object with the recent update date.
+     * @param userId
+     * @returns {Annotation}
+     */
     factory.getLastAnnotation = function (userId) {
         var annotations;
         if (userId) {
@@ -86,6 +112,10 @@ neonionApp.factory('AnnotatorService', [function () {
         return null;
     };
 
+    /**
+     * Returns a list of users which have contributed on the current document.
+     * @returns {Array}
+     */
     factory.getContributors = function () {
         var highlights = factory.getAnnotationHighlights();
         var contributors = [];
@@ -123,12 +153,20 @@ neonionApp.factory('AnnotatorService', [function () {
         factory.contributors = items;
     };
 
+    /**
+     * Shows a given annotation.
+     * @param annotation
+     */
     factory.showAnnotation = function (annotation) {
         annotation.highlights.forEach(function (entry) {
             entry.className = Annotator.Plugin.Neonion.prototype.classes.visible;
         });
     };
 
+    /**
+     * Hides a given annotation.
+     * @param annotation
+     */
     factory.hideAnnotation = function (annotation) {
         annotation.highlights.forEach(function (entry) {
             entry.className = Annotator.Plugin.Neonion.prototype.classes.hide;

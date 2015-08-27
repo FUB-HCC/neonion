@@ -20,9 +20,19 @@ neonionApp.controller('ContextInfoCtrl', ['$scope', '$location', 'CommonService'
         };
 
         $scope.getGroup = function () {
-            return GroupService.get({id: $location.search().workspace}, function (group) {
-                $scope.group = group;
-            }).$promise;
+            var groupId = parseInt($location.search().workspace);
+            if (Number.isFinite(groupId)) {
+                // get the group object
+                return GroupService.get({id: groupId}, function (group) {
+                    $scope.isPrivate = false;
+                    $scope.group = group;
+                }).$promise;
+            }
+            else {
+                $scope.isPrivate = true;
+                // no http communication
+                return Promise.resolve(true);
+            }
         };
 
         // execute promise chain

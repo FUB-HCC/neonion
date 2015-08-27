@@ -3,7 +3,7 @@ import json
 
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.conf import settings
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -84,49 +84,43 @@ def store_search(request):
 
 
 @login_required
-def es_bulk_import(request, index):
-    if 'type' in request.POST and 'id' in request.POST:
-        type_name = request.POST['type']
+@require_POST
+def es_bulk_import(request, index, type):
+    json_data = ''
+    # read chunks
+    f = request.FILES.getlist('file')[0]
+    for chunk in f.chunks():
+        json_data += chunk
 
-        json_data = ''
-        # read chunks
-        f = request.FILES.getlist('file')[0]
-        for chunk in f.chunks():
-            json_data += chunk
+    data = json.loads(json_data)
 
-        data = json.loads(json_data)
+    es = ElasticSearch(settings.ELASTICSEARCH_URL)
+    try:
+        es.create_index(index)
+    except IndexAlreadyExistsError:
+        pass
 
-        es = ElasticSearch(settings.ELASTICSEARCH_URL)
+    # clear item of type in document
+    try:
+        es.delete_all(index, type)
+    except Exception:
+        pass
+
+    # create generator
+    def items():
+        for item in data:
+            yield es.index_op(item)
+
+    for chunk in bulk_chunks(items(), docs_per_chunk=500, bytes_per_chunk=10000):
         try:
-            es.create_index(index)
-        except IndexAlreadyExistsError:
+            es.bulk(chunk, doc_type=type, index=index)
+        except BulkError:
             pass
 
-        # clear item of type in document
-        try:
-            es.delete_all(index, type_name)
-        except Exception as e:
-            print(e)
+    # refresh the index
+    es.refresh(index)
 
-        # create generator
-        def items():
-            for item in data:
-                yield es.index_op(item)
-
-        print("Start bulk import")
-        for chunk in bulk_chunks(items(), docs_per_chunk=500, bytes_per_chunk=10000):
-            print('Import next chunk')
-            try:
-                es.bulk(chunk, doc_type=type_name, index=index)
-            except BulkError as e:
-                print(e)
-
-        # refresh the index
-        es.refresh(index)
-
-        return HttpResponse(status=201)
-    else:
-        return HttpResponseBadRequest()
+    return HttpResponse(status=201)
 
 
 @login_required

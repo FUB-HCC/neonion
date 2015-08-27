@@ -16,6 +16,29 @@ th, tr {
   vertical-align: top;
 }
 
+.table-freetext-annotation-header {
+  position: relative;
+
+  .button {
+    position: absolute;
+    right: 0px;
+    top: $half-baseline;
+  }
+}
+
+// TMP: gehört hier nicht so richtig rein ist auch dupliziert, siehe oben
+.concept-annotation-header {
+  position: relative;
+  border-bottom: 1px solid silver;
+  margin-bottom: $half-baseline;
+
+  .button {
+    position: absolute;
+    right: 0px;
+    top: $half-baseline;
+  }
+}
+
 .table-freetext-annotation {
   table-layout: fixed;
   word-wrap:break-word;

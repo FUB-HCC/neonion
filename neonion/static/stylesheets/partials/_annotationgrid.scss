@@ -51,9 +51,11 @@
 
   .ann-header {
     font-weight: bold;
+    margin-bottom: 2*$baseline;
   }
 
   .sub-info {
+    margin-top: $baseline;
     font-size: 12px;
   }
 }

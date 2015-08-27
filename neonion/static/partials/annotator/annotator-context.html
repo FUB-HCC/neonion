@@ -16,9 +16,11 @@
         </li>
         <li class="loggedin"><i class="fa fa-user"></i>{{ user.email }}</li>
     </ul>
-    <div class="document-title" ng-switch on="isPrivate">
+    <div class="document-title">
         {{ document.title }}
-        <span class="list-icon" ng-switch-when="true"><i class="fa fa-circle-o"></i>Private</span>
-        <span class="list-icon" ng-switch-default><i class="fa fa-circle-o"></i>{{ group.name }}</span>
+        <span class="list-icon" ng-switch on="isPrivate"><i class="fa fa-circle-o"></i>
+            <span ng-switch-when="true">Private</span>
+            <span ng-switch-default>{{ group.name }}</span>
+        </span>
     </div>
 </div>

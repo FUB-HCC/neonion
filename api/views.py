@@ -103,21 +103,19 @@ def es_bulk_import(request, index, type):
     # clear item of type in document
     try:
         es.delete_all(index, type)
-    except Exception as e:
-        print(e)
+    except Exception:
+        pass
 
     # create generator
     def items():
         for item in data:
             yield es.index_op(item)
 
-    print("Start bulk import")
     for chunk in bulk_chunks(items(), docs_per_chunk=500, bytes_per_chunk=10000):
-        print('Import next chunk')
         try:
             es.bulk(chunk, doc_type=type, index=index)
-        except BulkError as e:
-            print(e)
+        except BulkError:
+            pass
 
     # refresh the index
     es.refresh(index)

@@ -144,6 +144,7 @@ PIPELINE_JS = {
         'source_filenames': (
             'js/annotator.min.js',
             'js/annotator.neonion.js',
+            'js/annotator.neonion.extensions.js',
             'js/annotator.ner.js',
             'js/annotator.store.min.js',
             'js/pdf.js'

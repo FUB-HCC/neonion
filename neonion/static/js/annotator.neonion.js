@@ -81,7 +81,7 @@
 
             // bind events on document
             $(document).bind({
-                mouseup: $.proxy(function (e) {
+                mouseup: $.proxy(function () {
                     // skip adder if only one button is visible
                     if ($(this.adder).is(":visible")) {
                         var childBtn = $(this.adder).find("button");
@@ -89,13 +89,6 @@
                         if (childBtn.length === 1) {
                             this.annotator.ignoreMouseup = true;
                             childBtn.click();
-                        }
-                    }
-                    else {
-                        // otherwise check whether a click on the document should close the editor
-                        var container = $(this.annotator.editor.element[0]);
-                        if (!container.is(e.target) && container.has(e.target).length === 0) {
-                            this.annotator.editor.hide();
                         }
                     }
                 }, this)

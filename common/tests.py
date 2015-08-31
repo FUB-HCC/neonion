@@ -1,13 +1,145 @@
 from django.test import TestCase
 from uri import generate_uri
 from statements import Annotation
-from annotation import add_resource_uri
-from exceptions import NoConceptAnnotationError, InvalidResourceTypeError
-from vocab import neonion
+from annotation import add_resource_uri, SemanticAnnotationValidator, pre_process_annotation
+from exceptions import InvalidAnnotationError, InvalidResourceTypeError
+from vocab import neonion, OpenAnnotation
 from cms import ContentSystem
 from django.core.validators import URLValidator
 from documents.tests import create_test_document
 from common.statements import metadata_statement
+
+
+class AnnotationValidationTestCase(TestCase):
+
+    def setUp(self):
+        self.valid = {
+            'highlight': {
+                'oa': {'motivatedBy': OpenAnnotation.Motivations.highlighting.value}
+            },
+            'comment': {
+                'text': 'Comment text',
+                'oa': {
+                    'motivatedBy': OpenAnnotation.Motivations.commenting.value,
+                    'hasBody': {'type': OpenAnnotation.DocumentTypes.text.value}
+                },
+            },
+            'classification': {
+                'oa': {
+                    'motivatedBy': OpenAnnotation.Motivations.classifying.value,
+                    'hasBody': {'type': OpenAnnotation.TagTypes.semanticTag.value},
+                },
+                'rdf': {
+                    'typeof': 'http://neonion.org/concept1',
+                    'label': 'Name of the instance'
+                }
+            },
+            'identification': {
+                'oa': {
+                    'motivatedBy': OpenAnnotation.Motivations.identifying.value,
+                    'hasBody': {'type': OpenAnnotation.TagTypes.semanticTag.value},
+                },
+                'rdf': {
+                    'uri': 'http://neonion.org/instance1',
+                    'typeof': 'http://neonion.org/concept1',
+                    'label': 'Name of the instance'
+                }
+            },
+            'linking': {
+                'oa': {
+                    'motivatedBy': OpenAnnotation.Motivations.linking.value,
+                    'hasBody': {'type': OpenAnnotation.TagTypes.semanticTag.value},
+                    'hasTarget': {}
+                },
+            }
+        }
+
+        self.invalid = {
+            'noMotivation': {
+                'oa': {}
+            },
+            'commentWithoutBody': {
+                'oa': {'motivatedBy': OpenAnnotation.Motivations.commenting.value}
+            },
+            'commentWithInvalidBodyType': {
+                'oa': {
+                    'motivatedBy': OpenAnnotation.Motivations.commenting.value,
+                    'hasBody': {'type': 'someType'}
+                }
+            },
+            'classificationWithInvalidBodyType': {
+                'oa': {
+                    'motivatedBy': OpenAnnotation.Motivations.classifying.value,
+                    'hasBody': {'type': 'someType'},
+                }
+            },
+            'classificationWithoutConceptType': {
+                'oa': {
+                    'motivatedBy': OpenAnnotation.Motivations.classifying.value,
+                    'hasBody': {'type': OpenAnnotation.TagTypes.semanticTag.value},
+                }
+            },
+            'linkingWithInvalidBodyType': {
+                'oa': {
+                    'motivatedBy': OpenAnnotation.Motivations.linking.value,
+                    'hasBody': {'type': 'someType'},
+                    'hasTarget': {}
+                }
+            }
+        }
+
+    def test_valid_annotations(self):
+        validate = SemanticAnnotationValidator()
+        self.assertIsNone(validate(self.valid['comment']))
+        self.assertIsNone(validate(self.valid['highlight']))
+        self.assertIsNone(validate(self.valid['classification']))
+        self.assertIsNone(validate(self.valid['identification']))
+        self.assertIsNone(validate(self.valid['linking']))
+
+    def test_invalid_annotations(self):
+        validate = SemanticAnnotationValidator()
+        self.assertRaises(InvalidAnnotationError, validate, self.invalid['noMotivation'])
+        self.assertRaises(InvalidAnnotationError, validate, self.invalid['commentWithoutBody'])
+        self.assertRaises(InvalidAnnotationError, validate, self.invalid['commentWithInvalidBodyType'])
+        self.assertRaises(InvalidAnnotationError, validate, self.invalid['classificationWithInvalidBodyType'])
+        self.assertRaises(InvalidAnnotationError, validate, self.invalid['classificationWithoutConceptType'])
+        self.assertRaises(InvalidAnnotationError, validate, self.invalid['linkingWithInvalidBodyType'])
+
+
+class AnnotationPreProcessTestCase(TestCase):
+
+    def setUp(self):
+        self.pre_process = {
+            'classification': {
+                'oa': {
+                    'motivatedBy': OpenAnnotation.Motivations.classifying.value,
+                    'hasBody': {'type': OpenAnnotation.TagTypes.semanticTag.value},
+                },
+                'rdf': {
+                    'typeof': 'http://neonion.org/concept1',
+                    'label': 'Name of the instance'
+                }
+            },
+            'identification': {
+                'oa': {
+                    'motivatedBy': OpenAnnotation.Motivations.identifying.value,
+                    'hasBody': {'type': OpenAnnotation.TagTypes.semanticTag.value},
+                },
+                'rdf': {
+                    'typeof': 'http://neonion.org/concept1',
+                    'label': 'Name of the instance'
+                }
+            }
+        }
+
+    def test_pre_process(self):
+        # following two calls ensures if a URI is added in pre-process
+        # (1) annotation is motivated by classification
+        annotation = pre_process_annotation(self.pre_process['classification'])
+        self.assertTrue('uri' in annotation['rdf'])
+        # (2) annotation is motivated by classification
+        annotation = pre_process_annotation(self.pre_process['identification'])
+        self.assertTrue('uri' in annotation['rdf'])
 
 
 class UriTestCase(TestCase):
@@ -86,7 +218,7 @@ class StatementsTestCase(TestCase):
         self.test_general_document = create_test_document()
 
     def test_no_semantic_annotation(self):
-        self.assertRaises(NoConceptAnnotationError, Annotation.statement_about_resource, self.noConceptAnnotation)
+        self.assertRaises(InvalidAnnotationError, Annotation.statement_about_resource, self.noConceptAnnotation)
 
     def test_semantic_annotation(self):
         statement = Annotation.statement_about_resource(self.conceptAnnotation)
@@ -98,7 +230,7 @@ class StatementsTestCase(TestCase):
         self.assertTrue("owl:sameAs" in statement)
 
     def test_add_uri_to_invalid_annotation(self):
-        self.assertRaises(NoConceptAnnotationError, add_resource_uri, self.noConceptAnnotation)
+        self.assertRaises(InvalidAnnotationError, add_resource_uri, self.noConceptAnnotation)
 
     def test_add_uri_to_valid_annotation(self):
         annotation = self.conceptAnnotationWithoutURI
@@ -118,7 +250,11 @@ class VocabTestCase(TestCase):
     def test_valid_urls(self):
         """ Tests whether the vocab contains only valid URLs. """
         vocab = neonion()
-        vocab_uri = [vocab.ANNOTATION_SET, vocab.CONCEPT, vocab.LINKED_CONCEPT, vocab.ANNOTATION_STORE_GRAPH]
+        vocab_uri = [
+            vocab.CONCEPT_SET, vocab.CONCEPT, vocab.LINKED_CONCEPT,
+            vocab.PROPERTY, vocab.LINKED_PROPERTY,
+            vocab.DOCUMENT, vocab.ANNOTATION_STORE_GRAPH
+        ]
         validate = URLValidator()
         for uri in vocab_uri:
             self.assertIsNone(validate(uri))

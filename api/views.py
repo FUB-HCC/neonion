@@ -1,7 +1,7 @@
 import requests
 import json
 
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponse
 from django.conf import settings
 from django.views.decorators.http import require_GET, require_POST
 from rest_framework.decorators import api_view
@@ -10,7 +10,8 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 from django.contrib.auth.decorators import login_required
 from authentication import UnsafeSessionAuthentication
-from common.annotation import pre_process_annotation, post_process_annotation
+from common.exceptions import InvalidResourceTypeError, InvalidAnnotationError
+from common.annotation import SemanticAnnotationValidator, pre_process_annotation, post_process_annotation
 from common.knowledge.provider import Provider
 from pyelasticsearch import ElasticSearch, bulk_chunks
 from django.http import JsonResponse
@@ -36,14 +37,25 @@ class AnnotationListView(APIView):
         """Creates a new annotation"""
         annotation = json.loads(request.body)
 
-        pre_process_annotation(annotation)
+        try:
+            # validate annotation first
+            validate = SemanticAnnotationValidator()
+            validate(annotation)
 
-        # forward request to annotation store
-        headers = {'content-type': 'application/json'}
-        response = requests.post(settings.ANNOTATION_STORE_URL + '/annotations',
-                                 data=json.dumps(annotation), headers=headers)
+            pre_process_annotation(annotation)
 
-        post_process_annotation(annotation)
+            # forward request to annotation store
+            headers = {'content-type': 'application/json'}
+            response = requests.post(settings.ANNOTATION_STORE_URL + '/annotations',
+                                     data=json.dumps(annotation), headers=headers)
+
+            post_process_annotation(annotation)
+        except InvalidAnnotationError:
+            pass
+        except InvalidResourceTypeError:
+            pass
+        except Exception:
+            pass
 
         return JsonResponse(response.json(), status=201, safe=False)
 

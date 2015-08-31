@@ -17,7 +17,7 @@ dj-database-url==0.3.0
 dj-static==0.0.6
 djangorestframework==3.0.0
 elasticsearch==1.2.0
-enum==0.4.4
+enum34 1.0.4
 html5lib==1.0b3
 ipython==2.3.1
 iso8601==0.1.10

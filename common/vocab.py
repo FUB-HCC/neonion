@@ -29,3 +29,4 @@ class OpenAnnotation:
         tagging = 'oa:tagging'
         classifying = 'oa:classifying'
         identifying = 'oa:identifying'
+        linking = 'oa:linking'

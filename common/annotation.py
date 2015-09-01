@@ -1,9 +1,7 @@
-from django.core.exceptions import ValidationError
 from common.uri import generate_uri
-from exceptions import NoConceptAnnotationError
+from exceptions import InvalidAnnotationError
 from common.sparql import insert_data
 from common.statements import Annotation
-from common.exceptions import InvalidResourceTypeError
 from common.vocab import OpenAnnotation
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
@@ -11,12 +9,10 @@ from django.utils.translation import ugettext_lazy as _
 
 @deconstructible
 class SemanticAnnotationValidator(object):
-    message = _('Ensure this annotation has semantic content.'),
-    code = 'invalid'
 
-    def __init__(self, message=None):
-        if message:
-            self.message = message
+    def __init__(self):
+        self.message = _('Ensure this annotation has semantic content.')
+        self.code = 'invalid'
 
     def __call__(self, annotation):
         throw_error = False
@@ -35,6 +31,10 @@ class SemanticAnnotationValidator(object):
                     else:
                         if not self.has_typeof_field(annotation):
                             throw_error = True
+                elif annotation['oa']['motivatedBy'] == OpenAnnotation.Motivations.linking.value:
+                    # linking has the body type semanticTag
+                    if not annotation['oa']['hasBody']['type'] == OpenAnnotation.TagTypes.semanticTag.value:
+                        throw_error = True
             else:
                 # only highlights do not need a body
                 if not annotation['oa']['motivatedBy'] == OpenAnnotation.Motivations.highlighting.value:
@@ -43,7 +43,7 @@ class SemanticAnnotationValidator(object):
             throw_error = True
 
         if throw_error:
-            raise ValidationError(self.message, code=self.code, params=annotation)
+            raise InvalidAnnotationError(self.message, code=self.code, params=annotation)
 
     def __eq__(self, other):
         return (
@@ -65,35 +65,27 @@ class SemanticAnnotationValidator(object):
         return 'rdf' in annotation and 'typeof' in annotation['rdf']
 
 
-def pre_process_annotation(annotation):
-    try:
-        if (motivation_equals(annotation, OpenAnnotation.Motivations.identifying) or
-                motivation_equals(annotation, OpenAnnotation.Motivations.classifying)):
-            try:
-                add_resource_uri(annotation)
-            except InvalidResourceTypeError:
-                pass
-    except ValidationError as e:
-        print(e)
+def pre_process_annotation(validated_annotation):
+    if (motivation_equals(validated_annotation, OpenAnnotation.Motivations.identifying) or
+            motivation_equals(validated_annotation, OpenAnnotation.Motivations.classifying)):
+        add_resource_uri(validated_annotation)
+
+    return validated_annotation
 
 
-def post_process_annotation(annotation):
+def post_process_annotation(validated_annotation):
+    # TODO serialize general parts of annotation (independent from motivation) to triple store
+
     # extract data from annotation and insert in triple store
-    try:
-        # print(Annotation.create_annotation_statement(annotation))
-        # insert_data(Annotation.create_annotation_statement(annotation))
-        if (motivation_equals(annotation, OpenAnnotation.Motivations.identifying) or
-                motivation_equals(annotation, OpenAnnotation.Motivations.classifying)):
-            insert_data(Annotation.statement_about_resource(annotation))
-    except Exception as e:
-        print(e.message)
+    if (motivation_equals(validated_annotation, OpenAnnotation.Motivations.identifying) or
+            motivation_equals(validated_annotation, OpenAnnotation.Motivations.classifying)):
+        insert_data(Annotation.statement_about_resource(validated_annotation))
+
+    return validated_annotation
 
 
 def motivation_equals(annotation, motivation):
-    if SemanticAnnotationValidator(annotation):
-        return annotation['oa']['motivatedBy'] == motivation.value
-    else:
-        False
+    return annotation['oa']['motivatedBy'] == motivation.value
 
 
 def add_resource_uri(annotation):
@@ -103,6 +95,6 @@ def add_resource_uri(annotation):
             if uri is not None:
                 annotation['rdf']['uri'] = uri
     else:
-        raise NoConceptAnnotationError(annotation)
+        raise InvalidAnnotationError(annotation)
 
     return annotation

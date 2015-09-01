@@ -30,7 +30,7 @@ class ViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # my annotations
-        response = self.client.get(reverse(views.my_annotations))
+        response = self.client.get(reverse(views.annotations))
         self.assertEqual(response.status_code, 200)
 
         # accounts

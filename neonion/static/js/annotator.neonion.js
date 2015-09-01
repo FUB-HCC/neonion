@@ -104,6 +104,17 @@
                 this.annotator.editor.submit();
             }, this));
 
+            // activate additional widgets
+            if (this.options.hasOwnProperty("activateWidgets")) {
+                for(var i = 0; i < this.options.activateWidgets.length; i++) {
+                    var widget = this.options.activateWidgets[i];
+                    if (this.widgets.hasOwnProperty(widget)) {
+                        // instantiate widget
+                        (new this.widgets[widget]).load(this, options);
+                    }
+                }
+            }
+
             // closure
             this.conceptSet(this.conceptSet());
             this.applyLayer(this.annotationLayers.group);
@@ -246,8 +257,14 @@
                 search: "search"
             },
             paginationSize: 5,
-            annotationMode : 1 // commenting
+            annotationMode : 1, // commenting
+            activateWidgets : ['storeContext']
         },
+
+        /**
+         * Object to inject custom methods.
+         */
+        widgets : {},
 
         templates: {
             showMore: "<button data-action='annotator-more'>Show more results&nbsp;&#8230;</button>",
@@ -430,10 +447,7 @@
         },
 
         annotationEditorSubmit: function (editor, annotation) {
-            // add context
-            annotation.context = this.helper.extractSurroundedContent(annotation, this.annotator);
             // TODO add OA start and end position to target
-            console.log(annotation);
         },
 
         /**
@@ -708,48 +722,6 @@
 
                 // focus search field
                 editor.find("#resource-search").focus();
-            },
-
-            extractSurroundedContent: function (annotation, annotator) {
-                var length = 70;
-                console.log("lenght" + length);
-                var node, contentLeft = '', contentRight = '';
-                // left
-                node = annotation.highlights[0];
-                while (node != annotator.element[0] && contentLeft.length < length) {
-                    if (node.previousSibling) {
-                        node = node.previousSibling;
-                        // prepend extracted text
-                        contentLeft = $(node).text() + contentLeft;
-                    }
-                    else {
-                        node = node.parentNode;
-                    }
-                }
-
-                // right
-                node = annotation.highlights[annotation.highlights.length - 1];
-                while (node != annotator.element[0] && contentRight.length < length) {
-                    if (node.nextSibling) {
-                        node = node.nextSibling;
-                        // append extracted text
-                        contentRight += $(node).text();
-                    }
-                    else {
-                        node = node.parentNode;
-                    }
-                }
-                // replace line feed with space
-                contentLeft = contentLeft.replace(/(\r\n|\n|\r)/gm, " ");
-                contentRight = contentRight.replace(/(\r\n|\n|\r)/gm, " ");
-
-                var leftC = contentLeft.trimLeft().substr(-length);
-                var rightC = contentRight.trimRight().substr(0, length);
-
-                return {
-                    left: leftC.substring(leftC.indexOf(" ") + 1),
-                    right: rightC.substring(0, rightC.lastIndexOf(" "))
-                };
             }
         },
 
@@ -774,21 +746,6 @@
         formatter: {
             'default': function (value) {
                 return "<span>" + value.label + "</span>";
-            },
-            'http://neonion.org/concept/person': function (value) {
-                var label = value.label;
-                if (value.birth) {
-                    label += "<span>&nbsp;&#42;&nbsp;" + value.birth;
-                    if (value.death) {
-                        label += ",&nbsp;&#8224;&nbsp;" + value.death;
-                    }
-                    label += "</span>";
-                }
-
-                if (value.descr) {
-                    label += "<br/><span>" + value.descr + "</span>";
-                }
-                return label;
             }
         }
 

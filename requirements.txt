@@ -15,9 +15,9 @@ coverage==3.7.1
 dataset==0.5.5
 dj-database-url==0.3.0
 dj-static==0.0.6
-djangorestframework==3.0.0
+djangorestframework==3.2.3
 elasticsearch==1.2.0
-enum34 1.0.4
+enum34==1.0.4
 html5lib==1.0b3
 ipython==2.3.1
 iso8601==0.1.10
@@ -33,6 +33,5 @@ requests==2.4.3
 simplejson==3.6.4
 six==1.8.0
 static3==0.5.1
-urllib3==1.9.1
 wsgiref==0.1.2
 django-pipeline==1.5.1

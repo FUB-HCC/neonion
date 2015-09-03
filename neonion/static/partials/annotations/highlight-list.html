@@ -4,8 +4,8 @@
         <li ng-repeat="(groupKey, annotationByGroup) in annotationByDocument | groupBy: 'permissions.read[0]'">
             <div class="table-annotation-header">
                 <h3>
-                    <a href="/annotator/{{ documentKey }}#?workspace={{ groupKey }}"
-                       target="blank">{{ documentTitles[documentKey] }}</a>
+                    <a href="/annotator/{{ documentKey }}#?workspace={{ groupKey }}">
+                        {{ documentTitles[documentKey] }}</a>
                 </h3>
                 <small ng-if="groupNames[groupKey]">
                     <i class="fa fa-circle-o"></i> {{ groupNames[groupKey] }}
@@ -28,11 +28,12 @@
                 <tbody>
                 <tr ng-repeat="annotation in annotationByGroup">
                     <td class="highlight">
-                        {{ annotation.context.left | truncate:'left' }}&nbsp;
+                        {{ annotation.context.left | truncate:'left' }}
                         <a class="mark"
-                           href="/annotator/{{ documentKey }}#?docId={{ documentKey }}&annotationId={{ annotation.id }}&workspace={{ groupKey }}"
-                           target="blank">{{ annotation.quote }}&nbsp;<i class="fa fa-external-link"></i>
-                        </a>&nbsp;{{ annotation.context.left | truncate:'right' }}
+                           href="/annotator/{{ documentKey }}#?docId={{ documentKey }}&annotationId={{ annotation.id }}&workspace={{ groupKey }}">
+                            {{ annotation.quote }}&nbsp;<i class="fa fa-external-link"></i>
+                        </a>
+                        {{ annotation.context.right | truncate:'right' }}
                     </td>
                     <td class="date">{{ annotation.oa.annotatedBy.email }}<br>{{ annotation.created | date : "MM/dd/yyyy 'at' h:mma" }}</td>
                 </tr>

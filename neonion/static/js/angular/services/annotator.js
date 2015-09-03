@@ -66,13 +66,18 @@ neonionApp.factory('AnnotatorService', [function () {
      * @returns {Array<Annotation>}
      */
     factory.getAnnotationObjects = function () {
-        var highlights = factory.getAnnotationHighlights();
-        var annotations = [];
-        highlights.each(function () {
-            var annotation = $(this).data("annotation");
-            annotations.push(annotation);
+        var annotations = $.map(factory.getAnnotationHighlights(), function (item) {
+            return $(item).data("annotation");
         });
-        return annotations;
+        // since an annotation can have multiple highlights create a unique set of annotations
+        var unique = {};
+        return $.grep(annotations, function(annotation) {
+            if (!unique.hasOwnProperty(annotation.id)) {
+                unique[annotation.id] = true;
+                return true;
+            }
+            return false;
+        });
     };
 
     /**

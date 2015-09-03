@@ -38,18 +38,18 @@ neonionApp.factory('AnnotatorService', [function () {
                 return (element.id == annotation);
             }).pop();
         }
-        if (annotation) {
+        if (annotation && annotation.hasOwnProperty("highlights")) {
+            // scroll to first annotation highlight
             var target = $(annotation.highlights[0]);
             $('html, body').stop().animate({
                     'scrollTop': target.offset().top - 200
                 },
                 1000,
-                'easeInOutQuart'
-            );
-            // blink for more attention
-            for (var i = 0; i < 2; i++) {
-                $(target).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
-            }
+                'easeInOutQuart',
+                function () {
+                    // blink for more attention
+                    $(annotation.highlights).fadeTo('slow', 0.5).fadeTo('slow', 1.0);
+                });
         }
     };
 
@@ -66,13 +66,18 @@ neonionApp.factory('AnnotatorService', [function () {
      * @returns {Array<Annotation>}
      */
     factory.getAnnotationObjects = function () {
-        var highlights = factory.getAnnotationHighlights();
-        var annotations = [];
-        highlights.each(function () {
-            var annotation = $(this).data("annotation");
-            annotations.push(annotation);
+        var annotations = $.map(factory.getAnnotationHighlights(), function (item) {
+            return $(item).data("annotation");
         });
-        return annotations;
+        // since an annotation can have multiple highlights create a unique set of annotations
+        var unique = {};
+        return $.grep(annotations, function(annotation) {
+            if (!unique.hasOwnProperty(annotation.id)) {
+                unique[annotation.id] = true;
+                return true;
+            }
+            return false;
+        });
     };
 
     /**

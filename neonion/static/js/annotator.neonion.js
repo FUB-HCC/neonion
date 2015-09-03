@@ -31,7 +31,7 @@
             if (concepts) {
                 this.concepts = concepts;
                 if (this.editorState.annotationMode == this.annotationModes.conceptTagging) {
-                    // apply if annotation mode equals semantic annotation mode
+                    // apply if annotation mode equals concept tagging
                     this.helper.applyConceptSet(this.conceptSet(), this.adder);
                 }
             }
@@ -397,18 +397,19 @@
         },
 
         annotationEditorShown: function (editor, annotation) {
-            this.helper.placeEditorBesidesAnnotation(annotation, this.annotator);
-
             if (annotation.hasOwnProperty("oa")) {
                 // visibility of fields depends on the motivation
                 switch (annotation.oa.motivatedBy) {
                     case this.oa.motivation.commenting:
                         this.showEditorField(this.fields.editor.commentField);
-                        var textarea = $(this.fields.editor.commentField).find("textarea");
-                        // transfer quote to text input
-                        textarea.val(annotation.quote);
-                        // preselect text
-                        textarea.select();
+                        // check if the annotation has no comment yet
+                        if (!annotation.hasOwnProperty("text")) {
+                            // transfer quote to text area and preselect the content
+                            $(this.fields.editor.commentField)
+                                .find("textarea")
+                                .val(annotation.quote)
+                                .select();
+                        }
                         break;
                     case this.oa.motivation.highlighting:
                         // submit editor automatically
@@ -419,6 +420,8 @@
                         var concept = this.getConcept(this.editorState.selectedConcept);
                         if (this.helper.conceptHasReferrals(concept)) {
                             this.showEditorField(this.fields.editor.conceptTaggingField);
+                            // focus search field
+                            $(this.fields.editor.conceptTaggingField).find("#resource-search").focus();
                         }
                         else {
                             // submit editor automatically if there is to search
@@ -427,6 +430,8 @@
                         break;
                 }
             }
+
+            this.helper.placeEditorBesidesAnnotation(annotation, this.annotator);
         },
 
         annotationEditorHidden: function () {
@@ -710,18 +715,25 @@
             },
 
             placeEditorBesidesAnnotation: function (annotation, annotator) {
-                var top = $(annotation.highlights[0]).position().top;
-                var left = $(annotation.highlights[0]).position().left;
                 var editor = $(annotator.editor.element[0]);
-                var annotator = $(annotator.element[0]);
-                var width = annotator.width();
-                editor.css("top", top);
-                editor.find(".annotator-line").width(width - left + 378 + 108);
-                editor.find(".annotator-line").css("left", -(width - left + 108));
-                $(annotation.highlights[0]).css("border-left", "1px solid #717171");
+                if (annotation.highlights.length > 0) {
+                    var annotatorRect = annotator.editor.element[0].getBoundingClientRect();
+                    annotator = $(annotator.element[0]);
+                    // place line vertically
+                    var top = $(annotation.highlights[0]).position().top;
+                    editor.css("top", top);
 
-                // focus search field
-                editor.find("#resource-search").focus();
+                    // place line horizontally
+                    var clientRects = annotation.highlights[0].getClientRects();
+                    var width = annotatorRect.left - clientRects[0].left;
+                    editor.find(".annotator-line").width(width);
+                    editor.find(".annotator-line").height(clientRects[0].height);
+                    editor.find(".annotator-line").css("left", -width);
+                    editor.find(".annotator-line").show();
+                }
+                else {
+                    editor.find(".annotator-line").hide();
+                }
             }
         },
 

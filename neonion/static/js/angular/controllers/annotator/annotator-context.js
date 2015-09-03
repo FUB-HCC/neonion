@@ -21,7 +21,7 @@ neonionApp.controller('ContextInfoCtrl', ['$scope', '$location', 'CommonService'
 
         $scope.getGroup = function () {
             var groupId = parseInt($location.search().workspace);
-            if (Number.isFinite(groupId)) {
+            if (!isNaN(groupId)) {
                 // get the group object
                 return GroupService.get({id: groupId}, function (group) {
                     $scope.isPrivate = false;

@@ -41,6 +41,7 @@
     text-indent: 0;
     width: 100%;
     outline: 0;
+    white-space: nowrap;
 
     &:hover {
       background-color: $tangerine;
@@ -79,7 +80,10 @@
 /* Annotator Widget
 -------------------------------------------------------------------- */
 .annotator-editor {
-  z-index: 0;
+
+  .annotator-item textarea {
+    resize: vertical;
+  }
 
   .annotator-widget {
     border: 0px;
@@ -168,7 +172,6 @@
 
 .annotator-viewer {
   border: 0px;
-  z-index: 100;
   @extend %shadow;
 
   .annotator-widget {
@@ -206,7 +209,7 @@
 }
 
 .annotator-line {
-  border-bottom: 1px solid $black;
+  box-shadow: inset 1px 1px 0px $dove-gray;
   position: absolute;
   width: 500px;
   z-index: -100;

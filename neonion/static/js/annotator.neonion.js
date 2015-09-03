@@ -555,7 +555,8 @@
         },
 
         viewerLoadResourceField: function (field, annotation) {
-            if (annotation.hasOwnProperty("rdf")) {
+            if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
+                this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
                 var ref = annotation.rdf.hasOwnProperty('sameAs') ? annotation.rdf.sameAs : '#';
                 var fieldValue = "<a href='" + ref + "' target='blank'>" + annotation.rdf.label + "</a>";
                 var fieldCaption = '';
@@ -579,7 +580,8 @@
         },
 
         loadEditorConceptField: function (field, annotation) {
-            if (this.annotationMode() == this.annotationModes.conceptTagging) {
+            if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
+                this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
                 // restore type from annotation if provided
                 this.editorState.selectedConcept = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : this.editorState.selectedConcept;
 
@@ -591,7 +593,8 @@
         },
 
         submitEditorConceptField: function (field, annotation) {
-            if (this.annotationMode() == this.annotationModes.conceptTagging) {
+            if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
+                this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
                 if (annotation.oa.hasBody.type == this.oa.types.tag.semanticTag) {
                     // add extra semantic data from identified resource
                     if (this.editorState.selectedItem >= 0 && this.editorState.selectedItem < this.editorState.resultSet.length) {
@@ -628,12 +631,20 @@
          * @returns {Array.<T>}
          */
         getAnnotations: function () {
-            return Array.prototype.slice.call(
+            var annotations = Array.prototype.slice.call(
                 document.querySelectorAll(".annotator-hl:not(.annotator-hl-temporary),." +
                 Annotator.Plugin.Neonion.prototype.classes.hide))
                 .map(function (highlight) {
                     return $(highlight).data("annotation");
                 });
+            var unique = {};
+            return annotations.filter(function(annotation) {
+                if (!unique.hasOwnProperty(annotation.id)) {
+                    unique[annotation.id] = true;
+                    return true;
+                }
+                return false;
+            });
         },
 
         /**

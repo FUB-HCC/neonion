@@ -1,8 +1,8 @@
 /**
  * AnnotatorMenu controller
  */
-neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$cookies', 'cookieKeys', 'AnnotatorService',
-    function ($scope, $window, $cookies, cookieKeys, AnnotatorService) {
+neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$cookies', 'cookieKeys', 'AnnotatorService',
+    function ($scope, $window, $location, $cookies, cookieKeys, AnnotatorService) {
         "use strict";
 
         $scope.annotatorService = AnnotatorService;
@@ -21,11 +21,12 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$cookies', 'co
                 value: Annotator.Plugin.Neonion.prototype.annotationModes.conceptTagging
             }
         };
+
         $scope.shortCutModifier = {
             default: {
                 modifierText: "Ctrl+Alt+"
             }
-        }
+        };
 
         $scope.handleKeyDown = function (event) {
             if (event.ctrlKey && event.altKey) {
@@ -37,7 +38,19 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$cookies', 'co
                     }
                 }
             }
-        }
+        };
+
+        /**
+         * Handle home click.
+         */
+        $scope.home = function() {
+            if ($location.search().return) {
+                window.location = $location.search().return;
+            }
+            else {
+                window.location = "/";
+            }
+        };
 
         /**
          * Scrolls the view port to the last annotation.
@@ -68,7 +81,7 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$cookies', 'co
             else {
                 return 1;
             }
-        }
+        };
 
         $scope.setAnnotationMode = function (mode) {
             $cookies.put(cookieKeys.annotationMode, mode);

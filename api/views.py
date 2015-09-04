@@ -15,7 +15,7 @@ from common.annotation import SemanticAnnotationValidator, pre_process_annotatio
 from common.knowledge.provider import Provider
 from pyelasticsearch import ElasticSearch, bulk_chunks
 from django.http import JsonResponse
-from pyelasticsearch.exceptions import IndexAlreadyExistsError, BulkError
+from pyelasticsearch.exceptions import IndexAlreadyExistsError, BulkError, ElasticHttpError, ElasticHttpNotFoundError
 
 
 class AnnotationListView(APIView):
@@ -111,11 +111,13 @@ def es_bulk_import(request, index, type):
         es.create_index(index)
     except IndexAlreadyExistsError:
         pass
+    except ElasticHttpError:
+        pass
 
     # clear item of type in document
     try:
         es.delete_all(index, type)
-    except Exception:
+    except ElasticHttpNotFoundError:
         pass
 
     # create generator

@@ -130,7 +130,10 @@
                     if (linkedAnnotations.length > 0) {
                         linkedAnnotations.forEach(function (statement) {
                             var object = factory.getAnnotationById(statement.oa.hasTarget.target);
-                            $(field).append(factory.createStatementHTML(annotation.rdf, statement.oa.hasBody.rdf, object.rdf, statement.id));
+                            // ensure the target annotation was found
+                            if (object) {
+                                $(field).append(factory.createStatementHTML(annotation.rdf, statement.oa.hasBody.rdf, object.rdf, statement.id));
+                            }
                         });
                         $(field).wrapInner("<ul></ul>").show();
                     }

@@ -18,7 +18,7 @@ neonionApp.controller('BulkUploadCtrl', ['$scope', 'Upload',
             };
 
             $scope.uploadFile = function (file) {
-                if ($scope.validate()) {
+                if ($scope.validate() && file) {
                     $scope.form.upload.uploading = true;
                     $scope.form.upload.progress = 0;
 

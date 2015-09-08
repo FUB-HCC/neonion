@@ -10,7 +10,7 @@
                 <input type="text" class="form-control" id="form-type" placeholder="Name of the type"
                        ng-model="form.type" required>
                 <label for="form-file">Uploaded File</label>
-                <input type="file" ngf-accept="'application/json'" id="form-file" name="file" ngf-select
+                <input type="file" ngf-accept="'*.json'" id="form-file" name="file" ngf-select
                        ng-model="file"/>
                 <button type="button" ng-disabled="form.upload.uploading"
                         class="btn btn-default" ng-click="uploadFile(file)">Submit</button>

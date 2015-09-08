@@ -18,16 +18,18 @@
             {% csrf_token %}
 
             {% block left %}
-            <div class="sidebar col-md-1">
-                <div class="logo-wrapper">
-                    <div class="logo"></div>
+            <div class="sidebar col-md-2">
+                <div data-spy="affix">
+                    <div class="logo-wrapper">
+                        <div class="logo"></div>
+                    </div>
+                    {% include "navigation.html" %}
                 </div>
-                {% include "navigation.html" %}
             </div>
             {% endblock %}
 
             {% block right %}
-            <div class="col-md-10 col-md-offset-1">
+            <div class="col-md-9">
               <div class="row">
                 <div class="header col-md-12">
                     {% block header %}

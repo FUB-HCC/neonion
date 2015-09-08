@@ -163,9 +163,11 @@ neonionApp.factory('AnnotatorService', [function () {
      * @param annotation
      */
     factory.showAnnotation = function (annotation) {
-        annotation.highlights.forEach(function (entry) {
-            entry.className = Annotator.Plugin.Neonion.prototype.classes.visible;
-        });
+        if (annotation.hasOwnProperty("highlights")) {
+            annotation.highlights.forEach(function (entry) {
+                entry.className = Annotator.Plugin.Neonion.prototype.classes.visible;
+            });
+        }
     };
 
     /**
@@ -173,10 +175,12 @@ neonionApp.factory('AnnotatorService', [function () {
      * @param annotation
      */
     factory.hideAnnotation = function (annotation) {
-        annotation.highlights.forEach(function (entry) {
-            entry.className = Annotator.Plugin.Neonion.prototype.classes.hide;
-            entry.style.backgroundColor = "";
-        });
+        if (annotation.hasOwnProperty("highlights")) {
+            annotation.highlights.forEach(function (entry) {
+                entry.className = Annotator.Plugin.Neonion.prototype.classes.hide;
+                entry.style.backgroundColor = "";
+            });
+        }
     };
 
     factory.makeColor = function (colorNum, colors) {
@@ -188,7 +192,9 @@ neonionApp.factory('AnnotatorService', [function () {
     };
 
     factory.colorizeAnnotation = function (annotation) {
-        if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("annotatedBy")) {
+        if (annotation.hasOwnProperty("highlights") &&
+            annotation.hasOwnProperty("oa") &&
+            annotation.oa.hasOwnProperty("annotatedBy")) {
             var idx = factory.contributors.map(function (x) {
                 return x.user;
             }).indexOf(annotation.oa.annotatedBy.email);

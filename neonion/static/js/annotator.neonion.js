@@ -110,7 +110,7 @@
                     var widget = this.options.activateWidgets[i];
                     if (this.widgets.hasOwnProperty(widget)) {
                         // instantiate widget
-                        (new this.widgets[widget]).load(this, options);
+                        (new this.widgets[widget](this, options)).load();
                     }
                 }
             }
@@ -239,7 +239,9 @@
             annotationEditorShown: "annotationEditorShown",
             annotationEditorHidden: "annotationEditorHidden",
             annotationEditorSubmit: "annotationEditorSubmit",
-            annotationViewerTextField: "annotationViewerTextField"
+            annotationViewerTextField: "annotationViewerTextField",
+            linkedAnnotationCreated: "linkedAnnotationCreated",
+            linkedAnnotationDeleted: "linkedAnnotationDeleted"
         },
 
         annotationModes: {
@@ -258,7 +260,7 @@
             },
             paginationSize: 5,
             annotationMode : 1, // commenting
-            activateWidgets : ['storeContext']
+            activateWidgets : ['storeContext', 'viewerSummarizeStatements', 'viewerCreateProperty']
         },
 
         /**
@@ -351,6 +353,73 @@
             }
         },
 
+        /**
+         *
+         * @param annotationSubject
+         * @param predicate
+         * @param annotationObject
+         * @returns {{ranges: Array, oa: {annotatedBy, motivatedBy: string, hasBody: {type: string}, hasTarget: {source: *, target: string}}}}
+         */
+        createLinkedAnnotation : function(annotationSubject, predicate, annotationObject) {
+            var linkage = {
+                ranges: [], // empty but necessary
+                oa : {
+                    motivatedBy: this.oa.motivation.linking,
+                    annotatedBy: $.extend(this.options.agent, {type: this.oa.types.agent.person}),
+                    hasBody: {
+                        rdf : {
+                            subject: annotationSubject.rdf.uri,
+                            predicate: predicate.uri,
+                            predicateLabel: predicate.label,
+                            object: annotationObject.rdf.uri
+                        },
+                        type: this.oa.types.tag.semanticTag
+                    },
+                    hasTarget: {
+                        source : annotationSubject.id,
+                        target : annotationObject.id
+                    }
+                }
+            };
+            this.applyPermissions(linkage);
+
+            // publish linked annotation was created
+            this.annotator.publish("linkedAnnotationCreated", [linkage]);
+
+            return linkage;
+        },
+
+        deleteLinkedAnnotation : function(annotation) {
+            this.annotator.deleteAnnotation(annotation);
+            this.annotator.publish("linkedAnnotationDeleted", [annotation]);
+        },
+
+        /**
+         * Sets then permissions according current workspace
+         * @param annotation
+         */
+        applyPermissions : function(annotation) {
+            if (this.options.hasOwnProperty("workspace")) {
+                // add permissions to annotation
+                annotation.permissions = {
+                    read: [this.options.workspace],
+                    update: [this.options.workspace],
+                    delete: [this.options.agent.email],
+                    admin: [this.options.agent.email]
+                };
+            }
+        },
+
+        linkedAnnotationCreated : function(annotation) {
+            if (this.annotator.plugins.Store) {
+                // store annotation
+                this.annotator.plugins.Store.annotationCreated(annotation);
+            }
+        },
+
+        linkedAnnotationDeleted : function(annotation) {
+
+        },
 
         /**
          * Called before an annotation is created.
@@ -384,16 +453,7 @@
                     break;
             }
 
-            // set permission according current workspace
-            if (this.options.hasOwnProperty("workspace")) {
-                // add permissions to annotation
-                annotation.permissions = {
-                    read: [this.options.workspace],
-                    update: [this.options.workspace],
-                    delete: [this.options.agent.email],
-                    admin: [this.options.agent.email]
-                };
-            }
+            this.applyPermissions(annotation);
         },
 
         annotationEditorShown: function (editor, annotation) {
@@ -500,7 +560,8 @@
         },
 
         viewerLoadResourceField: function (field, annotation) {
-            if (annotation.hasOwnProperty("rdf")) {
+            if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
+                this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
                 var ref = annotation.rdf.hasOwnProperty('sameAs') ? annotation.rdf.sameAs : '#';
                 var fieldValue = "<a href='" + ref + "' target='blank'>" + annotation.rdf.label + "</a>";
                 var fieldCaption = '';
@@ -524,7 +585,8 @@
         },
 
         loadEditorConceptField: function (field, annotation) {
-            if (this.annotationMode() == this.annotationModes.conceptTagging) {
+            if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
+                this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
                 // restore type from annotation if provided
                 this.editorState.selectedConcept = annotation.hasOwnProperty('rdf') ? annotation.rdf.typeof : this.editorState.selectedConcept;
 
@@ -536,7 +598,8 @@
         },
 
         submitEditorConceptField: function (field, annotation) {
-            if (this.annotationMode() == this.annotationModes.conceptTagging) {
+            if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
+                this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
                 if (annotation.oa.hasBody.type == this.oa.types.tag.semanticTag) {
                     // add extra semantic data from identified resource
                     if (this.editorState.selectedItem >= 0 && this.editorState.selectedItem < this.editorState.resultSet.length) {
@@ -554,14 +617,76 @@
         },
 
         /**
-         * Returns the label of the given concept identifier.
+         * Returns the concept object of the given concept identifier.
          * @param concept
          * @returns {*}
          */
         getConcept : function(concept) {
-            return this.conceptSet().filter(function(item) {
-                return item.uri == concept;
-            })[0];
+            for(var i = 0; i < this.concepts.length; i++) {
+                if (this.concepts[i].uri == concept) {
+                    return this.concepts[i];
+                }
+            }
+            return null;
+        },
+
+        /**
+         * Returns a list containing all annotation objects.
+         * Note: Only annotations with visible highlights are returned. Mo linked annotations.
+         * @returns {Array.<T>}
+         */
+        getAnnotations: function () {
+            var annotations = Array.prototype.slice.call(
+                document.querySelectorAll(".annotator-hl:not(.annotator-hl-temporary),." +
+                Annotator.Plugin.Neonion.prototype.classes.hide))
+                .map(function (highlight) {
+                    return $(highlight).data("annotation");
+                });
+            var unique = {};
+            return annotations.filter(function(annotation) {
+                if (!unique.hasOwnProperty(annotation.id)) {
+                    unique[annotation.id] = true;
+                    return true;
+                }
+                return false;
+            });
+        },
+
+        /**
+         * Returns a list of annotations matching the given concepts.
+         * @param concepts
+         * @returns {Array.<T>}
+         */
+        getAnnotationsMatchingConcepts: function (concepts) {
+            concepts = concepts.map(function (concept) {
+                return concept.uri;
+            });
+
+            return this.getAnnotations()
+                .filter($.proxy(function (annotation) {
+                    if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
+                        this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
+                        return concepts.indexOf(annotation.rdf.typeof) != -1;
+                    }
+                    return false;
+                }, this));
+        },
+
+        /**
+         * Groups the annotation object by the given property
+         * @param annotations
+         * @returns {{}}
+         */
+        groupAnnotationBy : function(annotations, condition) {
+            var grouped = {};
+            annotations.map(function(annotation) {
+                var value = condition(annotation);
+                if (!grouped.hasOwnProperty(value)) {
+                    grouped[value] = [];
+                }
+                grouped[value].push(annotation);
+            });
+            return grouped;
         },
 
         /**
@@ -677,6 +802,26 @@
                 var element = document.createElement('a');
                 element.href = endpoint;
                 return element.hostname.split('.')[1];
+            },
+
+            /**
+             * Returns true if the annotation has the given motivation.
+             * @param annotation
+             * @param motivation
+             * @returns {boolean}
+             */
+            getMotivationEquals : function(annotation, motivation) {
+                if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("motivatedBy")) {
+                    return annotation.oa.motivatedBy == motivation;
+                }
+                return false;
+            },
+
+            isLinkedAnnotation: function(annotation) {
+                if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("motivatedBy")) {
+                    return annotation.oa.motivatedBy == Annotator.Plugin.Neonion.prototype.oa.motivation.linking;
+                }
+                return false;
             },
 
             /**

@@ -653,8 +653,9 @@
   font-style: normal;
   font-weight: 300;
   src: local('Lato Light'), local('Lato-Light'), url(fonts/Lato/Lato-Light-latin-ext.woff2) format('woff2'), /* Chrome 26+, Opera 23+ */ url(fonts/Lato/Lato-Light.woff) format('woff');
-  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+  
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 /* latin */
 @font-face {
@@ -662,8 +663,9 @@
   font-style: normal;
   font-weight: 300;
   src: local('Lato Light'), local('Lato-Light'), url(fonts/Lato/Lato-Light-latin.woff2) format('woff2'), /* Chrome 26+, Opera 23+ */ url(fonts/Lato/Lato-Light.woff) format('woff');
-  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+  
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 /* latin-ext */
 @font-face {
@@ -671,8 +673,9 @@
   font-style: normal;
   font-weight: 400;
   src: local('Lato Regular'), local('Lato-Regular'), url(fonts/Lato/Lato-Regular-latin-ext.woff2) format('woff2'), /* Chrome 26+, Opera 23+ */ url(fonts/Lato/Lato-Regular.woff) format('woff');
-  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+  
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 /* latin */
 @font-face {
@@ -680,8 +683,9 @@
   font-style: normal;
   font-weight: 400;
   src: local('Lato Regular'), local('Lato-Regular'), url(fonts/Lato/Lato-Regular-latin.woff2) format('woff2'), /* Chrome 26+, Opera 23+ */ url(fonts/Lato/Lato-Regular.woff) format('woff');
-  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+  
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 /* latin-ext */
 @font-face {
@@ -689,8 +693,9 @@
   font-style: normal;
   font-weight: 700;
   src: local('Lato Bold'), local('Lato-Bold'), url(fonts/Lato/Lato-Bold-latin-ext.woff2) format('woff2'), /* Chrome 26+, Opera 23+ */ url(fonts/Lato/Lato-Bold.woff) format('woff');
-  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+  
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 /* latin */
 @font-face {
@@ -698,8 +703,9 @@
   font-style: normal;
   font-weight: 700;
   src: local('Lato Bold'), local('Lato-Bold'), url(fonts/Lato/Lato-Bold-latin.woff2) format('woff2'), /* Chrome 26+, Opera 23+ */ url(fonts/Lato/Lato-Bold.woff) format('woff');
-  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+  
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 /*!
  *  Font Awesome 4.3.0 by @davegandy - http://fontawesome.io - @fontawesome
@@ -9633,11 +9639,26 @@ fieldset[disabled] .btn-secondary.focus {
   width: 500px;
   z-index: -100;
 }
+.annotator-listing .fa {
+  font-family: 'FontAwesome' !important;
+  color: #8e8e93;
+}
+.annotator-listing .fa:hover {
+  color: #000000;
+  cursor: pointer;
+}
 dialog {
   border: 1px solid #cdcdcd;
+  padding: 0px;
 }
 dialog h5 {
   white-space: nowrap;
+}
+dialog section {
+  padding: 10px;
+}
+dialog section .btn-group-vertical {
+  width: 100%;
 }
 .annotator-adder {
   background-image: url(img/annotator-icon-sprite.png);

@@ -9281,10 +9281,10 @@ body#page-annotator {
 .nav-stacked > li.active a:hover {
   border-color: #f39100;
 }
-.nav-stacked > li a {
+.nav-stacked > li > a {
   border-left: 6px solid #ffffff;
 }
-.nav-stacked > li a:hover {
+.nav-stacked > li > a:hover {
   border-color: #cdcdcd;
 }
 .navbar-default .navbar-nav {
@@ -9298,6 +9298,9 @@ body#page-annotator {
 .navbar-default .navbar-nav > .active > a:hover,
 .navbar-default .navbar-nav > .active > a:focus {
   border-bottom: 3px solid #f39100;
+}
+.nav > li > a {
+  cursor: pointer;
 }
 .dropdown-menu {
   white-space: nowrap;

@@ -6,17 +6,18 @@ db.*
 db.sqlite3
 staticfiles
 __pycache__
-*.css.map
-.sass-cache/
 *.log
 /plugins/*/*
 !plugins/__init__.py
 *.*~
-# keep the css folder and ignore the content (except the .keep file)
-/neonion/static/css/*.css
-/neonion/static/css/*.map
 
+# styleguide
+/node_modules
+/neonion/static/styleguide
 
 # converage.py files
 .coverage
 /htmlcov
+
+# ignore bash scrips
+*.sh

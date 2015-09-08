@@ -10,7 +10,7 @@ neonionApp.controller('PropertyListCtrl', ['$scope', '$sce', 'CommonService', 'P
             };
             $scope.locales = {
                 // TODO localize
-                create: "New Property"
+                create: "Create Property"
             };
 
             $scope.queryProperties = function () {

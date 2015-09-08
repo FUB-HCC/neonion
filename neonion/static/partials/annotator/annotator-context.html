@@ -1,5 +1,5 @@
 <div ng-controller="ContextInfoCtrl" ng-cloak>
-    <ul class="context-list">
+    <ul class="list-inline">
         <li><i class="fa fa-bookmark"></i>
             <ng-pluralize count="annotatorService.getNumberOfTotalAnnotations()"
                           when="{'0': 'No Annotations',
@@ -14,9 +14,9 @@
                        'other': '{} Contributors'}">
             </ng-pluralize>
         </li>
-        <li class="loggedin"><i class="fa fa-user"></i>{{ user.email }}</li>
+        <li class="pull-right"><i class="fa fa-user"></i><span>{{ user.email }}</span></li>
     </ul>
-    <div class="document-title">
+    <div class="gap-top">
         {{ document.title }}
         <span class="list-icon" ng-switch on="isPrivate"><i class="fa fa-circle-o"></i>
             <span ng-switch-when="true">Private</span>

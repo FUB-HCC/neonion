@@ -7,23 +7,21 @@
 
 {% block content %}
     {% if use_file_upload %}
-        <div>
-            <h2>Import</h2>
-
-            <form method="post" action="{% url 'documents.views.upload_file' %}" enctype="multipart/form-data">
+        <form method="post" action="{% url 'documents.views.upload_file' %}" class="gap-top" enctype="multipart/form-data">
+            <fieldset>
                 {% csrf_token %}
-
-                <input id="file-upload" name="file-upload"
-                       type="file" change="fileLoad($files)"
-                       ng-click="meta=true" ng-init="meta=false">
-
-                <input class="button button-primary button-import pull-right" type="submit"/>
+                <input class="btn btn-primary pull-right" type="submit"/>
+                <div class="form-group">
+                    <label for="exampleInputFile">File input</label>
+                    <input id="file-upload" name="file-upload"
+                           type="file" change="fileLoad($files)"
+                           ng-click="meta=true" ng-init="meta=false">
+                </div>
                 <div id="import-metadata" ng-controller="MetaDataCtrl" ng-show="meta">
                     <ng-include src="'{% static 'partials/import-meta-data.html' %}'"></ng-include>
                 </div>
-            </form>
-
-        </div>
+            </fieldset>
+        </form>
     {% else %}
         <ng-include src="'{% static 'partials/import-cms.html' %}'"></ng-include>
     {% endif %}

@@ -10,7 +10,7 @@ neonionApp.controller('ConceptSetListCtrl', ['$scope', '$sce', 'CommonService', 
             };
             $scope.locales = {
                 // TODO localize
-                create: "New Concept Set"
+                create: "Create Concept Set"
             };
 
             $scope.queryConceptSets = function () {

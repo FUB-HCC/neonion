@@ -1,38 +1,42 @@
-<table ng-controller='UserListCtrl'>
+<table class="table" ng-controller='UserListCtrl'>
     <thead>
         <tr>
             <th>User</th>
             <th>Account</th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
          <tr ng-repeat="user in users | orderBy:'email'">
-            <td>{{ user.email }}</td>
-            <td>
-                <a ng-show="user.is_superuser" 
-                class="button button-small button-wide" 
+            <td class="col-md-3">{{ user.email }}</td>
+            <td class="col-md-3">
+                <a ng-show="user.is_superuser"
+                class="btn btn-primary btn-large"
                 ng-click="update(user,'is_superuser', false)">
                     Make user
                 </a>
-                <a ng-hide="user.is_superuser" 
-                class="button button-small button-wide" 
+                <a ng-hide="user.is_superuser"
+                class="btn btn-primary btn-large"
                 ng-click="update(user,'is_superuser', true)">
                     Make admin
                 </a>
-
-                <a ng-show="user.is_active" 
-                class="button button-small button-wide" 
-                ng-click="update(user,'is_active', false)">
-                    Deactivate
-                </a>
-                <a ng-hide="user.is_active" 
-                class="button button-small button-wide" 
+                <a ng-hide="user.is_active"
+                class="btn btn-primary btn-large"
                 ng-click="update(user,'is_active', true)">
                     Activate
                 </a>
-
-                <a ng-hide="user.is_superuser" 
-                class="button button-small" 
+            </td>
+            <td class="col-md-3">
+                <a ng-show="user.is_active"
+                class="btn btn-primary btn-large"
+                ng-click="update(user,'is_active', false)">
+                    Deactivate
+                </a>
+            </td>
+            <td class="col-md-3">
+                <a ng-hide="user.is_superuser"
+                class="btn btn-primary btn-large"
                 ng-click="delete(user)">
                     Delete
                 </a>

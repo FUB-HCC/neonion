@@ -1,5 +1,5 @@
-<div ng-cloak>
-    <div id="document-frame" class="panel panel-default">
+<div class="row" ng-cloak>
+    <div id="document-frame" class="gap-top gap-bottom">
         <div ng-switch on="document.attached_file.content_type">
             <div ng-switch-when="text/plain">
                 <ng-include src="'/static/partials/annotator-render-plain.html'"></ng-include>

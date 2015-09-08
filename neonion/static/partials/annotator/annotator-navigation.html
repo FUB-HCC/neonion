@@ -1,94 +1,66 @@
-<nav class="nav-vertical">
-    <ul ng-controller="AnnotatorMenuCtrl">
+<nav class="toolbar">
+    <ul ng-controller="AnnotatorMenuCtrl" class="nav">
         <li>
             <a id="nav-home" class="simptip-position-right" ng-click="home()" data-tooltip="Home">
-                <span class="fa fa-home fa-fw"></span>
+                <i class="fa fa-home fa-fw"></i>
             </a>
         </li>
         <li>
             <a id="nav-annotate" class="simptip-position-right" data-tooltip="Find concepts"
                ng-click="startNamedEntityRecognition()">
-                <span class="fa fa-magic fa-fw"></span>
+                <i class="fa fa-magic fa-fw"></i>
             </a>
         </li>
-
-        <li ng-class="{active:active===0}" ng-cloak>
-            <a id="nav-anotate" ng-click="toggleSubMenu(0)"
-               ng-class="{'disabled': annotatorService.contributors.length===0 }">
-                <span class="fa fa-users fa-fw"></span>
-                <span class="fa fa-caret-right small"></span>
+        <!-- CONTRIBUTER -->
+        <li class="dropdown" ng-class="{'disabled': annotatorService.contributors.length===0 }">
+            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-users fa-fw"></i>
+                <span class="caret"></span>
             </a>
-
-            <div class="submenu ng-cloak" ng-show="active === 0">
-                <div class="submenu-heading icon-right">Toggle Contributors<i class="fa fa-times"
-                                                                              ng-click="toggleSubMenu(0)"></i>
-                </div>
-                <ul class="submenu-content">
-                    <li class="submenu-content-item icon-left"
-                        ng-repeat="contrib in annotatorService.contributors | orderBy:'-updated'"
-                        ng-click="toggleContributor(contrib)">
-                        <i class="fa fa-fw"
-                           ng-class="{'fa-eye': contrib.showAnnotation, 'fa-eye-slash': !contrib.showAnnotation }"></i>
-
-                        <div class="content">{{ contrib.user }}
-                            <small class="content-time"><i
-                                    class="fa fa-clock-o"></i>{{ contrib.updated | date: 'short' }}</small>
-                        </div>
-                        <div class="content-color" ng-class="{'invisible': !contrib.showAnnotation }"
-                             style="background-color:{{ contrib.color }}"></div>
-                    </li>
-                </ul>
-            </div>
+            <ul class="dropdown-menu">
+                <li class="dropdown-header">Toggle Contributors</li>
+                <li class="dropdown-item" ng-repeat="contrib in annotatorService.contributors | orderBy:'-updated'" ng-click="toggleContributor(contrib)">
+                    <a>
+                        <i class="fa fa-fw" ng-class="{'fa-eye': contrib.showAnnotation, 'fa-eye-slash': !contrib.showAnnotation }"></i>
+                        <span>{{ contrib.user }}<small><i                  class="fa fa-clock-o fa-fw"></i>{{ contrib.updated | date: 'short' }}</small></span>
+                        <div class="dropdown-item-color" ng-class="{'invisible': !contrib.showAnnotation }"
+                         style="background-color:{{ contrib.color }}"></div>
+                     </a>
+                </li>
+            </ul>
         </li>
 
-        <li ng-class="{active:active===1}">
-            <a id="nav-anotate" ng-click="toggleSubMenu(1)">
-                <span class="fa fa-pencil fa-fw"></span>
-                <span class="fa fa-caret-right small"></span>
+        <!-- ANNOTATION MODE -->
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-pencil fa-fw"></i>
+                <span class="caret"></span>
             </a>
-
-            <div class="submenu ng-cloak" ng-show="active === 1">
-                <div class="submenu-heading icon-right">Switch Annotation Mode
-                    <i class="fa fa-times"
-                       ng-click="toggleSubMenu(1)">
-
-                    </i>
-                </div>
-                <ul class="submenu-content">
-                    <li ng-click="setAnnotationMode(mode.commenting.value)"
-                        class="icon-left"><span>
-                        <i class="fa fa-check fa-fw"
-                           ng-class="{invisible: getAnnotationMode()!==mode.commenting.value}">
-                        </i>Commenting</span>
-                        <small>{{ shortCutModifier.default.modifierText + mode.commenting.shortCut }}</small>
-                    </li>
-                    <li ng-click="setAnnotationMode(mode.highlighting.value)"
-                        class="icon-left"><span>
-                        <i class="fa fa-check fa-fw"
-                           ng-class="{invisible: getAnnotationMode()!==mode.highlighting.value}">
-                        </i>Highlighting</span>
-                        <small>{{ shortCutModifier.default.modifierText + mode.highlighting.shortCut }}</small>
-                    </li>
-                    <li ng-click="setAnnotationMode(mode.conceptTagging.value)"
-                        class="icon-left"><span>
-                        <i class="fa fa-check fa-fw"
-                           ng-class="{invisible: getAnnotationMode()!==mode.conceptTagging.value}">
-                        </i>Concept Tagging</span>
-                        <small>{{ shortCutModifier.default.modifierText + mode.conceptTagging.shortCut }}</small>
-                    </li>
-                </ul>
-            </div>
+            <ul class="dropdown-menu">
+                <li class="dropdown-header">Switch Annotation Mode</li>
+                <!-- MODE COMMENTING -->
+                <li class="dropdown-item" ng-click="setAnnotationMode(mode.commenting.value)">
+                    <a><i class="fa fa-check fa-fw" ng-class="{invisible: getAnnotationMode()!==mode.commenting.value}"></i><span>Commenting<small>{{ shortCutModifier.default.modifierText + mode.commenting.shortCut }}</small></span></a>
+                </li>
+                <li class="dropdown-item" ng-click="setAnnotationMode(mode.highlighting.value)">
+                    <a><i class="fa fa-check fa-fw" ng-class="{invisible: getAnnotationMode()!==mode.highlighting.value}"></i><span>Highlighting<small>{{ shortCutModifier.default.modifierText + mode.highlighting.shortCut }}</small></span></a>
+                </li>
+                <li class="dropdown-item" ng-click="setAnnotationMode(mode.conceptTagging.value)">
+                    <a><i class="fa fa-check fa-fw" ng-class="{invisible: getAnnotationMode()!==mode.conceptTagging.value}"></i><span>Concept Tagging<small>{{ shortCutModifier.default.modifierText + mode.conceptTagging.shortCut }}</small></span></a>
+                </li>
+            </ul>
         </li>
+
         <li>
             <a id="nav-anotate" class="simptip-position-right" data-tooltip="Last annotation"
                ng-click="scrollToLastAnnotation()">
-                <span class="fa fa-arrow-circle-down fa-fw"></span>
+                <i class="fa fa-arrow-circle-down fa-fw"></i>
             </a>
         </li>
         <li>
             <a id="nav-fullscreen" class="simptip-position-right disabled" data-tooltip="Fullscreen"
                ng-click="enableFullscreen()">
-                <span class="fa fa-expand fa-fw"></span>
+                <i class="fa fa-expand fa-fw"></i>
             </a>
         </li>
     </ul>

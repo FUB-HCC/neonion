@@ -7,14 +7,17 @@
 
 {% block content %}
     <div ng-init="tab = 1" ng-cloak>
-        <h2>Vocabulary</h2>
-
-        <nav class="nav-horizontal">
-            <ul>
-                <li ng-class="{active:tab===1}"><a href="" ng-click="tab = 1">Concept Sets</a></li>
-                <li ng-class="{active:tab===2}"><a href="" ng-click="tab = 2">Concepts</a></li>
-                <li ng-class="{active:tab===3}"><a href="" ng-click="tab = 3">Properties</a></li>
-            </ul>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li ng-class="{active:tab===1}"><a ng-click="tab = 1">Concept Sets</a></li>
+                    <li ng-class="{active:tab===2}"><a ng-click="tab = 2">Concepts</a></li>
+                    <li ng-class="{active:tab===3}"><a ng-click="tab = 3">Properties</a></li>
+                </ul>
+                <form class="navbar-form navbar-right" role="search">
+                    <ng-include src="'/static/partials/common/filter.html'"></ng-include>
+                </form>
+            </div>
         </nav>
 
         <div class="wrapper" ng-switch="tab">
@@ -39,6 +42,4 @@
 {% endblock %}
 
 {% block scripts %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 {% endblock %}

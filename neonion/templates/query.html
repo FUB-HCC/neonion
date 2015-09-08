@@ -5,8 +5,7 @@
 {% block title %}Query{% endblock %}
 
 {% block content %}
-    <h2>Query</h2>
-    <ng-include src="'{% static 'partials/analyze-query.html' %}'"></ng-include>
+    <ng-include src="'{% static 'partials/analyze-query.html' %}'" ng-controller="AnalyzeQueryCtrl"></ng-include>
 {% endblock %}
 
 {% block scripts %}

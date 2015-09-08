@@ -1,0 +1,262 @@
+// Fonts
+//
+// We use **`Lato`** with font weight 300 as out main font, as backup `sans serif` fonts.
+// The code is from here: https://css-tricks.com/snippets/css/using-font-face/
+// 
+// markup:
+//  <div>We are using Lato with weight 300!</div>
+//  <div><strong>This is strong.</strong></div>
+// <div><em>This is italic.</em></div> 
+//
+// Styleguide 2.1
+body {
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  background-color: @white;
+
+  &#page-annotator {
+    background-color: @gallery;
+  }
+}
+
+// Left Sidebar
+//
+// Styleguide 0
+// No styleguide reference.
+.sidebar {
+  background-color: @white;
+  height: 100vh;
+  position: fixed;
+  z-index: 100;
+  min-width: 140px;
+
+  .logo {
+    background: url(img/logo.png) no-repeat;
+    background-size: 100%;
+    height: 2 * @lh;
+  }
+
+  .logo-wrapper {
+    padding-top: @lh;
+    padding-bottom: @lh;
+    padding-left: @gap-h;
+  }
+}
+
+.toolbar {
+  background-color: @gallery;
+  height: 100vh;
+  padding-top: 4 * @lh;
+  width: 70px;
+}
+
+
+// Orange Header
+.header {
+  background-color: @tangerine;
+  height: 4 * @lh;
+}
+
+// Content - everything which is content goes in here
+.content {
+  background-color: @gallery;
+  min-height: 100vh;
+  height: 100%;
+
+  &.content-inverted {
+    background-color: @white;
+  }
+}
+
+// Main Navigation - vertical
+//
+// For the left main navigation the bootstrap `.nav-pills .nav-stacked` are used.
+//
+// markup:
+// <nav>
+//    <ul class="nav nav-pills nav-stacked">
+//        <li class="active"><a href="#">active element</a></li>
+//        <li><a href="#"><i class="fa fa-home fa-fw"></i>element with icon</a></li>
+//        <li><a href="#">element</a></li>
+//        <li><a href="#">element</a></li>
+//    </ul>
+// </nav>
+//
+// sg-wrapper:
+// <div class="sg grey-bg">
+//   <div class="sg grey-bg half-size">
+//     <sg-wrapper-content/>
+//   </div>
+// </div>
+//
+//
+// Styleguide 3.3
+.nav-stacked > li {
+
+  background-color: @white;
+  white-space: nowrap; // preventing wrapping
+
+  + li { margin-top: 0px; }
+
+  &.active a {
+    border-color: @tangerine;
+    &:hover { border-color: @tangerine; }
+  }
+
+  a {
+    border-left: @gap-h/2 solid @white;
+    &:hover { border-color: @silver; }
+  }
+}
+
+// Sub Navigation - horizontal
+//
+// For the horizontal navigation in the content area a bootstrap
+// `.navbar .navbar-default` is used.
+//
+// markup:
+// <nav class="navbar navbar-default">
+//    <div class="container-fluid">
+//      <ul class="nav navbar-nav">
+//        <li class="active"><a href="#">Active Tab</a></li>
+//        <li><a href="#">Tab</a></li>
+//        <li><a href="#">Tab</a></li>
+//      </ul>
+//      <form class="navbar-form navbar-right" role="search">
+//        <input type="text" placeholder="placeholder" class="form-control">
+//      </form>
+//   </div>
+// </nav>
+//
+// sg-wrapper:
+// <div class="sg grey-bg margin">
+//   <sg-wrapper-content/>
+// </div>
+//
+//
+// Styleguide 3.4
+.navbar-default {
+  .navbar-nav {
+
+    margin-left: -15px; // removing left gap
+    > li > a {
+
+      &:hover, &:focus {
+        border-bottom: 3px solid @silver;
+      }
+    }
+
+    > .active > a {
+      &, &:hover, &:focus {
+        border-bottom: 3px solid @tangerine;
+      }
+    }
+  }
+}
+
+// Complicated Dropdown Content
+//
+// This is a normal navigation from bootstrap using only the `nav` element,
+// with a dropdown menu, which can
+// have some very complicated content! (CSS is coming from hell!)
+// It contains a list with two lines and icons and some color beeing right aligned.
+//
+// markup:
+//<nav>
+//  <ul class="nav">
+//    <li><a><i class="fa fa-home fa-fw"></i></a></li>
+//    <li class="dropdown">
+//      <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-users fa-fw"></i><span class="caret"></span></a>
+//      <ul class="dropdown-menu">
+//        <li class="dropdown-header">Toggle Contributors</li>
+//        <li class="dropdown-item">
+//          <a href="#">
+//            <i class="fa fa-fw fa-eye"></i>
+//            <span>element<small><i class="fa fa-clock-o fa-fw"></i>some small text</small></span>
+//            <div class="dropdown-item-color" style="background-color: black"></div>
+//         </a>
+//        <li class="dropdown-item">
+//          <a href="#">
+//            <i class="fa fa-fw fa-eye"></i>
+//            <span>element<small><i class="fa fa-clock-o fa-fw"></i>some small text</small></span>
+//            <div class="dropdown-item-color" style="background-color: black"></div>
+//         </a>
+//    </ul>
+//  </li>
+//</ul>
+//
+// sg-wrapper:
+// <div class="sg grey-bg margin" style="height:300px;">
+//   <sg-wrapper-content/>
+// </div>
+//
+// 
+// Styleguide 3.6
+.dropdown-menu {
+  white-space: nowrap;
+
+  .dropdown-item {
+    i {
+      vertical-align: top;
+      line-height: @lh;
+    }
+
+    span {
+      display: inline-block;
+      padding-right: @lh + @gap-h;
+    }
+
+    small {
+      display: block;
+      font-weight: 300;
+      color: @mid-gray;
+    }
+
+    .dropdown-item-color {
+      width: @lh;
+      height: @lh;
+      border: 1px solid @white;
+      display: inline-block;
+      position: absolute;
+      right: 20px;
+    }
+  }
+}
+
+.navbar-form {
+  padding-right: 0px; // removing right gap
+}
+
+// List Groups
+//
+// We are using .`list-groups` for almost everything using an `<a>` element
+// insinde.
+//
+// markup:
+// <div class="list-group">
+//   <a class="list-group-item" href="#">Tab
+//     <i class="fa fa-trash-o pull-right"></i>
+//   </a>
+//   <a class="list-group-item" href="#">Tab</a>
+//   <a class="list-group-item" href="#">Tab</a>
+// </nav>
+//
+// sg-wrapper:
+// <div class="sg grey-bg margin">
+//   <sg-wrapper-content/>
+// </div>
+//
+//
+// Styleguide 3.5 
+.list-group a .fa {
+  color: @dove-gray;
+  &:hover { color: @black; }
+}
+
+a.list-group-item,
+button.list-group-item {
+  &:hover,
+  &:focus {
+    color: @black;
+  }
+}

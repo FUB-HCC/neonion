@@ -1,5 +1,5 @@
-<nav class="nav-vertical">
-    <ul>
+<nav class="row">
+    <ul class="nav nav-pills nav-stacked">
     {% if request.user.is_authenticated %}
         {% url 'neonion.views.render_home' as url_home %}
         {% url 'neonion.views.import_document' as url_import %}
@@ -13,7 +13,7 @@
         {# Documents #}
         <li {% if request.path == url_home %}class="active"{% endif %}>
             <a href="{{ url_home }}">
-                <span class="fa fa-home fa-fw"></span>Documents
+                <i class="fa fa-home fa-fw"></i>Documents
             </a>
         </li>
         {# Annotations #}
@@ -21,25 +21,25 @@
             {% if request.path == url_annotations or request.path == url_annotations_occurrence or request.path == url_annotations_documents %}
             class="active"{% endif %}>
             <a href="{{ url_annotations }}">
-                <span class="fa fa-bookmark fa-fw"></span>Annotations
+                <i class="fa fa-bookmark fa-fw"></i>Annotations
             </a>
         </li>
         {# Import #}
         <li {% if request.path == url_import %}class="active"{% endif %}>
             <a href="{{ url_import }}">
-                <span class="fa fa-upload fa-fw"></span>Import
+                <i class="fa fa-upload fa-fw"></i>Import
             </a>
         </li>
         {# Vocabulary #}
         <li {% if request.path == url_vocabulary %}class="active"{% endif %}>
             <a href="{{ url_vocabulary }}">
-                <span class="fa fa-weixin fa-fw"></span>Vocabulary
+                <i class="fa fa-weixin fa-fw"></i>Vocabulary
             </a>
         </li>
         {# Settings #}
         <li {% if request.path == url_settings %}class="active"{% endif %}>
             <a href="{{ url_settings }}">
-                <span class="fa fa-cog fa-fw"></span>Settings
+                <i class="fa fa-cog fa-fw"></i>Settings
             </a>
         </li>
         {# Admin section #}
@@ -50,20 +50,20 @@
             {# Query form #}
             <li {% if request.path == url_query %}class="active"{% endif %}>
                 <a href="{{ url_query }}">
-                    <span class="fa fa-cube fa-fw"></span>Query
+                    <i class="fa fa-cube fa-fw"></i>Query
                 </a>
             </li>
             {# Accounts #}
             <li {% if request.path == url_accounts %}class="active"{% endif %}>
                 <a href="{{ url_accounts }}">
-                    <span class="fa fa-users fa-fw"></span>Users
+                    <i class="fa fa-users fa-fw"></i>Users
                 </a>
             </li>
         {% endif %}
         {# Logout #}
         <li {% if request.path == url_logout %}class="active"{% endif %}>
             <a href="{{ url_logout }}">
-                <span class="fa fa-sign-out fa-fw"></span>Logout
+                <i class="fa fa-sign-out fa-fw"></i>Logout
             </a>
         </li>
     {% else %}
@@ -72,13 +72,13 @@
         {# Login #}
         <li {% if request.path == url_login %}class="active"{% endif %}>
             <a href="{{ url_login }}">
-                <span class="fa fa-sign-in fa-fw"></span>Sign In
+                <i class="fa fa-sign-in fa-fw"></i>Sign In
             </a>
         </li>
         {# Register #}
         <li {% if request.path == url_register %}class="active"{% endif %}>
             <a href="{{ url_register }}">
-                <span class="fa fa-plus-square-o fa-fw"></span>Sign Up
+                <i class="fa fa-plus-square-o fa-fw"></i>Sign Up
             </a>
         </li>
     {% endif %}

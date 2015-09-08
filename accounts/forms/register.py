@@ -1,6 +1,5 @@
 from django import forms
 from accounts.models import User
-from django.contrib.auth import get_user_model
 
 
 class RegistrationForm(forms.ModelForm):
@@ -8,9 +7,13 @@ class RegistrationForm(forms.ModelForm):
     Form for registering a new account.
     """
 
-    email = forms.EmailField(label='Email', max_length=80, widget=forms.TextInput(attrs={'class': 'h5-email', 'data-h5-errorid': 'invalid_email', 'required':''}))
+    email = forms.EmailField(label='Email',
+                             max_length=80,
+                             widget=forms.TextInput(
+                                 attrs={'class': 'form-control', 'data-h5-errorid': 'invalid_email', 'required': ''}))
 
-    password = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'required':''}))
+    password = forms.CharField(label='Password',
+                               widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': ''}))
 
     class Meta:
         model = User

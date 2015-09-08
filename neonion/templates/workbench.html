@@ -7,11 +7,13 @@
 
 {% block content %}
     <div ng-init="tab = 1" ng-cloak>
-        <nav class="nav-horizontal">
-            <ul>
-                <li ng-class="{active:tab===1}"><a ng-click="tab = 1">Orphaned Annotations</a></li>
-                <li ng-class="{active:tab===2}"><a ng-click="tab = 2">ElasticSearch</a></li>
-            </ul>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li ng-class="{active:tab===1}"><a ng-click="tab = 1">Orphaned Annotations</a></li>
+                    <li ng-class="{active:tab===2}"><a ng-click="tab = 2">ElasticSearch</a></li>
+                </ul>
+            </div>
         </nav>
 
         <div ng-switch="tab">
@@ -25,9 +27,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block scripts %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 {% endblock %}

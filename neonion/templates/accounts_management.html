@@ -7,20 +7,21 @@
 
 {% block content %}
     <div ng-init="tab = 1" ng-cloak>
-        <h2>Account Management</h2>
-        <nav class="nav-horizontal">
-            <ul>
-                <li ng-class="{active:tab===1}"><a ng-click="tab = 1">Users</a></li>
-                <li ng-class="{active:tab===2}"><a ng-click="tab = 2">Groups</a></li>
-            </ul>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li ng-class="{active:tab===1}"><a ng-click="tab = 1">Users</a></li>
+                    <li ng-class="{active:tab===2}"><a ng-click="tab = 2">Groups</a></li>
+                </ul>
+            </div>
         </nav>
 
         <div ng-switch="tab">
             <div ng-switch-when="1">
-                <ng-include  src="'{% static 'partials/accounts-user-list.html' %}'"></ng-include>
+                <ng-include src="'{% static 'partials/accounts-user-list.html' %}'"></ng-include>
             </div>
             <div ng-switch-when="2">
-                <ng-include  src="'{% static 'partials/accounts-group-list.html' %}'"></ng-include>
+                <ng-include src="'{% static 'partials/accounts-group-list.html' %}'"></ng-include>
             </div>
         </div>
     </div>

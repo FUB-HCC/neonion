@@ -17,7 +17,7 @@ neonionApp
         return function (annotations) {
             if (!angular.isUndefined(annotations)) {
                 return annotations.filter(function (value) {
-                    if (value.hasOwnProperty("rdf") && value['rdf'].hasOwnProperty("uri")) {
+                    if (value.hasOwnProperty("oa") && value.hasOwnProperty("rdf") && value['rdf'].hasOwnProperty("uri")) {
                         return true;
                     }
                     return false;
@@ -32,7 +32,7 @@ neonionApp
         return function (annotations) {
             if (!angular.isUndefined(annotations)) {
                 return annotations.filter(function (value) {
-                    if (value.oa.motivatedBy == "oa:commenting") {
+                    if (value.hasOwnProperty("oa") && value.oa.motivatedBy == "oa:commenting") {
                         return true;
                     }
                     return false;
@@ -47,7 +47,7 @@ neonionApp
         return function (annotations) {
             if (!angular.isUndefined(annotations)) {
                 return annotations.filter(function (value) {
-                    if (value.oa.motivatedBy == "oa:highlighting") {
+                    if (value.hasOwnProperty("oa") && value.oa.motivatedBy == "oa:highlighting") {
                         return true;
                     }
                     return false;

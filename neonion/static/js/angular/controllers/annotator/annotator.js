@@ -51,7 +51,9 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                             uri: params.docID,
                             agent: params.agent,
                             workspace: queryParams.workspace,
-                            annotationMode: $scope.getAnnotationModeCookie()
+                            annotationMode: $scope.getAnnotationModeCookie(),
+                            activateWidgets: $.merge(['storePageReference'],
+                                Annotator.Plugin.Neonion.prototype.options.activateWidgets)
                         })
                         // add NER plugin
                         .annotator('addPlugin', 'NER', {

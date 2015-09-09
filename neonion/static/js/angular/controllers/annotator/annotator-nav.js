@@ -5,6 +5,7 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$
     function ($scope, $window, $location, $cookies, cookieKeys, AnnotatorService) {
         "use strict";
 
+        $scope.openedAt = new Date();
         $scope.annotatorService = AnnotatorService;
         $scope.active = -1;
         $scope.mode = {
@@ -45,11 +46,22 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$
          */
         $scope.home = function() {
             if ($location.search().return) {
-                window.location = $location.search().return;
+                window.location = $location.search().return + "?" + $scope.serializeAnnotations();
             }
             else {
                 window.location = "/";
             }
+        };
+
+        /**
+         * Serializes the annotation object to a query params.
+         */
+        $scope.serializeAnnotations = function() {
+            var annotations = AnnotatorService.getAnnotationObjects()
+                .filter(function(annotation) {
+                    return new Date(annotation.created) >= $scope.openedAt;
+                });
+            return "annotations=" + JSON.stringify(annotations);
         };
 
         /**

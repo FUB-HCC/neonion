@@ -16,7 +16,7 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
 
         $scope.getQueryParams = function (pageNum) {
             return {
-                'oa.annotatedBy.email': $scope.user.email,
+                //'oa.annotatedBy.email': $scope.user.email,
                 'offset': pageNum * $scope.stepSize,
                 'limit': $scope.stepSize
             };
@@ -88,6 +88,7 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
         $scope.filterCommentAnnotations = function (annotation) {
             if (CommonService.filter.query.length > 0) {
                 var show = false;
+                show |= annotation.oa.annotatedBy.email.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
                 show |= annotation.quote.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
                 show |= annotation.text.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
                 return show;
@@ -98,6 +99,9 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
         $scope.filterConceptAnnotations = function (annotation) {
             if (CommonService.filter.query.length > 0) {
                 var show = false;
+                if (annotation.hasOwnProperty("oa")) {
+                    show |= annotation.oa.annotatedBy.email.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
+                }
                 show |= annotation.rdf.label.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
                 show |= annotation.rdf.typeof.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1
                 return show;
@@ -107,7 +111,10 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
 
         $scope.filterHighlightAnnotation = function (annotation) {
             if (CommonService.filter.query.length > 0) {
-                return annotation.quote.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
+                var show = false;
+                show |= annotation.oa.annotatedBy.email.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
+                show |= annotation.quote.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
+                return show;
             }
             return true;
         };

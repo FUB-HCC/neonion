@@ -17,7 +17,7 @@ neonionApp
         return function (annotations) {
             if (!angular.isUndefined(annotations)) {
                 return annotations.filter(function (value) {
-                    if (value.hasOwnProperty("rdf") && value['rdf'].hasOwnProperty("uri")) {
+                    if (value.hasOwnProperty("oa") && value.hasOwnProperty("rdf") && value['rdf'].hasOwnProperty("uri")) {
                         return true;
                     }
                     return false;

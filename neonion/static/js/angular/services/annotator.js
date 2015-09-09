@@ -136,9 +136,21 @@ neonionApp.factory('AnnotatorService', [function () {
         return contributors;
     };
 
+    factory.hashCode = function(str) {
+        var hash = 0, i, chr, len;
+        if (str.length == 0) return hash;
+        for (i = 0, len = str.length; i < len; i++) {
+            chr   = str.charCodeAt(i);
+            hash  = ((hash << 5) - hash) + chr;
+            hash |= 0; // Convert to 32bit integer
+        }
+        return hash;
+    };
+
     factory.refreshContributors = function () {
         var users = this.getContributors();
         var items = [];
+        var colors = colors = Math.max(users.length, 101);
 
         users.forEach(function (user, index) {
             var idx = factory.contributors.map(function (x) {
@@ -151,7 +163,7 @@ neonionApp.factory('AnnotatorService', [function () {
                 user: user, // creator of annotation
                 updated: isoUpated, // date when annotation was updated
                 showAnnotation: showAnnotation,
-                color: "hsla( " + factory.makeColor(index, users.length) + ", 50%, 75%, 1 )"
+                color: "hsla( " + factory.makeColor(factory.hashCode(user) % colors, colors) + ", 50%, 75%, 1 )"
             });
         });
 

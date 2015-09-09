@@ -7,15 +7,15 @@
 {% block page_id %}annotator{% endblock %}
 
 {% block left %}
-<div class="sidebar col-md-1">
-    <div class="row">
+<div class="sidebar col-md-2">
+    <div class="row" data-spy="affix">
         <ng-include src="'{% static 'partials/annotator/annotator-navigation.html' %}'"></ng-include>
     </div>
 </div>
 {% endblock %}
 
 {% block right %}
-<div class="col-md-10 col-md-offset-1">
+<div class="col-md-9">
     <div class="row">
         <div class="header col-md-12">
             {% block header %}

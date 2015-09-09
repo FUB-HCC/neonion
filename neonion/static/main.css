@@ -9236,9 +9236,7 @@ body#page-annotator {
 .sidebar {
   background-color: #ffffff;
   height: 100vh;
-  position: fixed;
   z-index: 100;
-  min-width: 140px;
 }
 .sidebar .logo {
   background: url(img/logo.png) no-repeat;

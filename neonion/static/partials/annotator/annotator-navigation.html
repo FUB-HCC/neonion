@@ -11,7 +11,7 @@
                 <i class="fa fa-magic fa-fw"></i>
             </a>
         </li>
-        <!-- CONTRIBUTER -->
+        <!-- CONTRIBUTORS -->
         <li class="dropdown" ng-class="{'disabled': annotatorService.contributors.length===0 }">
             <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 <i class="fa fa-users fa-fw"></i>
@@ -23,8 +23,8 @@
                     <a>
                         <i class="fa fa-fw" ng-class="{'fa-eye': contrib.showAnnotation, 'fa-eye-slash': !contrib.showAnnotation }"></i>
                         <span>{{ contrib.user }}<small><i                  class="fa fa-clock-o fa-fw"></i>{{ contrib.updated | date: 'short' }}</small></span>
-                        <div class="dropdown-item-color" ng-class="{'invisible': !contrib.showAnnotation }"
-                         style="background-color:{{ contrib.color }}"></div>
+                        <!-- <div class="dropdown-item-color" ng-class="{'invisible': !contrib.showAnnotation }"
+                         style="background-color:{{ contrib.color }}"></div> -->
                      </a>
                 </li>
             </ul>
@@ -40,13 +40,22 @@
                 <li class="dropdown-header">Switch Annotation Mode</li>
                 <!-- MODE COMMENTING -->
                 <li class="dropdown-item" ng-click="setAnnotationMode(mode.commenting.value)">
-                    <a><i class="fa fa-check fa-fw" ng-class="{invisible: getAnnotationMode()!==mode.commenting.value}"></i><span>Commenting<small>{{ shortCutModifier.default.modifierText + mode.commenting.shortCut }}</small></span></a>
+                    <a>
+                        <i class="fa fa-check fa-fw" ng-class="{invisible: getAnnotationMode()!==mode.commenting.value}"></i><span>Commenting<small>{{ shortCutModifier.default.modifierText + mode.commenting.shortCut }}</small></span>
+                        <div class="dropdown-item-color annotator-hl-comment"></div>
+                    </a>
                 </li>
                 <li class="dropdown-item" ng-click="setAnnotationMode(mode.highlighting.value)">
-                    <a><i class="fa fa-check fa-fw" ng-class="{invisible: getAnnotationMode()!==mode.highlighting.value}"></i><span>Highlighting<small>{{ shortCutModifier.default.modifierText + mode.highlighting.shortCut }}</small></span></a>
+                    <a>
+                        <i class="fa fa-check fa-fw" ng-class="{invisible: getAnnotationMode()!==mode.highlighting.value}"></i><span>Highlighting<small>{{ shortCutModifier.default.modifierText + mode.highlighting.shortCut }}</small></span>
+                        <div class="dropdown-item-color annotator-hl-highlight"></div>
+                    </a>
                 </li>
                 <li class="dropdown-item" ng-click="setAnnotationMode(mode.conceptTagging.value)">
-                    <a><i class="fa fa-check fa-fw" ng-class="{invisible: getAnnotationMode()!==mode.conceptTagging.value}"></i><span>Concept Tagging<small>{{ shortCutModifier.default.modifierText + mode.conceptTagging.shortCut }}</small></span></a>
+                    <a>
+                        <i class="fa fa-check fa-fw" ng-class="{invisible: getAnnotationMode()!==mode.conceptTagging.value}"></i><span>Concept Tagging<small>{{ shortCutModifier.default.modifierText + mode.conceptTagging.shortCut }}</small></span>
+                        <div class="dropdown-item-color annotator-hl-concept"></div>
+                    </a>
                 </li>
             </ul>
         </li>

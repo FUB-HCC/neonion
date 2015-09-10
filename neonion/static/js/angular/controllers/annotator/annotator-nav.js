@@ -94,7 +94,6 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$
             if (!contributor.showAnnotation) {
                 annotations.forEach(function (item) {
                     AnnotatorService.showAnnotation(item);
-                    AnnotatorService.colorizeAnnotation(item);
                 });
                 contributor.showAnnotation = true;
 

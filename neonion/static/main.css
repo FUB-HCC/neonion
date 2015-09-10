@@ -9303,6 +9303,10 @@ body#page-annotator {
 .dropdown-menu {
   white-space: nowrap;
 }
+.dropdown-menu.dropdown-menu-side {
+  top: 0px;
+  left: 76px;
+}
 .dropdown-menu .dropdown-item i {
   vertical-align: top;
   line-height: 22px;
@@ -9629,6 +9633,7 @@ fieldset[disabled] .btn-secondary.focus {
   border-bottom: 1px solid #cdcdcd;
   font-style: normal;
   padding: 11px 12px;
+  padding-right: 50px;
 }
 .annotator-viewer .annotator-item div:last-child {
   border-bottom: none;

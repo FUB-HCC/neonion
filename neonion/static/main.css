@@ -9288,6 +9288,10 @@ body#page-annotator {
 .nav-stacked > li i {
   margin-right: 5px;
 }
+.navbar-default {
+  border-right: 0px;
+  border-left: 0px;
+}
 .navbar-default .navbar-nav {
   margin-left: -15px;
 }

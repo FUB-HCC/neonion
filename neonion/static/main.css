@@ -9285,6 +9285,9 @@ body#page-annotator {
 .nav-stacked > li > a:hover {
   border-color: #cdcdcd;
 }
+.nav-stacked > li i {
+  margin-right: 5px;
+}
 .navbar-default .navbar-nav {
   margin-left: -15px;
 }

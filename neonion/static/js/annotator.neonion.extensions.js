@@ -122,24 +122,25 @@
 
         factory.summarizeProperties = function (field, annotation) {
             $(field).empty().hide();
-
-            switch (annotation.oa.motivatedBy) {
-                case scope.oa.motivation.classifying:
-                case scope.oa.motivation.identifying:
-                    var linkedAnnotations = factory.getLinkedAnnotationsWithSubject(scope.helper.getSemanticTag(annotation).uri);
-                    if (linkedAnnotations.length > 0) {
-                        linkedAnnotations.forEach(function (statement) {
-                            var object = factory.getAnnotationById(statement.oa.hasTarget.target);
-                            // ensure the target annotation was found
-                            if (object) {
-                                $(field).append(factory.createStatementHTML(scope.helper.getSemanticTag(annotation),
-                                    scope.helper.getSemanticTag(statement),
-                                    scope.helper.getSemanticTag(object), statement.id));
-                            }
-                        });
-                        $(field).wrapInner("<ul></ul>").show();
-                    }
-                    break;
+            if (annotation.hasOwnProperty("oa")) {
+                switch (annotation.oa.motivatedBy) {
+                    case scope.oa.motivation.classifying:
+                    case scope.oa.motivation.identifying:
+                        var linkedAnnotations = factory.getLinkedAnnotationsWithSubject(scope.helper.getSemanticTag(annotation).uri);
+                        if (linkedAnnotations.length > 0) {
+                            linkedAnnotations.forEach(function (statement) {
+                                var object = factory.getAnnotationById(statement.oa.hasTarget.target);
+                                // ensure the target annotation was found
+                                if (object) {
+                                    $(field).append(factory.createStatementHTML(scope.helper.getSemanticTag(annotation),
+                                        scope.helper.getSemanticTag(statement),
+                                        scope.helper.getSemanticTag(object), statement.id));
+                                }
+                            });
+                            $(field).wrapInner("<ul></ul>").show();
+                        }
+                        break;
+                }
             }
         };
 
@@ -210,11 +211,6 @@
         };
 
         factory.load = function () {
-            // load external library polyfill dialog
-            $.getScript("https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.1/dialog-polyfill.min.js", function () {
-                //console.log("polyfill-dialog loaded");
-            });
-
             // add field to viewer to place porperties
             scope.annotator.viewer.addField({
                 load: factory.loadPropertyField
@@ -227,24 +223,25 @@
 
         factory.loadPropertyField = function (field, annotation) {
             $(field).empty().hide();
-
-            switch (annotation.oa.motivatedBy) {
-                case scope.oa.motivation.classifying:
-                case scope.oa.motivation.identifying:
-                    var conceptDefinition = scope.getConcept(scope.helper.getSemanticTag(annotation).typeof);
-                    if (conceptDefinition && conceptDefinition.properties.length > 0) {
-                        conceptDefinition.properties.forEach(function (property, index) {
-                            var propertyBtn = $(factory.createPropertyItemHTML(property, index));
-                            if (!factory.hasSuitableAnnotations(property)) {
-                                // disable button if there are no suitable instances
-                                propertyBtn.prop('disabled', true);
-                            }
-                            $(field).append(propertyBtn);
-                        });
-                        factory.focusedAnnotation = annotation;
-                        $(field).show();
-                    }
-                    break;
+            if (annotation.hasOwnProperty("oa")) {
+                switch (annotation.oa.motivatedBy) {
+                    case scope.oa.motivation.classifying:
+                    case scope.oa.motivation.identifying:
+                        var conceptDefinition = scope.getConcept(scope.helper.getSemanticTag(annotation).typeof);
+                        if (conceptDefinition && conceptDefinition.properties.length > 0) {
+                            conceptDefinition.properties.forEach(function (property, index) {
+                                var propertyBtn = $(factory.createPropertyItemHTML(property, index));
+                                if (!factory.hasSuitableAnnotations(property)) {
+                                    // disable button if there are no suitable instances
+                                    propertyBtn.prop('disabled', true);
+                                }
+                                $(field).append(propertyBtn);
+                            });
+                            factory.focusedAnnotation = annotation;
+                            $(field).show();
+                        }
+                        break;
+                }
             }
         };
 
@@ -308,6 +305,18 @@
 
             factory.dialogSection.on("click", "[data-action='dialog-close']", factory.closeDialog);
             factory.dialogSection.on("click", "[data-action='dialog-submit']", factory.submitDialog);
+
+            // check if the browser supports the dialog element
+            if (!factory.dialog.showModal) {
+                // load external library polyfill dialog
+                $.getScript("https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.1/dialog-polyfill.min.js", function () {
+                    // register at dialog at polyfill
+                    dialogPolyfill.registerDialog(factory.dialog);
+                    // load stylesheet
+                    $('head').prepend('<link rel="stylesheet" type="text/css" ' +
+                        'href="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.1/dialog-polyfill.min.css">');
+                });
+            }
 
             scope.annotator.wrapper[0].appendChild(factory.dialog);
         };

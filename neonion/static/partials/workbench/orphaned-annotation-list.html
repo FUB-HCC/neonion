@@ -4,7 +4,8 @@
         <span class="fa fa-trash-o" ng-click="deleteAnnotations(annotations)"></span>
     </div>
     <button button type="button" class="list-group-item" ng-repeat="annotation in annotations | orderBy : 'annotation.created'">
-        <p>{{ annotation.created | date : "MM/dd/yyyy 'at' h:mma" }}</p>
+        <p>Created: {{ annotation.created | date : "MM/dd/yyyy 'at' h:mma" }}</p>
+        <p>Motivation: {{ annotation.oa.motivatedBy }}</p>
         <p>{{ annotation.context.left }}<b>{{ annotation.quote }}</b>{{ annotation.context.right }}</p>
         <i>AnnotationIdentifier {{ annotation.uri }}</i>
         <span class="fa fa-trash-o" ng-click="deleteAnnotation(annotation)"></span>

@@ -2,7 +2,7 @@
     <div ng-repeat="(documentKey, annotationByDocument) in annotations | filterByCommentAnnotation | filter:filterCommentAnnotations | groupBy: 'uri'">
         <div ng-repeat="(groupKey, annotationByGroup) in annotationByDocument | groupBy: 'permissions.read[0]'">
             <h4>
-                <a href="/annotator/{{ documentKey }}#?workspace={{ groupKey }}">
+                <a class="link" href="/annotator/{{ documentKey }}#?workspace={{ groupKey }}">
                     {{ documentTitles[documentKey] }}</a>
                 <small ng-if="groupNames[groupKey]">
                     <i class="fa fa-circle-o"></i> {{ groupNames[groupKey] }}

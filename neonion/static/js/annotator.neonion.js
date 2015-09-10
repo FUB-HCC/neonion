@@ -574,7 +574,7 @@
                 this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
                 var semanticTag = this.helper.getSemanticTag(annotation);
                 var ref = semanticTag.hasOwnProperty('sameAs') ? semanticTag.sameAs : '#';
-                var fieldValue = "<a href='" + ref + "' target='blank'>" + semanticTag.label + "</a>";
+                var fieldValue = "<a class='link' href='" + ref + "' target='blank'>" + semanticTag.label + "</a>";
                 var fieldCaption = '';
                 if (semanticTag.hasOwnProperty('conceptLabel')) {
                     fieldCaption = semanticTag.conceptLabel + ":&nbsp;";

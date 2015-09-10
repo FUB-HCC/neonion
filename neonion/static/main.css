@@ -9285,6 +9285,9 @@ body#page-annotator {
 .nav-stacked > li > a:hover {
   border-color: #cdcdcd;
 }
+.nav-stacked > li i {
+  margin-right: 5px;
+}
 .navbar-default .navbar-nav {
   margin-left: -15px;
 }
@@ -9302,6 +9305,10 @@ body#page-annotator {
 }
 .dropdown-menu {
   white-space: nowrap;
+}
+.dropdown-menu.dropdown-menu-side {
+  top: 0px;
+  left: 76px;
 }
 .dropdown-menu .dropdown-item i {
   vertical-align: top;
@@ -9435,8 +9442,13 @@ fieldset[disabled] .btn-secondary.focus {
   background-color: #000000;
 }
 .btn-spacing {
-  margin-left: 6px;
-  margin-right: 6px;
+  margin: 3px;
+}
+.link {
+  text-decoration: underline;
+}
+.link:hover {
+  color: #e98b00;
 }
 .annotator-notice *,
 .annotator-adder *,
@@ -9630,6 +9642,7 @@ fieldset[disabled] .btn-secondary.focus {
   border-bottom: 1px solid #cdcdcd;
   font-style: normal;
   padding: 11px 12px;
+  padding-right: 50px;
 }
 .annotator-viewer .annotator-item div:last-child {
   border-bottom: none;

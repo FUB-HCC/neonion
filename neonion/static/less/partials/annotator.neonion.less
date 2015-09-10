@@ -221,11 +221,9 @@
     border-bottom: 1px solid @silver;
     font-style: normal;
     padding: @lh/2 @gap-h;
+    padding-right: 50px; // because controls cover text otherwise
     &:extend(.annotator-basefontsize);
-
-    &:last-child {
-      border-bottom: none;
-    }
+    &:last-child { border-bottom: none; }
   }
 }
 

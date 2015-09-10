@@ -23,6 +23,19 @@
 }
 
 .btn-spacing {
-  margin-left: @gap-h/2;
-  margin-right: @gap-h/2;
+  margin: @gap-h/4;
+}
+
+// Links
+//
+// A link can be explicitly styled as a link.
+//
+// markup:
+// <a class="link" href="#">this is a link with class link</a>
+// <a href="#">this is a link without the class link</a>
+//
+// Styleguide 3.7
+.link {
+  text-decoration: underline;
+  &:hover { color: darken(@tangerine, 2%); }
 }

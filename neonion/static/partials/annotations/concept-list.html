@@ -19,11 +19,11 @@
             <tr ng-repeat="(key, annotationByConcept) in annotationByConceptType | orderBy: 'rdf.label' | groupBy: 'rdf.uri'">
                 <td class="col-md-6">{{ (annotationByConcept | first).rdf.label }}</td>
                 <td class="col-md-4">
-                    <a href="/annotation_occurrences#?rdf.uri={{ key | escape }}&oa.annotatedBy.email={{ user.email }}">
+                    <a class="link" href="/annotation_occurrences#?rdf.uri={{ key | escape }}&oa.annotatedBy.email={{ user.email }}">
                         {{ annotationByConcept.length }} Occurrences
                     </a>
                     in
-                    <a href="/annotation_documents#?rdf.uri={{ key | escape }}&oa.annotatedBy.email={{ user.email }}">
+                    <a class="link" href="/annotation_documents#?rdf.uri={{ key | escape }}&oa.annotatedBy.email={{ user.email }}">
                         {{ (annotationByConcept | unique : 'uri').length }} Documents
                     </a>
                 </td>

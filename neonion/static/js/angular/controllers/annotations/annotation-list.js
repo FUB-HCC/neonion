@@ -14,6 +14,10 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', '$filter', 'CommonService
             highlightFields: ['id', 'uri', 'quote', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy'],
             linkedAnnotationFields : ['id', 'uri', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy',
                 'oa.hasBody.rdf.subject', 'oa.hasBody.rdf.predicate', 'oa.hasBody.rdf.predicateLabel', 'oa.hasBody.rdf.object',
+                'oa.hasTarget.source', 'oa.hasTarget.target'],
+            fullKnowledge : ['id', 'uri', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy',
+                'rdf.label', 'rdf.uri', 'rdf.conceptLabel', 'rdf.typeof', 'rdf.sameAs',
+                'oa.hasBody.rdf.subject', 'oa.hasBody.rdf.predicate', 'oa.hasBody.rdf.predicateLabel', 'oa.hasBody.rdf.object',
                 'oa.hasTarget.source', 'oa.hasTarget.target']
         };
 
@@ -68,6 +72,29 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', '$filter', 'CommonService
 
         $scope.downloadHighlights = function (data, format) {
             $scope.download(data, $scope.exportProperties.highlightFields, format, "highlights_");
+        };
+
+        $scope.downloadConceptsAndStatements = function () {
+            // filter for concept annotations
+            var annotations = $filter('filterByConceptAnnotation')($scope.annotations)
+                .filter($scope.filterConceptAnnotations);
+
+            // filter for linked annotations - only export linked annotations that are relevent
+            var linkedAnnotations = $filter('filterByLinkedAnnotation')($scope.annotations)
+                // check if the subject is present in the array of annotations
+                .filter(function (linkage) {
+                    return annotations.some(function (annotation) {
+                        return annotation.rdf.uri == linkage.oa.hasBody.rdf.subject;
+                    })
+                })
+                // check if the objects is present in the array of annotations
+                .filter(function (linkage) {
+                    return annotations.some(function (annotation) {
+                        return annotation.rdf.uri == linkage.oa.hasBody.rdf.object;
+                    });
+                });
+
+            $scope.download(annotations.concat(linkedAnnotations), $scope.exportProperties.fullKnowledge, 'csv', "knowledge_");
         };
 
         $scope.download = function (data, properties, format, filePrefix) {

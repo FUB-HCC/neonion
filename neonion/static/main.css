@@ -9441,6 +9441,12 @@ fieldset[disabled] .btn-secondary.focus {
 .btn-spacing {
   margin: 3px;
 }
+.link {
+  text-decoration: underline;
+}
+.link:hover {
+  color: #e98b00;
+}
 .annotator-notice *,
 .annotator-adder *,
 .annotator-filter *,

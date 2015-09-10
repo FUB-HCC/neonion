@@ -9234,36 +9234,35 @@ body#page-annotator {
   background-color: #eeeeee;
 }
 .sidebar {
-  background-color: #ffffff;
   height: 100vh;
   z-index: 100;
 }
 .sidebar .logo {
-  background: url(img/logo.png) no-repeat;
-  background-size: 100%;
-  height: 44px;
+  max-height: 100%;
+  max-width: 100%;
 }
 .sidebar .logo-wrapper {
   padding-top: 22px;
   padding-bottom: 22px;
   padding-left: 12px;
+  height: 110px;
 }
 .toolbar {
   background-color: #eeeeee;
   height: 100vh;
-  padding-top: 88px;
+  padding-top: 110px;
   width: 70px;
 }
 .header {
   background-color: #f39100;
-  height: 88px;
+  height: 110px;
 }
 .content {
   background-color: #eeeeee;
   min-height: 100vh;
   height: 100%;
 }
-.content.content-inverted {
+.content-inverted {
   background-color: #ffffff;
 }
 .nav-stacked > li {

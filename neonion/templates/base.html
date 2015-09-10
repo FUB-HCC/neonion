@@ -19,9 +19,9 @@
 
             {% block left %}
             <div class="sidebar col-md-2">
-                <div data-spy="affix">
+                <div id="sidebarnav" data-spy="affix">
                     <div class="logo-wrapper">
-                        <div class="logo"></div>
+                        <img class="logo" src="{% static 'img/logo.png' %}" />
                     </div>
                     {% include "navigation.html" %}
                 </div>
@@ -47,6 +47,18 @@
               </div>  
             </div>
             {% endblock %}
+
+            <!-- FIXING AFFIX - set width of fixed element manually -->
+            <!-- https://github.com/twbs/bootstrap/issues/6350 -->
+            <script>
+                function setNavWidth() {
+                    var sideBarNavWidth = $('.sidebar').width() - parseInt($('#sidebarnav').css('paddingLeft')) - parseInt($('#sidebarnav').css('paddingRight'));
+                    $('#sidebarnav').css('width', sideBarNavWidth);
+                }
+
+                window.addEventListener("resize", setNavWidth);
+                setNavWidth();
+            </script>
 
             {% javascript 'angular_app' %}
 

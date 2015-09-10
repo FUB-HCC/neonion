@@ -9435,8 +9435,7 @@ fieldset[disabled] .btn-secondary.focus {
   background-color: #000000;
 }
 .btn-spacing {
-  margin-left: 6px;
-  margin-right: 6px;
+  margin: 3px;
 }
 .annotator-notice *,
 .annotator-adder *,

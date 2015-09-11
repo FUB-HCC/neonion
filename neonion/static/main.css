@@ -9685,3 +9685,17 @@ dialog section .btn-group-vertical {
   background-image: url(img/annotator-glyph-sprite.png);
   background-repeat: no-repeat;
 }
+.annotator-hl-concept {
+  background-color: rgba(57, 255, 10, 0.4);
+}
+.annotator-hl-comment {
+  background-color: rgba(243, 145, 0, 0.4);
+}
+.annotator-hl-highlight {
+  background-color: rgba(255, 255, 10, 0.4);
+}
+.annotator-hl-filtered.annotator-hl-comment,
+.annotator-hl-filtered.annotator-hl-highlight,
+.annotator-hl-filtered.annotator-hl-concept {
+  background-color: transparent;
+}

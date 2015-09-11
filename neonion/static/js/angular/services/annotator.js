@@ -177,7 +177,8 @@ neonionApp.factory('AnnotatorService', [function () {
     factory.showAnnotation = function (annotation) {
         if (annotation.hasOwnProperty("highlights")) {
             annotation.highlights.forEach(function (entry) {
-                entry.className = Annotator.Plugin.Neonion.prototype.classes.visible;
+                $(entry).removeClass(Annotator.Plugin.Neonion.prototype.classes.hide);
+                $(entry).addClass(Annotator.Plugin.Neonion.prototype.classes.visible);
             });
         }
     };
@@ -189,8 +190,8 @@ neonionApp.factory('AnnotatorService', [function () {
     factory.hideAnnotation = function (annotation) {
         if (annotation.hasOwnProperty("highlights")) {
             annotation.highlights.forEach(function (entry) {
-                entry.className = Annotator.Plugin.Neonion.prototype.classes.hide;
-                entry.style.backgroundColor = "";
+                $(entry).removeClass(Annotator.Plugin.Neonion.prototype.classes.visible);
+                $(entry).addClass(Annotator.Plugin.Neonion.prototype.classes.hide);
             });
         }
     };
@@ -218,6 +219,33 @@ neonionApp.factory('AnnotatorService', [function () {
             }
         }
     };
+
+    factory.colorizeAnnotationByMotivation = function (annotation) {
+        if (annotation.hasOwnProperty("highlights") &&
+            annotation.hasOwnProperty("oa") &&
+            annotation.oa.hasOwnProperty("motivatedBy")) {
+            var hlClass = null;
+            switch (annotation.oa.motivatedBy) {
+                case Annotator.Plugin.Neonion.prototype.oa.motivation.classifying:
+                case Annotator.Plugin.Neonion.prototype.oa.motivation.identifying:
+                    hlClass = "annotator-hl-concept";
+                    break;
+                case Annotator.Plugin.Neonion.prototype.oa.motivation.commenting:
+                    hlClass = "annotator-hl-comment";
+                    break;
+                case Annotator.Plugin.Neonion.prototype.oa.motivation.highlighting:
+                    hlClass = "annotator-hl-highlight";
+                    break;
+            }
+            // apply color to highlights
+            if (hlClass) {
+                annotation.highlights.forEach(function (highlight) {
+                    $(highlight).addClass(hlClass);
+                });
+            }
+        }
+    };
+
 
     return factory;
 }]);

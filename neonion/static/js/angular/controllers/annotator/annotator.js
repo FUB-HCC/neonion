@@ -72,7 +72,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                             $scope.$apply(function () {
                                 AnnotatorService.refreshContributors();
                                 // colorize each annotation
-                                annotations.forEach(AnnotatorService.colorizeAnnotation);
+                                annotations.forEach(AnnotatorService.colorizeAnnotationByMotivation);
                             });
 
                             // go to annotation given by hash
@@ -155,7 +155,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
         $scope.handleAnnotationEvent = function (annotation) {
             $scope.$apply(function () {
                 AnnotatorService.refreshContributors();
-                AnnotatorService.colorizeAnnotation(annotation);
+                AnnotatorService.colorizeAnnotationByMotivation(annotation);
             });
         };
 

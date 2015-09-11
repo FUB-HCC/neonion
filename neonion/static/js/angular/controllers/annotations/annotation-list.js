@@ -1,6 +1,6 @@
-neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'DocumentService',
+neonionApp.controller('AnnotationListCtrl', ['$scope', '$filter', 'CommonService', 'DocumentService',
     'GroupService', 'AnnotationStoreService',
-    function ($scope, CommonService, DocumentService, GroupService, AnnotationStoreService) {
+    function ($scope, $filter, CommonService, DocumentService, GroupService, AnnotationStoreService) {
         "use strict";
 
         $scope.pageNum = 0;
@@ -11,7 +11,14 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
             conceptFields: ['id', 'uri', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy', 'rdf.label',
                 'rdf.uri', 'rdf.conceptLabel', 'rdf.typeof', 'rdf.sameAs'],
             commentFields: ['id', 'uri', 'quote', 'text', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy'],
-            highlightFields: ['id', 'uri', 'quote', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy']
+            highlightFields: ['id', 'uri', 'quote', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy'],
+            linkedAnnotationFields : ['id', 'uri', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy',
+                'oa.hasBody.rdf.subject', 'oa.hasBody.rdf.predicate', 'oa.hasBody.rdf.predicateLabel', 'oa.hasBody.rdf.object',
+                'oa.hasTarget.source', 'oa.hasTarget.target'],
+            fullKnowledge : ['id', 'uri', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy',
+                'rdf.label', 'rdf.uri', 'rdf.conceptLabel', 'rdf.typeof', 'rdf.sameAs',
+                'oa.hasBody.rdf.subject', 'oa.hasBody.rdf.predicate', 'oa.hasBody.rdf.predicateLabel', 'oa.hasBody.rdf.object',
+                'oa.hasTarget.source', 'oa.hasTarget.target']
         };
 
         $scope.getQueryParams = function (pageNum) {
@@ -20,7 +27,7 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
                 'offset': pageNum * $scope.stepSize,
                 'limit': $scope.stepSize
             };
-        }
+        };
 
         $scope.queryGroupNames = function () {
             return GroupService.queryGroupNames(function (data) {
@@ -53,21 +60,48 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
         };
 
         $scope.downloadComments = function (data, format) {
-            $scope.download(data, $scope.exportProperties.commentFields, format);
-        }
+            $scope.download(data, $scope.exportProperties.commentFields, format, "comments_");
+        };
 
         $scope.downloadConceptTags = function (data, format) {
-            $scope.download(data, $scope.exportProperties.conceptFields, format);
-        }
+            $scope.download(data, $scope.exportProperties.conceptFields, format, "concepts_");
+            // extra downloa all statements
+            $scope.download($filter('filterByLinkedAnnotation')($scope.annotations),
+                $scope.exportProperties.linkedAnnotationFields, format, "statements_");
+        };
 
         $scope.downloadHighlights = function (data, format) {
-            $scope.download(data, $scope.exportProperties.highlightFields, format);
-        }
+            $scope.download(data, $scope.exportProperties.highlightFields, format, "highlights_");
+        };
 
-        $scope.download = function (data, properties, format) {
+        $scope.downloadConceptsAndStatements = function () {
+            // filter for concept annotations
+            var annotations = $filter('filterByConceptAnnotation')($scope.annotations)
+                .filter($scope.filterConceptAnnotations);
+
+            // filter for linked annotations - only export linked annotations that are relevent
+            var linkedAnnotations = $filter('filterByLinkedAnnotation')($scope.annotations)
+                // check if the subject is present in the array of annotations
+                .filter(function (linkage) {
+                    return annotations.some(function (annotation) {
+                        return annotation.rdf.uri == linkage.oa.hasBody.rdf.subject;
+                    })
+                })
+                // check if the objects is present in the array of annotations
+                .filter(function (linkage) {
+                    return annotations.some(function (annotation) {
+                        return annotation.rdf.uri == linkage.oa.hasBody.rdf.object;
+                    });
+                });
+
+            $scope.download(annotations.concat(linkedAnnotations), $scope.exportProperties.fullKnowledge, 'csv', "knowledge_");
+        };
+
+        $scope.download = function (data, properties, format, filePrefix) {
+            filePrefix = filePrefix || 'annotations_';
             if (format.toLowerCase() === 'csv') {
                 var data = $scope.exportCSV(data, properties);
-                var fileName = 'annotations_' + new Date().getTime() + '.csv';
+                var fileName = filePrefix + new Date().getTime() + '.csv';
                 var link = document.createElement('a');
                 link.setAttribute('href', data);
                 link.setAttribute('target', '_blank');
@@ -83,7 +117,7 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', 'CommonService', 'Documen
                 }
                 return annotation.rdf.typeof.split('/').pop();
             }
-        }
+        };
 
         $scope.filterCommentAnnotations = function (annotation) {
             if (CommonService.filter.query.length > 0) {

@@ -28,6 +28,21 @@ neonionApp
             }
         };
     })
+    .filter('filterByLinkedAnnotation', function () {
+        return function (annotations) {
+            if (!angular.isUndefined(annotations)) {
+                return annotations.filter(function (value) {
+                    if (value.oa.motivatedBy == "oa:linking") {
+                        return true;
+                    }
+                    return false;
+                });
+            }
+            else {
+                return [];
+            }
+        };
+    })
     .filter('filterByCommentAnnotation', function () {
         return function (annotations) {
             if (!angular.isUndefined(annotations)) {

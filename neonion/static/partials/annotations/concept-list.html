@@ -1,11 +1,10 @@
 <div ng-controller="AnnotationListCtrl" ng-cloak>
+    <a class="button button-small" ng-click="downloadConceptsAndStatements()">
+        <span class="fa fa-download fa-fw"></span>Download
+    </a>
     <div ng-repeat="(concept, annotationByConceptType) in annotations | filterByConceptAnnotation | filter:filterConceptAnnotations | orderBy: 'rdf.typeof' | groupBy: 'rdf.typeof'">
         <h4>
             {{ (annotationByConceptType | first).rdf.conceptLabel }}
-            <a class="btn btn-primary pull-right" target="blank"
-               ng-click="downloadConceptTags(annotationByConceptType, 'csv')">
-                <i class="fa fa-download fa-fw"></i>Download
-            </a>
         </h4>
         <table class="table">
             <thead>

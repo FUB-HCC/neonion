@@ -31,7 +31,9 @@
         </form>
 
         {% for error in form.non_field_errors %}
-            <div class="alert alert-danger" role="alert">{{ error|escape }}</div>
+            <div class="alert alert-danger" role="alert">
+                <span class="fa fa-exclamation-circle fa-fw" aria-hidden="true"></span> {{ error|escape }}
+            </div>
         {% endfor %}
     </div>
 </div>

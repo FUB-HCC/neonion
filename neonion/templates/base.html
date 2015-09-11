@@ -29,23 +29,27 @@
 
             {% block right %}
             <div class="col-md-9">
-              <div class="row">
-                <div class="header col-md-12">
-                    {% block header %}
-                    {# Search field #}
-                    <div id="search-form" ng-show="search.enabled" ng-model="common.search.query" ng-cloak>
-                        <button id="search-icon" class="fa fa-search"></button>
-                        <input id="search" type="text" autocomplete="off" />
+                <div class="row">
+                    <div class="header col-md-12" ng-controller="ContextInfoCtrl">
+                        {% block header %}
+                            {# Search field #}
+                            <div id="search-form" ng-show="search.enabled" ng-model="common.search.query" ng-cloak>
+                                <button id="search-icon" class="fa fa-search"></button>
+                                <input id="search" type="text" autocomplete="off"/>
+                            </div>
+                            {# User context #}
+                            <ul class="list-inline">
+                                <li class="pull-right"><i class="fa fa-user"></i><span>{{ user.email }}</span></li>
+                            </ul>
+                        {% endblock %}
                     </div>
-                    {% endblock %}
+                    <div class="content col-md-12">
+                        {% block content %}
+                        {% endblock %}
+                    </div>
                 </div>
-                <div class="content col-md-12">
-                    {% block content %}
-                    {% endblock %}
-                </div>
-              </div>  
             </div>
-            {% endblock %}
+        {% endblock %}
 
             <!-- FIXING AFFIX - set width of fixed element manually -->
             <!-- https://github.com/twbs/bootstrap/issues/6350 -->

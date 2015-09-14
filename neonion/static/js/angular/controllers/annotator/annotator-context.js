@@ -7,12 +7,6 @@ neonionApp.controller('ContextInfoCtrl', ['$scope', '$location', 'CommonService'
     function ($scope, $location, CommonService, AnnotatorService, DocumentService, GroupService) {
         "use strict";
 
-        $scope.getCurrentUser = function () {
-            return CommonService.getCurrentUser(function (user) {
-                $scope.user = user;
-            }).$promise;
-        };
-
         $scope.getDocument = function () {
             return DocumentService.get({id: $location.search().docId}, function (document) {
                 $scope.document = document;
@@ -36,8 +30,7 @@ neonionApp.controller('ContextInfoCtrl', ['$scope', '$location', 'CommonService'
         };
 
         // execute promise chain
-        $scope.getCurrentUser()
-            .then($scope.getDocument)
+        $scope.getDocument()
             .then($scope.getGroup)
             .then(function () {
                 $scope.annotatorService = AnnotatorService;

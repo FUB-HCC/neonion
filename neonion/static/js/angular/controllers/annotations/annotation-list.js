@@ -59,22 +59,19 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', '$filter', 'CommonService
             }).$promise;
         };
 
-        $scope.downloadComments = function (data, format) {
-            $scope.download(data, $scope.exportProperties.commentFields, format, "comments_");
+        $scope.downloadComments = function (format) {
+            var annotations = $filter('filterByCommentAnnotation')($scope.annotations)
+                .filter($scope.filterCommentAnnotations);
+            $scope.download(annotations, $scope.exportProperties.commentFields, format, "comments_");
         };
 
-        $scope.downloadConceptTags = function (data, format) {
-            $scope.download(data, $scope.exportProperties.conceptFields, format, "concepts_");
-            // extra downloa all statements
-            $scope.download($filter('filterByLinkedAnnotation')($scope.annotations),
-                $scope.exportProperties.linkedAnnotationFields, format, "statements_");
+        $scope.downloadHighlights = function (format) {
+            var annotations = $filter('filterByHighlightAnnotation')($scope.annotations)
+                .filter($scope.filterHighlightAnnotation);
+            $scope.download(annotations, $scope.exportProperties.highlightFields, format, "highlights_");
         };
 
-        $scope.downloadHighlights = function (data, format) {
-            $scope.download(data, $scope.exportProperties.highlightFields, format, "highlights_");
-        };
-
-        $scope.downloadConceptsAndStatements = function () {
+        $scope.downloadConceptsAndStatements = function (format) {
             // filter for concept annotations
             var annotations = $filter('filterByConceptAnnotation')($scope.annotations)
                 .filter($scope.filterConceptAnnotations);
@@ -94,7 +91,8 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', '$filter', 'CommonService
                     });
                 });
 
-            $scope.download(annotations.concat(linkedAnnotations), $scope.exportProperties.fullKnowledge, 'csv', "knowledge_");
+            $scope.download(annotations.concat(linkedAnnotations), 
+                $scope.exportProperties.fullKnowledge, format, "knowledge_");
         };
 
         $scope.download = function (data, properties, format, filePrefix) {
@@ -110,20 +108,27 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', '$filter', 'CommonService
             }
         };
 
-        $scope.toConceptName = function (annotation) {
-            if (annotation.hasOwnProperty('rdf')) {
-                if (annotation.rdf.hasOwnProperty('conceptLabel')) {
-                    return annotation.rdf.conceptLabel
+        $scope.filterCommonFields = function (annotation) {
+            if (CommonService.filter.query.length > 0) {
+                var show = false;
+                // filter by user
+                if (annotation.hasOwnProperty("oa")) {
+                    show |= annotation.oa.annotatedBy.email.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
                 }
-                return annotation.rdf.typeof.split('/').pop();
+                // filter by document name
+                if ($scope.documentTitles.hasOwnProperty(annotation.uri)) {
+                    show |= $scope.documentTitles[annotation.uri].toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
+                }
+                // filter by seletected text
+                show |= annotation.quote.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
+                return show;
             }
-        };
+            return true;
+        }
 
         $scope.filterCommentAnnotations = function (annotation) {
             if (CommonService.filter.query.length > 0) {
-                var show = false;
-                show |= annotation.oa.annotatedBy.email.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
-                show |= annotation.quote.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
+                var show = $scope.filterCommonFields(annotation);
                 show |= annotation.text.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
                 return show;
             }
@@ -132,25 +137,18 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', '$filter', 'CommonService
 
         $scope.filterConceptAnnotations = function (annotation) {
             if (CommonService.filter.query.length > 0) {
-                var show = false;
-                if (annotation.hasOwnProperty("oa")) {
-                    show |= annotation.oa.annotatedBy.email.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
+                var show = $scope.filterCommonFields(annotation);
+                if (annotation.hasOwnProperty("rdf")) {
+                    show |= annotation.rdf.label.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
+                    show |= annotation.rdf.typeof.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1                   
                 }
-                show |= annotation.rdf.label.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
-                show |= annotation.rdf.typeof.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1
                 return show;
             }
             return true;
         };
 
         $scope.filterHighlightAnnotation = function (annotation) {
-            if (CommonService.filter.query.length > 0) {
-                var show = false;
-                show |= annotation.oa.annotatedBy.email.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
-                show |= annotation.quote.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
-                return show;
-            }
-            return true;
+            return $scope.filterCommonFields(annotation);
         };
 
         // execute promise chain

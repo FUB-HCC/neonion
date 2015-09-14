@@ -1,4 +1,12 @@
 <div ng-controller="AnnotationListCtrl" ng-cloak>
+    <div class="row">
+        <div class="col-md-12">
+            <a class="btn btn-primary pull-right" target="blank"
+               ng-click="downloadHighlights('csv')">
+                <i class="fa fa-download fa-fw"></i>Download
+            </a>
+        </div>
+    </div>
     <div ng-repeat="(documentKey, annotationByDocument) in annotations | filterByHighlightAnnotation | filter:filterHighlightAnnotation | groupBy: 'uri'">
         <div ng-repeat="(groupKey, annotationByGroup) in annotationByDocument | groupBy: 'permissions.read[0]'">
             <h4>
@@ -10,10 +18,6 @@
                 <small ng-if="!groupNames[groupKey]">
                     <i class="fa fa-circle-o"></i> Private
                 </small>
-                <a class="btn btn-primary pull-right" target="blank"
-                   ng-click="downloadHighlights(annotationByGroup, 'csv')">
-                    <i class="fa fa-download fa-fw"></i>Download
-                </a>
             </h4>
             <table class="table">
                 <thead>

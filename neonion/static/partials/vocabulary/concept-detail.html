@@ -3,17 +3,17 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="btn-toolbar pull-right">
+                    <button ng-show="form.isEditing" class="btn btn-link" type="button"
+                            ng-click="delete()" disabled>Delete
+                    </button>
+                    <button class="btn btn-default" type="button"
+                            ng-click="return()">Cancel
+                    </button>
                     <button ng-hide="form.isEditing" class="btn btn-primary" type="button"
                             ng-click="create()">Create
                     </button>
                     <button ng-show="form.isEditing" class="btn btn-primary" type="button"
                             ng-click="update()">Save
-                    </button>
-                    <button class="btn btn-default" type="button"
-                            ng-click="return()">Cancel
-                    </button>
-                    <button ng-show="form.isEditing" class="btn btn-danger" type="button"
-                            ng-click="delete()" disabled>Delete
                     </button>
                 </div>
             </div>

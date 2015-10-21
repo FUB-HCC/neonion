@@ -16,7 +16,8 @@ gulp.task('styleguide:generate', function() {
           '<script src="/js/jquery.min.js"></script>',
           '<script src="/js/bootstrap.min.js"></script>'
         ],
-        disableEncapsulation: true
+        disableEncapsulation: true,
+        customColors: 'utils/styleguide.scss'
       }))
     .pipe(gulp.dest(outputPath));
 });
@@ -43,9 +44,10 @@ gulp.task('styleguide:static', function() {
     .pipe(gulp.dest(outputPath + '/js')); 
 });
 
-gulp.task('watch', function() {
+gulp.task('watch', ['styleguide'], function() {
   // Start watching changes and update styleguide whenever changes are detected
   // Styleguide automatically detects existing server instance
+
   gulp.watch(['less/**/*.less'], ['styleguide']);
 });
 

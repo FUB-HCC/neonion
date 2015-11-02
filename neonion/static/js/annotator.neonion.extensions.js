@@ -91,27 +91,9 @@
      * @returns {{}}
      */
     Annotator.Plugin.Neonion.prototype.widgets['viewerSummarizeStatements'] = function (scope, options) {
-        var factory = {
-            linkedAnnotations: []
-        };
+        var factory = {};
 
         factory.load = function () {
-            // filter for linked annotations
-            scope.annotator.subscribe("annotationsLoaded", function (annotations) {
-                factory.linkedAnnotations = factory.linkedAnnotations.concat(annotations.filter(scope.helper.isLinkedAnnotation));
-            });
-
-            // attach handler to get notified when a linked annotation was created
-            scope.annotator.subscribe("linkedAnnotationCreated", function (annotation) {
-                factory.linkedAnnotations.push(annotation);
-            });
-
-            // attach handler to get notified when a linked annotation was deleted
-            scope.annotator.subscribe("linkedAnnotationDeleted", function (annotation) {
-                var annotationIdx = factory.linkedAnnotations.indexOf(annotation);
-                factory.linkedAnnotations.splice(annotationIdx, 1);
-            });
-
             $(".annotator-viewer").on("click", "[data-action='delete-property']", factory.onDeleteProperty);
 
             // add field to viewer to place a summary of all properties
@@ -147,7 +129,7 @@
         factory.onDeleteProperty = function (e) {
             var annotationId = e.target.getAttribute("data-value");
             if (annotationId) {
-                var annotation = factory.linkedAnnotations.filter(function(item) {
+                var annotation = scope.linkedAnnotations.filter(function(item) {
                     return item.id == annotationId;
                 }).pop();
                 scope.deleteLinkedAnnotation(annotation);
@@ -162,7 +144,7 @@
          * @returns {Array.<T>}
          */
         factory.getLinkedAnnotationsWithSubject = function (subject) {
-            return factory.linkedAnnotations.filter(function (annotation) {
+            return scope.linkedAnnotations.filter(function (annotation) {
                 return scope.helper.getSemanticTag(annotation).subject == subject;
             });
         };

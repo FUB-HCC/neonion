@@ -58,6 +58,7 @@
          * @override
          */
         this.pluginInit = function () {
+            this.linkedAnnotations = [];
             this.adder = this.overrideAdder();
             this.fields = {
                 viewer: this.initViewerField(),
@@ -236,6 +237,9 @@
     $.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
         events: {
             beforeAnnotationCreated: "beforeAnnotationCreated",
+            annotationUpdated: "annotationUpdated",
+            annotationDeleted: "annotationDeleted",
+            annotationsLoaded: "annotationsLoaded",
             annotationEditorShown: "annotationEditorShown",
             annotationEditorHidden: "annotationEditorHidden",
             annotationEditorSubmit: "annotationEditorSubmit",
@@ -412,6 +416,7 @@
         },
 
         linkedAnnotationCreated : function(annotation) {
+            this.linkedAnnotations.push(annotation);
             if (this.annotator.plugins.Store) {
                 // store annotation
                 this.annotator.plugins.Store.annotationCreated(annotation);
@@ -419,7 +424,8 @@
         },
 
         linkedAnnotationDeleted : function(annotation) {
-
+            var annotationIdx = this.linkedAnnotations.indexOf(annotation);
+            this.linkedAnnotations.splice(annotationIdx, 1);
         },
 
         /**
@@ -455,6 +461,57 @@
             }
 
             this.applyPermissions(annotation);
+        },
+
+        /**
+        * Raised when an annotation was deleted.
+        */
+        annotationDeleted: function(annotation) {
+            if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
+                this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
+                // delete all linked annotations that references the deleted annotation
+                this.linkedAnnotations
+                    .filter(function(linkage) {
+                        // check if the linkage references the annotation in the target
+                        return linkage.oa.hasTarget.source == annotation.id ||
+                            linkage.oa.hasTarget.target == annotation.id;
+                    })
+                    .forEach($.proxy(this.deleteLinkedAnnotation, this));
+            }
+        },
+
+        /**
+        * Raised when an annotation was updated.
+        */
+        annotationUpdated: function(annotation) {
+            if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
+                this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
+                // update all linked annotations that references the annotation
+                this.linkedAnnotations
+                    .filter(function(linkage) {
+                        // check if the linkage references the annotation in the target
+                        return linkage.oa.hasTarget.source == annotation.id ||
+                            linkage.oa.hasTarget.target == annotation.id;
+                    })
+                    .forEach($.proxy(function(linkage) {
+                        // update the statement
+                        if (linkage.oa.hasTarget.source == annotation.id) {
+                            this.helper.getSemanticTag(linkage).subject = this.helper.getSemanticTag(annotation).uri;
+                        }
+                        else if (linkage.oa.hasTarget.object == annotation.id) {
+                            this.helper.getSemanticTag(linkage).object = this.helper.getSemanticTag(annotation).uri;
+                        }
+                        this.annotator.publish("linkedAnnotationUpdated", [linkage]);
+                    }), this);  
+            }
+        },
+
+        /**
+        * Raised when annotations are loaded from store.
+        */
+        annotationsLoaded: function(annotations) {
+            // filter for linked annotations
+            this.linkedAnnotations = this.linkedAnnotations.concat(annotations.filter(this.helper.isLinkedAnnotation));
         },
 
         annotationEditorShown: function (editor, annotation) {

@@ -6,6 +6,7 @@
     <title>Neonion - {% block title %}{% endblock %}</title>
     {% load staticfiles %}
     {% load pipeline %}
+    {% load custom_filters %}
     <link rel="stylesheet" href="{% static 'main.css' %}" type="text/css" media="screen" />
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
     {% javascript 'stats' %}
@@ -64,6 +65,10 @@
             </script>
 
             {% javascript 'angular_app' %}
+            <script>
+                // inject system settings to app
+                neonionApp.constant("systemSettings", {{ system|toJSON }});
+            </script>
 
             {% block scripts %}
             {% endblock %}

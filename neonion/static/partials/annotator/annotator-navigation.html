@@ -5,7 +5,8 @@
                 <i class="fa fa-home fa-fw"></i>
             </a>
         </li>
-        <li>
+        <!-- NAMED ENTITY RECOGNITION -->
+        <li ng-show="systemSettings.annotator.services.stanford_ner.enabled">
             <a id="nav-annotate" class="simptip-position-right" data-tooltip="Find concepts"
                ng-click="startNamedEntityRecognition()">
                 <i class="fa fa-magic fa-fw"></i>
@@ -22,9 +23,7 @@
                 <li class="dropdown-item" ng-repeat="contrib in annotatorService.contributors | orderBy:'-updated'" ng-click="toggleContributor(contrib)">
                     <a>
                         <i class="fa fa-fw" ng-class="{'fa-eye': contrib.showAnnotation, 'fa-eye-slash': !contrib.showAnnotation }"></i>
-                        <span>{{ contrib.user }}<small><i                  class="fa fa-clock-o fa-fw"></i>{{ contrib.updated | date: 'short' }}</small></span>
-                        <!-- <div class="dropdown-item-color" ng-class="{'invisible': !contrib.showAnnotation }"
-                         style="background-color:{{ contrib.color }}"></div> -->
+                        <span>{{ contrib.user }}<small><i class="fa fa-clock-o fa-fw"></i>{{ contrib.updated | date: 'short' }}</small></span>
                      </a>
                 </li>
             </ul>

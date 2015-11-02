@@ -2,6 +2,7 @@ from common.uri import generate_uri
 from exceptions import InvalidAnnotationError
 from common.sparql import insert_data
 from common.statements import Annotation
+from django.conf import settings
 from common.vocab import OpenAnnotation
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
@@ -75,11 +76,11 @@ def pre_process_annotation(validated_annotation):
 
 def post_process_annotation(validated_annotation):
     # TODO serialize general parts of annotation (independent from motivation) to triple store
-
-    # extract data from annotation and insert in triple store
-    if (motivation_equals(validated_annotation, OpenAnnotation.Motivations.identifying) or
-            motivation_equals(validated_annotation, OpenAnnotation.Motivations.classifying)):
-        insert_data(Annotation.statement_about_resource(validated_annotation))
+    if hasattr(settings, 'ENDPOINT_ENABLED') and settings.ENDPOINT_ENABLED:
+        # extract data from annotation and insert in triple store
+        if (motivation_equals(validated_annotation, OpenAnnotation.Motivations.identifying) or
+                motivation_equals(validated_annotation, OpenAnnotation.Motivations.classifying)):
+            insert_data(Annotation.statement_about_resource(validated_annotation))
 
     return validated_annotation
 

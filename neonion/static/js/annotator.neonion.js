@@ -894,6 +894,7 @@
                     var top = $(annotation.highlights[0]).position().top;
                     editor.css("top", top);
 
+                    console.log(annotation.highlights[0].getClientRects());
                     // place line horizontally
                     var clientRects = annotation.highlights[0].getClientRects();
                     var width = annotatorRect.left - clientRects[0].left;

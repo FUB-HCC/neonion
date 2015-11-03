@@ -18,8 +18,6 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                     $scope.documentUrl = "/documents/viewer/" + $scope.document.attached_file.id;
                 }
             })
-
-
         };
 
         $scope.getAnnotationModeCookie = function () {
@@ -27,9 +25,9 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
             return value ? parseInt($cookies.get(cookieKeys.annotationMode)) : 1;
         };
 
-        $scope.setupAnnotator = function (params) {
+        $scope.setupAnnotator = function () {
             UserService.current(function (user) {
-                params.agent = {
+                $scope.params.agent = {
                     id: user.id,
                     email: user.email
                 };
@@ -44,22 +42,22 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                             showViewPermissionsCheckbox: false,
                             showEditPermissionsCheckbox: false,
                             annotationData: {
-                                uri: params.docID
+                                uri: $scope.params.docID
                             },
                             loadFromSearch: {'limit': 0}
                         })
                         // add neonion plugin
                         .annotator('addPlugin', 'Neonion', {
-                            uri: params.docID,
-                            agent: params.agent,
+                            uri: $scope.params.docID,
+                            agent: $scope.params.agent,
                             workspace: queryParams.workspace,
                             annotationMode: $scope.getAnnotationModeCookie()
                         })
                         // add NER plugin
                         .annotator('addPlugin', 'NER', {
-                            uri: params.docID,
-                            service: params.nerUrl,
-                            auth: params.nerAuth
+                            uri: $scope.params.docID,
+                            service: $scope.params.nerUrl,
+                            auth: $scope.params.nerAuth
                         });
 
 
@@ -100,11 +98,21 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
         };
 
         var unbindRenderTemplateLoaded = $scope.$on('renderTemplateLoaded', function () {
-               $scope.$broadcast("loadDocument", $scope.documentUrl);
-            });
-            // unbind event
-            $scope.$on('$destroy', unbindRenderTemplateLoaded);
+            $scope.$broadcast("loadDocument", $scope.documentUrl);
+        });
 
+        /* var unbindPageRendered = $scope.$on('pageRendered', function () {
+
+         });*/
+
+        var unbindAllPagesRendered = $scope.$on('allPagesRendered', function () {
+            $scope.setupAnnotator();
+        });
+
+        // unbind event
+        $scope.$on('$destroy', unbindRenderTemplateLoaded);
+        // $scope.$on('$destroy', unbindPageRendered);
+        $scope.$on('$destroy', unbindAllPagesRendered);
 
         $scope.$on('$destroy', function () {
             // TODO release resources, cancel request...
@@ -112,3 +120,4 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
         });
 
     }]);
+

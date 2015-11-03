@@ -64,10 +64,14 @@ var TextLayerBuilder = function textLayerBuilder(textLayerDiv, pageIdx) {
     this.pageIdx = pageIdx;
     this.matches = [];
 
+    console.log("before textLayerBuilderBeginLayout");
+
     this.beginLayout = function textLayerBuilderBeginLayout() {
         this.textDivs = [];
         this.renderingDone = false;
     };
+
+    console.log(this.beginLayout);
 
     this.endLayout = function textLayerBuilderEndLayout() {
         this.layoutDone = true;
@@ -136,7 +140,7 @@ var TextLayerBuilder = function textLayerBuilder(textLayerDiv, pageIdx) {
     };
 
     this.appendText = function textLayerBuilderAppendText(geom) {
-        var textDiv = document.createElement('div');
+        var textDiv = document.createElement('div');        // add own class to style css
 
         // vScale and hScale already contain the scaling to pixel units
         var fontHeight = geom.fontSize * Math.abs(geom.vScale);

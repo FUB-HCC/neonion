@@ -149,7 +149,7 @@ PIPELINE_JS = {
             'js/annotator.store.min.js',
             'js/pdf.js',
             #'js/pdf.worker.js'
-            'js/textlayerbuilder.js'
+            'js/textLayerBuilder.js'
         ),
         'output_filename': 'js/annotator.js',
     },

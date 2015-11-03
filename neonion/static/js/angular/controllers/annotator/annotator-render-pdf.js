@@ -7,7 +7,6 @@ neonionApp.controller('AnnotatorPDFCtrl', ['$scope',
         "use strict";
 
         $scope.renderPDF = function (documentUrl) {
-            //console.log(documentUrl);
             //Not using web workers
             //Not disabling results in an error
             // This line is missing in the example code for rendering a pdf
@@ -15,8 +14,6 @@ neonionApp.controller('AnnotatorPDFCtrl', ['$scope',
             PDFJS.workerSrc = "/static/js/pdf.worker.js";
 
             PDFJS.getDocument(documentUrl).then(function (pdf) {
-                //console.log(pdf, pdf.numPages);
-                //console.log(pdf);
                 // Using promise to fetch the page
                 for (var i = 1; i <= pdf.numPages; i++) {
                     pdf.getPage(i).then($scope.renderPage);
@@ -53,7 +50,7 @@ neonionApp.controller('AnnotatorPDFCtrl', ['$scope',
                 .css("height", viewport.height + "px")
                 .css("width", viewport.width + "px")
                 .offset({
-                    top: canvasOffset.top - angular.element("#document-body").position().top,              // TODO find out why offset doesn't fit
+                    top: canvasOffset.top - angular.element("#document-body").position().top,
                     left: canvasOffset.left
                 });
 
@@ -66,8 +63,6 @@ neonionApp.controller('AnnotatorPDFCtrl', ['$scope',
 
                 //var textlayer = new TextLayerBuilder({ textlayerDiv : textlayerDiv.get(0), pageIndex : 0 });
                 textlayer.setTextContent(textContent);
-
-                //console.log(textContent);
 
                 var renderContext = {
                      canvasContext: context,

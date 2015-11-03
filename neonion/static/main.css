@@ -9275,7 +9275,7 @@ body#page-annotator {
   overflow: hidden;
 }
 .textlayer > div {
-  color: red;
+  color: transparent;
   position: absolute;
   line-height: 1;
   white-space: pre;

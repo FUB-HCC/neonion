@@ -888,18 +888,17 @@
             placeEditorBesidesAnnotation: function (annotation, annotator) {
                 var editor = $(annotator.editor.element[0]);
                 if (annotation.highlights.length > 0) {
-                    var annotatorRect = annotator.editor.element[0].getBoundingClientRect();
-                    annotator = $(annotator.element[0]);
-                    // place line vertically
-                    var top = $(annotation.highlights[0]).position().top;
+                    var editorBoundingRect = annotator.editor.element[0].getBoundingClientRect();
+                    var highlightRects = annotation.highlights[0].getClientRects();
+                    
+                    // place line vertically - calculation is relative to the bounds of annotatable area
+                    var top = highlightRects[0].top - annotator.element[0].getBoundingClientRect().top;
                     editor.css("top", top);
-
-                    console.log(annotation.highlights[0].getClientRects());
+                    
                     // place line horizontally
-                    var clientRects = annotation.highlights[0].getClientRects();
-                    var width = annotatorRect.left - clientRects[0].left;
+                    var width = editorBoundingRect.left - highlightRects[0].left;
                     editor.find(".annotator-line").width(width);
-                    editor.find(".annotator-line").height(clientRects[0].height);
+                    editor.find(".annotator-line").height(highlightRects[0].height);
                     editor.find(".annotator-line").css("left", -width);
                     editor.find(".annotator-line").show();
                 }

@@ -14,15 +14,9 @@ neonionApp.controller('AnnotatorPDFCtrl', ['$scope',
             PDFJS.workerSrc = "/static/js/pdf.worker.js";
 
             PDFJS.getDocument(documentUrl).then(function (pdf) {
-                // Using promise to fetch the page
-                for (var i = 1; i <= pdf.numPages; i++) {
-                    pdf.getPage(i).then($scope.renderPage);
-
-                    $scope.$emit("pageRendered");
-
-                    // TODO render async
-                }
-                $scope.$emit("allPagesRendered");
+                $scope.pdf = pdf;
+                // start rendering the first page
+                $scope.pdf.getPage(1).then($scope.renderPage);                
             });
         };
 
@@ -68,11 +62,30 @@ neonionApp.controller('AnnotatorPDFCtrl', ['$scope',
                      canvasContext: context,
                      viewport: viewport,
                      textLayer: textlayer
-                 };
+                };
 
-                page.render(renderContext);
-             });
+                page.render(renderContext).then(function() {
+                    $scope.onRenderPageComplete(page.pageInfo.pageIndex + 1);
+                });
+            });
         }
+
+        /**
+        * Page rendered successfully.
+        */
+        $scope.onRenderPageComplete = function(pageNum) {
+            // notify parent controller
+            $scope.$emit("pageRendered", pageNum);
+
+            if (pageNum < $scope.pdf.numPages) {
+                // render next page
+                $scope.pdf.getPage(pageNum + 1).then($scope.renderPage);
+            }
+            else {
+                // all pages rendered
+                $scope.$emit("allPagesRendered");
+            }
+        };
 
         var unbindLoadDocument= $scope.$on('loadDocument', function (event, documentUrl) {
             $scope.renderPDF(documentUrl);

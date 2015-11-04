@@ -97,15 +97,16 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
             });
         };
 
-        var unbindRenderTemplateLoaded = $scope.$on('renderTemplateLoaded', function () {
+        var unbindRenderTemplateLoaded = $scope.$on('renderTemplateLoaded', function (event) {
             $scope.$broadcast("loadDocument", $scope.documentUrl);
         });
 
-        /* var unbindPageRendered = $scope.$on('pageRendered', function () {
+        var unbindPageRendered = $scope.$on('pageRendered', function (event, pageNum) {
+            // debug output
+            console.log("Finished rendering of page " + pageNum);
+        });
 
-         });*/
-
-        var unbindAllPagesRendered = $scope.$on('allPagesRendered', function () {
+        var unbindAllPagesRendered = $scope.$on('allPagesRendered', function (event) {
             $scope.setupAnnotator();
         });
 

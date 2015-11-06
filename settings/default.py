@@ -147,9 +147,9 @@ PIPELINE_JS = {
             'js/annotator.neonion.extensions.js',
             'js/annotator.ner.js',
             'js/annotator.store.min.js',
-            'js/pdf.js',
-            #'js/pdf.worker.js'
-            'js/textLayerBuilder.js'
+            'js/pdf/pdf.js',
+            'js/pdf/text_layer_builder.js',
+            'js/pdf/ui_utils.js'
         ),
         'output_filename': 'js/annotator.js',
     },

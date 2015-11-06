@@ -7,10 +7,6 @@ neonionApp.controller('AnnotatorPDFCtrl', ['$scope',
         "use strict";
 
         $scope.renderPDF = function (documentUrl) {
-            //Not using web workers
-            //Not disabling results in an error
-            // This line is missing in the example code for rendering a pdf
-            PDFJS.disableWorker = true;
             PDFJS.workerSrc = "/static/js/pdf.worker.js";
 
             PDFJS.getDocument(documentUrl).then(function (pdf) {
@@ -21,12 +17,10 @@ neonionApp.controller('AnnotatorPDFCtrl', ['$scope',
         };
 
         $scope.renderPage = function (page) {
-
             var scale = 1.5;
             var viewport = page.getViewport(scale);
 
             // Prepare canvas using PDF page dimensions
-            //var canvas = angular.element("<canvas style='visibility: hidden'></canvas>");
             var canvas = angular.element("<canvas></canvas>");
             var textlayerDiv = angular.element("<div></div>");
             var context = canvas.get(0).getContext('2d');
@@ -51,21 +45,24 @@ neonionApp.controller('AnnotatorPDFCtrl', ['$scope',
             angular.element("#document-body").append(textlayerDiv);
 
             page.getTextContent().then(function (textContent) {
-                 //The second zero is an index identifying the page
-                 //It is set to page.number - 1
-                var textlayer = new TextLayerBuilder(textlayerDiv.get(0), 0);
+                // create the text layer
+                var textlayer = new TextLayerBuilder({
+                    textLayerDiv: textlayerDiv.get(0), 
+                    viewport: viewport,
+                    pageIndex: page.pageIndex
+                });
 
-                //var textlayer = new TextLayerBuilder({ textlayerDiv : textlayerDiv.get(0), pageIndex : 0 });
                 textlayer.setTextContent(textContent);
-
+                textlayer.render(200); // TEXT_LAYER_RENDER_DELAY
+                // paramets for rendering the page
                 var renderContext = {
-                     canvasContext: context,
-                     viewport: viewport,
-                     textLayer: textlayer
+                    canvasContext: context,
+                    viewport: viewport,
+                    textLayer: textlayer
                 };
-
+                // render the current page
                 page.render(renderContext).then(function() {
-                    $scope.onRenderPageComplete(page.pageInfo.pageIndex + 1);
+                    $scope.onRenderPageComplete(page.pageIndex + 1);
                 });
             });
         }

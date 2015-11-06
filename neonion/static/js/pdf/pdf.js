@@ -22,14 +22,33 @@ if (typeof PDFJS === 'undefined') {
   (typeof window !== 'undefined' ? window : this).PDFJS = {};
 }
 
-PDFJS.version = '1.1.366';
-PDFJS.build = '9e9df56';
+PDFJS.version = '1.1.114';
+PDFJS.build = '3fd44fd';
 
 (function pdfjsWrapper() {
   // Use strict in our context only - users might not want it
   'use strict';
 
+/* -*- Mode: Java; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
+/* Copyright 2012 Mozilla Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/* globals Cmd, ColorSpace, Dict, MozBlobBuilder, Name, PDFJS, Ref, URL,
+           Promise */
 
+'use strict';
 
 var globalScope = (typeof window === 'undefined') ? this : window;
 
@@ -60,14 +79,6 @@ var AnnotationType = {
   WIDGET: 1,
   TEXT: 2,
   LINK: 3
-};
-
-var AnnotationBorderStyleType = {
-  SOLID: 1,
-  DASHED: 2,
-  BEVELED: 3,
-  INSET: 4,
-  UNDERLINE: 5
 };
 
 var StreamType = {
@@ -523,7 +534,8 @@ Object.defineProperty(PDFJS, 'isLittleEndian', {
   }
 });
 
-  // Lazy test if the userAgent support CanvasTypedArrays
+//#if !(FIREFOX || MOZCENTRAL || B2G || CHROME)
+//// Lazy test if the userAgant support CanvasTypedArrays
 function hasCanvasTypedArrays() {
   var canvas = document.createElement('canvas');
   canvas.width = canvas.height = 1;
@@ -578,6 +590,9 @@ var Uint32ArrayView = (function Uint32ArrayViewClosure() {
 
   return Uint32ArrayView;
 })();
+//#else
+//PDFJS.hasCanvasTypedArrays = true;
+//#endif
 
 var IDENTITY_MATRIX = [1, 0, 0, 1, 0, 0];
 
@@ -962,10 +977,6 @@ function stringToUTF8String(str) {
   return decodeURIComponent(escape(str));
 }
 
-function utf8StringToString(str) {
-  return unescape(encodeURIComponent(str));
-}
-
 function isEmptyObj(obj) {
   for (var key in obj) {
     return false;
@@ -1106,6 +1117,7 @@ PDFJS.createPromiseCapability = createPromiseCapability;
     }
     return;
   }
+//#if !MOZCENTRAL
   var STATUS_PENDING = 0;
   var STATUS_RESOLVED = 1;
   var STATUS_REJECTED = 2;
@@ -1365,6 +1377,9 @@ PDFJS.createPromiseCapability = createPromiseCapability;
   };
 
   globalScope.Promise = Promise;
+//#else
+//throw new Error('DOM Promise is not present');
+//#endif
 })();
 
 var StatTimer = (function StatTimerClosure() {
@@ -2262,10 +2277,13 @@ var PDFPageProxy = (function PDFPageProxyClosure() {
      * annotation objects.
      */
     getAnnotations: function PDFPageProxy_getAnnotations() {
-      if (!this.annotationsPromise) {
-        this.annotationsPromise = this.transport.getAnnotations(this.pageIndex);
+      if (this.annotationsPromise) {
+        return this.annotationsPromise;
       }
-      return this.annotationsPromise;
+
+      var promise = this.transport.getAnnotations(this.pageIndex);
+      this.annotationsPromise = promise;
+      return promise;
     },
     /**
      * Begins the process of rendering a page to the desired context.
@@ -2311,7 +2329,6 @@ var PDFPageProxy = (function PDFPageProxyClosure() {
                                                       this.commonObjs,
                                                       intentState.operatorList,
                                                       this.pageNumber);
-      internalRenderTask.useRequestAnimationFrame = renderingIntent !== 'print';
       if (!intentState.renderTasks) {
         intentState.renderTasks = [];
       }
@@ -2502,6 +2519,7 @@ var WorkerTransport = (function WorkerTransportClosure() {
     // all requirements to run parts of pdf.js in a web worker.
     // Right now, the requirement is, that an Uint8Array is still an Uint8Array
     // as it arrives on the worker. Chrome added this with version 15.
+//#if !SINGLE_FILE
     if (!globalScope.PDFJS.disableWorker && typeof Worker !== 'undefined') {
       var workerSrc = PDFJS.workerSrc;
       if (!workerSrc) {
@@ -2544,6 +2562,7 @@ var WorkerTransport = (function WorkerTransportClosure() {
         info('The worker has been disabled.');
       }
     }
+//#endif
     // Either workers are disabled, not supported or have thrown an exception.
     // Thus, we fallback to a faked worker.
     this.setupFakeWorker();
@@ -2569,9 +2588,17 @@ var WorkerTransport = (function WorkerTransportClosure() {
         // In the developer build load worker_loader which in turn loads all the
         // other files and resolves the promise. In production only the
         // pdf.worker.js file is needed.
-        Util.loadScript(PDFJS.workerSrc, function() {
-          PDFJS.fakeWorkerFilesLoadedCapability.resolve();
-        });
+//#if !PRODUCTION
+        Util.loadScript(PDFJS.workerSrc);
+//#endif
+//#if PRODUCTION && SINGLE_FILE
+//      PDFJS.fakeWorkerFilesLoadedCapability.resolve();
+//#endif
+//#if PRODUCTION && !SINGLE_FILE
+//      Util.loadScript(PDFJS.workerSrc, function() {
+//        PDFJS.fakeWorkerFilesLoadedCapability.resolve();
+//      });
+//#endif
       }
       PDFJS.fakeWorkerFilesLoadedCapability.promise.then(function () {
         warn('Setting up fake worker.');
@@ -3117,7 +3144,6 @@ var InternalRenderTask = (function InternalRenderTaskClosure() {
     this.running = false;
     this.graphicsReadyCallback = null;
     this.graphicsReady = false;
-    this.useRequestAnimationFrame = false;
     this.cancelled = false;
     this.capability = createPromiseCapability();
     this.task = new RenderTask(this);
@@ -3191,11 +3217,7 @@ var InternalRenderTask = (function InternalRenderTaskClosure() {
     },
 
     _scheduleNext: function InternalRenderTask__scheduleNext() {
-      if (this.useRequestAnimationFrame) {
-        window.requestAnimationFrame(this._nextBound);
-      } else {
-        Promise.resolve(undefined).then(this._nextBound);
-      }
+      window.requestAnimationFrame(this._nextBound);
     },
 
     _next: function InternalRenderTask__next() {
@@ -4506,7 +4528,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       }
 
       var name = fontObj.loadedName || 'sans-serif';
-      var bold = fontObj.black ? (fontObj.bold ? '900' : 'bold') :
+      var bold = fontObj.black ? (fontObj.bold ? 'bolder' : 'bold') :
                                  (fontObj.bold ? 'bold' : 'normal');
 
       var italic = fontObj.italic ? 'italic' : 'normal';
@@ -4766,7 +4788,6 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       if (isTextInvisible || fontSize === 0) {
         return;
       }
-      this.cachedGetSinglePixelWidth = null;
 
       ctx.save();
       ctx.transform.apply(ctx, current.textMatrix);
@@ -6277,11 +6298,14 @@ var FontLoader = {
     if (styleElement) {
       styleElement.parentNode.removeChild(styleElement);
     }
+//#if !(MOZCENTRAL)
     this.nativeFontFaces.forEach(function(nativeFontFace) {
       document.fonts.delete(nativeFontFace);
     });
     this.nativeFontFaces.length = 0;
+//#endif
   },
+//#if !(MOZCENTRAL)
   get loadTestFont() {
     // This is a CFF font with 1 glyph for '.' that fills its entire width and
     // height.
@@ -6353,13 +6377,6 @@ var FontLoader = {
     var rules = [];
     var fontsToLoad = [];
     var fontLoadPromises = [];
-    var getNativeFontPromise = function(nativeFontFace) {
-      // Return a promise that is always fulfilled, even when the font fails to
-      // load.
-      return nativeFontFace.loaded.catch(function(e) {
-        warn('Failed to load font "' + nativeFontFace.family + '": ' + e);
-      });
-    };
     for (var i = 0, ii = fonts.length; i < ii; i++) {
       var font = fonts[i];
 
@@ -6373,7 +6390,7 @@ var FontLoader = {
       if (this.isFontLoadingAPISupported) {
         var nativeFontFace = font.createNativeFontFace();
         if (nativeFontFace) {
-          fontLoadPromises.push(getNativeFontPromise(nativeFontFace));
+          fontLoadPromises.push(nativeFontFace.loaded);
         }
       } else {
         var rule = font.bindDOM();
@@ -6386,7 +6403,7 @@ var FontLoader = {
 
     var request = FontLoader.queueLoadingCallback(callback);
     if (this.isFontLoadingAPISupported) {
-      Promise.all(fontLoadPromises).then(function() {
+      Promise.all(fontsToLoad).then(function() {
         request.complete();
       });
     } else if (rules.length > 0 && !this.isSyncFontLoadingSupported) {
@@ -6522,6 +6539,23 @@ var FontLoader = {
       });
       /** Hack end */
   }
+//#else
+//bind: function fontLoaderBind(fonts, callback) {
+//  assert(!isWorker, 'bind() shall be called from main thread');
+//
+//  for (var i = 0, ii = fonts.length; i < ii; i++) {
+//    var font = fonts[i];
+//    if (font.attached) {
+//      continue;
+//    }
+//
+//    font.attached = true;
+//    font.bindDOM()
+//  }
+//
+//  setTimeout(callback);
+//}
+//#endif
 };
 
 var FontFaceObject = (function FontFaceObjectClosure() {
@@ -6537,6 +6571,7 @@ var FontFaceObject = (function FontFaceObjectClosure() {
     }
   }
   FontFaceObject.prototype = {
+//#if !(MOZCENTRAL)
     createNativeFontFace: function FontFaceObject_createNativeFontFace() {
       if (!this.data) {
         return null;
@@ -6557,6 +6592,7 @@ var FontFaceObject = (function FontFaceObjectClosure() {
       }
       return nativeFontFace;
     },
+//#endif
 
     bindDOM: function FontFaceObject_bindDOM() {
       if (!this.data) {
@@ -6624,70 +6660,25 @@ var AnnotationUtils = (function AnnotationUtilsClosure() {
     style.fontFamily = fontFamily + fallbackName;
   }
 
-  function initContainer(item) {
+  function initContainer(item, drawBorder) {
     var container = document.createElement('section');
     var cstyle = container.style;
     var width = item.rect[2] - item.rect[0];
     var height = item.rect[3] - item.rect[1];
 
-    // Border
-    if (item.borderStyle.width > 0) {
-      // Border width
-      container.style.borderWidth = item.borderStyle.width + 'px';
-      if (item.borderStyle.style !== AnnotationBorderStyleType.UNDERLINE) {
-        // Underline styles only have a bottom border, so we do not need
-        // to adjust for all borders. This yields a similar result as
-        // Adobe Acrobat/Reader.
-        width = width - 2 * item.borderStyle.width;
-        height = height - 2 * item.borderStyle.width;
-      }
-
-      // Horizontal and vertical border radius
-      var horizontalRadius = item.borderStyle.horizontalCornerRadius;
-      var verticalRadius = item.borderStyle.verticalCornerRadius;
-      if (horizontalRadius > 0 || verticalRadius > 0) {
-        var radius = horizontalRadius + 'px / ' + verticalRadius + 'px';
-        CustomStyle.setProp('borderRadius', container, radius);
-      }
-
-      // Border style
-      switch (item.borderStyle.style) {
-        case AnnotationBorderStyleType.SOLID:
-          container.style.borderStyle = 'solid';
-          break;
-
-        case AnnotationBorderStyleType.DASHED:
-          container.style.borderStyle = 'dashed';
-          break;
-
-        case AnnotationBorderStyleType.BEVELED:
-          warn('Unimplemented border style: beveled');
-          break;
-
-        case AnnotationBorderStyleType.INSET:
-          warn('Unimplemented border style: inset');
-          break;
-
-        case AnnotationBorderStyleType.UNDERLINE:
-          container.style.borderBottomStyle = 'solid';
-          break;
-
-        default:
-          break;
-      }
-
-      // Border color
-      if (item.color) {
-        container.style.borderColor =
-          Util.makeCssRgb(item.color[0] | 0,
-                          item.color[1] | 0,
-                          item.color[2] | 0);
-      } else {
-        // Transparent (invisible) border, so do not draw it at all.
-        container.style.borderWidth = 0;
+    var bWidth = item.borderWidth || 0;
+    if (bWidth) {
+      width = width - 2 * bWidth;
+      height = height - 2 * bWidth;
+      cstyle.borderWidth = bWidth + 'px';
+      var color = item.color;
+      if (drawBorder && color) {
+        cstyle.borderStyle = 'solid';
+        cstyle.borderColor = Util.makeCssRgb(Math.round(color[0] * 255),
+                                             Math.round(color[1] * 255),
+                                             Math.round(color[2] * 255));
       }
     }
-
     cstyle.width = width + 'px';
     cstyle.height = height + 'px';
     return container;
@@ -6728,7 +6719,7 @@ var AnnotationUtils = (function AnnotationUtilsClosure() {
       rect[2] = rect[0] + (rect[3] - rect[1]); // make it square
     }
 
-    var container = initContainer(item);
+    var container = initContainer(item, false);
     container.className = 'annotText';
 
     var image  = document.createElement('img');
@@ -6751,15 +6742,17 @@ var AnnotationUtils = (function AnnotationUtilsClosure() {
     content.setAttribute('hidden', true);
 
     var i, ii;
-    if (item.hasBgColor && item.color) {
+    if (item.hasBgColor) {
       var color = item.color;
 
       // Enlighten the color (70%)
       var BACKGROUND_ENLIGHT = 0.7;
-      var r = BACKGROUND_ENLIGHT * (255 - color[0]) + color[0];
-      var g = BACKGROUND_ENLIGHT * (255 - color[1]) + color[1];
-      var b = BACKGROUND_ENLIGHT * (255 - color[2]) + color[2];
-      content.style.backgroundColor = Util.makeCssRgb(r | 0, g | 0, b | 0);
+      var r = BACKGROUND_ENLIGHT * (1.0 - color[0]) + color[0];
+      var g = BACKGROUND_ENLIGHT * (1.0 - color[1]) + color[1];
+      var b = BACKGROUND_ENLIGHT * (1.0 - color[2]) + color[2];
+      content.style.backgroundColor = Util.makeCssRgb((r * 255) | 0,
+                                                      (g * 255) | 0,
+                                                      (b * 255) | 0);
     }
 
     var title = document.createElement('h1');
@@ -6835,7 +6828,7 @@ var AnnotationUtils = (function AnnotationUtilsClosure() {
   }
 
   function getHtmlElementForLinkAnnotation(item) {
-    var container = initContainer(item);
+    var container = initContainer(item, true);
     container.className = 'annotLink';
 
     var link = document.createElement('a');
@@ -6869,6 +6862,7 @@ var AnnotationUtils = (function AnnotationUtilsClosure() {
 PDFJS.AnnotationUtils = AnnotationUtils;
 
 
+//#if (GENERIC || SINGLE_FILE)
 var SVG_DEFAULTS = {
   fontStyle: 'normal',
   fontWeight: 'normal',
@@ -8040,6 +8034,7 @@ var SVGGraphics = (function SVGGraphicsClosure() {
 })();
 
 PDFJS.SVGGraphics = SVGGraphics;
+//#endif
 
 
 }).call((typeof window === 'undefined') ? this : window);
@@ -8054,5 +8049,4 @@ if (!PDFJS.workerSrc && typeof document !== 'undefined') {
     return pdfjsSrc && pdfjsSrc.replace(/\.js$/i, '.worker.js');
   })();
 }
-
 

@@ -363,14 +363,13 @@
          * @param annotationSubject
          * @param predicate
          * @param annotationObject
-         * @returns {{ranges: Array, oa: {annotatedBy, motivatedBy: string, hasBody: {type: string}, hasTarget: {source: *, target: string}}}}
+         * @returns {{ranges: Array, oa: {motivatedBy: string, hasBody: {type: string}, hasTarget: {source: *, target: string}}}}
          */
         createLinkedAnnotation : function(annotationSubject, predicate, annotationObject) {
             var linkage = {
                 ranges: [], // empty but necessary
                 oa : {
                     motivatedBy: this.oa.motivation.linking,
-                    annotatedBy: $.extend(this.options.agent, {type: this.oa.types.agent.person}),
                     hasBody: {
                         rdf : {
                             subject: this.helper.getSemanticTag(annotationSubject).uri,
@@ -404,7 +403,7 @@
          * @param annotation
          */
         applyPermissions : function(annotation) {
-            if (this.options.hasOwnProperty("workspace")) {
+            /*if (this.options.hasOwnProperty("workspace")) {
                 // add permissions to annotation
                 annotation.permissions = {
                     read: [this.options.workspace],
@@ -412,7 +411,7 @@
                     delete: [this.options.agent.email],
                     admin: [this.options.agent.email]
                 };
-            }
+            }*/
         },
 
         linkedAnnotationCreated : function(annotation) {
@@ -435,7 +434,6 @@
         beforeAnnotationCreated: function (annotation) {
             // create a child element to store Open Annotation data
             annotation.oa = {
-                annotatedBy: $.extend(this.options.agent, {type: this.oa.types.agent.person}),
                 hasTarget: {
                     type: this.oa.types.document.text
                 }

@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 from rest_framework import routers
-from api import views
+from api import views, annotationstore
 from viewsets import UserViewSet, WorkingGroupViewSet, DocumentViewSet, ConceptSetViewSet, ConceptViewSet, \
     PropertyViewSet, LinkedConceptViewSet, MembershipViewSet
 
@@ -19,10 +19,12 @@ urlpatterns = [
     url(r'^', include(router.urls)),
 
     # AnnotationStore proxy API
-    url(r'^store/$', 'api.views.store_root'),
-    url(r'^store/search$', 'api.views.store_search'),
-    url(r'^store/annotations$', views.AnnotationListView.as_view()),
-    url(r'^store/annotations/(?P<pk>.+)$', views.AnnotationDetailView.as_view()),
+    url(r'^store/$', 'api.annotationstore.root'),
+    url(r'^store/search$', 'api.annotationstore.search'),
+
+    url(r'^store/(?P<group_pk>.+)/(?P<document_pk>.+)/annotations$', annotationstore.AnnotationListView.as_view()),
+    url(r'^store/(?P<group_pk>.+)/(?P<document_pk>.+)/annotations/(?P<annotation_pk>.+)$', annotationstore.AnnotationDetailView.as_view()),
+    url(r'^store/(?P<group_pk>.+)/(?P<document_pk>.+)/search$', annotationstore.SearchView.as_view()),
 
     # ElasticSearch proxy
     url(r'^es/search/(?P<index>.+)/(?P<type>.+)/(?P<term>.+)$', 'api.views.es_search'),

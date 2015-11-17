@@ -9227,6 +9227,12 @@ body {
 body#page-annotator {
   background-color: #eeeeee;
 }
+::selection {
+  background: rgba(0, 124, 255, 0.3);
+}
+::-moz-selection {
+  background: rgba(0, 124, 255, 0.3);
+}
 .sidebar {
   height: 100vh;
   z-index: 100;
@@ -9258,6 +9264,27 @@ body#page-annotator {
 }
 .content-inverted {
   background-color: #ffffff;
+}
+.textlayer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  color: #000;
+  overflow: hidden;
+}
+.textlayer > div {
+  color: transparent;
+  position: absolute;
+  line-height: 1;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0% 0px;
+}
+.textLayer .highlight {
+  margin: -1px;
+  padding: 1px;
 }
 .nav-stacked > li {
   background-color: #ffffff;

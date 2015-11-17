@@ -8,7 +8,7 @@
                  <ng-include src="'/static/partials/annotator-render-plain.html'"></ng-include>
             </div>
             <div ng-switch-when="application/pdf">
-                 <ng-include src="'/static/partials/annotator-render-pdf.html'" onload="renderPDF()"></ng-include>
+                 <ng-include src="'/static/partials/annotator-render-pdf.html'"></ng-include>
             </div>
             <div ng-switch-default>The format <i>{{ document.attached_file.content_type }}</i> is not supported yet</div>
         </div>

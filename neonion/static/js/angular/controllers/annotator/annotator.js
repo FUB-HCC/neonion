@@ -25,9 +25,9 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
             return value ? parseInt($cookies.get(cookieKeys.annotationMode)) : 1;
         };
 
-        $scope.setupAnnotator = function (params) {
+        $scope.setupAnnotator = function () {
             UserService.current(function (user) {
-                params.agent = {
+                $scope.params.agent = {
                     id: user.id,
                     email: user.email
                 };
@@ -42,22 +42,22 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                             showViewPermissionsCheckbox: false,
                             showEditPermissionsCheckbox: false,
                             annotationData: {
-                                uri: params.docID
+                                uri: $scope.params.docID
                             },
                             loadFromSearch: {'limit': 0}
                         })
                         // add neonion plugin
                         .annotator('addPlugin', 'Neonion', {
-                            uri: params.docID,
-                            agent: params.agent,
+                            uri: $scope.params.docID,
+                            agent: $scope.params.agent,
                             workspace: queryParams.workspace,
                             annotationMode: $scope.getAnnotationModeCookie()
                         })
                         // add NER plugin
                         .annotator('addPlugin', 'NER', {
-                            uri: params.docID,
-                            service: params.nerUrl,
-                            auth: params.nerAuth
+                            uri: $scope.params.docID,
+                            service: $scope.params.nerUrl,
+                            auth: $scope.params.nerAuth
                         });
 
 
@@ -90,68 +90,6 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
             }).$promise;
         };
 
-        /**
-         * Experimental
-         */
-        $scope.renderPDF = function () {
-            //PDFJS.disableWorker = true;
-            PDFJS.getDocument($scope.documentUrl).then(function (pdf) {
-                //console.log(pdf, pdf.numPages);
-                // Using promise to fetch the page
-                var numPages = Math.min(pdf.numPages, 10); // for testing limit pages
-                for (var i = 1; i <= numPages; i++) {
-                    pdf.getPage(i).then($scope.renderPage);
-                    // TODO render async
-                }
-            });
-        };
-
-        $scope.renderPage = function (page) {
-            var scale = 1.5;
-            var viewport = page.getViewport(scale);
-
-            // Prepare canvas using PDF page dimensions
-            var canvas = angular.element("<canvas/>");
-            angular.element("#document-body").append(canvas);
-            var context = canvas.get(0).getContext('2d');
-            canvas.get(0).height = viewport.height;
-            canvas.get(0).width = viewport.width;
-
-            // Render PDF page into canvas context
-            /*var canvasOffset = canvas.offset();
-             var $textLayerDiv = angular.element("<div />")
-             .addClass("textLayer")
-             .css("height", viewport.height + "px")
-             .css("width", viewport.width + "px")
-             .offset({
-             top: canvasOffset.top,
-             left: canvasOffset.left
-             });
-
-             angular.element("#document-body").append($textLayerDiv);*/
-
-            var renderContext = {
-                canvasContext: context,
-                viewport: viewport
-            };
-            page.render(renderContext);
-
-            /*page.getTextContent().then(function (textContent) {
-             //The second zero is an index identifying the page. It is set to page.number - 1.
-             //var textLayer = new TextLayerBuilder($textLayerDiv.get(0), 0);
-             var textLayer = new TextLayerBuilder({ textLayerDiv : $textLayerDiv.get(0), pageIndex : 0 });
-             textLayer.setTextContent(textContent);
-             //console.log(textContent);
-             var renderContext = {
-             canvasContext: context,
-             textLayer: textLayer,
-             viewport: viewport
-             };
-
-             page.render(renderContext);
-             });*/
-        }
-
         $scope.handleAnnotationEvent = function (annotation) {
             $scope.$apply(function () {
                 AnnotatorService.refreshContributors();
@@ -159,9 +97,28 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
             });
         };
 
+        var unbindRenderTemplateLoaded = $scope.$on('renderTemplateLoaded', function (event) {
+            $scope.$broadcast("loadDocument", $scope.documentUrl);
+        });
+
+        var unbindPageRendered = $scope.$on('pageRendered', function (event, pageNum) {
+            // debug output
+            console.log("Finished rendering of page " + pageNum);
+        });
+
+        var unbindAllPagesRendered = $scope.$on('allPagesRendered', function (event) {
+            $scope.setupAnnotator();
+        });
+
+        // unbind event
+        $scope.$on('$destroy', unbindRenderTemplateLoaded);
+        // $scope.$on('$destroy', unbindPageRendered);
+        $scope.$on('$destroy', unbindAllPagesRendered);
+
         $scope.$on('$destroy', function () {
             // TODO release resources, cancel request...
             console.log("Destroy annotator");
         });
 
     }]);
+

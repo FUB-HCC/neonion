@@ -38,7 +38,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                     angular.element("#document-body").annotator()
                         // add store plugin
                         .annotator('addPlugin', 'Store', {
-                            prefix: '/api/store/' + queryParams.workspace + '/' + params.docID,
+                            prefix: '/api/store/' + queryParams.workspace + '/' + queryParams.docId,
                             showViewPermissionsCheckbox: false,
                             showEditPermissionsCheckbox: false,
                             annotationData: {

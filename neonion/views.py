@@ -13,13 +13,12 @@ def render_home(request):
 
 
 @login_required
-def render_annotator(request, doc_id):
-    doc = get_object_or_404(Document, id=doc_id)
+def render_annotator(request, group_pk, document_pk):
+    get_object_or_404(Document, id=document_pk)
 
     data = {
-        'doc_id': doc_id,
-        'ner_url': settings.NER_SERVICE_URL,
-        'ner_auth': 'WCZZYjnOQFUYfJIN2ShH1iD24UHo58A6TI'
+        'group_pk': group_pk,
+        'document_pk': document_pk,
     }
     return render_to_response('annotator.html', data, context_instance=RequestContext(request))
 

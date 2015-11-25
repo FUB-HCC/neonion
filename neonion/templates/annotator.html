@@ -19,15 +19,11 @@
     <div class="row">
         <div class="header col-md-11 col-md-offset-1">
             {% block header %}
-                <ng-include src="'{% static 'partials/annotator/annotator-context.html' %}'"></ng-include>
+                <annotator-context group-id="{{ group_pk }}" document-id="{{ document_pk }}" />
             {% endblock %}
         </div>
         <div class="content content-inverted col-md-11 col-md-offset-1">
-            <div class="row">
-                <div class="col-md-6" id="annotate-space" ng-controller="AnnotatorCtrl"
-                    ng-include="'{% static 'partials/annotator/annotator.html' %}'"
-                    onload="initialize({ docID:'{{ doc_id }}', nerUrl:'{{ ner_url }}', nerAuth:'{{ ner_auth }}'})"></div>
-            </div>
+            <annotator group-id="{{ group_pk }}" document-id="{{ document_pk }}" class="col-md-6" />
         </div>
     </div>  
 </div>

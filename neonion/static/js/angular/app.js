@@ -1,5 +1,5 @@
 var neonionApp = angular.module('neonionApp', [
-    'ngResource', 'ngCookies', 'angular.filter', 'ngFileUpload'
+    'ngResource', 'ngCookies', 'angular.filter', 'ngFileUpload', 'components'
 ])
     .config(['$httpProvider', '$locationProvider',
         function ($httpProvider, $locationProvider) {

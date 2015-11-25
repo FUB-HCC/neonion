@@ -150,7 +150,7 @@ neonionApp.factory('AnnotatorService', [function () {
     factory.refreshContributors = function () {
         var users = this.getContributors();
         var items = [];
-        var colors = colors = Math.max(users.length, 101);
+        var colors = Math.max(users.length, 101);
 
         users.forEach(function (user, index) {
             var idx = factory.contributors.map(function (x) {

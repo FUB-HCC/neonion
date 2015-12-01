@@ -175,6 +175,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
+    "neonion.processors.system_settings",
 )
 
 
@@ -188,6 +189,13 @@ REST_FRAMEWORK = {
 }
 
 # neonion specific settings
-NEONION = {
-    'BASE_NAMESPACE':  'http://neonion.org/',
-}
+NEONION_BASE_NAMESPACE = 'http://neonion.org/'
+
+# settings for serialization to triple store
+ENDPOINT_ENABLED = False
+ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/neonion'
+ENDPOINT_UPDATE = 'http://localhost:8080/openrdf-sesame/repositories/neonion/statements'
+
+# settings for NER service
+NER_SERVICE_ENABLED = False
+NER_SERVICE_URL = 'http://localhost:5000'

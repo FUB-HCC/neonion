@@ -20,7 +20,7 @@ def generate_uri(resource_type, name=None):
 
         concept_name = resource_type.rstrip('/').rsplit('/', 1)[1]
         return '{}/{}/{}'.format(
-            settings.NEONION['BASE_NAMESPACE'].rstrip('/'),
+            settings.NEONION_BASE_NAMESPACE.rstrip('/'),
             concept_name,
             resource_id
         )

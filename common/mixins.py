@@ -12,7 +12,7 @@ class ResourceMixin(models.Model):
 
     def uri(self):
         class_name = self.__class__.__name__.lower()
-        return settings.NEONION['BASE_NAMESPACE'].rstrip('/') + '/' + class_name + '/' + self.id
+        return settings.NEONION_BASE_NAMESPACE.rstrip('/') + '/' + class_name + '/' + self.id
 
     def __str__(self):
         return self.label

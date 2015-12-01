@@ -1,12 +1,13 @@
 /**
  * AnnotatorMenu controller
  */
-neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$cookies', 'cookieKeys', 'AnnotatorService',
-    function ($scope, $window, $location, $cookies, cookieKeys, AnnotatorService) {
+neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$cookies',
+    'cookieKeys', 'systemSettings', 'AnnotatorService',
+    function ($scope, $window, $location, $cookies, cookieKeys, systemSettings, AnnotatorService) {
         "use strict";
-
+console.log(systemSettings);
+        $scope.systemSettings = systemSettings;
         $scope.annotatorService = AnnotatorService;
-        $scope.active = -1;
         $scope.mode = {
             commenting: {
                 shortCut: "A",
@@ -62,18 +63,6 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$
             }
         };
 
-        $scope.toggleSubMenu = function (index) {
-            if (index == $scope.active) {
-                $scope.closeSubMenus();
-            } else {
-                $scope.active = index;
-            }
-        };
-
-        $scope.closeSubMenus = function () {
-            $scope.active = -1;
-        }
-
         $scope.getAnnotationMode = function () {
             if (Annotator && Annotator._instances.length >= 1) {
                 return Annotator._instances[0].plugins.Neonion.annotationMode();
@@ -86,7 +75,6 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$
         $scope.setAnnotationMode = function (mode) {
             $cookies.put(cookieKeys.annotationMode, mode);
             Annotator._instances[0].plugins.Neonion.annotationMode(mode);
-            $scope.closeSubMenus();
         };
 
         $scope.toggleContributor = function (contributor) {
@@ -136,21 +124,5 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$
                 element.msRequestFullscreen();
             }
         };
-
-        // for closing the submenu if clicked anywere except the menu itself
-        angular.element(document).ready(function () {
-            $(document).mouseup(function (e) {
-                var navigation = $(".nav-vertical");
-                if (!navigation.is(e.target) && navigation.has(e.target).length === 0) {
-                    $scope.closeSubMenus();
-                    $scope.$apply();
-                }
-            });
-
-            // attach key listener
-            var unbindKeyHandler = angular.element($window).on('keydown', $scope.handleKeyDown);
-            // unbind on destroy
-            $scope.$on('$destroy', unbindKeyHandler);
-        });
 
     }]);

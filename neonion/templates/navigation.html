@@ -47,12 +47,14 @@
             {% url 'neonion.views.render_query' as url_query %}
             {% url 'neonion.views.accounts_management' as url_accounts %}
 
+            {% if system.services.endpoint.enabled %}
             {# Query form #}
             <li {% if request.path == url_query %}class="active"{% endif %}>
                 <a href="{{ url_query }}">
                     <i class="fa fa-cube fa-fw"></i>Query
                 </a>
             </li>
+            {% endif %}
             {# Accounts #}
             <li {% if request.path == url_accounts %}class="active"{% endif %}>
                 <a href="{{ url_accounts }}">

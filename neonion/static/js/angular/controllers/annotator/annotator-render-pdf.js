@@ -54,7 +54,7 @@ neonionApp.controller('AnnotatorPDFCtrl', ['$scope',
 
                 textlayer.setTextContent(textContent);
                 textlayer.render(200); // TEXT_LAYER_RENDER_DELAY
-                // paramets for rendering the page
+                // parameters for rendering the page
                 var renderContext = {
                     canvasContext: context,
                     viewport: viewport,
@@ -65,7 +65,7 @@ neonionApp.controller('AnnotatorPDFCtrl', ['$scope',
                     $scope.onRenderPageComplete(page.pageIndex + 1);
                 });
             });
-        }
+        };
 
         /**
         * Page rendered successfully.
@@ -85,12 +85,24 @@ neonionApp.controller('AnnotatorPDFCtrl', ['$scope',
         };
 
         var unbindLoadDocument= $scope.$on('loadDocument', function (event, documentUrl) {
-            $scope.renderPDF(documentUrl);
+            $scope.path = documentUrl;
+            $scope.renderPDF($scope.path);
+        });
+
+        var unbindReloadDocument= $scope.$on('reloadDocument', function (event) {
+            $scope.renderPDF($scope.path);
         });
 
         // Controller initialized notify parent controller
         $scope.$emit("renderTemplateLoaded");
 
-        // unbind event
+        // unbind events
         $scope.$on('$destroy', unbindLoadDocument);
+        $scope.$on('$destroy', unbindReloadDocument);
+
+        // render if path is provided
+        if($scope.path) {
+            $scope.renderPDF($scope.path);
+        }
+
     }]);

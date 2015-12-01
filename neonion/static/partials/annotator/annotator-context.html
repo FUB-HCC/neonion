@@ -1,26 +1,26 @@
-<div ng-controller="ContextInfoCtrl" ng-cloak>
-    <ul class="list-inline">
-        <li><i class="fa fa-bookmark"></i>
-            <ng-pluralize count="annotatorService.getNumberOfTotalAnnotations()"
-                          when="{'0': 'No Annotations',
+<ul class="list-inline">
+    <li><i class="fa fa-bookmark"></i>
+        <ng-pluralize count="annotatorService.getNumberOfTotalAnnotations()"
+                      when="{'0': 'No Annotations',
                        'one': '1 Annotation',
                        'other': '{} Annotations'}">
-            </ng-pluralize>
-        </li>
-        <li><i class="fa fa-users"></i>
-            <ng-pluralize count="annotatorService.contributors.length"
-                          when="{'0': 'Nobody has contributed',
+        </ng-pluralize>
+    </li>
+    <li><i class="fa fa-users"></i>
+        <ng-pluralize count="annotatorService.contributors.length"
+                      when="{'0': 'Nobody has contributed',
                        'one': '1 Contributor',
                        'other': '{} Contributors'}">
-            </ng-pluralize>
-        </li>
-        <li class="pull-right"><i class="fa fa-user"></i> {{ user.email }}</li>
-    </ul>
-    <div class="gap-top">
-        {{ document.title }}
+        </ng-pluralize>
+    </li>
+    <li class="pull-right">
+        <logged-user/>
+    </li>
+</ul>
+<div class="gap-top">
+    {{ document.title }}
         <span class="list-icon" ng-switch on="isPrivate"><i class="fa fa-circle-o"></i>
             <span ng-switch-when="true">Private</span>
             <span ng-switch-default>{{ group.name }}</span>
         </span>
-    </div>
 </div>

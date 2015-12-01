@@ -157,6 +157,7 @@ PIPELINE_JS = {
         'source_filenames': (
             'js/angular/app.js',
             'js/angular/filters.js',
+            'js/angular/components.js',
             'js/angular/root.js',
             'js/angular/services/*.js',
             'js/angular/controllers/**/*.js',

@@ -31,7 +31,7 @@
                     <td class="highlight col-md-10">
                         {{ annotation.context.left | truncate:'left' }}
                         <a class="mark"
-                           href="/annotator/{{ documentKey }}#?docId={{ documentKey }}&annotationId={{ annotation.id }}&workspace={{ groupKey }}">
+                           href="/annotator/{{ groupKey }}/{{ documentKey }}#?annotationId={{ annotation.id }}">
                             {{ annotation.quote }}&nbsp;<i class="fa fa-external-link"></i>
                         </a>
                         {{ annotation.context.right | truncate:'right' }}

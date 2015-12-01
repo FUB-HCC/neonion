@@ -9,15 +9,19 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
               ConceptSetService) {
         "use strict";
 
-        $scope.initialize = function (params) {
-            $scope.params = params;
+        $scope.loadDocumentMeta = function () {
+            if ($scope.hasOwnProperty("groupId") && $scope.hasOwnProperty("documentId")) {
+                DocumentService.get({id: $scope.documentId}, function (document) {
+                    $scope.document = document;
+                })
+            }
+        };
 
-            DocumentService.get({id: params.docID}, function (document) {
-                $scope.document = document;
-                if ($scope.document.hasOwnProperty("attached_file")) {
-                    $scope.documentUrl = "/documents/viewer/" + $scope.document.attached_file.id;
-                }
-            })
+        $scope.getDocumentUrl = function() {
+            if ($scope.document) {
+                return "/documents/viewer/" + $scope.document.attached_file.id;
+            }
+            return "";
         };
 
         $scope.getAnnotationModeCookie = function () {
@@ -27,38 +31,36 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
 
         $scope.setupAnnotator = function () {
             UserService.current(function (user) {
-                $scope.params.agent = {
+                $scope.agent = {
                     id: user.id,
                     email: user.email
                 };
             }).$promise
                 .then(function () {
-                    var queryParams = $location.search();
-
                     angular.element("#document-body").annotator()
                         // add store plugin
                         .annotator('addPlugin', 'Store', {
-                            prefix: '/api/store/' + queryParams.workspace + '/' + queryParams.docId,
+                            prefix: '/api/store/' + $scope.groupId + '/' + $scope.documentId,
                             showViewPermissionsCheckbox: false,
                             showEditPermissionsCheckbox: false,
                             annotationData: {
-                                uri: $scope.params.docID
+                                uri: $scope.documentId
                             },
                             loadFromSearch: {'limit': 0}
                         })
                         // add neonion plugin
                         .annotator('addPlugin', 'Neonion', {
-                            uri: $scope.params.docID,
-                            agent: $scope.params.agent,
-                            workspace: queryParams.workspace,
+                            uri: $scope.documentId,
+                            workspace: $scope.groupId,
+                            agent: $scope.agent,
                             annotationMode: $scope.getAnnotationModeCookie()
-                        })
-                        // add NER plugin
-                        .annotator('addPlugin', 'NER', {
-                            uri: $scope.params.docID,
-                            service: $scope.params.nerUrl,
-                            auth: $scope.params.nerAuth
                         });
+                    // add NER plugin
+                    /*.annotator('addPlugin', 'NER', {
+                     uri: $scope.documentId,
+                     service: $scope.params.nerUrl,
+                     auth: $scope.params.nerAuth
+                     });*/
 
 
                     // get annotator instance and subscribe to events
@@ -76,6 +78,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                             });
 
                             // go to annotation given by hash
+                            var queryParams = $location.search();
                             if (queryParams.hasOwnProperty("annotationId")) {
                                 AnnotatorService.scrollToAnnotation(queryParams.annotationId);
                             }
@@ -98,7 +101,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
         };
 
         var unbindRenderTemplateLoaded = $scope.$on('renderTemplateLoaded', function (event) {
-            $scope.$broadcast("loadDocument", $scope.documentUrl);
+
         });
 
         var unbindPageRendered = $scope.$on('pageRendered', function (event, pageNum) {
@@ -110,15 +113,17 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
             $scope.setupAnnotator();
         });
 
-        // unbind event
+        // unbind events
         $scope.$on('$destroy', unbindRenderTemplateLoaded);
-        // $scope.$on('$destroy', unbindPageRendered);
+        $scope.$on('$destroy', unbindPageRendered);
         $scope.$on('$destroy', unbindAllPagesRendered);
 
         $scope.$on('$destroy', function () {
             // TODO release resources, cancel request...
-            console.log("Destroy annotator");
+            //console.log("Destroy annotator");
         });
+
+        $scope.loadDocumentMeta();
 
     }]);
 

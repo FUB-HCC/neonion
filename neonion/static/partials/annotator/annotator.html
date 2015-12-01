@@ -2,13 +2,13 @@
     <div id="document-frame" class="gap-top gap-bottom">
         <div ng-switch on="document.attached_file.content_type">
             <div ng-switch-when="text/plain">
-                <ng-include src="'/static/partials/annotator-render-plain.html'"></ng-include>
+                <plain-render path="{{ getDocumentUrl() }}"/>
             </div>
-             <div ng-switch-when="text/html">
-                 <ng-include src="'/static/partials/annotator-render-plain.html'"></ng-include>
+            <div ng-switch-when="text/html">
+                <plain-render path="{{ getDocumentUrl() }}"/>
             </div>
             <div ng-switch-when="application/pdf">
-                 <ng-include src="'/static/partials/annotator-render-pdf.html'"></ng-include>
+                <pdf-render path="{{ getDocumentUrl() }}"/>
             </div>
         </div>
     </div>

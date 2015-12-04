@@ -265,7 +265,12 @@
             },
             paginationSize: 5,
             annotationMode : 1, // commenting
-            activateWidgets : ['contextInformation', 'viewerSummarizeStatements', 'viewerCreateProperty']
+            activateWidgets : [
+                'storeContext',
+                'viewerSummarizeStatements',
+                'viewerCreateProperty',
+                'visualizeRelationship'
+            ]
         },
 
         /**
@@ -332,6 +337,9 @@
                 tag: {
                     tag: "oa:Tag",
                     semanticTag: "oa:SemanticTag"
+                },
+                selectors: {
+                    sourceTargetSelector : "oa:SourceTargetSelector"
                 }
             }
         },
@@ -381,7 +389,8 @@
                     },
                     hasTarget: {
                         source : annotationSubject.id,
-                        target : annotationObject.id
+                        target : annotationObject.id,
+                        type : this.oa.types.selectors.sourceTargetSelector
                     }
                 }
             };

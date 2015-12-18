@@ -18,8 +18,7 @@ urlpatterns = [
     url(r'^management/?$', 'neonion.views.accounts_management'),
 
     url(r'^annotator/(?P<group_pk>.+)/(?P<document_pk>.+)$', 'neonion.views.render_annotator'),
-    
-    url(r'^admin/', include(admin.site.urls)),
+
     url(r'^api/', include('api.urls')),
     url(r'^accounts/', include('accounts.urls')),
     url(r'^documents/', include('documents.urls')),

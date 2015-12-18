@@ -31,7 +31,7 @@ class DocumentDetailedSerializer(DocumentSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'is_active', 'is_superuser')
+        fields = ('id', 'email', 'is_active', 'is_staff', 'is_superuser')
 
 
 # Serializer for user representation.

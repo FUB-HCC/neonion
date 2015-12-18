@@ -29,6 +29,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     surname = models.CharField('persons surname', blank=True, max_length=256)
     joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=settings.DEFAULT_USER_ACTIVE_STATE)
+    is_staff = models.BooleanField(default=False)
 
     owned_documents = models.ManyToManyField(Document, blank=True, null=True)
     hidden_documents = models.ManyToManyField(Document, related_name='hidden_documents', blank=True, null=True)

@@ -81,19 +81,6 @@
   {
     "fields": {
       "comment": "",
-      "endpoint": "http://mpiwg-berlin.mpg.de",
-      "custom_query": null,
-      "linked_type": "http://mpiwg-berlin.mpg.de/person",
-      "retrieved_at": null,
-      "label": "Person@MPIWG",
-      "provider_class": ""
-    },
-    "model": "annotationsets.linkedconcept",
-    "pk": "mpiwg_person"
-  },
-  {
-    "fields": {
-      "comment": "",
       "endpoint": "https://www.wikidata.org",
       "custom_query": null,
       "linked_type": "https://www.wikidata.org/wiki/Q178706",
@@ -181,18 +168,6 @@
     },
     "model": "annotationsets.concept",
     "pk": "person_function"
-  },
-  {
-    "fields": {
-      "comment": "Just another concept set for testing",
-      "concepts": [
-        "person",
-        "person_function"
-      ],
-      "label": "Another one"
-    },
-    "model": "annotationsets.conceptset",
-    "pk": "another"
   },
   {
     "fields": {

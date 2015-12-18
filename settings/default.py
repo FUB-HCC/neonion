@@ -38,11 +38,9 @@ LOCALE_PATHS = (
 # Application definition
 
 INSTALLED_APPS = (
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
     'pipeline',
@@ -64,7 +62,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
@@ -174,7 +171,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
-    "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
     "neonion.processors.system_settings",
 )
@@ -199,4 +195,4 @@ ENDPOINT_UPDATE = 'http://localhost:8080/openrdf-sesame/repositories/neonion/sta
 
 # settings for NER service
 NER_SERVICE_ENABLED = False
-NER_SERVICE_URL = 'http://localhost:5000'
+NER_SERVICE_URL = 'http://localhost:6000'

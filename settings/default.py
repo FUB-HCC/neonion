@@ -46,7 +46,6 @@ INSTALLED_APPS = (
     'pipeline',
     'neonion',
     'api',
-    'plugins',
     'documents',
     'accounts',
     'endpoint',

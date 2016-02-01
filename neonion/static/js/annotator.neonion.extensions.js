@@ -24,15 +24,83 @@
 
     /**
      * Widget to store the surrounded text of the annotation quote.
-     * @returns {Widget}
+     * @returns {}
      */
-    Annotator.Plugin.Neonion.prototype.widgets['storeContext'] = function (scope, options) {
+    Annotator.Plugin.Neonion.prototype.widgets['contextInformation'] = function (scope, options) {
         var factory = {};
 
         factory.load = function () {
             // extract the context information when the editor was submitted
             scope.annotator.subscribe("annotationEditorSubmit", function (editor, annotation) {
-                annotation.context = factory.extractSurroundedContent(annotation, scope.annotator);
+                if (!annotation.hasOwnProperty('neonion')) {
+                    annotation['neonion'] = {};
+                }
+                // add context information
+                annotation['neonion']['context'] = {
+                    'pageIdx': factory.getPageIndex(annotation, scope.annotator),
+                    'surrounding': factory.getSurroundedContent(annotation, scope.annotator),
+                    'normalizedHighlights': factory.getHighlightRectangles(annotation, scope.annotator)
+                };
+            });
+        };
+
+        /**
+         * Returns the element representing the page bounds.
+         * @param annotation
+         * @param annotator
+         */
+        factory.getPageElement = function (annotation, annotator) {
+            var node = null;
+            if (annotation.highlights.length > 0) {
+                node = $(annotation.highlights[0]);
+                while (!node.parent().hasClass('annotator-wrapper')) {
+                    // move up until annotator-wrapper is reached
+                    node = node.parent();
+                }
+                // convert selector to DOM element
+                node = node[0];
+            }
+            return node;
+        };
+
+        /**
+         * Returns the page index on the document.
+         * @param annotation
+         * @param annotator
+         */
+        factory.getPageIndex = function (annotation, annotator) {
+            var page = factory.getPageElement(annotation, annotator);
+            // return the index of the page
+            return $(page.parentNode).children("div").index(page);
+        };
+
+        factory.getHighlightRectangles = function (annotation, annotator) {
+            var page = factory.getPageElement(annotation, annotator);
+            var pageBounds = page.getBoundingClientRect();
+            var rects = [];
+
+            annotation.highlights.forEach(function (highlight) {
+                var clientRects = highlight.getClientRects();
+                // convert ClientRectList to array
+                for (var i = 0; i < clientRects.length; i++) {
+                    rects.push({
+                        'top': clientRects[i].top,
+                        'left': clientRects[i].left,
+                        'width': clientRects[i].width,
+                        'height': clientRects[i].height
+                    });
+                }
+            });
+
+            // return an array of normalized rectangles
+            return rects.map(function (rect) {
+                // map coordinate to page space and normalize
+                rect.top = (rect.top - pageBounds.top) / pageBounds.height;
+                rect.left = (rect.left - pageBounds.left) / pageBounds.width;
+                // normalize size
+                rect.width = rect.width / pageBounds.width;
+                rect.height = rect.height / pageBounds.height;
+                return rect;
             });
         };
 
@@ -42,7 +110,7 @@
          * @param annotator
          * @returns {{left: string, right: string}}
          */
-        factory.extractSurroundedContent = function (annotation, annotator) {
+        factory.getSurroundedContent = function (annotation, annotator) {
             var length = 70;
             var node, contentLeft = '', contentRight = '';
             // left
@@ -129,7 +197,7 @@
         factory.onDeleteProperty = function (e) {
             var annotationId = e.target.getAttribute("data-value");
             if (annotationId) {
-                var annotation = scope.linkedAnnotations.filter(function(item) {
+                var annotation = scope.linkedAnnotations.filter(function (item) {
                     return item.id == annotationId;
                 }).pop();
                 scope.deleteLinkedAnnotation(annotation);
@@ -233,8 +301,7 @@
          */
         factory.hasSuitableAnnotations = function (property) {
             // get tne URIs of all suitable concepts
-            var matchingConcepts = scope.concepts.
-                filter(function (concept) {
+            var matchingConcepts = scope.concepts.filter(function (concept) {
                     return property.range.indexOf(concept.id) != -1;
                 })
                 .map(function (concept) {
@@ -340,7 +407,7 @@
                 var annotations = factory.groupedObjects[uri];
 
                 // sort annotations by euclidean distance to focused annotation
-                annotations.sort(function(a, b) {
+                annotations.sort(function (a, b) {
                     return factory.euclideanDistance(factory.focusedAnnotation, a) - factory.euclideanDistance(factory.focusedAnnotation, b);
                 });
 

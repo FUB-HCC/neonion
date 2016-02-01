@@ -265,7 +265,7 @@
             },
             paginationSize: 5,
             annotationMode : 1, // commenting
-            activateWidgets : ['storeContext', 'viewerSummarizeStatements', 'viewerCreateProperty']
+            activateWidgets : ['contextInformation', 'viewerSummarizeStatements', 'viewerCreateProperty']
         },
 
         /**

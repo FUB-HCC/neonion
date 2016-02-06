@@ -52,16 +52,8 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                         .annotator('addPlugin', 'Neonion', {
                             uri: $scope.documentId,
                             workspace: $scope.groupId,
-                            agent: $scope.agent,
                             annotationMode: $scope.getAnnotationModeCookie()
                         });
-                    // add NER plugin
-                    /*.annotator('addPlugin', 'NER', {
-                     uri: $scope.documentId,
-                     service: $scope.params.nerUrl,
-                     auth: $scope.params.nerAuth
-                     });*/
-
 
                     // get annotator instance and subscribe to events
                     $scope.annotator = angular.element("#document-body").data("annotator");

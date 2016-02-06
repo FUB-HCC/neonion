@@ -2,8 +2,7 @@ from common.uri import generate_uri
 from common.exceptions import InvalidAnnotationError
 from common.sparql import insert_data
 from common.statements import Annotation
-from django.conf import settings
-from common.vocab import OpenAnnotation
+from common.vocab import neonion, OpenAnnotation
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
 
@@ -20,26 +19,14 @@ class SemanticAnnotationValidator(object):
         if self.has_motivation_field(annotation):
             if self.has_body_field(annotation):
                 # check the motivation
-                if annotation['oa']['motivatedBy'] == OpenAnnotation.Motivations.commenting.value:
-                    # comments has body type text
-                    if not annotation['oa']['hasBody']['type'] == OpenAnnotation.DocumentTypes.text.value:
-                        throw_error = True
-                elif (annotation['oa']['motivatedBy'] == OpenAnnotation.Motivations.classifying.value or
-                        annotation['oa']['motivatedBy'] == OpenAnnotation.Motivations.identifying.value):
-                    # classifying and identifying motivated annotations has the body type semanticTag
-                    if not annotation['oa']['hasBody']['type'] == OpenAnnotation.TagTypes.semanticTag.value:
-                        throw_error = True
-                    else:
-                        if not self.has_typeof_field(annotation):
-                            throw_error = True
-                elif annotation['oa']['motivatedBy'] == OpenAnnotation.Motivations.linking.value:
-                    # linking has the body type semanticTag
-                    if not annotation['oa']['hasBody']['type'] == OpenAnnotation.TagTypes.semanticTag.value:
-                        throw_error = True
+                if (motivation_equals(annotation, OpenAnnotation.Motivations.classifying) or
+                        motivation_equals(annotation, OpenAnnotation.Motivations.identifying)):
+                    throw_error = not self.has_instance_mandatory_fields(annotation)
+                elif motivation_equals(annotation, OpenAnnotation.Motivations.linking):
+                    throw_error = not self.has_relation_mandatory_fields(annotation)
             else:
                 # only highlights do not need a body
-                if not annotation['oa']['motivatedBy'] == OpenAnnotation.Motivations.highlighting.value:
-                    throw_error = True
+                throw_error = not motivation_equals(annotation, OpenAnnotation.Motivations.highlighting)
         else:
             throw_error = True
 
@@ -59,28 +46,28 @@ class SemanticAnnotationValidator(object):
 
     @classmethod
     def has_body_field(cls, annotation):
-        return 'oa' in annotation and 'hasBody' in annotation['oa'] and 'type' in annotation['oa']['hasBody']
+        return 'oa' in annotation and 'hasBody' in annotation['oa'] and '@type' in annotation['oa']['hasBody']
 
     @classmethod
-    def has_typeof_field(cls, annotation):
-        return 'rdf' in annotation and 'typeof' in annotation['rdf']
+    def has_instance_mandatory_fields(cls, annotation):
+        # classifying and identifying motivated annotations has the body type semanticTag
+        return (OpenAnnotation.TagTypes.semanticTag.value in annotation['oa']['hasBody']['@type'] and
+            "neo:Instance" in annotation['oa']['hasBody']['@type'] and
+            "instanceOf" in annotation['oa']['hasBody'] and
+            "label" in annotation['oa']['hasBody'])
+
+    @classmethod
+    def has_relation_mandatory_fields(cls, annotation):
+        # linking has the body type semanticTag
+        return (OpenAnnotation.TagTypes.semanticTag.value in annotation['oa']['hasBody']['@type'] and
+            "neo:Relation" in annotation['oa']['hasBody']['@type'])
 
 
-def pre_process_annotation(validated_annotation):
+def endpoint_create_annotation(validated_annotation):
+    # extract data from annotation and insert in triple store
     if (motivation_equals(validated_annotation, OpenAnnotation.Motivations.identifying) or
             motivation_equals(validated_annotation, OpenAnnotation.Motivations.classifying)):
-        add_resource_uri(validated_annotation)
-
-    return validated_annotation
-
-
-def post_process_annotation(validated_annotation):
-    # TODO serialize general parts of annotation (independent from motivation) to triple store
-    if hasattr(settings, 'ENDPOINT_ENABLED') and settings.ENDPOINT_ENABLED:
-        # extract data from annotation and insert in triple store
-        if (motivation_equals(validated_annotation, OpenAnnotation.Motivations.identifying) or
-                motivation_equals(validated_annotation, OpenAnnotation.Motivations.classifying)):
-            insert_data(Annotation.statement_about_resource(validated_annotation))
+        insert_data(Annotation.statement_about_resource(validated_annotation))
 
     return validated_annotation
 
@@ -89,13 +76,21 @@ def motivation_equals(annotation, motivation):
     return annotation['oa']['motivatedBy'] == motivation.value
 
 
-def add_resource_uri(annotation):
-    if 'rdf' in annotation:
-        if 'uri' not in annotation['rdf']:
-            uri = generate_uri(annotation['rdf']['typeof'], annotation['rdf']['label'])
-            if uri is not None:
-                annotation['rdf']['uri'] = uri
-    else:
-        raise InvalidAnnotationError(annotation)
+def add_resource_uri(validated_annotation):
+    uri = generate_uri(validated_annotation['oa']['hasBody']['instanceOf'], validated_annotation['oa']['hasBody']['label'])
+    if uri is not None:
+        validated_annotation['oa']['hasBody']['references'] = uri
 
-    return annotation
+    return validated_annotation
+
+
+def add_creator(validated_annotation, mail):
+    if 'neonion' in validated_annotation:
+        validated_annotation['neonion']['creator'] = mail
+
+    # add user to annotation
+    if 'oa' in validated_annotation and 'annotatedBy' in validated_annotation['oa']:
+        validated_annotation['oa']['annotatedBy']['@id'] = generate_uri(neonion.USER, mail)
+        validated_annotation['oa']['annotatedBy']['mbox'] = { '@id': 'mailto:' + mail }
+
+    return validated_annotation

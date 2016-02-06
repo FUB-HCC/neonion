@@ -38,7 +38,7 @@
                         {{ annotation.neonion.context.surrounding.right | truncate:'right' }}
                     </td>
                     <td class="annotation col-md-3">{{ annotation.text }}</td>
-                    <td class="date col-md-2">{{ annotation.oa.annotatedBy.email }}<br>{{ annotation.created | date : "MM/dd/yyyy 'at' h:mma" }}
+                    <td class="date col-md-2">{{ annotation['neonion']['creator'] }}<br>{{ annotation.created | date : "MM/dd/yyyy 'at' h:mma" }}
                     </td>
                 </tr>
                 </tbody>

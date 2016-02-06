@@ -20,7 +20,10 @@
         };
 
         factory.getCompositeKey = function (annotation) {
-            return [annotation.oa.hasTarget.source, annotation.oa.hasTarget.target];
+            return [
+                annotation['oa']['hasTarget']['hasSelector']['source'], 
+                annotation['oa']['hasTarget']['hasSelector']['target']
+            ];
         };
 
         factory.relationsLoaded = function (annotations) {
@@ -41,10 +44,10 @@
                     element: element,
                     relations: [],
                     source: annotations.filter(function (item) {
-                        return item.id == annotation.oa.hasTarget.source
+                        return item['oa']['@id'] == annotation['oa']['hasTarget']['hasSelector']['source'];
                     }).pop(),
                     target: annotations.filter(function (item) {
-                        return item.id == annotation.oa.hasTarget.target
+                        return item['oa']['@id'] == annotation['oa']['hasTarget']['hasSelector']['target'];
                     }).pop()
                 };
                 // delay fade in
@@ -75,61 +78,63 @@
 
         factory.redrawRelation = function (key) {
             if (factory.relationMap.hasOwnProperty(key)) {
-                var annotatorBoundingRect = scope.annotator.element[0].getBoundingClientRect();
-                var sourceRects = factory.relationMap[key].source.highlights[0].getClientRects();
-                var targetRects = factory.relationMap[key].target.highlights[0].getClientRects();
+                if (factory.relationMap[key]['source'] && factory.relationMap[key]['target']) {
+                    var annotatorBoundingRect = scope.annotator.element[0].getBoundingClientRect();
+                    var sourceRects = factory.relationMap[key].source.highlights[0].getClientRects();
+                    var targetRects = factory.relationMap[key].target.highlights[0].getClientRects();
 
-                // calculate bounds of the SVG container
-                var bounds = {
-                    offsetTop: annotatorBoundingRect.top,
-                    offsetLeft: annotatorBoundingRect.left,
-                    top: Math.floor(Math.min(sourceRects[0].top, targetRects[0].top) - annotatorBoundingRect.top),
-                    left: 0, // Math.floor(Math.min(sourceRects[0].left, targetRects[0].left) - annotatorBoundingRect.left),
-                    height: Math.ceil(Math.max(targetRects[0].top + targetRects[0].height - sourceRects[0].top,
-                            sourceRects[0].top + sourceRects[0].height - targetRects[0].top) + 1),
-                    transform: function (pt) {
-                        return {
-                            left: Math.floor(pt.left - this.left - this.offsetLeft),
-                            top: Math.floor(pt.top - this.top - this.offsetTop)
-                        };
+                    // calculate bounds of the SVG container
+                    var bounds = {
+                        offsetTop: annotatorBoundingRect.top,
+                        offsetLeft: annotatorBoundingRect.left,
+                        top: Math.floor(Math.min(sourceRects[0].top, targetRects[0].top) - annotatorBoundingRect.top),
+                        left: 0, // Math.floor(Math.min(sourceRects[0].left, targetRects[0].left) - annotatorBoundingRect.left),
+                        height: Math.ceil(Math.max(targetRects[0].top + targetRects[0].height - sourceRects[0].top,
+                                sourceRects[0].top + sourceRects[0].height - targetRects[0].top) + 1),
+                        transform: function (pt) {
+                            return {
+                                left: Math.floor(pt.left - this.left - this.offsetLeft),
+                                top: Math.floor(pt.top - this.top - this.offsetTop)
+                            };
+                        }
+                    };
+                    bounds.width = Math.ceil(annotatorBoundingRect.width - bounds.left + factory.calculateRelationOffset(sourceRects[0], targetRects[0]));
+
+                    // set position of SVG container
+                    factory.relationMap[key]['element']
+                        .empty()
+                        .css("top", bounds.top).css("left", bounds.left)
+                        .width(bounds.width).height(bounds.height);
+
+                    // create SVG polyline
+                    var line = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+                    line.setAttribute("class", "annotator-svg-relation");
+                    var pts = [];
+
+                    if (sourceRects[0].top != targetRects[0].top) {
+                        var pt1 = bounds.transform(sourceRects[0]), pt2 = bounds.transform(targetRects[0]);
+                        pts.push(pt1.left + "," + pt1.top);
+                        pt1.top += sourceRects[0].height;
+                        pts.push(pt1.left + "," + pt1.top);
+
+                        pts.push(pt1.left + "," + pt1.top);
+                        pts.push(bounds.width - 1 + "," + pt1.top);
+                        pts.push(bounds.width - 1 + "," + pt2.top);
+                        pts.push(pt2.left + "," + pt2.top);
+                        pt2.top += targetRects[0].height;
+                        pts.push(pt2.left + "," + pt2.top);
                     }
-                };
-                bounds.width = Math.ceil(annotatorBoundingRect.width - bounds.left + factory.calculateRelationOffset(sourceRects[0], targetRects[0]));
+                    else {
+                        var pt1 = bounds.transform(sourceRects[0]), pt2 = bounds.transform(targetRects[0])
+                        pts.push(pt1.left + sourceRects[0].width * 0.5 + "," + pt1.top + sourceRects[0].height);
+                        pts.push(pt2.left + targetRects[0].width * 0.5 + "," + pt2.top + targetRects[0].height);
+                    }
+                    line.setAttribute("points", pts.join(" "));
+                    // append element to DOM
+                    factory.relationMap[key]['element'].append(line);
 
-                // set position of SVG container
-                factory.relationMap[key]['element']
-                    .empty()
-                    .css("top", bounds.top).css("left", bounds.left)
-                    .width(bounds.width).height(bounds.height);
-
-                // create SVG polyline
-                var line = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-                line.setAttribute("class", "annotator-svg-relation");
-                var pts = [];
-
-                if (sourceRects[0].top != targetRects[0].top) {
-                    var pt1 = bounds.transform(sourceRects[0]), pt2 = bounds.transform(targetRects[0]);
-                    pts.push(pt1.left + "," + pt1.top);
-                    pt1.top += sourceRects[0].height;
-                    pts.push(pt1.left + "," + pt1.top);
-
-                    pts.push(pt1.left + "," + pt1.top);
-                    pts.push(bounds.width - 1 + "," + pt1.top);
-                    pts.push(bounds.width - 1 + "," + pt2.top);
-                    pts.push(pt2.left + "," + pt2.top);
-                    pt2.top += targetRects[0].height;
-                    pts.push(pt2.left + "," + pt2.top);
+                    factory.redrawRelationCaption(key);
                 }
-                else {
-                    var pt1 = bounds.transform(sourceRects[0]), pt2 = bounds.transform(targetRects[0])
-                    pts.push(pt1.left + sourceRects[0].width * 0.5 + "," + pt1.top + sourceRects[0].height);
-                    pts.push(pt2.left + targetRects[0].width * 0.5 + "," + pt2.top + targetRects[0].height);
-                }
-                line.setAttribute("points", pts.join(" "));
-                // append element to DOM
-                factory.relationMap[key]['element'].append(line);
-
-                factory.redrawRelationCaption(key);
             }
         };
 
@@ -166,15 +171,13 @@
                 switch (annotation.oa.motivatedBy) {
                     case scope.oa.motivation.classifying:
                     case scope.oa.motivation.identifying:
-                        var linkedAnnotations = factory.getLinkedAnnotationsWithSubject(scope.helper.getSemanticTag(annotation).uri);
+                        var linkedAnnotations = factory.getLinkedAnnotationsWithSubject(annotation['oa']['hasBody']['references']);
                         if (linkedAnnotations.length > 0) {
                             linkedAnnotations.forEach(function (statement) {
-                                var object = factory.getAnnotationById(statement.oa.hasTarget.target);
+                                var object = factory.getAnnotationById(statement['oa']['hasTarget']['hasSelector']['target']);
                                 // ensure the target annotation was found
                                 if (object) {
-                                    $(field).append(factory.createStatementHTML(scope.helper.getSemanticTag(annotation),
-                                        scope.helper.getSemanticTag(statement),
-                                        scope.helper.getSemanticTag(object), statement.id));
+                                    $(field).append(factory.createStatementHTML(annotation, statement, object));
                                 }
                             });
                             $(field).wrapInner("<ul></ul>").show();
@@ -203,7 +206,7 @@
          */
         factory.getLinkedAnnotationsWithSubject = function (subject) {
             return scope.linkedAnnotations.filter(function (annotation) {
-                return scope.helper.getSemanticTag(annotation).subject == subject;
+                return annotation['neonion']['viewer']['source'] == subject;
             });
         };
 
@@ -215,7 +218,7 @@
         factory.getAnnotationById = function (id) {
             return scope.getAnnotations()
                 .filter(function (annotation) {
-                    return annotation.id == id;
+                    return annotation['oa']['@id'] == id;
                 })
                 .pop();
         };
@@ -227,12 +230,12 @@
          * @param object
          * @returns {String}
          */
-        factory.createStatementHTML = function (subject, predicate, object, annotationId) {
+        factory.createStatementHTML = function (subject, statement, object) {
             return "<li>" +
-                subject.label + "&nbsp;" +
-                predicate.predicateLabel + "&nbsp;" +
-                object.label +
-                "<i class='pull-right fa fa-times fa-1' data-action='delete-property' data-value='" + annotationId + "'></i>" +
+                subject['oa']['hasBody']['label'] + "&nbsp;" +
+                statement['neonion']['viewer']['predicateLabel'] + "&nbsp;" +
+                object['oa']['hasBody']['label'] +
+                "<i class='pull-right fa fa-times fa-1' data-action='delete-property' data-value='" + statement.id + "'></i>" +
                 "</li>";
         };
 
@@ -267,7 +270,7 @@
                 switch (annotation.oa.motivatedBy) {
                     case scope.oa.motivation.classifying:
                     case scope.oa.motivation.identifying:
-                        var conceptDefinition = scope.getConcept(scope.helper.getSemanticTag(annotation).typeof);
+                        var conceptDefinition = scope.getConceptDefinition(annotation['oa']['hasBody']['instanceOf']);
                         if (conceptDefinition && conceptDefinition.properties.length > 0) {
                             conceptDefinition.properties.forEach(function (property, index) {
                                 var propertyBtn = $(factory.createPropertyItemHTML(property, index));
@@ -301,7 +304,7 @@
             return scope.getAnnotations().some(function (annotation) {
                 if (scope.helper.getMotivationEquals(annotation, scope.oa.motivation.classifying) ||
                     scope.helper.getMotivationEquals(annotation, scope.oa.motivation.identifying)) {
-                    return matchingConcepts.indexOf(scope.helper.getSemanticTag(annotation).typeof) != -1;
+                    return matchingConcepts.indexOf(annotation['oa']['hasBody']['instanceOf']) != -1;
                 }
                 return false;
             });
@@ -309,7 +312,7 @@
 
         factory.onCreateProperty = function (e) {
             if (factory.focusedAnnotation) {
-                var concept = scope.getConcept(scope.helper.getSemanticTag(factory.focusedAnnotation).typeof);
+                var concept = scope.getConceptDefinition(factory.focusedAnnotation['oa']['hasBody']['instanceOf']);
                 if (concept) {
                     // get index of property from target value
                     var propertyIdx = parseInt($(e.target).val());
@@ -328,11 +331,11 @@
                     // group annotations by their uri and cache result in factory
                     factory.groupedObjects = scope.groupAnnotationBy(annotations,
                         function (annotation) {
-                            return scope.helper.getSemanticTag(annotation).uri;
+                            return annotation['oa']['hasBody']['references'];
                         }
                     );
 
-                    factory.showDialog(scope.helper.getSemanticTag(factory.focusedAnnotation), factory.selectedProperty, factory.groupedObjects);
+                    factory.showDialog(factory.focusedAnnotation['oa']['hasBody'], factory.selectedProperty, factory.groupedObjects);
                 }
             }
         };
@@ -366,7 +369,7 @@
             for (var key in objects) {
                 items.push({
                     uri: key,
-                    label: scope.helper.getSemanticTag(objects[key][0]).label
+                    label: objects[key][0]['oa']['hasBody']['label']
                 });
             }
             // sort items by label alphabetically
@@ -375,7 +378,7 @@
             // add heading to dialog
             factory.dialogSection.empty()
                 .append("<a class='pull-right' data-action='dialog-close'><i class='fa fa-times'></i></a>")
-                .append("<h5>" + subject.label + "&nbsp;" + property.label + ":</h5>");
+                .append("<h5>" + subject['label'] + "&nbsp;" + property['label'] + ":</h5>");
 
             factory.itemSection = $("<div class='list-group'></div>");
 
@@ -429,12 +432,12 @@
 
         factory.createInstanceItemHTML = function (instance) {
             return "<button type='button' class='btn btn-default' data-action='dialog-submit' value='" +
-                instance.uri + "'>" + instance.label + "</button>";
+                instance['uri'] + "'>" + instance['label'] + "</button>";
         };
 
         factory.createPropertyItemHTML = function (property, index) {
             return "<button class='btn btn-secondary btn-xs btn-spacing' data-action='create-property' type='button' value='" + index + "'>" +
-                property.label + "</button>";
+                property['label'] + "</button>";
         };
 
         return factory;

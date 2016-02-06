@@ -88,8 +88,9 @@ neonionApp.factory('AnnotatorService', [function () {
     factory.getUserAnnotations = function (userId) {
         var annotations = factory.getAnnotationObjects();
         return annotations.filter(function (annotation) {
-            if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("annotatedBy")) {
-                return annotation.oa.annotatedBy.email == userId;
+            if (annotation.hasOwnProperty("neonion") 
+                && annotation['neonion'].hasOwnProperty('creator')) {
+                return annotation['neonion']['creator'] == userId;
             }
             else {
                 return false;
@@ -126,8 +127,9 @@ neonionApp.factory('AnnotatorService', [function () {
         var contributors = [];
         highlights.each(function () {
             var annotation = $(this).data("annotation");
-            if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("annotatedBy")) {
-                var userId = annotation.oa.annotatedBy.email;
+            if (annotation.hasOwnProperty("neonion") 
+                && annotation['neonion'].hasOwnProperty('creator')) {
+                var userId = annotation['neonion']['creator'];
                 if (contributors.indexOf(userId) === -1) {
                     contributors.push(userId);
                 }
@@ -204,28 +206,12 @@ neonionApp.factory('AnnotatorService', [function () {
         return ( colorNum * (360 / colors) ) % 360;
     };
 
-    factory.colorizeAnnotation = function (annotation) {
-        if (annotation.hasOwnProperty("highlights") &&
-            annotation.hasOwnProperty("oa") &&
-            annotation.oa.hasOwnProperty("annotatedBy")) {
-            var idx = factory.contributors.map(function (x) {
-                return x.user;
-            }).indexOf(annotation.oa.annotatedBy.email);
-            if (idx !== -1) {
-                var color = factory.contributors[idx].color;
-                annotation.highlights.forEach(function (highlight) {
-                    $(highlight).css("backgroundColor", color);
-                });
-            }
-        }
-    };
-
     factory.colorizeAnnotationByMotivation = function (annotation) {
         if (annotation.hasOwnProperty("highlights") &&
             annotation.hasOwnProperty("oa") &&
             annotation.oa.hasOwnProperty("motivatedBy")) {
             var hlClass = null;
-            switch (annotation.oa.motivatedBy) {
+            switch (annotation['oa']['motivatedBy']) {
                 case Annotator.Plugin.Neonion.prototype.oa.motivation.classifying:
                 case Annotator.Plugin.Neonion.prototype.oa.motivation.identifying:
                     hlClass = "annotator-hl-concept";

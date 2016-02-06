@@ -212,7 +212,7 @@
             scope.annotator.subscribe('annotationEditorShown', function (editor, annotation) {
                 if (scope.helper.getMotivationEquals(annotation, scope.oa.motivation.classifying) ||
                     scope.helper.getMotivationEquals(annotation, scope.oa.motivation.identifying)) {
-                    var concept = scope.getConceptDefinition(annotation['oa']['hasBody']['instanceOf']);
+                    var concept = scope.getConceptDefinition(annotation['oa']['hasBody']['classifiedAs']);
                     // check if the concept provides an entity lookup
                     if (!(concept && factory.conceptHasReferrals(concept))) {
                         // submit automatically if no lookup is provided
@@ -306,7 +306,7 @@
                 if (factory.state.selectedItem >= 0 && factory.state.selectedItem < factory.state.resultSet.length) {
                     var dataItem = factory.state.resultSet[factory.state.selectedItem];
                     annotation['oa']['hasBody']['label'] = dataItem.label;
-                    annotation['oa']['hasBody']['sameAs'] = dataItem.uri + '';
+                    annotation['oa']['hasBody']['identifiedAs'] = dataItem.uri + '';
                     annotation['oa']['motivatedBy'] = scope.oa.motivation.identifying;
                 }
             }
@@ -328,7 +328,7 @@
          * @param searchTerm
          */
         factory.updateEntityList = function (searchTerm) {
-            var concept = scope.getConceptDefinition(scope.annotator.editor.annotation['oa']['hasBody']['instanceOf']);
+            var concept = scope.getConceptDefinition(scope.annotator.editor.annotation['oa']['hasBody']['classifiedAs']);
 
             // check if the concept is connected to concepts from a knowledge provider
             if (concept && factory.conceptHasReferrals(concept)) {
@@ -395,11 +395,11 @@
             // count occurrence of each resource
             for (var i = 0; i < annotations.length; i++) {
                 if(scope.helper.getMotivationEquals(annotations[i], scope.oa.motivation.identifying)) {
-                    if (annotations[i]['oa']['hasBody'].hasOwnProperty("sameAs")) {
-                        if (!occurrence[annotations[i]['oa']['hasBody']['sameAs']]) {
-                            occurrence[annotations[i]['oa']['hasBody']['sameAs']] = 0;
+                    if (annotations[i]['oa']['hasBody'].hasOwnProperty("identifiedAs")) {
+                        if (!occurrence[annotations[i]['oa']['hasBody']['identifiedAs']]) {
+                            occurrence[annotations[i]['oa']['hasBody']['identifiedAs']] = 0;
                         }
-                        occurrence[annotations[i]['oa']['hasBody']['sameAs']]++;
+                        occurrence[annotations[i]['oa']['hasBody']['identifiedAs']]++;
                     }
                 }
             }

@@ -171,7 +171,7 @@
                 switch (annotation.oa.motivatedBy) {
                     case scope.oa.motivation.classifying:
                     case scope.oa.motivation.identifying:
-                        var linkedAnnotations = factory.getLinkedAnnotationsWithSubject(annotation['oa']['hasBody']['references']);
+                        var linkedAnnotations = factory.getLinkedAnnotationsWithSubject(annotation['oa']['hasBody']['contextualizedAs']);
                         if (linkedAnnotations.length > 0) {
                             linkedAnnotations.forEach(function (statement) {
                                 var object = factory.getAnnotationById(statement['oa']['hasTarget']['hasSelector']['target']);
@@ -270,7 +270,7 @@
                 switch (annotation.oa.motivatedBy) {
                     case scope.oa.motivation.classifying:
                     case scope.oa.motivation.identifying:
-                        var conceptDefinition = scope.getConceptDefinition(annotation['oa']['hasBody']['instanceOf']);
+                        var conceptDefinition = scope.getConceptDefinition(annotation['oa']['hasBody']['classifiedAs']);
                         if (conceptDefinition && conceptDefinition.properties.length > 0) {
                             conceptDefinition.properties.forEach(function (property, index) {
                                 var propertyBtn = $(factory.createPropertyItemHTML(property, index));
@@ -304,7 +304,7 @@
             return scope.getAnnotations().some(function (annotation) {
                 if (scope.helper.getMotivationEquals(annotation, scope.oa.motivation.classifying) ||
                     scope.helper.getMotivationEquals(annotation, scope.oa.motivation.identifying)) {
-                    return matchingConcepts.indexOf(annotation['oa']['hasBody']['instanceOf']) != -1;
+                    return matchingConcepts.indexOf(annotation['oa']['hasBody']['classifiedAs']) != -1;
                 }
                 return false;
             });
@@ -312,7 +312,7 @@
 
         factory.onCreateProperty = function (e) {
             if (factory.focusedAnnotation) {
-                var concept = scope.getConceptDefinition(factory.focusedAnnotation['oa']['hasBody']['instanceOf']);
+                var concept = scope.getConceptDefinition(factory.focusedAnnotation['oa']['hasBody']['classifiedAs']);
                 if (concept) {
                     // get index of property from target value
                     var propertyIdx = parseInt($(e.target).val());
@@ -331,7 +331,7 @@
                     // group annotations by their uri and cache result in factory
                     factory.groupedObjects = scope.groupAnnotationBy(annotations,
                         function (annotation) {
-                            return annotation['oa']['hasBody']['references'];
+                            return annotation['oa']['hasBody']['contextualizedAs'];
                         }
                     );
 

@@ -6,7 +6,7 @@
             </a>
         </div>
     </div>
-    <div ng-repeat="(concept, annotationByConceptType) in annotations | filterByConceptAnnotation | filter:filterConceptAnnotations | orderBy: 'oa.hasBody.instanceOf' | groupBy: 'oa.hasBody.instanceOf'">
+    <div ng-repeat="(concept, annotationByConceptType) in annotations | filterByConceptAnnotation | filter:filterConceptAnnotations | orderBy: 'oa.hasBody.classifiedAs' | groupBy: 'oa.hasBody.classifiedAs'">
         <h4>
             {{ (annotationByConceptType | first)['neonion']['viewer']['conceptLabel'] }}
         </h4>
@@ -19,7 +19,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="(key, annotationByConcept) in annotationByConceptType | orderBy: 'oa.hasBody.label' | groupBy: 'oa.hasBody.references'">
+            <tr ng-repeat="(key, annotationByConcept) in annotationByConceptType | orderBy: 'oa.hasBody.label' | groupBy: 'oa.hasBody.contextualizedAs'">
                 <td class="col-md-6">{{ (annotationByConcept | first)['oa']['hasBody']['label'] }}</td>
                 <td class="col-md-4">
                     <a class="link" href="/annotation_occurrences#?rdf.uri={{ key | escape }}&oa.annotatedBy.email={{ user.email }}">

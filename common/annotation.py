@@ -21,7 +21,7 @@ class SemanticAnnotationValidator(object):
                 # check the motivation
                 if (motivation_equals(annotation, OpenAnnotation.Motivations.classifying) or
                         motivation_equals(annotation, OpenAnnotation.Motivations.identifying)):
-                    throw_error = not self.has_instance_mandatory_fields(annotation)
+                    throw_error = not self.has_entity_mandatory_fields(annotation)
                 elif motivation_equals(annotation, OpenAnnotation.Motivations.linking):
                     throw_error = not self.has_relation_mandatory_fields(annotation)
             else:
@@ -49,18 +49,18 @@ class SemanticAnnotationValidator(object):
         return 'oa' in annotation and 'hasBody' in annotation['oa'] and '@type' in annotation['oa']['hasBody']
 
     @classmethod
-    def has_instance_mandatory_fields(cls, annotation):
+    def has_entity_mandatory_fields(cls, annotation):
         # classifying and identifying motivated annotations has the body type semanticTag
         return (OpenAnnotation.TagTypes.semanticTag.value in annotation['oa']['hasBody']['@type'] and
-            "neo:Instance" in annotation['oa']['hasBody']['@type'] and
-            "instanceOf" in annotation['oa']['hasBody'] and
+            "neo:EntityMention" in annotation['oa']['hasBody']['@type'] and
+            "classifiedAs" in annotation['oa']['hasBody'] and
             "label" in annotation['oa']['hasBody'])
 
     @classmethod
     def has_relation_mandatory_fields(cls, annotation):
         # linking has the body type semanticTag
         return (OpenAnnotation.TagTypes.semanticTag.value in annotation['oa']['hasBody']['@type'] and
-            "neo:Relation" in annotation['oa']['hasBody']['@type'])
+            "neo:RelationMention" in annotation['oa']['hasBody']['@type'])
 
 
 def endpoint_create_annotation(validated_annotation):
@@ -77,9 +77,9 @@ def motivation_equals(annotation, motivation):
 
 
 def add_resource_uri(validated_annotation):
-    uri = generate_uri(validated_annotation['oa']['hasBody']['instanceOf'], validated_annotation['oa']['hasBody']['label'])
+    uri = generate_uri(validated_annotation['oa']['hasBody']['classifiedAs'], validated_annotation['oa']['hasBody']['label'])
     if uri is not None:
-        validated_annotation['oa']['hasBody']['references'] = uri
+        validated_annotation['oa']['hasBody']['contextualizedAs'] = uri
 
     return validated_annotation
 

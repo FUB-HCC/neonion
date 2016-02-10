@@ -29,12 +29,12 @@
                 <tbody>
                 <tr ng-repeat="annotation in annotationByGroup">
                     <td class="highlight col-md-10">
-                        {{ annotation.context.left | truncate:'left' }}
+                        {{ annotation.neonion.context.surrounding.left | truncate:'left' }}
                         <a class="mark"
                            href="/annotator/{{ groupKey }}/{{ documentKey }}#?annotationId={{ annotation.id }}">
                             {{ annotation.quote }}&nbsp;<i class="fa fa-external-link"></i>
                         </a>
-                        {{ annotation.context.right | truncate:'right' }}
+                        {{ annotation.neonion.context.surrounding.right | truncate:'right' }}
                     </td>
                     <td class="date col-md-2">{{ annotation.oa.annotatedBy.email }}<br>{{ annotation.created | date : "MM/dd/yyyy 'at' h:mma" }}
                     </td>

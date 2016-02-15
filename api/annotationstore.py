@@ -10,7 +10,7 @@ from authentication import UnsafeSessionAuthentication
 from common.exceptions import InvalidResourceTypeError, InvalidAnnotationError
 from common.annotation import SemanticAnnotationValidator, pre_process_annotation, post_process_annotation
 from django.http import JsonResponse
-from decorators import require_group_permission
+from api.decorators import require_group_permission
 
 
 class AnnotationListView(APIView):

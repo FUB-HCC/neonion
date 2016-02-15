@@ -1,5 +1,5 @@
 from common.uri import generate_uri
-from exceptions import InvalidAnnotationError
+from common.exceptions import InvalidAnnotationError
 from common.sparql import insert_data
 from common.statements import Annotation
 from django.conf import settings

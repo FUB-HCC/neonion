@@ -34,7 +34,6 @@ class DocumentManager(models.Manager):
     def create_document_from_file(self, file, **kwargs):
         if file.content_type in DocumentManager.SUPPORTED_TYPES:
             file_name = file.name.encode('utf-8')
-            doc_title = str(' '.join(splitext(basename(file_name))[0].split()))
             doc_id = uuid.uuid1().hex
 
             raw_data = ''
@@ -51,7 +50,6 @@ class DocumentManager(models.Manager):
 
                 return self.create(
                     id=doc_id,
-                    title=doc_title,
                     attached_file=uploaded_file,
                     **{key: value for key, value in kwargs.items()})
 

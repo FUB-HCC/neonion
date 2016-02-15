@@ -7,7 +7,7 @@ neonionApp.controller('AnnotatorPDFCtrl', ['$scope',
         "use strict";
 
         $scope.renderPDF = function (documentUrl) {
-            PDFJS.workerSrc = "/static/js/pdf.worker.js";
+            PDFJS.workerSrc = "/static/js/pdf/pdf.worker.js";
 
             PDFJS.getDocument(documentUrl).then(function (pdf) {
                 $scope.pdf = pdf;

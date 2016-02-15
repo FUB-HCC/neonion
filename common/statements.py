@@ -1,4 +1,4 @@
-from exceptions import InvalidAnnotationError
+from common.exceptions import InvalidAnnotationError
 from common.vocab import OpenAnnotation, neonion
 
 DEFAULT_PREFIXES = '''PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>

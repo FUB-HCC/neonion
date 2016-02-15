@@ -5,7 +5,7 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$
     'cookieKeys', 'systemSettings', 'AnnotatorService',
     function ($scope, $window, $location, $cookies, cookieKeys, systemSettings, AnnotatorService) {
         "use strict";
-console.log(systemSettings);
+
         $scope.systemSettings = systemSettings;
         $scope.annotatorService = AnnotatorService;
         $scope.mode = {

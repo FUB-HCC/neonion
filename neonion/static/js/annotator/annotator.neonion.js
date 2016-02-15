@@ -385,7 +385,6 @@
                     }
                 }
             };
-            this.applyPermissions(linkage);
 
             // publish linked annotation was created
             this.annotator.publish("linkedAnnotationCreated", [linkage]);
@@ -396,22 +395,6 @@
         deleteLinkedAnnotation : function(annotation) {
             this.annotator.deleteAnnotation(annotation);
             this.annotator.publish("linkedAnnotationDeleted", [annotation]);
-        },
-
-        /**
-         * Sets then permissions according current workspace
-         * @param annotation
-         */
-        applyPermissions : function(annotation) {
-            /*if (this.options.hasOwnProperty("workspace")) {
-                // add permissions to annotation
-                annotation.permissions = {
-                    read: [this.options.workspace],
-                    update: [this.options.workspace],
-                    delete: [this.options.agent.email],
-                    admin: [this.options.agent.email]
-                };
-            }*/
         },
 
         linkedAnnotationCreated : function(annotation) {
@@ -457,8 +440,6 @@
                     annotation.oa.motivatedBy = this.oa.motivation.highlighting;
                     break;
             }
-
-            this.applyPermissions(annotation);
         },
 
         /**

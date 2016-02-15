@@ -1,10 +1,9 @@
 from django.test import TestCase
-from uri import generate_uri
-from statements import Annotation
-from annotation import add_resource_uri, SemanticAnnotationValidator, pre_process_annotation
-from exceptions import InvalidAnnotationError, InvalidResourceTypeError
-from vocab import neonion, OpenAnnotation
-from cms import ContentSystem
+from common.uri import generate_uri
+from common.statements import Annotation
+from common.annotation import add_resource_uri, SemanticAnnotationValidator, pre_process_annotation
+from common.exceptions import InvalidAnnotationError, InvalidResourceTypeError
+from common.vocab import neonion, OpenAnnotation
 from django.core.validators import URLValidator
 from documents.tests import create_test_document
 from common.statements import metadata_statement
@@ -258,14 +257,3 @@ class VocabTestCase(TestCase):
         validate = URLValidator()
         for uri in vocab_uri:
             self.assertIsNone(validate(uri))
-
-
-class ContentSystemTestCase(TestCase):
-
-    def test_abstract_cms(self):
-        cms = ContentSystem()
-        # expect NotImplementedError on all calls
-        self.assertRaises(NotImplementedError, cms.list)
-        self.assertRaises(NotImplementedError, cms.get_document, None)
-        self.assertRaises(NotImplementedError, cms.get_meta, None)
-        self.assertRaises(NotImplementedError, cms.search, None)

@@ -67,9 +67,7 @@
 
             this.editorState = {
                 annotationMode: this.options.annotationMode,
-                selectedConcept: "",
-                selectedItem: -1,
-                resultSet: []
+                selectedConcept: ""
             };
 
             // create compositor from provided annotation sets
@@ -95,16 +93,6 @@
                 }, this)
             });
 
-            // attach handler to hide editor
-            $("[data-action=annotator-cancel]").on("click", $.proxy(function () {
-                this.annotator.editor.hide();
-            }, this));
-
-            // attach handler to submit editor
-            $("[data-action=annotator-submit]").on("click", $.proxy(function () {
-                this.annotator.editor.submit();
-            }, this));
-
             // activate additional widgets
             if (this.options.hasOwnProperty("activateWidgets")) {
                 for(var i = 0; i < this.options.activateWidgets.length; i++) {
@@ -116,9 +104,19 @@
                 }
             }
 
+            // attach handler to hide editor
+            $("[data-action=annotator-cancel]").on("click", $.proxy(function () {
+                this.annotator.editor.hide();
+            }, this));
+
+            // attach handler to submit editor
+            $("[data-action=annotator-submit]").on("click", $.proxy(function () {
+                this.annotator.editor.submit();
+            }, this));
+
             // closure
             this.conceptSet(this.conceptSet());
-            this.applyLayer(this.annotationLayers.group);
+            this.applyLayer(this.annotationLayers.space);
         };
 
         /**
@@ -129,9 +127,9 @@
             return {
                 // get comment field
                 comment: this.annotator.viewer.fields[0].element,
-                // add field to linked resource
-                resource: this.annotator.viewer.addField({
-                    load: $.proxy(this.viewerLoadResourceField, this)
+                // add field to linked entity
+                entity: this.annotator.viewer.addField({
+                    load: $.proxy(this.viewerLoadEntityField, this)
                 }),
                 // add field with agent
                 agent: this.annotator.viewer.addField({
@@ -145,10 +143,11 @@
          * @returns {*}
          */
         this.initEditorField = function () {
-            return {
-                commentField: this.initCommentField(),
-                conceptTaggingField: this.initConceptTaggingField()
-            };
+            $(".annotator-editor").append(this.templates.editorLine);
+            // create a mapping from motivation to editor field
+            var mapping = {};
+            mapping[this.oa.motivation.commenting] = this.initCommentField();
+            return mapping;
         };
 
         this.initCommentField = function () {
@@ -156,78 +155,6 @@
             // add controls submit and cancel buttons
             $(field).append(
                 "<div class='resource-controls'>" + this.templates.submitItem + this.templates.cancelItem + "</div>");
-
-            return field;
-        };
-
-        this.initConceptTaggingField = function () {
-            // add field containing the suggested resources
-            var field = this.annotator.editor.addField({
-                load: $.proxy(this.loadEditorConceptField, this),
-                submit: $.proxy(this.submitEditorConceptField, this)
-            });
-
-            // replace filed with custom content
-            $(field).children((":first")).replaceWith(
-                "<div class='resource-controls'>" + this.templates.cancelItem + "</div>" +
-                "<form id='resource-form'>" + this.templates.searchItem + "</form>" +
-                "<div id='resource-list'>" + this.templates.unknownItem + "</div>"
-            );
-
-            // create input for search term
-            var searchInput = $('<input>').attr({
-                type: 'text',
-                id: 'resource-search',
-                autocomplete: 'off',
-                placeholder: this.literals['en'].searchText,
-                required: true
-            });
-
-            $(".annotator-editor").append(this.templates.editorLine);
-
-            var searchForm = $(field).find("#resource-form");
-            var resourceList = $(field).find("#resource-list");
-            searchInput.appendTo(searchForm);
-
-            // attach submit handler handler
-            searchForm.submit($.proxy(function () {
-                this.updateResourceList(searchInput.val());
-                return false;
-            }, this));
-
-            // attach key event to search while typing
-            searchInput.keyup(function (e) {
-                var keyCode = e.which || e.keyCode;
-                // fire only on printable characters and backspace
-                if (keyCode >= 32 || keyCode === 8) {
-                    var timeoutID = $(searchForm).data("timeoutID");
-                    if (timeoutID) {
-                        // clear prior timeout
-                        window.clearTimeout(timeoutID);
-                    }
-                    // submit search form delayed
-                    timeoutID = window.setTimeout(function () {
-                        $(searchForm).removeData("timeoutID");
-                        $(searchForm).submit();
-                    }, 200);
-                    $(searchForm).data("timeoutID", timeoutID);
-                }
-            });
-
-            // stop propagation on anchor click
-            resourceList.on("click", "a", $.proxy(function (e) {
-                e.stopPropagation();
-            }, this));
-
-            // attach handler to submit from resource list
-            resourceList.on("click", "button", $.proxy(function (e) {
-                var source = $(e.currentTarget);
-                var itemIndex = parseInt(source.val());
-                itemIndex = !isNaN(itemIndex) ? itemIndex : -1;
-                // store selected resource in editor state
-                this.editorState.selectedItem = itemIndex;
-                this.annotator.editor.submit();
-            }, this));
 
             return field;
         };
@@ -252,36 +179,37 @@
         annotationModes: {
             commenting: 1,
             highlighting: 2,
-            conceptTagging: 3
+            conceptTagging: 3,
+            tagging: 4
         },
 
         options: {
-            prefix: "/api/es/",
-            agent: {
-                email: "unknown@neonion.org"
-            },
-            urls: {
-                search: "search"
-            },
-            paginationSize: 5,
             annotationMode : 1, // commenting
-            activateWidgets : ['contextInformation', 'viewerSummarizeStatements', 'viewerCreateProperty']
+            activateWidgets : [
+                'entityLinking',
+                'contextInformation', 
+                'visualizeRelationship',
+                'viewerSummarizeStatements', 
+                'viewerCreateProperty'
+            ],            
+            lookup: {
+                prefix: "/api/es/",
+                urls: {
+                    search: "search"
+                }            
+            }
         },
 
         /**
-         * Object to inject custom methods.
+         * Object to inject custom features.
          */
         widgets : {},
 
         templates: {
-            showMore: "<button class='more' data-action='annotator-more'>Show more results&nbsp;&#8230;</button>",
-            spinner: "<span style='margin:5px;' class='fa fa-spinner fa-spin'></span>",
-            noResults: "<div class='empty'>No results found.</div>",
             editorLine: "<div class='annotator-line'></div>",
             searchItem: "<i class='fa fa-search'></i>",
             cancelItem: "<a data-action='annotator-cancel'><i class='fa fa-times fa-fw'></i></a>",
             submitItem: "<a data-action='annotator-submit'><i class='fa fa-check fa-fw'></i></a>",
-            unknownItem: "<button type='button' class='unknown' data-action='annotator-submit'>Unknown Resource</button>",
             emptyAdder: "<button></button>"
         },
 
@@ -300,12 +228,6 @@
                 searchText: "Search term",
                 unknown: "Not identified",
                 agent: "Creator"
-            },
-            de: {
-                search: "Suchen",
-                searchText: "Suchtext",
-                unknown: "Unbekannt",
-                agent: "Erfasser"
             }
         },
 
@@ -316,24 +238,83 @@
                 classifying: "oa:classifying",
                 identifying: "oa:identifying",
                 linking: "oa:linking",
-                questioning: "oa:questioning"
+                tagging: "oa:tagging"
             },
-            types: {
-                agent: {
-                    person: "foaf:person",
-                    software: "prov:SoftwareAgent"
+            stubs: {
+                // basic stub for the embedded OA representation
+                createBaseStub: function() {
+                    return { 
+                        "@type": "oa:Annotation",
+                        "annotatedAt": new Date().toISOString(),
+                        "annotatedBy": { "@type": "foaf:person" },
+                        "hasTarget": {
+                            "@type": "oa:SpecificResource",
+                            "hasSelector": { 
+                                "@type": "oa:FragmentSelector"
+                            },
+                            "hasSource": { "@type": "dctypes:Text" }
+                        }
+                    }   
                 },
-                document: {
-                    text: "dctypes:Text"
+                // stub representing a highlight
+                createHighlightAnnotationStub: function() {
+                    return $.extend(true, Annotator.Plugin.Neonion.prototype.oa.stubs.createBaseStub(),
+                        {
+                            "motivatedBy": "oa:highlighting"
+                        });
                 },
-                content: {
-                    contentAsText: "cnt:ContentAsText"
+                // stub representing a comment
+                createCommentAnnotationStub: function() {
+                    return $.extend(true, Annotator.Plugin.Neonion.prototype.oa.stubs.createHighlightAnnotationStub(),
+                        {
+                            "motivatedBy": "oa:commenting",
+                            "hasBody": {
+                                "@type": ["dctypes:Text", "cnt:ContentAsText"],
+                                "chars": ""
+                            }
+                        });
                 },
-                tag: {
-                    tag: "oa:Tag",
-                    semanticTag: "oa:SemanticTag"
+                // stub representing a tag
+                createTagAnnotationStub: function() {
+                    return $.extend(true, Annotator.Plugin.Neonion.prototype.oa.stubs.createBaseStub(),
+                        {
+                            "motivatedBy": "oa:tagging",
+                            "hasBody": {
+                                "@type": ["oa:Tag", "cnt:ContentAsText"],
+                                "chars": ""
+                            }
+                        });
+                },
+                // stub representing an instance
+                createInstanceAnnotationStub: function() {
+                    return $.extend(true, Annotator.Plugin.Neonion.prototype.oa.stubs.createBaseStub(),
+                        {
+                            "motivatedBy": "oa:classifying",
+                            "hasBody": {
+                                "@type": ["oa:SemanticTag", "neo:Instance"],
+                                "references": "",
+                                "instanceOf": ""
+                            }
+                        });
+                },
+                // stub representing a relation
+                createLinkedAnnotationStub: function() {
+                    return $.extend(true, Annotator.Plugin.Neonion.prototype.oa.stubs.createBaseStub(),
+                        {
+                            "motivatedBy": "oa:linking",
+                            "hasBody": {
+                                "@type": ["oa:SemanticTag", "neo:Relation"],
+                            },
+                            "hasTarget": {
+                                "hasSelector": { 
+                                    "@type": "neo:SourceTargetSelector",
+                                    "source": "",
+                                    "target": ""
+                                }
+                            }
+                        });
                 }
-            }
+            }                
         },
 
         annotationLayers: {
@@ -343,49 +324,43 @@
                     limit: 999999
                 };
             },
-            private: function (params) {
-                var query = Annotator.Plugin.Neonion.prototype.annotationLayers.unspecified(params);
-                query["oa.annotatedBy.email"] = params.agent.email;
-                return query;
-            },
-            group: function (params) {
-                var query = Annotator.Plugin.Neonion.prototype.annotationLayers.unspecified(params);
+            space: function (params) {
+                var query = {};
                 if (params.hasOwnProperty("workspace")) {
                     // filter for workspace
                     query["permissions.read"] = params.workspace;
                 }
-                return query;
+                return $.extend(true, Annotator.Plugin.Neonion.prototype.annotationLayers.unspecified(params), query);
             }
         },
 
         /**
-         *
+         * Creates a linked annotation and returns it.
          * @param annotationSubject
          * @param predicate
          * @param annotationObject
          * @returns {{ranges: Array, oa: {motivatedBy: string, hasBody: {type: string}, hasTarget: {source: *, target: string}}}}
          */
-        createLinkedAnnotation : function(annotationSubject, predicate, annotationObject) {
+        createLinkedAnnotation : function(annotationSource, predicate, annotationTarget) {
             var linkage = {
                 ranges: [], // empty but necessary
-                oa : {
-                    motivatedBy: this.oa.motivation.linking,
-                    hasBody: {
-                        rdf : {
-                            subject: this.helper.getSemanticTag(annotationSubject).uri,
-                            predicate: predicate.uri,
-                            predicateLabel: predicate.label,
-                            object: this.helper.getSemanticTag(annotationObject).uri
-                        },
-                        type: this.oa.types.tag.semanticTag
+                neonion: {
+                    viewer : {
+                        source: annotationSource['oa']['hasBody']['references'],
+                        predicate: predicate['uri'],
+                        predicateLabel: predicate['label'],
+                        target: annotationTarget['oa']['hasBody']['references']
                     },
-                    hasTarget: {
-                        source : annotationSubject.id,
-                        target : annotationObject.id
-                    }
-                }
+                },
+                oa : this.oa.stubs.createLinkedAnnotationStub()
             };
 
+            // set type of relation
+            linkage['oa']['hasBody']['@id'] = predicate['uri'];
+            // set source and target of selector
+            linkage['oa']['hasTarget']['hasSelector']['source'] = annotationSource['oa']['@id'];
+            linkage['oa']['hasTarget']['hasSelector']['target'] = annotationTarget['oa']['@id'];
+        
             // publish linked annotation was created
             this.annotator.publish("linkedAnnotationCreated", [linkage]);
 
@@ -415,29 +390,26 @@
          * @param annotation
          */
         beforeAnnotationCreated: function (annotation) {
-            // create a child element to store Open Annotation data
-            annotation.oa = {
-                hasTarget: {
-                    type: this.oa.types.document.text
-                }
-            };
+            // neonion specific sub-field
+            annotation['neonion'] = {};
 
             // prepare annotation according current annotation mode
             switch (this.editorState.annotationMode) {
                 case this.annotationModes.conceptTagging:
-                    annotation.oa.motivatedBy = this.oa.motivation.classifying;
-                    annotation.oa.hasBody = {type: this.oa.types.tag.semanticTag};
-                    annotation.rdf = {
-                        typeof: this.editorState.selectedConcept,
-                        conceptLabel: this.getConcept(this.editorState.selectedConcept).label
+                    annotation['oa'] = this.oa.stubs.createInstanceAnnotationStub();
+                    annotation['oa']['hasBody']['instanceOf'] = this.editorState.selectedConcept;
+                    annotation['neonion']['viewer'] = {
+                        conceptLabel: this.getConceptDefinition(this.editorState.selectedConcept)['label']
                     };
                     break;
                 case this.annotationModes.commenting:
-                    annotation.oa.motivatedBy = this.oa.motivation.commenting;
-                    annotation.oa.hasBody = {type: this.oa.types.document.text};
+                    annotation['oa'] = this.oa.stubs.createCommentAnnotationStub();
+                    break;
+                case this.annotationModes.tagging:
+                    annotation['oa'] = this.oa.stubs.createTagAnnotationStub();
                     break;
                 case this.annotationModes.highlighting:
-                    annotation.oa.motivatedBy = this.oa.motivation.highlighting;
+                    annotation['oa'] = this.oa.stubs.createHighlightAnnotationStub();
                     break;
             }
         },
@@ -452,8 +424,8 @@
                 this.linkedAnnotations
                     .filter(function(linkage) {
                         // check if the linkage references the annotation in the target
-                        return linkage.oa.hasTarget.source == annotation.id ||
-                            linkage.oa.hasTarget.target == annotation.id;
+                        return linkage['oa']['hasTarget']['hasSelector']['source'] == annotation['oa']['@id'] ||
+                            linkage['oa']['hasTarget']['hasSelector']['target'] == annotation['oa']['@id'];
                     })
                     .forEach($.proxy(this.deleteLinkedAnnotation, this));
             }
@@ -466,22 +438,22 @@
             if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
                 this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
                 // update all linked annotations that references the annotation
-                this.linkedAnnotations
+                /*this.linkedAnnotations
                     .filter(function(linkage) {
                         // check if the linkage references the annotation in the target
-                        return linkage.oa.hasTarget.source == annotation.id ||
-                            linkage.oa.hasTarget.target == annotation.id;
+                        return linkage['oa']['hasTarget']['hasSelector']['source'] == annotation['oa']['@id'] ||
+                            linkage['oa']['hasTarget']['target'] == annotation['oa']['@id'];
                     })
                     .forEach($.proxy(function(linkage) {
                         // update the statement
-                        if (linkage.oa.hasTarget.source == annotation.id) {
-                            this.helper.getSemanticTag(linkage).subject = this.helper.getSemanticTag(annotation).uri;
+                        if (linkage['oa']['hasTarget']['hasSelector']['source'] == annotation['oa']['@id']) {
+                            //this.helper.getSemanticTag(linkage).subject = this.helper.getSemanticTag(annotation).uri;
                         }
-                        else if (linkage.oa.hasTarget.object == annotation.id) {
-                            this.helper.getSemanticTag(linkage).object = this.helper.getSemanticTag(annotation).uri;
+                        else if (linkage.oa.hasTarget.object == annotation['oa']['@id']) {
+                            //this.helper.getSemanticTag(linkage).object = this.helper.getSemanticTag(annotation).uri;
                         }
                         this.annotator.publish("linkedAnnotationUpdated", [linkage]);
-                    }), this);  
+                    }), this); */ 
             }
         },
 
@@ -494,47 +466,32 @@
         },
 
         annotationEditorShown: function (editor, annotation) {
-            if (annotation.hasOwnProperty("oa")) {
+            if (annotation.hasOwnProperty("oa") &&
+                this.fields.editor.hasOwnProperty(annotation['oa']['motivatedBy'])) {
+                var field = this.fields.editor[annotation['oa']['motivatedBy']];
                 // visibility of fields depends on the motivation
-                switch (annotation.oa.motivatedBy) {
+                switch (annotation['oa']['motivatedBy']) {
                     case this.oa.motivation.commenting:
-                        this.showEditorField(this.fields.editor.commentField);
                         // check if the annotation has no comment yet
                         if (!annotation.hasOwnProperty("text")) {
                             // transfer quote to text area and preselect the content
-                            $(this.fields.editor.commentField)
+                            $(field)
                                 .find("textarea")
                                 .val(annotation.quote)
                                 .select();
                         }
                         break;
-                    case this.oa.motivation.highlighting:
-                        // submit editor automatically
-                        editor.submit();
-                        break;
-                    case this.oa.motivation.classifying:
-                    case this.oa.motivation.identifying:
-                        var concept = this.getConcept(this.helper.getSemanticTag(annotation).typeof);
-                        if (concept && this.helper.conceptHasReferrals(concept)) {
-                            this.showEditorField(this.fields.editor.conceptTaggingField);
-                            // focus search field
-                            $(this.fields.editor.conceptTaggingField).find("#resource-search").focus();
-                        }
-                        else {
-                            // submit editor automatically if there is to search
-                            editor.submit();
-                        }
-                        break;
                 }
+                this.showEditorField(field);
+                this.helper.placeEditorBesidesAnnotation(annotation, this.annotator);    
             }
-
-            this.helper.placeEditorBesidesAnnotation(annotation, this.annotator);
+            else {
+                editor.submit();
+            }
         },
 
         annotationEditorHidden: function () {
-            // clear prior editor state
-            this.editorState.selectedItem = -1;
-            this.editorState.resultSet = [];
+            // clear editor state
             this.editorState.selectedConcept = "";
         },
 
@@ -548,8 +505,7 @@
         },
 
         annotationViewerTextField: function (field, annotation) {
-            if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("hasBody") &&
-                annotation.oa.hasBody.type == this.oa.types.document.text) {
+            if (annotation.hasOwnProperty("text") && annotation["text"].length > 0) {
                 $(field).show();
             }
             else {
@@ -558,7 +514,20 @@
         },
 
         annotationEditorSubmit: function (editor, annotation) {
-            // TODO add OA start and end position to target
+            if (annotation.hasOwnProperty("oa")) {
+                switch (annotation['oa']['motivatedBy']) {
+                    case this.oa.motivation.commenting:
+                        // add comment to body
+                        annotation['oa']['hasBody']['chars'] = annotation['text'];
+                        break;
+                    case this.oa.motivation.classifying:
+                    case this.oa.motivation.identifying:
+                        if (!annotation['oa']['hasBody'].hasOwnProperty('label')) {
+                            annotation['oa']['hasBody']['label'] = annotation.quote;    
+                        }
+                        break;
+                }
+            }
         },
 
         /**
@@ -605,16 +574,15 @@
             return adder;
         },
 
-        viewerLoadResourceField: function (field, annotation) {
+        viewerLoadEntityField: function (field, annotation) {
             if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
                 this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
-                var semanticTag = this.helper.getSemanticTag(annotation);
-                var ref = semanticTag.hasOwnProperty('sameAs') ? semanticTag.sameAs : '#';
-                var fieldValue = "<a class='link' href='" + ref + "' target='blank'>" + semanticTag.label + "</a>";
-                var fieldCaption = '';
-                if (semanticTag.hasOwnProperty('conceptLabel')) {
-                    fieldCaption = semanticTag.conceptLabel + ":&nbsp;";
+                var fieldValue = annotation['oa']['hasBody']['label'];
+                if (annotation['oa']['hasBody'].hasOwnProperty('sameAs')) {
+                    fieldValue = "<a class='link' href='" + annotation['oa']['hasBody']['sameAs'] + 
+                        "' target='_blank'>" + annotation['oa']['hasBody']['label'] + "</a>";
                 }
+                var fieldCaption = annotation['neonion']['viewer']['conceptLabel'] + ":&nbsp;";
                 field.innerHTML = fieldCaption + fieldValue;
                 $(field).show();
             }
@@ -625,40 +593,10 @@
 
         viewerLoadAgentField: function (field, annotation) {
             var userField = this.literals['en'].unknown;
-            if (annotation.hasOwnProperty('oa') && annotation.oa.hasOwnProperty('annotatedBy')) {
-                userField = annotation.oa.annotatedBy.email;
+            if (annotation.hasOwnProperty('neonion') && annotation['neonion'].hasOwnProperty('creator')) {
+                userField = annotation['neonion']['creator'];
             }
             field.innerHTML = this.literals['en'].agent + ":&nbsp;" + userField;
-        },
-
-        loadEditorConceptField: function (field, annotation) {
-            if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
-                this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
-                $(field).show();
-                $(field).find("#resource-search").val(annotation.quote);
-                $(field).find("#resource-search").attr("autofocus", "autofocus");
-                $(field).find("#resource-form").submit();
-            }
-        },
-
-        submitEditorConceptField: function (field, annotation) {
-            if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
-                this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
-                if (annotation.oa.hasBody.type == this.oa.types.tag.semanticTag) {
-                    // add extra semantic data from identified resource
-                    var semanticTag = this.helper.getSemanticTag(annotation);
-                    if (this.editorState.selectedItem >= 0 && this.editorState.selectedItem < this.editorState.resultSet.length) {
-                        var dataItem = this.editorState.resultSet[this.editorState.selectedItem];
-                        semanticTag.sameAs = dataItem.uri + '';
-                        semanticTag.label = dataItem.label;
-                        annotation.oa.motivatedBy = this.oa.motivation.identifying;
-                    }
-                    else {
-                        semanticTag.label = annotation.quote;
-                        annotation.oa.motivatedBy = this.oa.motivation.classifying;
-                    }
-                }
-            }
         },
 
         /**
@@ -666,7 +604,7 @@
          * @param concept
          * @returns {*}
          */
-        getConcept : function(concept) {
+        getConceptDefinition : function(concept) {
             for(var i = 0; i < this.concepts.length; i++) {
                 if (this.concepts[i].uri == concept) {
                     return this.concepts[i];
@@ -711,7 +649,7 @@
                 .filter($.proxy(function (annotation) {
                     if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
                         this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
-                        return concepts.indexOf(this.helper.getSemanticTag(annotation).typeof) != -1;
+                        return concepts.indexOf(annotation['oa']['hasBody']['instanceOf']) != -1;
                     }
                     return false;
                 }, this));
@@ -734,137 +672,7 @@
             return grouped;
         },
 
-        /**
-         * Creates the list containing the suggested resources.
-         * @param searchTerm
-         */
-        updateResourceList: function (searchTerm) {
-            var list = $(this.fields.editor.conceptTaggingField).find("#resource-list");
-            var concept = this.getConcept(this.helper.getSemanticTag(this.annotator.editor.annotation).typeof);
-
-            // replace list with spinner while loading
-            list.html(this.templates.spinner);
-
-            // check if the concept is connected to concepts from a knowledge provider
-            if (concept && this.helper.conceptHasReferrals(concept)) {
-                var indexName = this.helper.getIndexName(concept.linked_concepts[0].endpoint);
-                // lookup resource by search term and provided index
-                this.search(concept.id, searchTerm, indexName)
-                    .done($.proxy(function (items) {
-                        var formatter = this.formatter[concept.uri] || this.formatter['default'];
-                        // store last result set
-                        this.editorState.resultSet = items;
-                        // update score
-                        this.updateScoreAccordingOccurrence(items);
-                        // create and add items
-                        list.empty();
-
-                        if (items.length !== 0) {
-                            list.append(this.helper.createListItems(0, items, this.options.paginationSize, formatter));
-
-                            // do we need pagination?
-                            if (items.length > this.options.paginationSize) {
-                                var idxOffset = this.options.paginationSize;
-                                var btnLoadMore = $(this.templates.showMore);
-                                list.append(btnLoadMore);
-
-                                btnLoadMore.click($.proxy(function () {
-                                    list.append(this.helper.createListItems(idxOffset, items, this.options.paginationSize, formatter));
-                                    idxOffset += this.options.paginationSize;
-
-                                    if (idxOffset < items.length) {
-                                        // move button to end
-                                        btnLoadMore.parent().append(btnLoadMore);
-                                    }
-                                    else {
-                                        // hide button if all items are visible
-                                        btnLoadMore.hide();
-                                    }
-                                    return false;
-                                }, this));
-                            }
-                        } else {
-                            list.append(this.templates.noResults);
-                        }
-                        list.prepend(this.templates.unknownItem);
-                    }, this))
-                    .fail($.proxy(function () {
-                        list.html(this.templates.unknownItem);
-                    }, this));
-            }
-        },
-
-        search: function (type, searchText, index) {
-            var url = this.options.prefix + this.options.urls.search +
-                "/" + encodeURI(index) + "/" + encodeURI(type) + "/" + encodeURI(searchText);
-            return $.getJSON(url);
-        },
-
-        updateScoreAccordingOccurrence: function (items) {
-            var annotations = this.getAnnotations();
-            var occurrence = {};
-            // count occurrence of each resource
-            for (var i = 0; i < annotations.length; i++) {
-                var semanticTag = this.helper.getSemanticTag(annotations[i]);
-                if (semanticTag && semanticTag.hasOwnProperty("sameAs")) {
-                    if (!occurrence[semanticTag.sameAs]) {
-                        occurrence[semanticTag.sameAs] = 0;
-                    }
-                    occurrence[semanticTag.sameAs]++;
-                }
-            }
-            // calculate score
-            for (var i = 0; i < items.length; i++) {
-                var uri = items[i].uri;
-                items[i].score = 1 + (1 - i / (items.length - 1));
-                if (occurrence[uri]) {
-                    items[i].score *= occurrence[uri] + 1;
-                }
-            }
-            // sort by score 
-            items.sort(function (a, b) {
-                return b.score - a.score;
-            });
-        },
-
         helper: {
-
-            /**
-             * Returns the RDF object associated with the semantic tag.
-             * @param annotation
-             * @returns {*}
-             */
-            getSemanticTag: function (annotation) {
-                switch (annotation.oa.motivatedBy) {
-                    case Annotator.Plugin.Neonion.prototype.oa.motivation.classifying:
-                    case Annotator.Plugin.Neonion.prototype.oa.motivation.identifying:
-                        return annotation.rdf;
-                    case Annotator.Plugin.Neonion.prototype.oa.motivation.linking:
-                        return annotation.oa.hasBody.rdf;
-                    default:
-                        return null;
-                }
-            },
-
-            /**
-             * Indicates whether the given concept provides a search for referrals.
-             * @param concept
-             * @returns {boolean}
-             */
-            conceptHasReferrals : function(concept) {
-                return concept.hasOwnProperty('linked_concepts') && concept.linked_concepts.length > 0;
-            },
-
-            /**
-             * Extracts the name of the index from the given endpoint URL
-             * @param endpoint
-             */
-            getIndexName : function(endpoint) {
-                // TODO rethink that
-                var element = document.createElement('a');
-                element.href = endpoint;
-                return element.hostname.split('.')[1];
-            },
 
             /**
              * Returns true if the annotation has the given motivation.
@@ -874,14 +682,14 @@
              */
             getMotivationEquals : function(annotation, motivation) {
                 if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("motivatedBy")) {
-                    return annotation.oa.motivatedBy == motivation;
+                    return annotation['oa']['motivatedBy'] == motivation;
                 }
                 return false;
             },
 
             isLinkedAnnotation: function(annotation) {
                 if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("motivatedBy")) {
-                    return annotation.oa.motivatedBy == Annotator.Plugin.Neonion.prototype.oa.motivation.linking;
+                    return annotation['oa']['motivatedBy'] == Annotator.Plugin.Neonion.prototype.oa.motivation.linking;
                 }
                 return false;
             },
@@ -896,29 +704,6 @@
                 for (var i = 0; i < concepts.length; i++) {
                     adder.append("<button value='" + concepts[i].uri + "'>" + concepts[i].label + "</button>");
                 }
-            },
-
-            /**
-             * Creates a list of item according pagination and formatter.
-             * @param offset
-             * @param list
-             * @param pageSize
-             * @param formatter
-             * @returns {Array}
-             */
-            createListItems: function (offset, list, pageSize, formatter) {
-                list = list.slice(offset, offset + pageSize);
-                var items = [];
-                for (var i = 0; i < list.length; i++) {
-                    var label = formatter(list[i]);
-                    items.push(
-                        "<button type='button' class='' value='" + (offset + i) + "'>" +
-                        label +
-                        "<a class='pull-right' href='" + list[i].uri + "' target='blank'><i class='fa fa-external-link'></i></a>" +
-                        "</button>"
-                    );
-                }
-                return items;
             },
 
             placeEditorBesidesAnnotation: function (annotation, annotator) {

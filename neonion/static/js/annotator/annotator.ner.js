@@ -49,20 +49,15 @@
         },
 
         annotationCreated : function (annotation) {
-            // TODO raise NER event
-            //console.log(annotation, this);
+
         },
 
         annotationUpdated : function (annotation) {
-            // TODO raise NER event
-            //console.log(annotation);
+ 
         },
 
         annotationDeleted : function (annotation) {
-            // check if deleted annotation is automatic annotation
-            /*if (annotation.hasOwnProperty('creator') && annotation.oa.annotatedBy.email == this.options.agent.email) {
-                // TODO raise NER event
-            }*/
+
         },
 
         /**
@@ -129,8 +124,8 @@
                     // finalize annotation
                     this.annotator.setupAnnotation(annotation);
                     if (this.annotator.plugins.Neonion) {
-                        annotation.oa.annotatedBy = $.extend(this.options.agent, {type: this.oa.types.agent.software}),
-                        annotation.oa.motivatedBy = this.annotator.plugins.Neonion.oa.motivation.questioning;
+                        annotation['oa']['annotatedBy']= $.extend(this.options.agent, { "@type": "prov:SoftwareAgent"}),
+                        annotation['oa']['@motivatedBy'] = this.annotator.plugins.Neonion.oa.motivation.questioning;
                         annotation.context = this.annotator.plugins.Neonion.extractSurroundedContent(annotation);
                     }
                     // publish annotation created

@@ -41,6 +41,16 @@
                     'surrounding': factory.getSurroundedContent(annotation, scope.annotator),
                     'normalizedHighlights': factory.getHighlightRectangles(annotation, scope.annotator)
                 };
+
+                // add information to OA selector
+                if (annotation.hasOwnProperty("oa")) {
+                    // use PDF fragment identification
+                    // see http://openannotation.org/spec/core/specific.html#FragmentSelector
+                    annotation['oa']['hasTarget']['hasSelector']['conformsTo'] = 'http://tools.ietf.org/rfc/rfc3778';
+                    annotation['oa']['hasTarget']['hasSelector']['value'] = 
+                        '#page=' + (annotation['neonion']['context']['pageIdx'] + 1) + 
+                        '&highlight=' + factory.getFragmentHighlight(annotation['neonion']['context']['normalizedHighlights']);
+                }
             });
         };
 
@@ -61,6 +71,21 @@
                 node = node[0];
             }
             return node;
+        };
+
+        /**
+         * Returns a formatted string representing the bounds to the highlights.
+         * @param highlights array with rectangles
+         */
+        factory.getFragmentHighlight = function(highlights) {
+            var lt = 0, rt = 1, top = 0, btm = 1;
+            for(var i = 0; i < highlights.length; i++) {
+                lt = Math.max(highlights[i].left, lt);
+                rt = Math.min(1 - highlights[i].left + highlights[i].width, rt);
+                top = Math.max(highlights[i].top, top);
+                btm = Math.min(1 - highlights[i].top + highlights[i].height, btm);
+            }
+            return lt + ',' + rt + ',' + top + ',' + btm;
         };
 
         /**
@@ -155,296 +180,284 @@
     };
 
     /**
-     * Widget to show existing properties in the viewer.
-     * @returns {{}}
+     * Widget to enable the linking of entities to external resources.
+     * @returns {}
      */
-    Annotator.Plugin.Neonion.prototype.widgets['viewerSummarizeStatements'] = function (scope, options) {
-        var factory = {};
+    Annotator.Plugin.Neonion.prototype.widgets['entityLinking'] = function (scope, options) {
 
-        factory.load = function () {
-            $(".annotator-viewer").on("click", "[data-action='delete-property']", factory.onDeleteProperty);
-
-            // add field to viewer to place a summary of all properties
-            scope.annotator.viewer.addField({
-                load: factory.summarizeProperties
-            });
-        };
-
-        factory.summarizeProperties = function (field, annotation) {
-            $(field).empty().hide();
-            if (annotation.hasOwnProperty("oa")) {
-                switch (annotation.oa.motivatedBy) {
-                    case scope.oa.motivation.classifying:
-                    case scope.oa.motivation.identifying:
-                        var linkedAnnotations = factory.getLinkedAnnotationsWithSubject(scope.helper.getSemanticTag(annotation).uri);
-                        if (linkedAnnotations.length > 0) {
-                            linkedAnnotations.forEach(function (statement) {
-                                var object = factory.getAnnotationById(statement.oa.hasTarget.target);
-                                // ensure the target annotation was found
-                                if (object) {
-                                    $(field).append(factory.createStatementHTML(scope.helper.getSemanticTag(annotation),
-                                        scope.helper.getSemanticTag(statement),
-                                        scope.helper.getSemanticTag(object), statement.id));
-                                }
-                            });
-                            $(field).wrapInner("<ul></ul>").show();
-                        }
-                        break;
-                }
-            }
-        };
-
-        factory.onDeleteProperty = function (e) {
-            var annotationId = e.target.getAttribute("data-value");
-            if (annotationId) {
-                var annotation = scope.linkedAnnotations.filter(function (item) {
-                    return item.id == annotationId;
-                }).pop();
-                scope.deleteLinkedAnnotation(annotation);
-            }
-            // update interface
-            scope.annotator.viewer.hide();
-        };
-
-        /**
-         * Find all linked annotations stating something about a given subject.
-         * @param subject
-         * @returns {Array.<T>}
-         */
-        factory.getLinkedAnnotationsWithSubject = function (subject) {
-            return scope.linkedAnnotations.filter(function (annotation) {
-                return scope.helper.getSemanticTag(annotation).subject == subject;
-            });
-        };
-
-        /**
-         * Returns the annotation object with the given id.
-         * @param id
-         * @returns {T}
-         */
-        factory.getAnnotationById = function (id) {
-            return scope.getAnnotations()
-                .filter(function (annotation) {
-                    return annotation.id == id;
-                })
-                .pop();
-        };
-
-        /**
-         * Returns a HTML representation of a statement.
-         * @param subject
-         * @param predicate
-         * @param object
-         * @returns {String}
-         */
-        factory.createStatementHTML = function (subject, predicate, object, annotationId) {
-            return "<li>" +
-                subject.label + "&nbsp;" +
-                predicate.predicateLabel + "&nbsp;" +
-                object.label +
-                "<i class='pull-right fa fa-times fa-1' data-action='delete-property' data-value='" + annotationId + "'></i>" +
-                "</li>";
-        };
-
-        return factory;
-    };
-
-    /**
-     * Widget create a property from a field in viewer.
-     * @returns {{}}
-     */
-    Annotator.Plugin.Neonion.prototype.widgets['viewerCreateProperty'] = function (scope, options) {
         var factory = {
-            focusedAnnotation: null,
-            selectProperty: null,
-            groupedObjects: {}
+            state: {
+                selectedItem: -1,
+                resultSet: []  
+            },
+            paginationSize: 5,
+        };
+
+        factory.templates = {
+            showMore: "<button class='more' data-action='annotator-more'>Show more results&nbsp;&#8230;</button>",
+            spinner: "<span style='margin:5px;' class='fa fa-spinner fa-spin'></span>",
+            noResults: "<div class='empty'>No results found.</div>",
+            searchItem: "<i class='fa fa-search'></i>",
+            cancelItem: "<a data-action='annotator-cancel'><i class='fa fa-times fa-fw'></i></a>",
+            unknownItem: "<button type='button' class='unknown' data-action='annotator-submit'>Unknown Resource</button>",
         };
 
         factory.load = function () {
-            // add field to viewer to place porperties
-            scope.annotator.viewer.addField({
-                load: factory.loadPropertyField
-            });
+            // create field in editor
+            factory.entityField = factory.initEditorEntityField();
+            // inject field to parent
+            scope.fields.editor[scope.oa.motivation.classifying] = factory.entityField;
+            scope.fields.editor[scope.oa.motivation.identifying] = factory.entityField;
 
-            $(".annotator-viewer").on("click", "[data-action='create-property']", factory.onCreateProperty);
-
-            factory.setupDialog();
-        };
-
-        factory.loadPropertyField = function (field, annotation) {
-            $(field).empty().hide();
-            if (annotation.hasOwnProperty("oa")) {
-                switch (annotation.oa.motivatedBy) {
-                    case scope.oa.motivation.classifying:
-                    case scope.oa.motivation.identifying:
-                        var conceptDefinition = scope.getConcept(scope.helper.getSemanticTag(annotation).typeof);
-                        if (conceptDefinition && conceptDefinition.properties.length > 0) {
-                            conceptDefinition.properties.forEach(function (property, index) {
-                                var propertyBtn = $(factory.createPropertyItemHTML(property, index));
-                                if (!factory.hasSuitableAnnotations(property)) {
-                                    // disable button if there are no suitable instances
-                                    propertyBtn.prop('disabled', true);
-                                }
-                                $(field).append(propertyBtn);
-                            });
-                            factory.focusedAnnotation = annotation;
-                            $(field).show();
-                        }
-                        break;
-                }
-            }
-        };
-
-        /**
-         * Checks whether the page contains annotations with suitable concept types for the given property.
-         * @param property
-         */
-        factory.hasSuitableAnnotations = function (property) {
-            // get tne URIs of all suitable concepts
-            var matchingConcepts = scope.concepts.filter(function (concept) {
-                    return property.range.indexOf(concept.id) != -1;
-                })
-                .map(function (concept) {
-                    return concept.uri;
-                });
-
-            return scope.getAnnotations().some(function (annotation) {
+            scope.annotator.subscribe('annotationEditorShown', function (editor, annotation) {
                 if (scope.helper.getMotivationEquals(annotation, scope.oa.motivation.classifying) ||
                     scope.helper.getMotivationEquals(annotation, scope.oa.motivation.identifying)) {
-                    return matchingConcepts.indexOf(scope.helper.getSemanticTag(annotation).typeof) != -1;
+                    var concept = scope.getConceptDefinition(annotation['oa']['hasBody']['instanceOf']);
+                    // check if the concept provides an entity lookup
+                    if (!(concept && factory.conceptHasReferrals(concept))) {
+                        // submit automatically if no lookup is provided
+                        editor.submit();
+                    }
                 }
+
+            });
+
+            scope.annotator.subscribe('annotationEditorHidden', function () {
+                // clear prior editor state
+                factory.state.selectedItem = -1;
+                factory.state.resultSet = [];
+            });
+        };
+
+        factory.initEditorEntityField = function () {
+            // add field containing the suggested resources
+            var field = scope.annotator.editor.addField({
+                load: factory.loadEditorEntityField,
+                submit: factory.submitEditorEntityField
+            });
+
+            // replace filed with custom content
+            $(field).children((":first")).replaceWith(
+                "<div class='resource-controls'>" + factory.templates.cancelItem + "</div>" +
+                "<form id='resource-form'>" + factory.templates.searchItem + "</form>" +
+                "<div id='resource-list'>" + factory.templates.unknownItem + "</div>"
+            );
+
+            // create input for search term
+            var searchInput = $('<input>').attr({
+                type: 'text',
+                id: 'resource-search',
+                autocomplete: 'off',
+                placeholder: scope.literals['en'].searchText,
+                required: true
+            });
+
+            var searchForm = $(field).find("#resource-form");
+            var resourceList = $(field).find("#resource-list");
+            searchInput.appendTo(searchForm);
+
+            // attach submit handler handler
+            searchForm.submit(function () {
+                factory.updateEntityList(searchInput.val());    
                 return false;
             });
+
+            // attach key event to search while typing
+            searchInput.keyup(function (e) {
+                var keyCode = e.which || e.keyCode;
+                // fire only on printable characters and backspace
+                if (keyCode >= 32 || keyCode === 8) {
+                    var timeoutID = $(searchForm).data("timeoutID");
+                    if (timeoutID) {
+                        // clear prior timeout
+                        window.clearTimeout(timeoutID);
+                    }
+                    // submit search form delayed
+                    timeoutID = window.setTimeout(function () {
+                        $(searchForm).removeData("timeoutID");
+                        $(searchForm).submit();
+                    }, 200);
+                    $(searchForm).data("timeoutID", timeoutID);
+                }
+            });
+
+            // stop propagation on anchor click
+            resourceList.on("click", "a", function (e) {
+                e.stopPropagation();
+            });
+
+            // attach handler to submit from resource list
+            resourceList.on("click", "button", function (e) {
+                var source = $(e.currentTarget);
+                var itemIndex = parseInt(source.val());
+                itemIndex = !isNaN(itemIndex) ? itemIndex : -1;
+                // store selected resource in editor state
+                factory.state.selectedItem = itemIndex;
+                scope.annotator.editor.submit();
+            });
+
+            return field;
         };
 
-        factory.onCreateProperty = function (e) {
-            if (factory.focusedAnnotation) {
-                var concept = scope.getConcept(scope.helper.getSemanticTag(factory.focusedAnnotation).typeof);
-                if (concept) {
-                    // get index of property from target value
-                    var propertyIdx = parseInt($(e.target).val());
-
-                    // get the property description
-                    factory.selectedProperty = concept.properties[propertyIdx];
-
-                    // find all suitable concepts for property
-                    var matchingConcepts = scope.concepts.filter(function (concept) {
-                        return factory.selectedProperty.range.indexOf(concept.id) != -1;
-                    });
-
-                    // find all annotations matching that concepts
-                    var annotations = scope.getAnnotationsMatchingConcepts(matchingConcepts);
-
-                    // group annotations by their uri and cache result in factory
-                    factory.groupedObjects = scope.groupAnnotationBy(annotations,
-                        function (annotation) {
-                            return scope.helper.getSemanticTag(annotation).uri;
-                        }
-                    );
-
-                    factory.showDialog(scope.helper.getSemanticTag(factory.focusedAnnotation), factory.selectedProperty, factory.groupedObjects);
+        factory.submitEditorEntityField = function (field, annotation) {
+            if (scope.helper.getMotivationEquals(annotation, scope.oa.motivation.classifying) ||
+                scope.helper.getMotivationEquals(annotation, scope.oa.motivation.identifying)) {
+                // add extra information from identified resource
+                if (factory.state.selectedItem >= 0 && factory.state.selectedItem < factory.state.resultSet.length) {
+                    var dataItem = factory.state.resultSet[factory.state.selectedItem];
+                    annotation['oa']['hasBody']['label'] = dataItem.label;
+                    annotation['oa']['hasBody']['sameAs'] = dataItem.uri + '';
+                    annotation['oa']['motivatedBy'] = scope.oa.motivation.identifying;
                 }
             }
         };
 
-        factory.setupDialog = function () {
-            factory.dialog = document.createElement("dialog");
-            factory.dialogSection = $("<section></section>");
-            factory.dialogSection.appendTo(factory.dialog);
-
-            factory.dialogSection.on("click", "[data-action='dialog-close']", factory.closeDialog);
-            factory.dialogSection.on("click", "[data-action='dialog-submit']", factory.submitDialog);
-
-            // check if the browser supports the dialog element
-            if (!factory.dialog.showModal) {
-                // load external library polyfill dialog
-                $.getScript("https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.1/dialog-polyfill.min.js", function () {
-                    // register at dialog at polyfill
-                    dialogPolyfill.registerDialog(factory.dialog);
-                    // load stylesheet
-                    $('head').prepend('<link rel="stylesheet" type="text/css" ' +
-                        'href="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.1/dialog-polyfill.min.css">');
-                });
+        factory.loadEditorEntityField = function (field, annotation) {
+            if (scope.helper.getMotivationEquals(annotation, scope.oa.motivation.classifying) ||
+                scope.helper.getMotivationEquals(annotation, scope.oa.motivation.identifying)) {
+                $(field).show();
+                $(field).find("#resource-search").val(annotation.quote);
+                $(field).find("#resource-search").attr("autofocus", "autofocus");
+                $(field).find("#resource-search").focus();
+                $(field).find("#resource-form").submit();
             }
-
-            scope.annotator.wrapper[0].appendChild(factory.dialog);
-        };
-
-        factory.showDialog = function (subject, property, objects) {
-            // for each uri in grouped objects take the first item as representative
-            var items = [];
-            for (var key in objects) {
-                items.push({
-                    uri: key,
-                    label: scope.helper.getSemanticTag(objects[key][0]).label
-                });
-            }
-            // sort items by label alphabetically
-            items.sort(scope.comparator.compareByLabel);
-
-            // add heading to dialog
-            factory.dialogSection.empty()
-                .append("<a class='pull-right' data-action='dialog-close'><i class='fa fa-times'></i></a>")
-                .append("<h5>" + subject.label + "&nbsp;" + property.label + ":</h5>");
-
-            factory.itemSection = $("<div class='list-group'></div>");
-
-            // add item to dialog
-            var group = $("<div class='btn-group-vertical' role='group'></div>");
-            items.forEach(function (item) {
-                group.append(factory.createInstanceItemHTML(item));
-            });
-            factory.dialogSection.append(group);
-
-            // update interface
-            scope.annotator.viewer.hide();
-            factory.dialog.showModal();
-        };
-
-        factory.submitDialog = function (e) {
-            var uri = $(e.target).val();
-            if (factory.groupedObjects.hasOwnProperty(uri)) {
-                var annotations = factory.groupedObjects[uri];
-
-                // sort annotations by euclidean distance to focused annotation
-                annotations.sort(function (a, b) {
-                    return factory.euclideanDistance(factory.focusedAnnotation, a) - factory.euclideanDistance(factory.focusedAnnotation, b);
-                });
-
-                // principle of proximity - the annotation with the closest distance to the focused annotation becomes the target
-                scope.createLinkedAnnotation(factory.focusedAnnotation, factory.selectedProperty, annotations[0]);
-            }
-
-            factory.closeDialog();
         };
 
         /**
-         * Calculates the euclidean distance between two annotations.
-         * @param a
-         * @param b
-         * @returns {number}
+         * Creates the list containing the suggested resources.
+         * @param searchTerm
          */
-        factory.euclideanDistance = function (a, b) {
-            a = a.highlights[0].getBoundingClientRect();
-            b = b.highlights[0].getBoundingClientRect();
-            var centerA = {x: a.left + a.width * 0.5, y: a.top + a.height * 0.5};
-            var centerB = {x: b.left + b.width * 0.5, y: b.top + b.height * 0.5};
-            return Math.sqrt((centerA.x - centerB.x) * (centerA.x - centerB.x) + (centerA.y - centerB.y) * (centerA.y - centerB.y));
+        factory.updateEntityList = function (searchTerm) {
+            var concept = scope.getConceptDefinition(scope.annotator.editor.annotation['oa']['hasBody']['instanceOf']);
+
+            // check if the concept is connected to concepts from a knowledge provider
+            if (concept && factory.conceptHasReferrals(concept)) {
+                var list = $(factory.entityField).find("#resource-list");
+                // replace list with spinner while loading
+                list.html(factory.templates.spinner);
+
+                var indexName = factory.getIndexName(concept.linked_concepts[0].endpoint);
+                // lookup resource by search term and provided index
+                this.search(concept.id, searchTerm, indexName)
+                    .done(function (items) {
+                        var formatter = scope.formatter[concept.uri] || scope.formatter['default'];
+                        // store last result set
+                        factory.state.resultSet = items;
+                        // update score
+                        factory.updateScoreAccordingOccurrence(items);
+                        // create and add items
+                        list.empty();
+
+                        if (items.length !== 0) {
+                            list.append(factory.createListItems(0, items, factory.paginationSize, formatter));
+
+                            // do we need pagination?
+                            if (items.length > factory.paginationSize) {
+                                var idxOffset = factory.paginationSize;
+                                var btnLoadMore = $(factory.templates.showMore);
+                                list.append(btnLoadMore);
+
+                                btnLoadMore.click(function () {
+                                    list.append(factory.createListItems(idxOffset, items, factory.paginationSize, formatter));
+                                    idxOffset += factory.paginationSize;
+
+                                    if (idxOffset < items.length) {
+                                        // move button to end
+                                        btnLoadMore.parent().append(btnLoadMore);
+                                    }
+                                    else {
+                                        // hide button if all items are visible
+                                        btnLoadMore.hide();
+                                    }
+                                    return false;
+                                });
+                            }
+                        } else {
+                            list.append(factory.templates.noResults);
+                        }
+                        list.prepend(factory.templates.unknownItem);
+                    })
+                    .fail(function () {
+                        list.html(factory.templates.unknownItem);
+                    });
+            }
         };
 
-        factory.closeDialog = function () {
-            factory.dialog.close();
-            factory.focusedAnnotation = null;
+        factory.search = function (type, searchText, index) {
+            var url = scope.options.lookup.prefix + scope.options.lookup.urls.search +
+                "/" + encodeURI(index) + "/" + encodeURI(type) + "/" + encodeURI(searchText);
+            return $.getJSON(url);
         };
 
-        factory.createInstanceItemHTML = function (instance) {
-            return "<button type='button' class='btn btn-default' data-action='dialog-submit' value='" +
-                instance.uri + "'>" + instance.label + "</button>";
+        factory.updateScoreAccordingOccurrence = function (items) {
+            var annotations = scope.getAnnotations();
+            var occurrence = {};
+            // count occurrence of each resource
+            for (var i = 0; i < annotations.length; i++) {
+                if(scope.helper.getMotivationEquals(annotations[i], scope.oa.motivation.identifying)) {
+                    if (annotations[i]['oa']['hasBody'].hasOwnProperty("sameAs")) {
+                        if (!occurrence[annotations[i]['oa']['hasBody']['sameAs']]) {
+                            occurrence[annotations[i]['oa']['hasBody']['sameAs']] = 0;
+                        }
+                        occurrence[annotations[i]['oa']['hasBody']['sameAs']]++;
+                    }
+                }
+            }
+            // calculate score
+            for (var i = 0; i < items.length; i++) {
+                var uri = items[i].uri;
+                items[i].score = 1 + (1 - i / (items.length - 1));
+                if (occurrence[uri]) {
+                    items[i].score *= occurrence[uri] + 1;
+                }
+            }
+            // sort by score 
+            items.sort(function (a, b) {
+                return b.score - a.score;
+            });
         };
 
-        factory.createPropertyItemHTML = function (property, index) {
-            return "<button class='btn btn-secondary btn-xs btn-spacing' data-action='create-property' type='button' value='" + index + "'>" +
-                property.label + "</button>";
+        /**
+         * Creates a list of item according pagination and formatter.
+         * @param offset
+         * @param list
+         * @param pageSize
+         * @param formatter
+         * @returns {Array}
+         */
+        factory.createListItems = function (offset, list, pageSize, formatter) {
+            list = list.slice(offset, offset + pageSize);
+            var items = [];
+            for (var i = 0; i < list.length; i++) {
+                var label = formatter(list[i]);
+                items.push(
+                    "<button type='button' class='' value='" + (offset + i) + "'>" +
+                    label +
+                    "<a class='pull-right' href='" + list[i].uri + "' target='blank'><i class='fa fa-external-link'></i></a>" +
+                    "</button>"
+                );
+            }
+            return items;
+        };
+
+        /**
+         * Indicates whether the given concept provides a search for referrals.
+         * @param concept
+         * @returns {boolean}
+         */
+        factory.conceptHasReferrals = function(concept) {
+            return concept.hasOwnProperty('linked_concepts') && concept['linked_concepts'].length > 0;
+        };
+
+        /**
+         * Extracts the name of the index from the given endpoint URL
+         * @param endpoint
+         */
+        factory.getIndexName = function(endpoint) {
+            // TODO rethink that
+            var element = document.createElement('a');
+            element.href = endpoint;
+            return element.hostname.split('.')[1];
         };
 
         return factory;

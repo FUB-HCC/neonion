@@ -3,6 +3,8 @@ from enum import Enum
 
 
 class neonion:
+    USER = settings.NEONION_BASE_NAMESPACE.rstrip('/') + '/ontology/user'
+    ANNOTATION = settings.NEONION_BASE_NAMESPACE.rstrip('/') + '/ontology/annotation'
     CONCEPT_SET = settings.NEONION_BASE_NAMESPACE.rstrip('/') + '/ontology/conceptset'
     CONCEPT = settings.NEONION_BASE_NAMESPACE.rstrip('/') + '/ontology/concept'
     LINKED_CONCEPT = settings.NEONION_BASE_NAMESPACE.rstrip('/') + '/ontology/linkedconcept'

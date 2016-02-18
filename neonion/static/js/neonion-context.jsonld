@@ -1,0 +1,8 @@
+{
+	"@context": [
+		"http://www.w3.org/ns/oa-context-20130208.json",
+		{
+			"@vocab": "http://www.neonion.org/ontology"
+		}
+	]
+}

@@ -17,10 +17,8 @@ neonionApp
         return function (annotations) {
             if (!angular.isUndefined(annotations)) {
                 return annotations.filter(function (value) {
-                    if (value.hasOwnProperty("oa") && value.hasOwnProperty("rdf") && value['rdf'].hasOwnProperty("uri")) {
-                        return true;
-                    }
-                    return false;
+                    return (value['oa']['motivatedBy'] == "oa:classifying" ||
+                        value['oa']['motivatedBy'] == "oa:identifying");
                 });
             }
             else {
@@ -32,10 +30,7 @@ neonionApp
         return function (annotations) {
             if (!angular.isUndefined(annotations)) {
                 return annotations.filter(function (value) {
-                    if (value.oa.motivatedBy == "oa:linking") {
-                        return true;
-                    }
-                    return false;
+                    return (value['oa']['motivatedBy'] == "oa:linking");
                 });
             }
             else {
@@ -47,10 +42,7 @@ neonionApp
         return function (annotations) {
             if (!angular.isUndefined(annotations)) {
                 return annotations.filter(function (value) {
-                    if (value.hasOwnProperty("oa") && value.oa.motivatedBy == "oa:commenting") {
-                        return true;
-                    }
-                    return false;
+                    return (value['oa']['motivatedBy'] == "oa:commenting");
                 });
             }
             else {
@@ -62,10 +54,7 @@ neonionApp
         return function (annotations) {
             if (!angular.isUndefined(annotations)) {
                 return annotations.filter(function (value) {
-                    if (value.hasOwnProperty("oa") && value.oa.motivatedBy == "oa:highlighting") {
-                        return true;
-                    }
-                    return false;
+                    return (value['oa']['motivatedBy'] == "oa:highlighting");
                 });
             }
             else {

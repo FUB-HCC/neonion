@@ -7,23 +7,30 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', '$filter', 'CommonService
         $scope.stepSize = 50;
         $scope.annotations = [];
 
-        $scope.exportProperties = {
-            conceptFields: ['id', 'uri', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy', 'rdf.label',
-                'rdf.uri', 'rdf.conceptLabel', 'rdf.typeof', 'rdf.sameAs'],
-            commentFields: ['id', 'uri', 'quote', 'text', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy'],
-            highlightFields: ['id', 'uri', 'quote', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy'],
-            linkedAnnotationFields : ['id', 'uri', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy',
-                'oa.hasBody.rdf.subject', 'oa.hasBody.rdf.predicate', 'oa.hasBody.rdf.predicateLabel', 'oa.hasBody.rdf.object',
-                'oa.hasTarget.source', 'oa.hasTarget.target'],
-            fullKnowledge : ['id', 'uri', 'created', 'oa.annotatedBy.email', 'oa.motivatedBy',
-                'rdf.label', 'rdf.uri', 'rdf.conceptLabel', 'rdf.typeof', 'rdf.sameAs',
-                'oa.hasBody.rdf.subject', 'oa.hasBody.rdf.predicate', 'oa.hasBody.rdf.predicateLabel', 'oa.hasBody.rdf.object',
-                'oa.hasTarget.source', 'oa.hasTarget.target']
+        $scope.exportFields = {
+            baseFields : function() {
+                return  [
+                    'oa.@id', 'oa.annotatedBy.mbox.@id', 'oa.motivatedBy', 'oa.annotatedAt', 
+                    'oa.hasTarget.hasSource.@id', 'oa.hasTarget.hasSelector.conformsTo', 'oa.hasTarget.hasSelector.value',
+                    'oa.hasBody.@type'
+                ];   
+            },
+            commentFields: function() {
+                return $scope.exportFields.baseFields().concat(['oa.hasBody.chars']);
+            },
+            highlightFields: function() {
+                return $scope.exportFields.baseFields();  
+            },
+            graph: function() {
+                return $scope.exportFields.baseFields().concat([
+                    'oa.hasBody.@id', 'oa.hasBody.references', 'oa.hasBody.instanceOf', 'oa.hasBody.sameAs', 'oa.hasBody.label',
+                    'oa.hasTarget.hasSelector.source', 'oa.hasTarget.hasSelector.target'
+                ]);
+            },
         };
 
         $scope.getQueryParams = function (pageNum) {
             return {
-                //'oa.annotatedBy.email': $scope.user.email,
                 'offset': pageNum * $scope.stepSize,
                 'limit': $scope.stepSize
             };
@@ -62,13 +69,13 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', '$filter', 'CommonService
         $scope.downloadComments = function (format) {
             var annotations = $filter('filterByCommentAnnotation')($scope.annotations)
                 .filter($scope.filterCommentAnnotations);
-            $scope.download(annotations, $scope.exportProperties.commentFields, format, "comments_");
+            $scope.download(annotations, $scope.exportFields.commentFields(), format, "comments_");
         };
 
         $scope.downloadHighlights = function (format) {
             var annotations = $filter('filterByHighlightAnnotation')($scope.annotations)
                 .filter($scope.filterHighlightAnnotation);
-            $scope.download(annotations, $scope.exportProperties.highlightFields, format, "highlights_");
+            $scope.download(annotations, $scope.exportFields.highlightFields(), format, "highlights_");
         };
 
         $scope.downloadConceptsAndStatements = function (format) {
@@ -81,18 +88,18 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', '$filter', 'CommonService
                 // check if the subject is present in the array of annotations
                 .filter(function (linkage) {
                     return annotations.some(function (annotation) {
-                        return annotation.rdf.uri == linkage.oa.hasBody.rdf.subject;
+                        return annotation['oa']['@id'] == linkage['oa']['hasTarget']['hasSelector']['source'];
                     })
                 })
                 // check if the objects is present in the array of annotations
                 .filter(function (linkage) {
                     return annotations.some(function (annotation) {
-                        return annotation.rdf.uri == linkage.oa.hasBody.rdf.object;
+                        return annotation['oa']['@id'] == linkage['oa']['hasTarget']['hasSelector']['target'];
                     });
                 });
 
             $scope.download(annotations.concat(linkedAnnotations), 
-                $scope.exportProperties.fullKnowledge, format, "knowledge_");
+                $scope.exportFields.graph(), format, "knowledge_");
         };
 
         $scope.download = function (data, properties, format, filePrefix) {
@@ -112,8 +119,8 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', '$filter', 'CommonService
             if (CommonService.filter.query.length > 0) {
                 var show = false;
                 // filter by user
-                if (annotation.hasOwnProperty("oa")) {
-                    show |= annotation.oa.annotatedBy.email.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
+                if (annotation.hasOwnProperty("neonion")) {
+                    show |= annotation['neonion']['creator'].toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
                 }
                 // filter by document name
                 if ($scope.documentTitles.hasOwnProperty(annotation.uri)) {
@@ -139,8 +146,7 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', '$filter', 'CommonService
             if (CommonService.filter.query.length > 0) {
                 var show = $scope.filterCommonFields(annotation);
                 if (annotation.hasOwnProperty("rdf")) {
-                    show |= annotation.rdf.label.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
-                    show |= annotation.rdf.typeof.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1                   
+                    show |= annotation['oa']['hasBody']['label'].toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;                 
                 }
                 return show;
             }

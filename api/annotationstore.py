@@ -49,8 +49,7 @@ class AnnotationListView(APIView):
                 # enricht body
                 if 'hasBody' in annotation['oa']:
                     # generate URN for body
-                    if '@id' not in annotation['oa']['hasBody']:
-                        annotation['oa']['hasBody']['@id'] = generate_urn()
+                    annotation['oa']['hasBody']['@id'] = generate_urn()
 
                     # generate URI for classifyied or identified instance
                     if (ann.motivation_equals(annotation, OpenAnnotation.Motivations.identifying) or
@@ -60,8 +59,7 @@ class AnnotationListView(APIView):
                 # enrich target
                 if 'hasTarget' in annotation['oa']:
                     # generate URN for target
-                    if '@id' not in annotation['oa']['hasTarget']:
-                        annotation['oa']['hasTarget']['@id'] = generate_urn()
+                    annotation['oa']['hasTarget']['@id'] = generate_urn()
 
                     if 'hasSource' in annotation['oa']['hasTarget']:
                         document = Document.objects.get(pk=document_pk)

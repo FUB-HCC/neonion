@@ -23,8 +23,8 @@ neonionApp.controller('AnnotationListCtrl', ['$scope', '$filter', 'CommonService
             },
             graph: function() {
                 return $scope.exportFields.baseFields().concat([
-                    'oa.hasBody.@id', 'oa.hasBody.references', 'oa.hasBody.instanceOf', 'oa.hasBody.sameAs', 'oa.hasBody.label',
-                    'oa.hasTarget.hasSelector.source', 'oa.hasTarget.hasSelector.target'
+                    'oa.hasBody.contextualizedAs', 'oa.hasBody.classifiedAs', 'oa.hasBody.identifiedAs', 'oa.hasBody.label',
+                    'oa.hasBody.relation', 'oa.hasTarget.hasSelector.source', 'oa.hasTarget.hasSelector.target'
                 ]);
             },
         };

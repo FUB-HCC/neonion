@@ -291,9 +291,9 @@
                         {
                             "motivatedBy": "oa:classifying",
                             "hasBody": {
-                                "@type": ["oa:SemanticTag", "neo:Instance"],
-                                "references": "",
-                                "instanceOf": ""
+                                "@type": ["oa:SemanticTag", "neo:EntityMention"],
+                                "contextualizedAs": "",
+                                "classifiedAs": ""
                             }
                         });
                 },
@@ -303,7 +303,7 @@
                         {
                             "motivatedBy": "oa:linking",
                             "hasBody": {
-                                "@type": ["oa:SemanticTag", "neo:Relation"],
+                                "@type": ["oa:SemanticTag", "neo:RelationMention"],
                             },
                             "hasTarget": {
                                 "hasSelector": { 
@@ -346,17 +346,17 @@
                 ranges: [], // empty but necessary
                 neonion: {
                     viewer : {
-                        source: annotationSource['oa']['hasBody']['references'],
+                        source: annotationSource['oa']['hasBody']['contextualizedAs'],
                         predicate: predicate['uri'],
                         predicateLabel: predicate['label'],
-                        target: annotationTarget['oa']['hasBody']['references']
+                        target: annotationTarget['oa']['hasBody']['contextualizedAs']
                     },
                 },
                 oa : this.oa.stubs.createLinkedAnnotationStub()
             };
 
             // set type of relation
-            linkage['oa']['hasBody']['@id'] = predicate['uri'];
+            linkage['oa']['hasBody']['relation'] = predicate['uri'];
             // set source and target of selector
             linkage['oa']['hasTarget']['hasSelector']['source'] = annotationSource['oa']['@id'];
             linkage['oa']['hasTarget']['hasSelector']['target'] = annotationTarget['oa']['@id'];
@@ -397,7 +397,7 @@
             switch (this.editorState.annotationMode) {
                 case this.annotationModes.conceptTagging:
                     annotation['oa'] = this.oa.stubs.createInstanceAnnotationStub();
-                    annotation['oa']['hasBody']['instanceOf'] = this.editorState.selectedConcept;
+                    annotation['oa']['hasBody']['classifiedAs'] = this.editorState.selectedConcept;
                     annotation['neonion']['viewer'] = {
                         conceptLabel: this.getConceptDefinition(this.editorState.selectedConcept)['label']
                     };
@@ -578,8 +578,8 @@
             if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
                 this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
                 var fieldValue = annotation['oa']['hasBody']['label'];
-                if (annotation['oa']['hasBody'].hasOwnProperty('sameAs')) {
-                    fieldValue = "<a class='link' href='" + annotation['oa']['hasBody']['sameAs'] + 
+                if (annotation['oa']['hasBody'].hasOwnProperty('identifiedAs')) {
+                    fieldValue = "<a class='link' href='" + annotation['oa']['hasBody']['identifiedAs'] + 
                         "' target='_blank'>" + annotation['oa']['hasBody']['label'] + "</a>";
                 }
                 var fieldCaption = annotation['neonion']['viewer']['conceptLabel'] + ":&nbsp;";
@@ -649,7 +649,7 @@
                 .filter($.proxy(function (annotation) {
                     if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
                         this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
-                        return concepts.indexOf(annotation['oa']['hasBody']['instanceOf']) != -1;
+                        return concepts.indexOf(annotation['oa']['hasBody']['classifiedAs']) != -1;
                     }
                     return false;
                 }, this));

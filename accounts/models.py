@@ -79,7 +79,7 @@ class WorkingGroup(models.Model):
     comment = models.CharField('group description', max_length=500, blank=True)
     owner = models.ForeignKey(User, related_name="group_owner", null=True, unique=False)
     members = models.ManyToManyField(User, through='Membership', related_name="group_members")
-    documents = models.ManyToManyField(Document)
+    documents = models.ManyToManyField(Document, blank=True)
     concept_set = models.ForeignKey(ConceptSet, blank=True, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):

@@ -4,17 +4,37 @@
  * Annotator controller
  */
 neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce', 'cookieKeys',
-    'UserService', 'AnnotatorService', 'DocumentService', 'ConceptSetService',
-    function ($scope, $cookies, $location, $sce, cookieKeys, UserService, AnnotatorService, DocumentService,
-              ConceptSetService) {
+    'UserService', 'AnnotatorService', 'DocumentService', 'GroupService', 'ConceptSetService',
+    function ($scope, $cookies, $location, $sce, cookieKeys, UserService, AnnotatorService, 
+            DocumentService, GroupService, ConceptSetService) {
         "use strict";
 
-        $scope.loadDocumentMeta = function () {
-            if ($scope.hasOwnProperty("groupId") && $scope.hasOwnProperty("documentId")) {
-                DocumentService.get({id: $scope.documentId}, function (document) {
+        $scope.getDocument = function () {
+            if ($scope.hasOwnProperty("documentId")) {
+                return DocumentService.get({id: $scope.documentId}, function (document) {
                     $scope.document = document;
-                })
+                }).$promise;
             }
+            return Promise.resolve(true);
+        };
+
+        $scope.getGroup = function() {
+            if ($scope.hasOwnProperty("groupId")) {
+                return GroupService.get({id: $scope.groupId}, function (group) {
+                    $scope.group = group;
+                }).$promise;
+            }
+            return Promise.resolve(true);
+        };
+
+        $scope.getConceptSet = function () {
+            if ($scope.group) {
+                return ConceptSetService.getDeep({id: $scope.group.concept_set}, 
+                function (conceptSet) {
+                    $scope.conceptSet = conceptSet
+                }).$promise;                
+            }
+            return Promise.resolve(true);
         };
 
         $scope.getDocumentUrl = function() {
@@ -76,13 +96,11 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                             }
                         });
                 })
+                .then($scope.getGroup)
                 .then($scope.getConceptSet)
-        };
-
-        $scope.getConceptSet = function () {
-            return ConceptSetService.getDeep({id: "default"}, function (conceptSet) {
-                $scope.annotator.plugins.Neonion.conceptSet(conceptSet.concepts);
-            }).$promise;
+                .then(function() {
+                    $scope.annotator.plugins.Neonion.conceptSet($scope.conceptSet.concepts);
+                });
         };
 
         $scope.handleAnnotationEvent = function (annotation) {
@@ -115,7 +133,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
             //console.log("Destroy annotator");
         });
 
-        $scope.loadDocumentMeta();
+        $scope.getDocument();
 
     }]);
 

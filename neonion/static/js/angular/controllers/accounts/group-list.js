@@ -1,8 +1,9 @@
 /**
  * Group management controller
  */
-neonionApp.controller('GroupListCtrl', ['$scope', 'GroupService', 'UserService', 'MembershipService', 'DocumentService',
-        function ($scope, GroupService, UserService, MembershipService, DocumentService) {
+neonionApp.controller('GroupListCtrl', ['$scope', 'GroupService', 'UserService', 
+    'MembershipService', 'DocumentService', 'ConceptSetService',
+        function ($scope, GroupService, UserService, MembershipService, DocumentService, ConceptSetService) {
             "use strict";
 
             $scope.form = {
@@ -31,6 +32,12 @@ neonionApp.controller('GroupListCtrl', ['$scope', 'GroupService', 'UserService',
             $scope.queryMemberships = function () {
                 return MembershipService.query(function (data) {
                     $scope.memberships = data;
+                }).$promise;
+            }
+
+            $scope.queryConceptSets = function () {
+                return ConceptSetService.query(function (data) {
+                    $scope.conceptSets = data;
                 }).$promise;
             }
 
@@ -120,20 +127,25 @@ neonionApp.controller('GroupListCtrl', ['$scope', 'GroupService', 'UserService',
 
             $scope.addDocument = function (group, document) {
                 group.documents.push(document.id);
-                return group.$update().$promise;
+                return $scope.updateGroup(group);
             };
 
             $scope.removeDocument = function (group, document) {
                 var docIdx = group.documents.indexOf(document.id);
                 group.documents.splice(docIdx, 1);
-                return group.$update().$promise;
+                return $scope.updateGroup(group);
             };
+
+            $scope.updateGroup = function(group) {
+                return group.$update().$promise;
+            }
 
             // execute promise chain
             $scope.queryUsers()
+                .then($scope.queryConceptSets)
                 .then($scope.queryDocuments)
                 .then($scope.queryMemberships)
-                .then($scope.queryGroups());
+                .then($scope.queryGroups);
 
         }]
 );

@@ -1,15 +1,18 @@
 <table class="table" ng-controller='GroupListCtrl'>
     <thead>
         <tr>
-            <td>
-                <form class="navbar-form navbar-right pull-left" role="search">
-                     <input class="form-control" type="text" ng-model="form.groupName" required ng-trim="true" />
-                </form>
-            </td>
-            <td>
-                <a class="btn btn-primary" ng-click="createGroup()">
-                    <i class="fa fa-plus fa-fw"></i>Create
-                </a>
+            <td colspan="2">
+                <div class="input-group">
+                     <input class="form-control" 
+                        type="text" ng-model="form.groupName" 
+                        required ng-trim="true" />
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" 
+                            type="button"
+                            ng-click="createGroup()">Create
+                        </button>
+                    </div>
+                </div>
             </td>
         </tr>
     </thead>
@@ -23,12 +26,17 @@
          <tr ng-repeat="group in groups | orderBy:'name'">
             <td class="col-md-3">{{ group.name }}</td>
             <td class="col-md-9">
-                <a class="btn btn-primary" ng-click="showMembership(group)">
-                    <i class="fa fa-users fa-fw"></i>Membership
-                </a>
-                <a ng-show="group.owner != null" class="btn btn-primary" ng-click="deleteGroup(group)">
-                    <i class="fa fa-times fa-fw"></i>Delete
-                </a>
+                <select 
+                    ng-options="set.id as set.label for set in conceptSets"
+                    ng-model="group.concept_set"
+                    ng-change="updateGroup(group)">
+                </select>
+                <button class="btn btn-default" type="button"
+                        ng-click="showMembership(group)">Membership
+                </button>
+                <button class="btn btn-link" type="button"
+                        ng-click="deleteGroup(group)">Delete
+                </button>
                 <div ng-show="group.id == form.selectedGroup">
                     <table class="table">
                         <tr>
@@ -57,7 +65,6 @@
                                 </div>
                             </td>
                         </tr>
-
                     </table>
                 </div>
             </td>

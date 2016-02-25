@@ -2,44 +2,45 @@
     <thead>
         <tr>
             <th>User</th>
-            <th>Account</th>
-            <th></th>
+            <th>Account Settings</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
          <tr ng-repeat="user in users | orderBy:'email'">
-            <td class="col-md-3">{{ user.email }}</td>
-            <td class="col-md-3">
-                <a ng-show="user.is_superuser"
-                class="btn btn-primary btn-large"
-                ng-click="update(user,'is_superuser', false)">
-                    Make user
-                </a>
-                <a ng-hide="user.is_superuser"
-                class="btn btn-primary btn-large"
-                ng-click="update(user,'is_superuser', true)">
-                    Make admin
-                </a>
-                <a ng-hide="user.is_active"
-                class="btn btn-primary btn-large"
-                ng-click="update(user,'is_active', true)">
-                    Activate
-                </a>
+            <td class="col-md-1">{{ user.email }}</td>
+            <td class="col-md-2">
+                <div class="btn-group btn-group-justified" role="group">
+                    <a ng-show="user.is_superuser"
+                        class="btn btn-default"
+                        ng-click="update(user,'is_superuser', false)">
+                        Make user
+                    </a>
+
+                    <a ng-hide="user.is_superuser"
+                        class="btn btn-default"
+                        ng-click="update(user,'is_superuser', true)">
+                        Make admin
+                    </a>
+
+                    <a ng-hide="user.is_active"
+                        class="btn btn-default"
+                        ng-click="update(user,'is_active', true)">
+                        Activate
+                    </a>
+         
+                    <a ng-show="user.is_active"
+                        class="btn btn-default"
+                        ng-click="update(user,'is_active', false)">
+                        Deactivate
+                    </a>
+                </div>
             </td>
-            <td class="col-md-3">
-                <a ng-show="user.is_active"
-                class="btn btn-primary btn-large"
-                ng-click="update(user,'is_active', false)">
-                    Deactivate
-                </a>
-            </td>
-            <td class="col-md-3">
-                <a ng-hide="user.is_superuser"
-                class="btn btn-primary btn-large"
+            <td class="col-md-2">
+                <button class="btn btn-link"
                 ng-click="delete(user)">
                     Delete
-                </a>
+                </button>
             </td>
         </tr>
     </tbody>

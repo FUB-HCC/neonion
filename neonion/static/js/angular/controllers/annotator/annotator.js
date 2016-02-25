@@ -20,21 +20,23 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
 
         $scope.getGroup = function() {
             if ($scope.hasOwnProperty("groupId")) {
-                return GroupService.get({id: $scope.groupId}, function (group) {
-                    $scope.group = group;
-                }).$promise;
+                var groupId = parseInt($scope.groupId);
+                if (Number.isInteger(groupId)) {
+                    return GroupService.get({id: $scope.groupId}, function (group) {
+                        $scope.group = group;
+                    }).$promise;
+                }
             }
             return Promise.resolve(true);
         };
 
         $scope.getConceptSet = function () {
-            if ($scope.group) {
-                return ConceptSetService.getDeep({id: $scope.group.concept_set}, 
+            var conceptSetId = $scope.group ? $scope.group.concept_set : 'default';
+
+            return ConceptSetService.getDeep({id: conceptSetId}, 
                 function (conceptSet) {
                     $scope.conceptSet = conceptSet
                 }).$promise;                
-            }
-            return Promise.resolve(true);
         };
 
         $scope.getDocumentUrl = function() {

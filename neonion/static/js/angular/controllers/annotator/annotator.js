@@ -71,7 +71,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                             loadFromSearch: {'limit': 0}
                         })
                         // add neonion plugin
-                        .annotator('addPlugin', 'Neonion', {
+                        .annotator('addPlugin', 'neonion', {
                             uri: $scope.documentId,
                             workspace: $scope.groupId,
                             annotationMode: $scope.getAnnotationModeCookie()
@@ -101,7 +101,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                 .then($scope.getGroup)
                 .then($scope.getConceptSet)
                 .then(function() {
-                    $scope.annotator.plugins.Neonion.conceptSet($scope.conceptSet.concepts);
+                    $scope.annotator.plugins.neonion.conceptSet($scope.conceptSet.concepts);
                 });
         };
 

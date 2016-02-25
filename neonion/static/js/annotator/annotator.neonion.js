@@ -14,7 +14,7 @@
      * neonion plugin for Annotator
      * @implements {Annotator.Plugin}
      */
-    Annotator.Plugin.Neonion = function (element, options) {
+    Annotator.Plugin.neonion = function (element, options) {
 
         /**
          * Call constructor.
@@ -161,7 +161,7 @@
 
     };
 
-    $.extend(Annotator.Plugin.Neonion.prototype, new Annotator.Plugin(), {
+    $.extend(Annotator.Plugin.neonion.prototype, new Annotator.Plugin(), {
         events: {
             beforeAnnotationCreated: "beforeAnnotationCreated",
             annotationUpdated: "annotationUpdated",
@@ -258,14 +258,14 @@
                 },
                 // stub representing a highlight
                 createHighlightAnnotationStub: function() {
-                    return $.extend(true, Annotator.Plugin.Neonion.prototype.oa.stubs.createBaseStub(),
+                    return $.extend(true, Annotator.Plugin.neonion.prototype.oa.stubs.createBaseStub(),
                         {
                             "motivatedBy": "oa:highlighting"
                         });
                 },
                 // stub representing a comment
                 createCommentAnnotationStub: function() {
-                    return $.extend(true, Annotator.Plugin.Neonion.prototype.oa.stubs.createHighlightAnnotationStub(),
+                    return $.extend(true, Annotator.Plugin.neonion.prototype.oa.stubs.createHighlightAnnotationStub(),
                         {
                             "motivatedBy": "oa:commenting",
                             "hasBody": {
@@ -276,7 +276,7 @@
                 },
                 // stub representing a tag
                 createTagAnnotationStub: function() {
-                    return $.extend(true, Annotator.Plugin.Neonion.prototype.oa.stubs.createBaseStub(),
+                    return $.extend(true, Annotator.Plugin.neonion.prototype.oa.stubs.createBaseStub(),
                         {
                             "motivatedBy": "oa:tagging",
                             "hasBody": {
@@ -287,7 +287,7 @@
                 },
                 // stub representing an instance
                 createInstanceAnnotationStub: function() {
-                    return $.extend(true, Annotator.Plugin.Neonion.prototype.oa.stubs.createBaseStub(),
+                    return $.extend(true, Annotator.Plugin.neonion.prototype.oa.stubs.createBaseStub(),
                         {
                             "motivatedBy": "oa:classifying",
                             "hasBody": {
@@ -299,7 +299,7 @@
                 },
                 // stub representing a relation
                 createLinkedAnnotationStub: function() {
-                    return $.extend(true, Annotator.Plugin.Neonion.prototype.oa.stubs.createBaseStub(),
+                    return $.extend(true, Annotator.Plugin.neonion.prototype.oa.stubs.createBaseStub(),
                         {
                             "motivatedBy": "oa:linking",
                             "hasBody": {
@@ -330,7 +330,7 @@
                     // filter for workspace
                     query["permissions.read"] = params.workspace;
                 }
-                return $.extend(true, Annotator.Plugin.Neonion.prototype.annotationLayers.unspecified(params), query);
+                return $.extend(true, Annotator.Plugin.neonion.prototype.annotationLayers.unspecified(params), query);
             }
         },
 
@@ -621,7 +621,7 @@
         getAnnotations: function () {
             var annotations = Array.prototype.slice.call(
                 document.querySelectorAll(".annotator-hl:not(.annotator-hl-temporary),." +
-                Annotator.Plugin.Neonion.prototype.classes.hide))
+                Annotator.Plugin.neonion.prototype.classes.hide))
                 .map(function (highlight) {
                     return $(highlight).data("annotation");
                 });
@@ -689,7 +689,7 @@
 
             isLinkedAnnotation: function(annotation) {
                 if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("motivatedBy")) {
-                    return annotation['oa']['motivatedBy'] == Annotator.Plugin.Neonion.prototype.oa.motivation.linking;
+                    return annotation['oa']['motivatedBy'] == Annotator.Plugin.neonion.prototype.oa.motivation.linking;
                 }
                 return false;
             },
@@ -731,7 +731,7 @@
 
         comparator: {
             compareByLabel: function (a, b) {
-                return Annotator.Plugin.Neonion.prototype.comparator.compareByField("label", a, b);
+                return Annotator.Plugin.neonion.prototype.comparator.compareByField("label", a, b);
             },
             compareByUpdated: function (a, b) {
                 return Number(Date.parse(a.updated)) - Number(Date.parse(b.updated));

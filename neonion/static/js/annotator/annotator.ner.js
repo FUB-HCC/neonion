@@ -89,7 +89,7 @@
                     contentType: "application/json; charset=utf-8",
                     beforeSend: $.proxy(function (request) {
                         if (this.options.hasOwnProperty('auth')) {
-                            //request.setRequestHeader("X-Neonion-Authorization", this.options['auth']);
+                            //request.setRequestHeader("X-neonion-Authorization", this.options['auth']);
                         }
                     }, this),
                     success: $.proxy(function (data, textStatus, jqXH) {
@@ -123,10 +123,10 @@
                     annotation.ranges = [path];
                     // finalize annotation
                     this.annotator.setupAnnotation(annotation);
-                    if (this.annotator.plugins.Neonion) {
+                    if (this.annotator.plugins.neonion) {
                         annotation['oa']['annotatedBy']= $.extend(this.options.agent, { "@type": "prov:SoftwareAgent"}),
-                        annotation['oa']['@motivatedBy'] = this.annotator.plugins.Neonion.oa.motivation.questioning;
-                        annotation.context = this.annotator.plugins.Neonion.extractSurroundedContent(annotation);
+                        annotation['oa']['@motivatedBy'] = this.annotator.plugins.neonion.oa.motivation.questioning;
+                        annotation.context = this.annotator.plugins.neonion.extractSurroundedContent(annotation);
                     }
                     // publish annotation created
                     this.annotator.publish("annotationCreated", [annotation]);

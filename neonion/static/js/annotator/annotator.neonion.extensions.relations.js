@@ -5,7 +5,7 @@
      * Widget to visualize relationships inside the text.
      * @returns {{}}
      */
-    Annotator.Plugin.Neonion.prototype.widgets['visualizeRelationship'] = function (scope, options) {
+    Annotator.Plugin.neonion.prototype.widgets['visualizeRelationship'] = function (scope, options) {
         var factory = {};
 
         factory.sideBarWidth = 100;
@@ -153,7 +153,7 @@
      * Widget to show existing properties in the viewer.
      * @returns {{}}
      */
-    Annotator.Plugin.Neonion.prototype.widgets['viewerSummarizeStatements'] = function (scope, options) {
+    Annotator.Plugin.neonion.prototype.widgets['viewerSummarizeStatements'] = function (scope, options) {
         var factory = {};
 
         factory.load = function () {
@@ -246,7 +246,7 @@
      * Widget create a property from a field in viewer.
      * @returns {{}}
      */
-    Annotator.Plugin.Neonion.prototype.widgets['viewerCreateProperty'] = function (scope, options) {
+    Annotator.Plugin.neonion.prototype.widgets['viewerCreateProperty'] = function (scope, options) {
         var factory = {
             focusedAnnotation: null,
             selectProperty: null,

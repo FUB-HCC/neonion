@@ -58,7 +58,7 @@ neonionApp.factory('AnnotatorService', [function () {
      * @returns {*|jQuery|HTMLElement}
      */
     factory.getAnnotationHighlights = function () {
-        return $(".annotator-hl:not(.annotator-hl-temporary),." + Annotator.Plugin.Neonion.prototype.classes.hide);
+        return $(".annotator-hl:not(.annotator-hl-temporary),." + Annotator.Plugin.neonion.prototype.classes.hide);
     };
 
     /**
@@ -112,7 +112,7 @@ neonionApp.factory('AnnotatorService', [function () {
             annotations = factory.getAnnotationObjects();
         }
         if (annotations.length > 0) {
-            annotations.sort(Annotator.Plugin.Neonion.prototype.comparator.compareByUpdated);
+            annotations.sort(Annotator.Plugin.neonion.prototype.comparator.compareByUpdated);
             return annotations[annotations.length - 1];
         }
         return null;
@@ -179,8 +179,8 @@ neonionApp.factory('AnnotatorService', [function () {
     factory.showAnnotation = function (annotation) {
         if (annotation.hasOwnProperty("highlights")) {
             annotation.highlights.forEach(function (entry) {
-                $(entry).removeClass(Annotator.Plugin.Neonion.prototype.classes.hide);
-                $(entry).addClass(Annotator.Plugin.Neonion.prototype.classes.visible);
+                $(entry).removeClass(Annotator.Plugin.neonion.prototype.classes.hide);
+                $(entry).addClass(Annotator.Plugin.neonion.prototype.classes.visible);
             });
         }
     };
@@ -192,8 +192,8 @@ neonionApp.factory('AnnotatorService', [function () {
     factory.hideAnnotation = function (annotation) {
         if (annotation.hasOwnProperty("highlights")) {
             annotation.highlights.forEach(function (entry) {
-                $(entry).removeClass(Annotator.Plugin.Neonion.prototype.classes.visible);
-                $(entry).addClass(Annotator.Plugin.Neonion.prototype.classes.hide);
+                $(entry).removeClass(Annotator.Plugin.neonion.prototype.classes.visible);
+                $(entry).addClass(Annotator.Plugin.neonion.prototype.classes.hide);
             });
         }
     };
@@ -212,14 +212,14 @@ neonionApp.factory('AnnotatorService', [function () {
             annotation.oa.hasOwnProperty("motivatedBy")) {
             var hlClass = null;
             switch (annotation['oa']['motivatedBy']) {
-                case Annotator.Plugin.Neonion.prototype.oa.motivation.classifying:
-                case Annotator.Plugin.Neonion.prototype.oa.motivation.identifying:
+                case Annotator.Plugin.neonion.prototype.oa.motivation.classifying:
+                case Annotator.Plugin.neonion.prototype.oa.motivation.identifying:
                     hlClass = "annotator-hl-concept";
                     break;
-                case Annotator.Plugin.Neonion.prototype.oa.motivation.commenting:
+                case Annotator.Plugin.neonion.prototype.oa.motivation.commenting:
                     hlClass = "annotator-hl-comment";
                     break;
-                case Annotator.Plugin.Neonion.prototype.oa.motivation.highlighting:
+                case Annotator.Plugin.neonion.prototype.oa.motivation.highlighting:
                     hlClass = "annotator-hl-highlight";
                     break;
             }

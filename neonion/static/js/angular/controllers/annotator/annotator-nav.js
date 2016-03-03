@@ -11,15 +11,15 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$
         $scope.mode = {
             commenting: {
                 shortCut: "A",
-                value: Annotator.Plugin.Neonion.prototype.annotationModes.commenting
+                value: Annotator.Plugin.neonion.prototype.annotationModes.commenting
             },
             highlighting: {
                 shortCut: "S",
-                value: Annotator.Plugin.Neonion.prototype.annotationModes.highlighting
+                value: Annotator.Plugin.neonion.prototype.annotationModes.highlighting
             },
             conceptTagging: {
                 shortCut: "D",
-                value: Annotator.Plugin.Neonion.prototype.annotationModes.conceptTagging
+                value: Annotator.Plugin.neonion.prototype.annotationModes.conceptTagging
             }
         };
 
@@ -65,7 +65,7 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$
 
         $scope.getAnnotationMode = function () {
             if (Annotator && Annotator._instances.length >= 1) {
-                return Annotator._instances[0].plugins.Neonion.annotationMode();
+                return Annotator._instances[0].plugins.neonion.annotationMode();
             }
             else {
                 return 1;
@@ -74,7 +74,7 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$
 
         $scope.setAnnotationMode = function (mode) {
             $cookies.put(cookieKeys.annotationMode, mode);
-            Annotator._instances[0].plugins.Neonion.annotationMode(mode);
+            Annotator._instances[0].plugins.neonion.annotationMode(mode);
         };
 
         $scope.toggleContributor = function (contributor) {

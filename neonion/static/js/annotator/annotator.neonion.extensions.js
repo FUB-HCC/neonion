@@ -6,7 +6,7 @@
      * @param value
      * @returns {*}
      */
-    Annotator.Plugin.Neonion.prototype.formatter['http://neonion.org/concept/person'] = function (value) {
+    Annotator.Plugin.neonion.prototype.formatter['http://neonion.org/concept/person'] = function (value) {
         var label = value.label;
         if (value.birth) {
             label += "<span>&nbsp;&#42;&nbsp;" + value.birth;
@@ -26,7 +26,7 @@
      * Widget to store the surrounded text of the annotation quote.
      * @returns {}
      */
-    Annotator.Plugin.Neonion.prototype.widgets['contextInformation'] = function (scope, options) {
+    Annotator.Plugin.neonion.prototype.widgets['contextInformation'] = function (scope, options) {
         var factory = {};
 
         factory.load = function () {
@@ -183,7 +183,7 @@
      * Widget to enable the linking of entities to external resources.
      * @returns {}
      */
-    Annotator.Plugin.Neonion.prototype.widgets['entityLinking'] = function (scope, options) {
+    Annotator.Plugin.neonion.prototype.widgets['entityLinking'] = function (scope, options) {
 
         var factory = {
             state: {

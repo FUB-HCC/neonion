@@ -3,6 +3,7 @@ def system_settings(request):
 
     return {
         'system': {
+            'allow_registration' : 'accounts.backends.EmailAuthBackend' in settings.AUTHENTICATION_BACKENDS,
             'services': {
                 'endpoint': {
                     'enabled': settings.ENDPOINT_ENABLED,

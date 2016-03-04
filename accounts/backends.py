@@ -6,12 +6,12 @@ class EmailAuthBackend(object):
     A custom authentication backend. Allows users to log in using their email address.
     """
 
-    def authenticate(self, email=None, password=None):
+    def authenticate(self, username=None, password=None):
         """
         Authentication method
         """
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(username=username)
             if user.check_password(password):
                 return user
         except User.DoesNotExist:

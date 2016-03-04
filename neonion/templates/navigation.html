@@ -77,12 +77,14 @@
                 <i class="fa fa-sign-in fa-fw"></i>Sign In
             </a>
         </li>
+        {% if system.allow_registration %}
         {# Register #}
         <li {% if request.path == url_register %}class="active"{% endif %}>
             <a href="{{ url_register }}">
                 <i class="fa fa-plus-square-o fa-fw"></i>Sign Up
             </a>
         </li>
+        {% endif %}
     {% endif %}
     </ul>
 </nav>

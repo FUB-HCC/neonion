@@ -457,7 +457,7 @@
             // TODO rethink that
             var element = document.createElement('a');
             element.href = endpoint;
-            return element.hostname.split('.')[1];
+            return element.hostname.replace('www.','');
         };
 
         return factory;

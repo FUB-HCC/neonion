@@ -19,10 +19,11 @@ def import_json_into_es(types, inputfolder, logger):
     """
 
     es = ElasticSearch(config.ELASTICSEARCH_URL)
+    es_index = 'wikidata.org'
 
     try:
-        es.delete_index('wikidata')
-        es.create_index('wikidata')
+        es.delete_index(es_index)
+        es.create_index(es_index)
         logger.info('rebuild index [wikidata]')
     except:
         logger.warning('cant delete wikidata index')
@@ -69,7 +70,7 @@ def import_json_into_es(types, inputfolder, logger):
             done += 1
 
             if ( done % 5000 == 0 ):
-                es.bulk_index('wikidata', wd_types[key]['type'], items, id_field='id')
+                es.bulk_index(es_index, wd_types[key]['type'], items, id_field='id')
                 items = []
 
             # if done % len(wd_types) / 10 == 0: # log 10% steps
@@ -79,7 +80,7 @@ def import_json_into_es(types, inputfolder, logger):
                 logger.info('imported {}: {}'.format(wd_types[key]['type'],format(done, ',d')))
 
         if len(items) > 0:
-            es.bulk_index('wikidata', wd_types[key]['type'], items, id_field='id')
+            es.bulk_index(es_index, wd_types[key]['type'], items, id_field='id')
         logger.info('imported {}: {}'.format(wd_types[key]['type'],format(done, ',d')))
 
 

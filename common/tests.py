@@ -1,7 +1,7 @@
 from django.test import TestCase
 from common.uri import generate_uri
 from common.statements import Annotation
-from common.annotation import add_resource_uri, SemanticAnnotationValidator, pre_process_annotation
+from common.annotation import add_resource_uri, AnnotationValidator, pre_process_annotation
 from common.exceptions import InvalidAnnotationError, InvalidResourceTypeError
 from common.vocab import neonion, OpenAnnotation
 from django.core.validators import URLValidator
@@ -88,7 +88,7 @@ class AnnotationValidationTestCase(TestCase):
         }
 
     def test_valid_annotations(self):
-        validate = SemanticAnnotationValidator()
+        validate = AnnotationValidator()
         self.assertIsNone(validate(self.valid['comment']))
         self.assertIsNone(validate(self.valid['highlight']))
         self.assertIsNone(validate(self.valid['classification']))
@@ -96,7 +96,7 @@ class AnnotationValidationTestCase(TestCase):
         self.assertIsNone(validate(self.valid['linking']))
 
     def test_invalid_annotations(self):
-        validate = SemanticAnnotationValidator()
+        validate = AnnotationValidator()
         self.assertRaises(InvalidAnnotationError, validate, self.invalid['noMotivation'])
         self.assertRaises(InvalidAnnotationError, validate, self.invalid['commentWithoutBody'])
         self.assertRaises(InvalidAnnotationError, validate, self.invalid['commentWithInvalidBodyType'])

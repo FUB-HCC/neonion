@@ -1,20 +1,19 @@
 import json
 
-from django.http import HttpResponse
 from django.conf import settings
-from django.views.decorators.http import require_GET, require_POST
-
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET, require_POST
+from pyelasticsearch import ElasticSearch, bulk_chunks
+from pyelasticsearch.exceptions import IndexAlreadyExistsError, BulkError, ElasticHttpError, ElasticHttpNotFoundError
 
 from common.knowledge.provider import Provider
-from pyelasticsearch import ElasticSearch, bulk_chunks
-from django.http import JsonResponse
-from pyelasticsearch.exceptions import IndexAlreadyExistsError, BulkError, ElasticHttpError, ElasticHttpNotFoundError
 
 
 @login_required
 @require_POST
-def es_bulk_import(request, index, type):
+def entity_bulk_import(request, index, type):
     json_data = ''
     # read chunks
     f = request.FILES.getlist('file')[0]
@@ -34,7 +33,7 @@ def es_bulk_import(request, index, type):
     # clear item of type in document
     try:
         es.delete_all(index, type)
-    except ElasticHttpNotFoundError:
+    except (ElasticHttpError, ElasticHttpNotFoundError):
         pass
 
     # create generator
@@ -56,9 +55,7 @@ def es_bulk_import(request, index, type):
 
 @login_required
 @require_GET
-def es_search(request, index, type, term):
+def entity_search(request, index, type, term):
     # call search method from provider
     provider = Provider(settings.ELASTICSEARCH_URL)
-    result_set = provider.search(term, type, index)['hits']['hits']
-    result_set = map(lambda item: item['_source'], result_set)
-    return JsonResponse(result_set, safe=False)
+    return JsonResponse(provider.search(term, type, index), safe=False)

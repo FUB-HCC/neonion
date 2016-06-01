@@ -1,6 +1,6 @@
 neonionApp.factory('AnnotationStoreService', ['$resource',
         function ($resource) {
-            return $resource('/api/store/annotations/:id',
+            return $resource('/store/annotations/:id',
                 {id: '@id', limit: 999999},
                 {
                     'search': {
@@ -8,7 +8,7 @@ neonionApp.factory('AnnotationStoreService', ['$resource',
                         params: {limit: 999999},
                         isArray: true,
                         cache: true,
-                        url: '/api/store/search',
+                        url: '/store/search',
                         transformResponse: function (data, headersGetter) {
                             return angular.fromJson(data)['rows'];
                         }

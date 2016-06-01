@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 @deconstructible
-class SemanticAnnotationValidator(object):
+class AnnotationValidator(object):
 
     def __init__(self):
         self.message = _('Ensure this annotation has semantic content.')

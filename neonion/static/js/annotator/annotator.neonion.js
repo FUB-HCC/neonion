@@ -190,7 +190,7 @@
                 'contextInformation', 
                 'visualizeRelationship',
                 'viewerSummarizeStatements', 
-                'viewerCreateProperty'
+                'pointAndLightRelations'
             ],            
             lookup: {
                 prefix: "/api/es/",

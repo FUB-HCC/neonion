@@ -251,15 +251,32 @@
   stroke-width: 1
 }
 
+.annotator-svg-relation.fade,
 .annotator-relation-line.fade {
   opacity: 0;
-  -webkit-transition: opacity 0.5s ease-in;
-  -moz-transition: opacity 0.5s ease-in;
-  -ms-transition: opacity 0.5s ease-in;
-  -o-transition: opacity 0.5s ease-in;
-  transition: opacity 0.5s ease-in;
+  -webkit-transition: opacity 0.1s ease-in-out;
+  -moz-transition: opacity 0.1s ease-in-out;
+  -ms-transition: opacity 0.1s ease-in-out;
+  -o-transition: opacity 0.1s ease-in-out;
+  transition: opacity 0.1s ease-in-out;
 }
 
+.annotator-relation-overlay {
+  pointer-events : none;
+  position :fixed;
+  left: 0px;
+  top: 0px;
+  height : 100%;
+  width :100%
+}
+
+.annotator-relation-overlay .annotator-svg-relation {
+  fill: none;
+  stroke: @manatee;
+  stroke-width: 1
+}
+
+.annotator-svg-relation.fade.in,
 .annotator-relation-line.fade.in {
   opacity: 1;
 }

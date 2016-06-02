@@ -3,22 +3,12 @@ web:
   command: python manage.py runserver 0.0.0.0:8000
   links:
     - elasticsearch
-    - annotatorstore
   volumes:
     - ./data:/data
   ports:
     - "8000:8000"
 
-annotatorstore:
-  build: annotator_store
-  command: python run.py
-  links:
-    - elasticsearch
-  ports:
-    - "5000:5000"
-
 elasticsearch:
   image: elasticsearch
   ports:
     - "9200:9200"
-    # - "9300:9300"

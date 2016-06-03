@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Add" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="24px" height="24px" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve">
+<circle fill="#1A1A1A" cx="12" cy="12" r="11.5"/>
+<polygon display="none" fill="#FFFFFF" points="19,10 14,10 14,5 10,5 10,10 5,10 5,14 10,14 10,19 14,19 14,14 19,14 "/>
+<g id="Icons_with_numbers">
+	<g id="Group" transform="translate(-384.000000, -192.000000)">
+		<path id="Triangle_313" fill="#FFFFFF" d="M389.337,207.245l4,4.049h-4V207.245z M396.337,199.294l4,4l-6.022,7.044l-3.979-4.044
+			L396.337,199.294z M398.422,197.075c0.625-0.625,1.824-0.438,2.68,0.417l0.775,0.774c0.855,0.855,1.041,2.055,0.416,2.68
+			l-1.234,1.235l-3.871-3.871L398.422,197.075z"/>
+	</g>
+</g>
+</svg>

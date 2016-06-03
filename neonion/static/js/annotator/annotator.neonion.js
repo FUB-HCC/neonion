@@ -96,7 +96,7 @@
 
             // activate additional widgets
             if (this.options.hasOwnProperty("activateWidgets")) {
-                for(var i = 0; i < this.options.activateWidgets.length; i++) {
+                for (var i = 0; i < this.options.activateWidgets.length; i++) {
                     var widget = this.options.activateWidgets[i];
                     if (this.widgets.hasOwnProperty(widget)) {
                         // instantiate widget
@@ -174,6 +174,7 @@
             annotationViewerShown: "annotationViewerShown",
             annotationViewerTextField: "annotationViewerTextField",
             linkedAnnotationCreated: "linkedAnnotationCreated",
+            linkedAnnotationUpdated: "linkedAnnotationUpdated",
             linkedAnnotationDeleted: "linkedAnnotationDeleted"
         },
 
@@ -184,27 +185,34 @@
             tagging: 4
         },
 
+        annotationEvents: {
+            created: 1,
+            updated: 2,
+            deleted: 3
+        },
+
         options: {
-            annotationMode : 1, // commenting
-            activateWidgets : [
+            annotationMode: 1, // commenting
+            activateWidgets: [
                 'entityLinking',
-                'contextInformation', 
+                'contextInformation',
                 'visualizeRelationship',
-                'viewerSummarizeStatements', 
+                'viewerSummarizeStatements',
                 'pointAndLightRelations'
-            ],            
+            ],
             lookup: {
                 prefix: "/api/es/",
                 urls: {
                     search: "search"
-                }            
-            }
+                }
+            },
+            updateInverseRelations: true
         },
 
         /**
          * Object to inject custom features.
          */
-        widgets : {},
+        widgets: {},
 
         templates: {
             editorLine: "<div class='annotator-line'></div>",
@@ -243,29 +251,29 @@
             },
             stubs: {
                 // basic stub for the embedded OA representation
-                createBaseStub: function() {
-                    return { 
+                createBaseStub: function () {
+                    return {
                         "@type": "oa:Annotation",
                         "annotatedAt": new Date().toISOString(),
-                        "annotatedBy": { "@type": "foaf:person" },
+                        "annotatedBy": {"@type": "foaf:person"},
                         "hasTarget": {
                             "@type": "oa:SpecificResource",
-                            "hasSelector": { 
+                            "hasSelector": {
                                 "@type": "oa:FragmentSelector"
                             },
-                            "hasSource": { "@type": "dctypes:Text" }
+                            "hasSource": {"@type": "dctypes:Text"}
                         }
-                    }   
+                    }
                 },
                 // stub representing a highlight
-                createHighlightAnnotationStub: function() {
+                createHighlightAnnotationStub: function () {
                     return $.extend(true, Annotator.Plugin.neonion.prototype.oa.stubs.createBaseStub(),
                         {
                             "motivatedBy": "oa:highlighting"
                         });
                 },
                 // stub representing a comment
-                createCommentAnnotationStub: function() {
+                createCommentAnnotationStub: function () {
                     return $.extend(true, Annotator.Plugin.neonion.prototype.oa.stubs.createHighlightAnnotationStub(),
                         {
                             "motivatedBy": "oa:commenting",
@@ -276,7 +284,7 @@
                         });
                 },
                 // stub representing a tag
-                createTagAnnotationStub: function() {
+                createTagAnnotationStub: function () {
                     return $.extend(true, Annotator.Plugin.neonion.prototype.oa.stubs.createBaseStub(),
                         {
                             "motivatedBy": "oa:tagging",
@@ -287,7 +295,7 @@
                         });
                 },
                 // stub representing an instance
-                createInstanceAnnotationStub: function() {
+                createInstanceAnnotationStub: function () {
                     return $.extend(true, Annotator.Plugin.neonion.prototype.oa.stubs.createBaseStub(),
                         {
                             "motivatedBy": "oa:classifying",
@@ -299,7 +307,7 @@
                         });
                 },
                 // stub representing a relation
-                createLinkedAnnotationStub: function() {
+                createLinkedAnnotationStub: function () {
                     return $.extend(true, Annotator.Plugin.neonion.prototype.oa.stubs.createBaseStub(),
                         {
                             "motivatedBy": "oa:linking",
@@ -307,7 +315,7 @@
                                 "@type": ["oa:SemanticTag", "neo:RelationMention"],
                             },
                             "hasTarget": {
-                                "hasSelector": { 
+                                "hasSelector": {
                                     "@type": "neo:SourceTargetSelector",
                                     "source": "",
                                     "target": ""
@@ -315,7 +323,7 @@
                             }
                         });
                 }
-            }                
+            }
         },
 
         annotationLayers: {
@@ -338,52 +346,126 @@
         /**
          * Creates a linked annotation and returns it.
          * @param annotationSubject
-         * @param predicate
+         * @param relation
          * @param annotationObject
          * @returns {{ranges: Array, oa: {motivatedBy: string, hasBody: {type: string}, hasTarget: {source: *, target: string}}}}
          */
-        createLinkedAnnotation : function(annotationSource, predicate, annotationTarget) {
-            var linkage = {
+        createLinkedAnnotation: function (annotationSource, relation, annotationTarget) {
+            var annotation = {
                 ranges: [], // empty but necessary
                 neonion: {
-                    viewer : {
+                    viewer: {
                         source: annotationSource['oa']['hasBody']['contextualizedAs'],
-                        predicate: predicate['uri'],
-                        predicateLabel: predicate['label'],
+                        predicate: relation['uri'],
+                        predicateLabel: relation['label'],
                         target: annotationTarget['oa']['hasBody']['contextualizedAs']
-                    },
+                    }
                 },
-                oa : this.oa.stubs.createLinkedAnnotationStub()
+                oa: this.oa.stubs.createLinkedAnnotationStub()
             };
 
             // set type of relation
-            linkage['oa']['hasBody']['relation'] = predicate['uri'];
+            annotation['oa']['hasBody']['relation'] = relation['uri'];
             // set source and target of selector
-            linkage['oa']['hasTarget']['hasSelector']['source'] = annotationSource['oa']['@id'];
-            linkage['oa']['hasTarget']['hasSelector']['target'] = annotationTarget['oa']['@id'];
-        
-            // publish linked annotation was created
-            this.annotator.publish("linkedAnnotationCreated", [linkage]);
+            annotation['oa']['hasTarget']['hasSelector']['source'] = annotationSource['oa']['@id'];
+            annotation['oa']['hasTarget']['hasSelector']['target'] = annotationTarget['oa']['@id'];
 
-            return linkage;
+            // publish linked annotation was created
+            this.annotator.publish("linkedAnnotationCreated", [annotation]);
+
+            return annotation;
         },
 
-        deleteLinkedAnnotation : function(annotation) {
+        updateLinkedAnnotation: function (annotation, relation) {
+            // update fields in viewer
+            annotation.neonion.viewer.predicate = relation['uri'];
+            annotation.neonion.viewer.predicateLabel = relation['label'];
+            // set type of relation
+            annotation['oa']['hasBody']['relation'] = relation['uri'];
+
+            this.annotator.updateAnnotation(annotation);
+            this.annotator.publish("linkedAnnotationUpdated", [annotation]);
+        },
+
+        deleteLinkedAnnotation: function (annotation) {
             this.annotator.deleteAnnotation(annotation);
             this.annotator.publish("linkedAnnotationDeleted", [annotation]);
         },
 
-        linkedAnnotationCreated : function(annotation) {
-            this.linkedAnnotations.push(annotation);
-            if (this.annotator.plugins.Store) {
-                // store annotation
-                this.annotator.plugins.Store.annotationCreated(annotation);
+        handleLinkedAnnotationEvent: function (annotation, eventType) {
+
+            if (eventType == this.annotationEvents.created) {
+                this.linkedAnnotations.push(annotation);
+                if (this.annotator.plugins.Store) {
+                    // store annotation
+                    this.annotator.plugins.Store.annotationCreated(annotation);
+                }
+            }
+            else if (eventType == this.annotationEvents.updated) {
+
+            }
+            else if (eventType == this.annotationEvents.deleted) {
+                var annotationIdx = this.linkedAnnotations.indexOf(annotation);
+                this.linkedAnnotations.splice(annotationIdx, 1);
+            }
+
+            if (this.options.updateInverseRelations) {
+                // get the source and target annotations
+                var selector = annotation['oa']['hasTarget']['hasSelector'],
+                    source = this.findAnnotation(selector['source']),
+                    target = this.findAnnotation(selector['target']);
+                if (source && target) {
+                    // get the definition of the source and target concepts
+                    var sourceConcept = this.getConceptDefinition(source['oa']['hasBody']['classifiedAs']),
+                        targetConcept = this.getConceptDefinition(target['oa']['hasBody']['classifiedAs']);
+                    if (sourceConcept && targetConcept) {
+                        // get the property definition from the source concept
+                        var property = sourceConcept.properties.find(function (prop) {
+                            return prop.uri == annotation['oa']['hasBody']['relation'];
+                        });
+                        if (property && property.inverse_property) {
+                            // get the inverse property from target concept
+                            var inverseProperty = targetConcept.properties.find(function (prop) {
+                                return property.inverse_property == prop.id;
+                            });
+                            if (inverseProperty) {
+                                // try to find the inverse relation annotation
+                                var inverseAnnotation = this.linkedAnnotations.find(function (link) {
+                                    return link['oa']['hasBody']['relation'] == inverseProperty.uri &&
+                                        link['oa']['hasTarget']['hasSelector']['source'] == target['oa']['@id'] &&
+                                        link['oa']['hasTarget']['hasSelector']['target'] == source['oa']['@id']
+                                });
+
+                                // do event specific stuff
+                                if (eventType == this.annotationEvents.created) {
+                                    // create the inverse relation if it does not exist
+                                    if (!inverseAnnotation) {
+                                        this.createLinkedAnnotation(target, inverseProperty, source);
+                                    }
+                                }
+                                else if (eventType == this.annotationEvents.deleted) {
+                                    // delete the inverse relation of it exists
+                                    if (inverseAnnotation) {
+                                        this.deleteLinkedAnnotation(inverseAnnotation);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
 
-        linkedAnnotationDeleted : function(annotation) {
-            var annotationIdx = this.linkedAnnotations.indexOf(annotation);
-            this.linkedAnnotations.splice(annotationIdx, 1);
+        linkedAnnotationCreated: function (annotation) {
+            this.handleLinkedAnnotationEvent(annotation, this.annotationEvents.created);
+        },
+
+        linkedAnnotationUpdated: function (annotation) {
+            this.handleLinkedAnnotationEvent(annotation, this.annotationEvents.updated);
+        },
+
+        linkedAnnotationDeleted: function (annotation) {
+            this.handleLinkedAnnotationEvent(annotation, this.annotationEvents.deleted);
         },
 
         /**
@@ -397,11 +479,13 @@
             // prepare annotation according current annotation mode
             switch (this.editorState.annotationMode) {
                 case this.annotationModes.conceptTagging:
-                    annotation['oa'] = this.oa.stubs.createInstanceAnnotationStub();
-                    annotation['oa']['hasBody']['classifiedAs'] = this.editorState.selectedConcept;
-                    annotation['neonion']['viewer'] = {
-                        conceptLabel: this.getConceptDefinition(this.editorState.selectedConcept)['label']
-                    };
+                    if (this.editorState.selectedConcept) {
+                        annotation['oa'] = this.oa.stubs.createInstanceAnnotationStub();
+                        annotation['oa']['hasBody']['classifiedAs'] = this.editorState.selectedConcept;
+                        annotation['neonion']['viewer'] = {
+                            conceptLabel: this.getConceptDefinition(this.editorState.selectedConcept)['label']
+                        };
+                    }
                     break;
                 case this.annotationModes.commenting:
                     annotation['oa'] = this.oa.stubs.createCommentAnnotationStub();
@@ -416,14 +500,14 @@
         },
 
         /**
-        * Raised when an annotation was deleted.
-        */
-        annotationDeleted: function(annotation) {
+         * Raised when an annotation was deleted.
+         */
+        annotationDeleted: function (annotation) {
             if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
                 this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
                 // delete all linked annotations that references the deleted annotation
                 this.linkedAnnotations
-                    .filter(function(linkage) {
+                    .filter(function (linkage) {
                         // check if the linkage references the annotation in the target
                         return linkage['oa']['hasTarget']['hasSelector']['source'] == annotation['oa']['@id'] ||
                             linkage['oa']['hasTarget']['hasSelector']['target'] == annotation['oa']['@id'];
@@ -433,35 +517,27 @@
         },
 
         /**
-        * Raised when an annotation was updated.
-        */
-        annotationUpdated: function(annotation) {
+         * Raised when an annotation was updated.
+         */
+        annotationUpdated: function (annotation) {
             if (this.helper.getMotivationEquals(annotation, this.oa.motivation.classifying) ||
                 this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
-                // update all linked annotations that references the annotation
-                /*this.linkedAnnotations
-                    .filter(function(linkage) {
-                        // check if the linkage references the annotation in the target
-                        return linkage['oa']['hasTarget']['hasSelector']['source'] == annotation['oa']['@id'] ||
-                            linkage['oa']['hasTarget']['target'] == annotation['oa']['@id'];
+                // find the linked annotations which are connected to the annotation
+                this.linkedAnnotations
+                    .filter(function (link) {
+                        var selector = link['oa']['hasTarget']['hasSelector'];
+                        return selector['source'] == annotation['oa']['@id'] ||
+                            selector['target'] == annotation['oa']['@id'];
                     })
-                    .forEach($.proxy(function(linkage) {
-                        // update the statement
-                        if (linkage['oa']['hasTarget']['hasSelector']['source'] == annotation['oa']['@id']) {
-                            //this.helper.getSemanticTag(linkage).subject = this.helper.getSemanticTag(annotation).uri;
-                        }
-                        else if (linkage.oa.hasTarget.object == annotation['oa']['@id']) {
-                            //this.helper.getSemanticTag(linkage).object = this.helper.getSemanticTag(annotation).uri;
-                        }
-                        this.annotator.publish("linkedAnnotationUpdated", [linkage]);
-                    }), this); */ 
+                    // delete each annotation
+                    .forEach(this.deleteLinkedAnnotation);
             }
         },
 
         /**
-        * Raised when annotations are loaded from store.
-        */
-        annotationsLoaded: function(annotations) {
+         * Raised when annotations are loaded from store.
+         */
+        annotationsLoaded: function (annotations) {
             // filter for linked annotations
             this.linkedAnnotations = this.linkedAnnotations.concat(annotations.filter(this.helper.isLinkedAnnotation));
         },
@@ -484,7 +560,7 @@
                         break;
                 }
                 this.showEditorField(field);
-                this.helper.placeEditorBesidesAnnotation(annotation, this.annotator);    
+                this.helper.placeEditorBesidesAnnotation(annotation, this.annotator);
             }
             else {
                 editor.submit();
@@ -497,6 +573,29 @@
         },
 
         annotationViewerShown: function (viewer, annotations) {
+            // avoid the viewer is overlapping the annotation highlight
+            var viewerRect = viewer.element[0].getBoundingClientRect(),
+            // find the client region the viewer in inside
+                rect = Array.from(annotations[0].highlights[0].getClientRects())
+                    .find(function (rect) {
+                        return viewerRect.left >= rect.left && viewerRect.left <= rect.left + rect.width &&
+                            viewerRect.top >= rect.top && viewerRect.top <= rect.top + rect.height;
+                    });
+            if (rect) {
+                // translate the viewer vertically
+                var pos = $(viewer.element[0]).position(),
+                    inset = 5,
+                    newTop;
+                if ($(viewer.element[0]).hasClass("annotator-invert-y")) {
+                    newTop = pos.top + (rect.top + rect.height - viewerRect.top) - inset;
+                }
+                else {
+                    newTop = pos.top + (rect.top - viewerRect.top) + inset;
+                }
+                $(viewer.element[0]).css({top: newTop});
+            }
+
+            // hide edit button if the viewer shows a highlights annotation
             if (this.helper.getMotivationEquals(annotations[0], this.oa.motivation.highlighting)) {
                 $(viewer.element).find(".annotator-edit").hide();
             }
@@ -524,7 +623,7 @@
                     case this.oa.motivation.classifying:
                     case this.oa.motivation.identifying:
                         if (!annotation['oa']['hasBody'].hasOwnProperty('label')) {
-                            annotation['oa']['hasBody']['label'] = annotation.quote;    
+                            annotation['oa']['hasBody']['label'] = annotation.quote;
                         }
                         break;
                 }
@@ -580,7 +679,7 @@
                 this.helper.getMotivationEquals(annotation, this.oa.motivation.identifying)) {
                 var fieldValue = annotation['oa']['hasBody']['label'];
                 if (annotation['oa']['hasBody'].hasOwnProperty('identifiedAs')) {
-                    fieldValue = "<a class='link' href='" + annotation['oa']['hasBody']['identifiedAs'] + 
+                    fieldValue = "<a class='link' href='" + annotation['oa']['hasBody']['identifiedAs'] +
                         "' target='_blank'>" + annotation['oa']['hasBody']['label'] + "</a>";
                 }
                 var fieldCaption = annotation['neonion']['viewer']['conceptLabel'] + ":&nbsp;";
@@ -593,11 +692,7 @@
         },
 
         viewerLoadAgentField: function (field, annotation) {
-            var userField = this.literals['en'].unknown;
-            if (annotation.hasOwnProperty('neonion') && annotation['neonion'].hasOwnProperty('creator')) {
-                userField = annotation['neonion']['creator'];
-            }
-            field.innerHTML = this.literals['en'].agent + ":&nbsp;" + userField;
+            field.innerHTML = this.helper.formatCreator(annotation);
         },
 
         /**
@@ -605,13 +700,10 @@
          * @param concept
          * @returns {*}
          */
-        getConceptDefinition : function(concept) {
-            for(var i = 0; i < this.concepts.length; i++) {
-                if (this.concepts[i].uri == concept) {
-                    return this.concepts[i];
-                }
-            }
-            return null;
+        getConceptDefinition: function (conceptUri) {
+            return this.concepts.find(function (concept) {
+                return concept.uri == conceptUri;
+            });
         },
 
         /**
@@ -622,18 +714,25 @@
         getAnnotations: function () {
             var annotations = Array.prototype.slice.call(
                 document.querySelectorAll(".annotator-hl:not(.annotator-hl-temporary),." +
-                Annotator.Plugin.neonion.prototype.classes.hide))
+                    Annotator.Plugin.neonion.prototype.classes.hide))
                 .map(function (highlight) {
                     return $(highlight).data("annotation");
                 });
             var unique = {};
-            return annotations.filter(function(annotation) {
+            return annotations.filter(function (annotation) {
                 if (!unique.hasOwnProperty(annotation.id)) {
                     unique[annotation.id] = true;
                     return true;
                 }
                 return false;
             });
+        },
+
+        findAnnotation: function (id) {
+            return this.getAnnotations()
+                .find(function (annotation) {
+                    return annotation['oa']['@id'] == id;
+                });
         },
 
         /**
@@ -661,9 +760,9 @@
          * @param annotations
          * @returns {{}}
          */
-        groupAnnotationBy : function(annotations, condition) {
+        groupAnnotationBy: function (annotations, condition) {
             var grouped = {};
-            annotations.map(function(annotation) {
+            annotations.map(function (annotation) {
                 var value = condition(annotation);
                 if (!grouped.hasOwnProperty(value)) {
                     grouped[value] = [];
@@ -681,14 +780,14 @@
              * @param motivation
              * @returns {boolean}
              */
-            getMotivationEquals : function(annotation, motivation) {
+            getMotivationEquals: function (annotation, motivation) {
                 if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("motivatedBy")) {
                     return annotation['oa']['motivatedBy'] == motivation;
                 }
                 return false;
             },
 
-            isLinkedAnnotation: function(annotation) {
+            isLinkedAnnotation: function (annotation) {
                 if (annotation.hasOwnProperty("oa") && annotation.oa.hasOwnProperty("motivatedBy")) {
                     return annotation['oa']['motivatedBy'] == Annotator.Plugin.neonion.prototype.oa.motivation.linking;
                 }
@@ -712,11 +811,11 @@
                 if (annotation.highlights.length > 0) {
                     var editorBoundingRect = annotator.editor.element[0].getBoundingClientRect();
                     var highlightRects = annotation.highlights[0].getClientRects();
-                    
+
                     // place line vertically - calculation is relative to the bounds of annotatable area
                     var top = highlightRects[0].top - annotator.element[0].getBoundingClientRect().top;
                     editor.css("top", top);
-                    
+
                     // place line horizontally
                     var width = editorBoundingRect.left - highlightRects[0].left;
                     editor.find(".annotator-line").width(width);
@@ -727,6 +826,14 @@
                 else {
                     editor.find(".annotator-line").hide();
                 }
+            },
+            formatCreator: function (annotation) {
+                var userField = Annotator.Plugin.neonion.prototype.literals['en'].unknown;
+                if (annotation.hasOwnProperty('oa')) {
+                    userField = annotation['oa']['annotatedBy']['mbox']['@id'];
+                    userField = userField.replace('mailto:', '');
+                }
+                return Annotator.Plugin.neonion.prototype.literals['en'].agent + ":&nbsp;" + userField;
             }
         },
 

@@ -1,149 +1,181 @@
 (function () {
     "use strict"; // enable strict mode
-    
+
     /**
      * Widget to visualize relationships inside the text.
      * @returns {{}}
      */
     Annotator.Plugin.neonion.prototype.widgets['visualizeRelationship'] = function (scope, options) {
-        var factory = {};
-
-        factory.sideBarWidth = 100;
-        factory.maxDistance = 500;
-        factory.relationMap = {};
+        var factory = {
+            sideBarWidth: 100,
+            connections: {},
+            activeConnections: []
+        };
 
         factory.load = function () {
+            factory.g2d = factory.instantiateGraphicsOverlay();
+            factory.svgContainer = factory.instantiateConnectionContainer();
+
             // attach to events
-            scope.annotator.subscribe("linkedAnnotationCreated", factory.relationCreated);
-            scope.annotator.subscribe("linkedAnnotationDeleted", factory.relationDeleted);
-            scope.annotator.subscribe("annotationsLoaded", factory.relationsLoaded);
+            $(scope.annotator.viewer.element[0])
+                .on("mouseenter", ".annotator-viewer-relation button", function (event) {
+                    var target = event.currentTarget,
+                        annotationId = $(target).attr("data-value");
+                    if (annotationId) {
+                        var connection = scope.linkedAnnotations.find(function (annotation) {
+                            return annotation['oa']['@id'] == annotationId;
+                        });
+                        if (connection) {
+                            factory.activeConnections.push(connection);
+                            factory.showRelation(connection);
+                        }
+                    }
+                })
+                .on("mouseleave", ".annotator-viewer-relation button", function () {
+                    factory.activeConnections.forEach(factory.hideRelation);
+                    factory.activeConnections = [];
+                });
         };
 
         factory.getCompositeKey = function (annotation) {
             return [
-                annotation['oa']['hasTarget']['hasSelector']['source'], 
+                annotation['oa']['hasTarget']['hasSelector']['source'],
                 annotation['oa']['hasTarget']['hasSelector']['target']
             ];
         };
 
-        factory.relationsLoaded = function (annotations) {
-            factory.relationMap = {};
-            for (var i = 0; i < scope.linkedAnnotations.length; i++) {
-                factory.relationCreated(scope.linkedAnnotations[i]);
+        factory.instantiateGraphicsOverlay = function () {
+            if ($(".annotator-relation-overlay")[0]) {
+                return $(".annotator-relation-overlay").first();
             }
-        };
+            else {
+                var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("class", "annotator-relation-overlay");
 
-        factory.relationCreated = function (annotation) {
-            var key = factory.getCompositeKey(annotation);
-            if (!factory.relationMap.hasOwnProperty(key)) {
-                var element = $("<svg class='annotator-relation-line fade' shape-rendering='crispEdges' xmlns='http://www.w3.org/2000/svg' />")
+                return $(svg)
                     .appendTo(".annotator-wrapper");
-                var annotations = scope.getAnnotations();
-
-                factory.relationMap[key] = {
-                    element: element,
-                    relations: [],
-                    source: annotations.filter(function (item) {
-                        return item['oa']['@id'] == annotation['oa']['hasTarget']['hasSelector']['source'];
-                    }).pop(),
-                    target: annotations.filter(function (item) {
-                        return item['oa']['@id'] == annotation['oa']['hasTarget']['hasSelector']['target'];
-                    }).pop()
-                };
-                // delay fade in
-                window.setTimeout(function () {
-                    element.attr("class", "annotator-relation-line fade in");
-                }, 20);
             }
-
-            factory.relationMap[key].relations.push(annotation);
-            factory.redrawRelation(key);
         };
 
-        factory.relationDeleted = function (annotation) {
+        factory.instantiateConnectionContainer = function () {
+            return $(document.createElementNS('http://www.w3.org/2000/svg', 'g'))
+                .appendTo(factory.g2d);
+        };
+
+        factory.instantiateConnection = function (source, target) {
+            var path = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+            path.setAttribute("class", "annotator-relation-line");
+            var caption = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            caption.setAttribute("class", "annotator-relation-caption");
+
+            return {
+                element: $(path),
+                caption: $(caption),
+                relations: [],
+                source: source,
+                target: target
+            };
+        };
+
+        factory.collectLinkedAnnotations = function (source) {
+            return scope.linkedAnnotations.filter(function (annotation) {
+                var selector = annotation['oa']['hasTarget']['hasSelector'];
+                return selector && selector['source'] == source['oa']['@id'];
+            });
+        };
+
+        factory.showRelation = function (annotation) {
             var key = factory.getCompositeKey(annotation);
-            if (factory.relationMap.hasOwnProperty(key)) {
-                var relationIdx = factory.relationMap[key].relations.indexOf(annotation);
-                if (relationIdx != -1) {
-                    factory.relationMap[key].relations.splice(relationIdx, 1);
-                }
-                // hide relation element if there are no relations
-                if (factory.relationMap[key].relations.length == 0) {
-                    // hide DOM elements
-                    factory.relationMap[key]['element'].attr("class", "annotator-relation-line fade");
-                    delete factory.relationMap[key];
+            // check if the connection already exists
+            if (!factory.connections.hasOwnProperty(key)) {
+                var annotations = scope.getAnnotations();
+                var source = annotations.find(function (item) {
+                        return item['oa']['@id'] == annotation['oa']['hasTarget']['hasSelector']['source'];
+                    }),
+                    target = annotations.find(function (item) {
+                        return item['oa']['@id'] == annotation['oa']['hasTarget']['hasSelector']['target'];
+                    });
+
+                factory.connections[key] = factory.instantiateConnection(source, target);
+                factory.connections[key].element.appendTo(factory.svgContainer);
+                factory.connections[key].caption.appendTo(factory.svgContainer);
+            }
+
+            var connection = factory.connections[key];
+            if (connection.relations.indexOf(annotation) == -1) {
+                connection.relations.push(annotation);
+            }
+
+            // add outline to annotation highlights
+            connection.source.highlights
+                .concat(connection.target.highlights)
+                .forEach(function (highlight) {
+                    $(highlight).addClass("annotator-relation-outline");
+                });
+
+            factory.redrawRelation(connection);
+        };
+
+        factory.hideRelation = function (annotation) {
+            var key = factory.getCompositeKey(annotation);
+            if (factory.connections.hasOwnProperty(key)) {
+                var connection = factory.connections[key];
+                connection.element.attr("class", "annotator-relation-line hideLine");
+                connection.caption.hide();
+
+                // remove outline from annotation highlights
+                connection.source.highlights
+                    .concat(connection.target.highlights)
+                    .forEach(function (highlight) {
+                        $(highlight).removeClass("annotator-relation-outline");
+                    });
+            }
+        };
+
+        factory.redrawRelation = function (connection) {
+            if (connection['source'] && connection['target']) {
+                var rectA = connection.source.highlights[0].getClientRects()[0],
+                    rectB = connection.target.highlights[0].getClientRects()[0];
+
+                connection.element
+                    .attr("points", factory.getPoints(rectA, rectB).join(" "))
+                    .attr("class", "annotator-relation-line fadeIn");
+
+                // draw caption
+                if (connection.relations.length) {
+                    var caption = connection.caption;
+                    var annotation = connection.relations[0];
+                    var y = Math.min(rectA.top + rectA.height, rectB.top + rectB.height);
+                    caption
+                        .html(annotation['neonion']['viewer']['predicateLabel'])
+                        .attr("x", factory.getWidth())
+                        .attr("y", y)
+                        .show();
                 }
             }
         };
 
-        factory.redrawRelation = function (key) {
-            if (factory.relationMap.hasOwnProperty(key)) {
-                if (factory.relationMap[key]['source'] && factory.relationMap[key]['target']) {
-                    var annotatorBoundingRect = scope.annotator.element[0].getBoundingClientRect();
-                    var sourceRects = factory.relationMap[key].source.highlights[0].getClientRects();
-                    var targetRects = factory.relationMap[key].target.highlights[0].getClientRects();
-
-                    // calculate bounds of the SVG container
-                    var bounds = {
-                        offsetTop: annotatorBoundingRect.top,
-                        offsetLeft: annotatorBoundingRect.left,
-                        top: Math.floor(Math.min(sourceRects[0].top, targetRects[0].top) - annotatorBoundingRect.top),
-                        left: 0, // Math.floor(Math.min(sourceRects[0].left, targetRects[0].left) - annotatorBoundingRect.left),
-                        height: Math.ceil(Math.max(targetRects[0].top + targetRects[0].height - sourceRects[0].top,
-                                sourceRects[0].top + sourceRects[0].height - targetRects[0].top) + 1),
-                        transform: function (pt) {
-                            return {
-                                left: Math.floor(pt.left - this.left - this.offsetLeft),
-                                top: Math.floor(pt.top - this.top - this.offsetTop)
-                            };
-                        }
-                    };
-                    bounds.width = Math.ceil(annotatorBoundingRect.width - bounds.left + factory.calculateRelationOffset(sourceRects[0], targetRects[0]));
-
-                    // set position of SVG container
-                    factory.relationMap[key]['element']
-                        .empty()
-                        .css("top", bounds.top).css("left", bounds.left)
-                        .width(bounds.width).height(bounds.height);
-
-                    // create SVG polyline
-                    var line = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-                    line.setAttribute("class", "annotator-svg-relation");
-                    var pts = [];
-
-                    if (sourceRects[0].top != targetRects[0].top) {
-                        var pt1 = bounds.transform(sourceRects[0]), pt2 = bounds.transform(targetRects[0]);
-                        pts.push(pt1.left + "," + pt1.top);
-                        pt1.top += sourceRects[0].height;
-                        pts.push(pt1.left + "," + pt1.top);
-
-                        pts.push(pt1.left + "," + pt1.top);
-                        pts.push(bounds.width - 1 + "," + pt1.top);
-                        pts.push(bounds.width - 1 + "," + pt2.top);
-                        pts.push(pt2.left + "," + pt2.top);
-                        pt2.top += targetRects[0].height;
-                        pts.push(pt2.left + "," + pt2.top);
-                    }
-                    else {
-                        var pt1 = bounds.transform(sourceRects[0]), pt2 = bounds.transform(targetRects[0])
-                        pts.push(pt1.left + sourceRects[0].width * 0.5 + "," + pt1.top + sourceRects[0].height);
-                        pts.push(pt2.left + targetRects[0].width * 0.5 + "," + pt2.top + targetRects[0].height);
-                    }
-                    line.setAttribute("points", pts.join(" "));
-                    // append element to DOM
-                    factory.relationMap[key]['element'].append(line);
-
-                    factory.redrawRelationCaption(key);
-                }
-            }
+        factory.getWidth = function () {
+            var rect = scope.annotator.element[0].getBoundingClientRect();
+            return rect.left + rect.width + factory.sideBarWidth;
         };
 
-        factory.redrawRelationCaption = function (key) {
+        factory.getPoints = function (rectA, rectB) {
+            var pts = [],
+                outerPt = factory.getWidth(),
+                x1 = rectA.left, y1 = rectA.top,
+                x2 = rectB.left, y2 = rectB.top;
 
-        };
+            y1 += rectA.height + 1;
+            pts.push(x1 + "," + y1);
 
-        factory.calculateRelationOffset = function(sourceA, targetB) {
-            return (Math.min(Math.abs(sourceA.top - targetB.top), factory.maxDistance) / factory.maxDistance) * factory.sideBarWidth;
+            //pts.push(x1 + "," + y1);
+            pts.push(outerPt + "," + y1);
+            y2 += rectB.height + 1;
+            pts.push(outerPt + "," + y2);
+            pts.push(x2 + "," + y2);
+
+            return pts;
         };
 
         return factory;
@@ -157,8 +189,6 @@
         var factory = {};
 
         factory.load = function () {
-            $(".annotator-viewer").on("click", "[data-action='delete-property']", factory.onDeleteProperty);
-
             // add field to viewer to place a summary of all properties
             scope.annotator.viewer.addField({
                 load: factory.summarizeProperties
@@ -166,21 +196,34 @@
         };
 
         factory.summarizeProperties = function (field, annotation) {
-            $(field).empty().hide();
+            $(field)
+                .attr("class", "annotator-viewer-relation")
+                .empty()
+                .hide();
+
             if (annotation.hasOwnProperty("oa")) {
                 switch (annotation.oa.motivatedBy) {
                     case scope.oa.motivation.classifying:
                     case scope.oa.motivation.identifying:
                         var linkedAnnotations = factory.getLinkedAnnotationsWithSubject(annotation['oa']['hasBody']['contextualizedAs']);
                         if (linkedAnnotations.length > 0) {
-                            linkedAnnotations.forEach(function (statement) {
-                                var object = factory.getAnnotationById(statement['oa']['hasTarget']['hasSelector']['target']);
-                                // ensure the target annotation was found
-                                if (object) {
-                                    $(field).append(factory.createStatementHTML(annotation, statement, object));
-                                }
-                            });
-                            $(field).wrapInner("<ul></ul>").show();
+                            linkedAnnotations
+                            // sort by relations by property label
+                                .sort(function (p1, p2) {
+                                    var label1 = p1['neonion']['viewer']['predicateLabel'],
+                                        label2 = p2['neonion']['viewer']['predicateLabel'];
+                                    if (label1 < label2) return -1;
+                                    if (label1 > label2) return 1;
+                                    return 0;
+                                })
+                                .forEach(function (statement) {
+                                    var object = factory.getAnnotationById(statement['oa']['hasTarget']['hasSelector']['target']);
+                                    // ensure the target annotation was found
+                                    if (object) {
+                                        $(field).append(factory.createRelationItem(annotation, statement, object));
+                                    }
+                                });
+                            $(field).show();
                         }
                         break;
                 }
@@ -188,11 +231,11 @@
         };
 
         factory.onDeleteProperty = function (e) {
-            var annotationId = e.target.getAttribute("data-value");
+            var annotationId = e.currentTarget.getAttribute("data-value");
             if (annotationId) {
-                var annotation = scope.linkedAnnotations.filter(function (item) {
-                    return item.id == annotationId;
-                }).pop();
+                var annotation = scope.linkedAnnotations.find(function (item) {
+                    return item['oa']['@id'] == annotationId;
+                });
                 scope.deleteLinkedAnnotation(annotation);
             }
             // update interface
@@ -230,13 +273,12 @@
          * @param object
          * @returns {String}
          */
-        factory.createStatementHTML = function (subject, statement, object) {
-            return "<li>" +
-                subject['oa']['hasBody']['label'] + "&nbsp;" +
-                statement['neonion']['viewer']['predicateLabel'] + "&nbsp;" +
-                object['oa']['hasBody']['label'] +
-                "<i class='pull-right fa fa-times fa-1' data-action='delete-property' data-value='" + statement.id + "'></i>" +
-                "</li>";
+        factory.createRelationItem = function (subject, relation, object) {
+            return $("<button data-value='" + relation['oa']['@id'] + "'></button>")
+            //.append("<span data-value='" + subject['oa']['@id'] + "' class='subject'>" + subject['oa']['hasBody']['label'] + "</span>")
+                .append("<span class='predicate'>" + relation['neonion']['viewer']['predicateLabel'] + "</span>")
+                .append("<span data-value='" + object['oa']['@id'] + "' class='object'>" + object['oa']['hasBody']['label'] + "</span>")
+                .click(factory.onDeleteProperty);
         };
 
         return factory;

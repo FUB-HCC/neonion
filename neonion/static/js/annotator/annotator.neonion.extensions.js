@@ -47,8 +47,8 @@
                     // use PDF fragment identification
                     // see http://openannotation.org/spec/core/specific.html#FragmentSelector
                     annotation['oa']['hasTarget']['hasSelector']['conformsTo'] = 'http://tools.ietf.org/rfc/rfc3778';
-                    annotation['oa']['hasTarget']['hasSelector']['value'] = 
-                        '#page=' + (annotation['neonion']['context']['pageIdx'] + 1) + 
+                    annotation['oa']['hasTarget']['hasSelector']['value'] =
+                        '#page=' + (annotation['neonion']['context']['pageIdx'] + 1) +
                         '&highlight=' + factory.getFragmentHighlight(annotation['neonion']['context']['normalizedHighlights']);
                 }
             });
@@ -77,9 +77,9 @@
          * Returns a formatted string representing the bounds to the highlights.
          * @param highlights array with rectangles
          */
-        factory.getFragmentHighlight = function(highlights) {
+        factory.getFragmentHighlight = function (highlights) {
             var lt = 0, rt = 1, top = 0, btm = 1;
-            for(var i = 0; i < highlights.length; i++) {
+            for (var i = 0; i < highlights.length; i++) {
                 lt = Math.max(highlights[i].left, lt);
                 rt = Math.min(1 - highlights[i].left + highlights[i].width, rt);
                 top = Math.max(highlights[i].top, top);
@@ -95,8 +95,11 @@
          */
         factory.getPageIndex = function (annotation, annotator) {
             var page = factory.getPageElement(annotation, annotator);
-            // return the index of the page
-            return $(page.parentNode).children("div").index(page);
+            if (page) {
+                // return the index of the page
+                return $(page.parentNode).children("div").index(page);
+            }
+            return -1;
         };
 
         factory.getHighlightRectangles = function (annotation, annotator) {
@@ -188,7 +191,7 @@
         var factory = {
             state: {
                 selectedItem: -1,
-                resultSet: []  
+                resultSet: []
             },
             paginationSize: 5,
         };
@@ -258,7 +261,7 @@
 
             // attach submit handler handler
             searchForm.submit(function () {
-                factory.updateEntityList(searchInput.val());    
+                factory.updateEntityList(searchInput.val());
                 return false;
             });
 
@@ -394,7 +397,7 @@
             var occurrence = {};
             // count occurrence of each resource
             for (var i = 0; i < annotations.length; i++) {
-                if(scope.helper.getMotivationEquals(annotations[i], scope.oa.motivation.identifying)) {
+                if (scope.helper.getMotivationEquals(annotations[i], scope.oa.motivation.identifying)) {
                     if (annotations[i]['oa']['hasBody'].hasOwnProperty("identifiedAs")) {
                         if (!occurrence[annotations[i]['oa']['hasBody']['identifiedAs']]) {
                             occurrence[annotations[i]['oa']['hasBody']['identifiedAs']] = 0;
@@ -445,7 +448,7 @@
          * @param concept
          * @returns {boolean}
          */
-        factory.conceptHasReferrals = function(concept) {
+        factory.conceptHasReferrals = function (concept) {
             return concept.hasOwnProperty('linked_concepts') && concept['linked_concepts'].length > 0;
         };
 
@@ -453,11 +456,11 @@
          * Extracts the name of the index from the given endpoint URL
          * @param endpoint
          */
-        factory.getIndexName = function(endpoint) {
+        factory.getIndexName = function (endpoint) {
             // TODO rethink that
             var element = document.createElement('a');
             element.href = endpoint;
-            return element.hostname.replace('www.','');
+            return element.hostname.replace('www.', '');
         };
 
         return factory;

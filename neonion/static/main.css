@@ -9380,7 +9380,8 @@ button.list-group-item:focus {
 .annotator-notice *,
 .annotator-adder *,
 .annotator-filter *,
-.annotator-widget * {
+.annotator-widget *,
+.annotator-relation-menu .annotator-creator {
   font-family: 'Lato', sans-serif;
   font-weight: 300;
 }
@@ -9397,7 +9398,10 @@ button.list-group-item:focus {
 .annotator-editor .annotator-widget #resource-form i,
 .annotator-editor .annotator-widget #resource-form input[type=text],
 .annotator-editor a,
-.annotator-viewer .annotator-item div {
+.annotator-viewer .annotator-item div,
+.annotator-relation-menu .empty,
+.annotator-relation-menu button,
+.annotator-relation-menu .annotator-creator {
   font-size: 14px;
   line-height: 22px;
 }
@@ -9405,7 +9409,7 @@ button.list-group-item:focus {
 .annotator-adder,
 .annotator-editor .annotator-item,
 .annotator-viewer,
-dialog {
+.annotator-relation-menu {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 .btn-secondary {
@@ -9546,6 +9550,8 @@ fieldset[disabled] .btn-secondary.focus {
 .annotator-adder {
   width: auto;
   height: auto;
+  background-image: url(img/annotator-icon-sprite.png);
+  background-repeat: no-repeat;
 }
 .annotator-adder button {
   white-space: nowrap;
@@ -9648,12 +9654,14 @@ fieldset[disabled] .btn-secondary.focus {
 .annotator-viewer .annotator-widget {
   border: 0px;
   border-radius: 0px;
+  min-width: 300px;
 }
 .annotator-viewer .annotator-widget .annotator-controls {
   right: 5px;
   padding: 11px 12px 11px 0;
   position: absolute;
   margin: 0px;
+  background-color: #ffffff;
 }
 .annotator-viewer .annotator-widget .annotator-controls button {
   padding: 0 0 0 0;
@@ -9666,7 +9674,6 @@ fieldset[disabled] .btn-secondary.focus {
   border-bottom: 1px solid #cdcdcd;
   font-style: normal;
   padding: 11px 12px;
-  padding-right: 50px;
 }
 .annotator-viewer .annotator-item div:last-child {
   border-bottom: none;
@@ -9678,53 +9685,222 @@ fieldset[disabled] .btn-secondary.focus {
   width: 500px;
   z-index: -100;
 }
-.annotator-relation-line {
-  pointer-events: none;
-  position: absolute;
-  z-index: 100;
+@keyframes fade-in {
+  to {
+    stroke-opacity: 1.0;
+  }
 }
-.annotator-svg-relation {
-  fill: none;
-  stroke: #8e8e93;
-  stroke-width: 1;
+@keyframes fade-out {
+  from {
+    stroke-opacity: 1.0;
+  }
+  to {
+    stroke-opacity: 0.0;
+  }
 }
-.annotator-svg-relation.fade,
-.annotator-relation-line.fade {
-  opacity: 0.3;
-  -webkit-transition: opacity 0.1s ease-in-out;
-  -moz-transition: opacity 0.1s ease-in-out;
-  -ms-transition: opacity 0.1s ease-in-out;
-  -o-transition: opacity 0.1s ease-in-out;
-  transition: opacity 0.1s ease-in-out;
+@keyframes fade-out-half {
+  from {
+    stroke-opacity: 1.0;
+  }
+  to {
+    stroke-opacity: 0.3;
+  }
 }
-.annotator-svg-relation.fade.in,
-.annotator-relation-line.fade.in {
-  opacity: 1;
+@keyframes fade-in-half {
+  from {
+    stroke-opacity: 0.3;
+  }
+  to {
+    stroke-opacity: 1.0;
+  }
 }
 .annotator-relation-overlay {
   pointer-events: none;
   position: fixed;
-  left: 0px;
-  top: 0px;
-  height: 100%;
+  left: 0;
+  top: 0;
   width: 100%;
+  height: 100%;
 }
-.annotator-relation-outline {
-  outline-style: solid;
-  outline-color: #434346;
-  outline-width: 2px;
+.annotator-relation-overlay .annotator-relation-runner {
+  pointer-events: visiblePainted;
 }
-.annotator-relation-runner {
-  position: fixed;
-  background: white;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  border-radius: 10px;
-}
-.annotator-relation-overlay .annotator-svg-relation {
+.annotator-relation-overlay .annotator-relation-line {
+  pointer-events: none;
   fill: none;
   stroke: #434346;
   stroke-width: 2;
+  stroke-linecap: butt;
+  stroke-linejoin: round;
+}
+.annotator-relation-overlay .annotator-relation-line.existing {
+  stroke: #f39100;
+}
+.annotator-relation-overlay .annotator-relation-line.fadeIn {
+  -webkit-animation: fade-in-half 0.2s ease forwards;
+  -moz-animation: fade-in-half 0.2s ease forwards;
+  animation: fade-in-half 0.2s ease forwards;
+}
+.annotator-relation-overlay .annotator-relation-line.fadeOut {
+  -webkit-animation: fade-out-half 0.2s ease forwards;
+  -moz-animation: fade-out-half 0.2s ease forwards;
+  animation: fade-out-half 0.2s ease forwards;
+}
+.annotator-relation-overlay .annotator-relation-line.hideLine {
+  -webkit-animation: fade-out 0.4s ease forwards;
+  -moz-animation: fade-out 0.4s ease forwards;
+  animation: fade-out 0.4s ease forwards;
+}
+.annotator-relation-overlay .annotator-relation-caption {
+  color: #434346;
+  text-anchor: end;
+  alignment-baseline: after-edge;
+}
+.annotator-hl {
+  opacity: 1;
+}
+.annotator-hl.annotator-relation-outline {
+  outline: 2px solid #434346;
+}
+.annotator-hl.fade {
+  opacity: 0.3;
+  -webkit-transition: opacity 0.2s ease;
+  -moz-transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease;
+}
+.annotator-viewer-relation {
+  overflow-y: auto;
+  max-height: 200px;
+}
+.annotator-viewer-relation button {
+  width: 100%;
+  border: none;
+  white-space: nowrap;
+}
+.annotator-viewer-relation button:before {
+  vertical-align: middle;
+  margin-right: 3px;
+  content: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' width='12px' height='12px' viewBox='0 0 24 24' xml:space='preserve'></svg>");
+}
+.annotator-viewer-relation button:hover:before {
+  content: url(img/annotator/relation_remove_black.svg);
+}
+.annotator-relation-menu {
+  background-image: url(../img/annotator-icon-sprite.png);
+  z-index: 1020;
+  position: absolute;
+  font-size: 10px;
+  line-height: 1;
+  margin-top: -48px;
+  margin-left: -24px;
+  width: 48px;
+  height: 48px;
+  background-position: left top;
+  width: auto;
+  height: auto;
+  background-image: url(img/annotator-icon-sprite.png);
+  background-repeat: no-repeat;
+  position: fixed;
+}
+.annotator-relation-menu > div:first-of-type {
+  overflow: auto;
+  max-height: 30vh;
+}
+.annotator-relation-menu .empty {
+  padding: 0 12px;
+  background-color: #ffffff;
+  border-top: 1px solid #cdcdcd;
+}
+.annotator-relation-menu button {
+  background: #ffffff;
+  border: none;
+  border-top: 1px solid #cdcdcd;
+  color: #000000;
+  display: block;
+  outline: 0;
+  padding: 0 12px;
+  text-align: left;
+  text-indent: 0;
+  width: 100%;
+}
+.annotator-relation-menu button:hover {
+  background-color: #f39100;
+  color: #ffffff;
+}
+.annotator-relation-menu button:hover span,
+.annotator-relation-menu button:hover i {
+  color: #eeeeee;
+}
+.annotator-relation-menu button span {
+  font-size: 14px;
+}
+.annotator-relation-menu button i:hover {
+  color: #000000;
+}
+.annotator-relation-menu button.unknown {
+  background-image: url("img/unknown.png");
+  background-repeat: no-repeat;
+  background-position: 12px;
+  padding-left: 50px;
+}
+.annotator-relation-menu button.more {
+  background-color: #cdcdcd;
+}
+.annotator-relation-menu button {
+  white-space: nowrap;
+}
+.annotator-relation-menu hr {
+  margin: 0px;
+  height: 1px;
+  background-color: #8e8e93;
+}
+.annotator-relation-menu button {
+  width: 100%;
+  height: 40px;
+}
+.annotator-relation-menu button:before {
+  vertical-align: middle;
+  margin-right: 3px;
+  content: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' width='12px' height='12px' viewBox='0 0 24 24' xml:space='preserve'></svg>");
+}
+.annotator-relation-menu button:hover:before {
+  content: url(img/annotator/relation_checkmark_white.svg);
+}
+.annotator-relation-menu button.exist:before {
+  content: url(img/annotator/relation_checkmark_black.svg);
+}
+.annotator-relation-menu button.exist:hover:before {
+  content: url(img/annotator/relation_remove_white.svg);
+}
+.annotator-relation-menu .annotator-creator {
+  color: #434346;
+  background-color: #ffffff;
+  padding: 11px 12px 11px 12px;
+}
+.annotator-viewer-relation .subject,
+.annotator-relation-menu .subject,
+.annotator-viewer-relation .predicate,
+.annotator-relation-menu .predicate,
+.annotator-viewer-relation .object,
+.annotator-relation-menu .object {
+  color: #000000;
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+.annotator-viewer-relation .predicate,
+.annotator-relation-menu .predicate {
+  font-weight: bold;
+}
+.annotator-viewer-relation .subject,
+.annotator-relation-menu .subject,
+.annotator-viewer-relation .object,
+.annotator-relation-menu .object {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .annotator-listing .fa {
   font-family: 'FontAwesome' !important;
@@ -9733,23 +9909,6 @@ fieldset[disabled] .btn-secondary.focus {
 .annotator-listing .fa:hover {
   color: #000000;
   cursor: pointer;
-}
-dialog {
-  border: 1px solid #cdcdcd;
-  padding: 0px;
-}
-dialog h5 {
-  white-space: nowrap;
-}
-dialog section {
-  padding: 10px;
-}
-dialog section .btn-group-vertical {
-  width: 100%;
-}
-.annotator-adder {
-  background-image: url(img/annotator-icon-sprite.png);
-  background-repeat: no-repeat;
 }
 .annotator-resize,
 .annotator-widget::after,

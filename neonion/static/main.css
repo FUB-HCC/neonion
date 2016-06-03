@@ -9690,12 +9690,16 @@ fieldset[disabled] .btn-secondary.focus {
 }
 .annotator-svg-relation.fade,
 .annotator-relation-line.fade {
-  opacity: 0;
+  opacity: 0.3;
   -webkit-transition: opacity 0.1s ease-in-out;
   -moz-transition: opacity 0.1s ease-in-out;
   -ms-transition: opacity 0.1s ease-in-out;
   -o-transition: opacity 0.1s ease-in-out;
   transition: opacity 0.1s ease-in-out;
+}
+.annotator-svg-relation.fade.in,
+.annotator-relation-line.fade.in {
+  opacity: 1;
 }
 .annotator-relation-overlay {
   pointer-events: none;
@@ -9721,10 +9725,6 @@ fieldset[disabled] .btn-secondary.focus {
   fill: none;
   stroke: #434346;
   stroke-width: 2;
-}
-.annotator-svg-relation.fade.in,
-.annotator-relation-line.fade.in {
-  opacity: 1;
 }
 .annotator-listing .fa {
   font-family: 'FontAwesome' !important;

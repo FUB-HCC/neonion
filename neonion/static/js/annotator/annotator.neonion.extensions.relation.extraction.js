@@ -1,43 +1,43 @@
 (function () {
     "use strict"; // enable strict mode
 
-    function Vector2(x, y){
-       this.x = x;
-       this.y = y;
+    function Vector2(x, y) {
+        this.x = x;
+        this.y = y;
     }
 
     Vector2.prototype = {
-        add : function (v2) {
+        add: function (v2) {
             return new Vector2(this.x - v2.x, this.y - v2.y);
         },
-        subtract : function (v2) {
+        subtract: function (v2) {
             return new Vector2(this.x - v2.x, this.y - v2.y);
         },
-        multiply : function(multiplier) {
+        multiply: function (multiplier) {
             return new Vector2(this.x * multiplier, this.y * multiplier);
         },
-        divide : function(divisor) {
+        divide: function (divisor) {
             return new Vector2(this.x / divisor, this.y / divisor);
         },
-        normalize : function () {
+        normalize: function () {
             return this.divide(this.magnitude());
         },
-        dot : function (v2) {
+        dot: function (v2) {
             return this.x * v2.x + this.y * v2.y;
         },
-        cross : function(v2) {
+        cross: function (v2) {
             return new Vector2(this.x * v2.y - v2.x * this.y, this.y * v2.x - v2.y * this.x);
         },
-        rotate90: function() {
+        rotate90: function () {
             return new Vector2(-this.y, this.x);
         },
-        magnitude : function () {
+        magnitude: function () {
             return Math.sqrt(this.x * this.x + this.y * this.y);
         },
-        distance : function (v1, v2) {
+        distance: function (v1, v2) {
             return Math.sqrt((v1.x - v2.x) * (v1.x - v2.x) + (v1.y - v2.y) * (v1.y - v2.y));
         },
-        undefinedVector : function () {
+        undefinedVector: function () {
             return new Vector2(Number.NaN, Number.NaN);
         }
     };
@@ -76,7 +76,7 @@
         }
     };
 
-    function Rect2D(left, width, top, height){
+    function Rect2D(left, width, top, height) {
         this.left = left;
         this.width = width;
         this.top = top;
@@ -95,7 +95,7 @@
                 new Line2D(new Vector2(this.left, this.top + this.height), new Vector2(this.left, this.top))
             ]
         },
-        lineIntersection: function(line) {
+        lineIntersection: function (line) {
             var lines = this.boundingLines();
             var intersections = [];
             for (var i = 0; i < lines.length; i++) {
@@ -104,6 +104,9 @@
                     intersections.push(intersectionPt);
             }
             return intersections;
+        },
+        fromClientRect: function (rect) {
+            return new Rect2D(rect.left, rect.width, rect.top, rect.height);
         }
     };
 
@@ -114,20 +117,17 @@
     }
 
     Bezier.prototype = {
-        getPoint: function(t) {
+        getPoint: function (t) {
             var x = (1 - t) * ((1 - t) * this.v1.x + t * this.v2.x) + t * ((1 - t) * this.v2.x + t * this.v3.x);
             var y = (1 - t) * ((1 - t) * this.v1.y + t * this.v2.y) + t * ((1 - t) * this.v2.y + t * this.v3.y);
             return new Vector2(x, y);
         },
-        getPointDeriviated: function(t) {
+        getPointDeriviated: function (t) {
             return 2 * (1 - t) * (v2 - v1) + 2 * t * (v3 - v2);
         },
-        getClosestPoint : function(ref) {
-            return new Vector2(0, 0);
-        },
         convertSVGPath: function () {
-           return "M" + this.v1.x + " " + this.v1.y +
-               " Q " + this.v2.x + " " + this.v2.y + " " + this.v3.x + " " + this.v3.y;
+            return "M" + this.v1.x + " " + this.v1.y +
+                " Q " + this.v2.x + " " + this.v2.y + " " + this.v3.x + " " + this.v3.y;
         }
     };
 
@@ -137,49 +137,65 @@
      */
     Annotator.Plugin.neonion.prototype.widgets['pointAndLightRelations'] = function (scope, options) {
         var factory = {
-            path : [],
-            selectedAnnotation : null,
-            selectedConnection : null,
-            activeConnections : [],
-            options : {
+            path: [],
+            selectedAnnotation: null,
+            selectedConnection: null,
+            activeConnections: [],
+            options: {
                 debug: true,
-                cullAnnotations : true,
-                cullingDistance : function () { return screen.height * 0.8 },
-                FOWRadians : Math.PI / 15 // 15  degrees
+                cullAnnotations: true,
+                cullingDistance: function () {
+                    return screen.height * 0.8
+                },
+                FOWRadians: Math.PI / 15 // 15  degrees
             },
-            helper : {
-                instantiateGraphicsOverlay : function() {
+            helper: {
+                instantiateGraphicsOverlay: function () {
                     return $("<svg class='annotator-relation-overlay' shape-rendering='auto' xmlns='http://www.w3.org/2000/svg' />")
                         .appendTo(".annotator-wrapper");
                 },
-                instantiateRunner: function() {
+                instantiateRunner: function () {
                     return $("<i class='annotator-relation-runner fa fa-plus-circle fa-lg' aria-hidden='true'></i>")
                         .appendTo(".annotator-wrapper").hide();
                 },
-                instantiateSegment : function(source, target) {
+                instantiateSegment: function (source, target) {
                     var line = document.createElementNS("http://www.w3.org/2000/svg", "path");
                     line.setAttribute("class", "annotator-svg-relation fade");
                     line.setAttribute("stroke-linecap", "round");
 
                     return {
-                        key : factory.getCompositeKey(source, target),
-                        source : source,
-                        target : target,
-                        active : false,
-                        path : line
+                        key: factory.getCompositeKey(source, target),
+                        source: source,
+                        target: target,
+                        active: false,
+                        path: line
                     }
                 },
-                annotationRect : function (annotation) {
-                    var rect = annotation.highlights[0].getClientRects()[0];
-                    return new Rect2D(rect.left, rect.width, rect.top, rect.height);
+                animatePath: function(path, reverse) {
+                    var length = path.getTotalLength();
+                    // update stroke
+                    path.style.strokeDasharray = length + ' ' + length;
+                    path.style.strokeDashoffset = length;
+                    path.getBoundingClientRect();
+                    if (!reverse) {
+                        path.style.transition = path.style.WebkitTransition = 'stroke-dashoffset 0.2s ease-out';
+                        path.style.strokeDashoffset = '0';
+                    }
+                    else {
+                        path.style.transition = path.style.WebkitTransition = 'stroke-dashoffset 0.3s ease-in';
+                        path.style.strokeDashoffset = length;
+                    }
+                },
+                annotationRect: function(annotation) {
+                    return Rect2D.prototype.fromClientRect(annotation.highlights[0].getClientRects()[0]);
                 },
                 /**
-                * Calculate the control points of the qubic bezier curve.
-                * @param source
-                * @param target
-                * @returns {*[Bezier]}
-                */
-                calculateCurve : function(source, target) {
+                 * Calculate the control points of the qubic bezier curve.
+                 * @param source
+                 * @param target
+                 * @returns {*[Bezier]}
+                 */
+                calculateCurve: function (source, target) {
                     var sourceRect = factory.helper.annotationRect(source);
                     var targetRect = factory.helper.annotationRect(target);
                     var start = factory.helper.getClosestPoint(targetRect.center(),
@@ -195,10 +211,63 @@
 
                     return new Bezier(start, mid, end);
                 },
-                getClosestPoint: function(origin, points) {
-                    return points.sort(function(pt1, pt2){
+                getClosestPoint: function (origin, points) {
+                    return points.sort(function (pt1, pt2) {
                         return Vector2.prototype.distance(pt1, origin) - Vector2.prototype.distance(pt2, origin);
                     })[0];
+                },
+                getClosestPointToPath: function (pathNode, point) {
+                    // Source https://pomax.github.io/bezierinfo/#projections
+
+                    var pathLength = pathNode.getTotalLength(),
+                        precision = 8,
+                        best,
+                        bestLength,
+                        bestDistance = Number.MAX_VALUE;
+
+                    // linear scan for coarse approximation
+                    for (var scan, scanLength = 0, scanDistance; scanLength <= pathLength; scanLength += precision) {
+                        if ((scanDistance = distance2(scan = pathNode.getPointAtLength(scanLength))) < bestDistance) {
+                            best = scan;
+                            bestLength = scanLength;
+                            bestDistance = scanDistance;
+                        }
+                    }
+
+                    // binary search for precise estimate
+                    precision /= 2;
+                    while (precision > 0.5) {
+                        var before,
+                            after,
+                            beforeLength,
+                            afterLength,
+                            beforeDistance,
+                            afterDistance;
+
+                        if ((beforeLength = bestLength - precision) >= 0 &&
+                            (beforeDistance = distance2(before = pathNode.getPointAtLength(beforeLength))) < bestDistance) {
+                            best = before;
+                            bestLength = beforeLength;
+                            bestDistance = beforeDistance;
+                        } else if ((afterLength = bestLength + precision) <= pathLength &&
+                            (afterDistance = distance2(after = pathNode.getPointAtLength(afterLength))) < bestDistance) {
+                            best = after;
+                            bestLength = afterLength;
+                            bestDistance = afterDistance;
+                        } else {
+                            precision /= 2;
+                        }
+                    }
+
+                    //best = [best.x, best.y];
+                    //best.distance = Math.sqrt(bestDistance);
+                    return new Vector2(best.x, best.y);
+
+                    function distance2(p) {
+                        var dx = p.x - point.x,
+                            dy = p.y - point.y;
+                        return dx * dx + dy * dy;
+                    }
                 }
             }
         };
@@ -211,7 +280,7 @@
             scope.annotator.subscribe("annotationCreated", factory.collectAnnotations);
             scope.annotator.subscribe("annotationDeleted", factory.collectAnnotations);
             scope.annotator.subscribe("annotationsLoaded", factory.collectAnnotations);
-            scope.annotator.subscribe("annotationViewerShown", function(viewer) {
+            scope.annotator.subscribe("annotationViewerShown", function (viewer) {
                 if (factory.selectedAnnotation)
                     viewer.hide();
             });
@@ -221,8 +290,9 @@
             scope.annotator.subscribe("connectionBecomeSelected", factory.connectionBecomeSelected);
             scope.annotator.subscribe("connectionBecomeDeselected", factory.connectionBecomeDeselected);
 
+
             // listen to clicks on annotation highlights
-            $(document).on("click", ".annotator-hl", function(event){
+            $(document).on("click", ".annotator-hl", function (event) {
                 if (factory.isActive()) {
                     var annotation = $(event.target).data("annotation");
                     factory.selectAnnotation(annotation);
@@ -241,9 +311,13 @@
                     factory.updateMovement(cursor);
                 }
             });
+
+            factory.runner.mouseenter(function () {
+                // TODO
+            });
         };
 
-        factory.blurSelection = function() {
+        factory.blurSelection = function () {
             factory.selectAnnotation(null);
             factory.selectConnection(null);
         };
@@ -251,7 +325,7 @@
         factory.selectAnnotation = function (annotation) {
             if (factory.selectedAnnotation != annotation) {
                 if (factory.selectedAnnotation) {
-                    factory.selectedAnnotation.highlights.forEach(function(highlight) {
+                    factory.selectedAnnotation.highlights.forEach(function (highlight) {
                         $(highlight).removeClass("annotator-relation-outline");
                     });
                 }
@@ -263,7 +337,7 @@
                     });
                 }
 
-                for(var key in factory.path) {
+                for (var key in factory.path) {
                     factory.setConnectionVisibility(factory.path[key], false);
                 }
             }
@@ -273,12 +347,12 @@
         factory.selectConnection = function (connection) {
             if (factory.selectedConnection != connection) {
                 if (factory.selectedConnection) {
-                    factory.publish("connectionBecomeDeselected", [factory.selectedConnection]);
+                    scope.annotator.publish("connectionBecomeDeselected", [factory.selectedConnection]);
                 }
 
                 factory.selectedConnection = connection;
                 if (factory.selectedConnection) {
-                    factory.publish("connectionBecomeSelected", [factory.selectedConnection]);
+                    scope.annotator.publish("connectionBecomeSelected", [factory.selectedConnection]);
                     factory.runner.show();
                 }
                 else {
@@ -292,7 +366,7 @@
                 var illuminatedAnnotations = factory.getIlluminated(factory.selectedAnnotation, cursor);
                 var activeConnections = [];
 
-                illuminatedAnnotations.forEach(function(annotation) {
+                illuminatedAnnotations.forEach(function (annotation) {
                     var key = factory.getCompositeKey(factory.selectedAnnotation, annotation);
                     if (!factory.path.hasOwnProperty(key)) {
                         factory.path[key] = factory.helper.instantiateSegment(factory.selectedAnnotation, annotation);
@@ -305,26 +379,23 @@
                 });
 
                 // sort activeConnection by distance to cursor
-                /*activeConnections = activeConnections.sort(function(a,b) {
-                    var ptA = a.getClosestPoint(cursor);
-                    var ptB = b.getClosestPoint(cursor);
+                activeConnections = activeConnections.sort(function (a, b) {
+                    var ptA = factory.helper.getClosestPointToPath(a.path, cursor);
+                    var ptB = factory.helper.getClosestPointToPath(b.path, cursor);
                     return Vector2.prototype.distance(ptA, cursor) - Vector2.prototype.distance(ptB, cursor)
                 });
-                factory.selectConnection(activeConnections.length > 0 ? activeConnections[0] : null);*/
+                factory.selectConnection(activeConnections.length > 0 ? activeConnections[0] : null);
 
                 factory.activeConnections
-                    .filter(function(connection) {
+                    .filter(function (connection) {
                         return activeConnections.indexOf(connection) == -1;
                     })
-                    .forEach(function(connection) {
+                    .forEach(function (connection) {
                         factory.setConnectionVisibility(connection, false);
                     });
 
-                // remove
-                factory.selectedConnection = activeConnections.length > 0 ? activeConnections[0] : null;
                 // update position of plus
                 if (factory.selectedConnection) {
-                    factory.runner.show();
                     factory.updateRunner(factory.selectedConnection, cursor);
                 }
 
@@ -333,7 +404,7 @@
         };
 
         factory.updateRunner = function (connection, cursor) {
-            var pos = connection.curve.getPoint(0.5);
+            var pos = factory.helper.getClosestPointToPath(connection.path, cursor);
             pos.x -= factory.runner.width() * 0.5;
             pos.y -= factory.runner.height() * 0.5;
             factory.runner.css({top: pos.y, left: pos.x});
@@ -362,30 +433,34 @@
             }
         };
 
-        factory.connectionBecomeVisible = function(connection) {
+        factory.connectionBecomeVisible = function (connection) {
             connection.curve = factory.helper.calculateCurve(connection.source, connection.target);
-            connection.path.setAttribute("class", "annotator-svg-relation fade in");
             connection.path.setAttribute("d", connection.curve.convertSVGPath());
+
+            factory.helper.animatePath(connection.path, false);
         };
 
-        factory.connectionBecomeHidden = function(connection) {
-            connection.path.setAttribute("class", "annotator-svg-relation fade");
+        factory.connectionBecomeHidden = function (connection) {
+            factory.helper.animatePath(connection.path, true);
         };
 
         factory.connectionBecomeSelected = function (connection) {
+            connection.path.setAttribute("class", "annotator-svg-relation fade in");
             // outline annotation
-            connection.target.highlights.forEach(function(highlight) {
+            connection.target.highlights.forEach(function (highlight) {
                 $(highlight).addClass("annotator-relation-outline");
             });
 
         };
 
-        factory.connectionBecomeDeselected = function() {
+        factory.connectionBecomeDeselected = function (connection) {
+            connection.path.setAttribute("class", "annotator-svg-relation fade");
             // remove outline
-            connection.target.highlights.forEach(function(highlight) {
-                $(highlight).removeClass("annotator-relation-outline");
-            });
-
+            if (connection.target != factory.selectedAnnotation) {
+                connection.target.highlights.forEach(function (highlight) {
+                    $(highlight).removeClass("annotator-relation-outline");
+                });
+            }
         };
 
         factory.getCompositeKey = function (source, target) {
@@ -431,8 +506,8 @@
         factory.hasSuitableAnnotations = function (property) {
             // get tne URIs of all suitable concepts
             var matchingConcepts = scope.concepts.filter(function (concept) {
-                    return property.range.indexOf(concept.id) != -1;
-                })
+                return property.range.indexOf(concept.id) != -1;
+            })
                 .map(function (concept) {
                     return concept.uri;
                 });

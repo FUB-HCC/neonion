@@ -9705,10 +9705,22 @@ fieldset[disabled] .btn-secondary.focus {
   height: 100%;
   width: 100%;
 }
+.annotator-relation-outline {
+  outline-style: solid;
+  outline-color: #434346;
+  outline-width: 2px;
+}
+.annotator-relation-runner {
+  position: fixed;
+  background: white;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+}
 .annotator-relation-overlay .annotator-svg-relation {
   fill: none;
-  stroke: #8e8e93;
-  stroke-width: 1;
+  stroke: #434346;
+  stroke-width: 2;
 }
 .annotator-svg-relation.fade.in,
 .annotator-relation-line.fade.in {

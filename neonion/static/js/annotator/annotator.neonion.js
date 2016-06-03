@@ -49,6 +49,7 @@
                         this.adder.html(this.templates.emptyAdder);
                         break;
                 }
+                this.annotator.publish("annotationModeChanged");
             }
             return this.editorState.annotationMode;
         };

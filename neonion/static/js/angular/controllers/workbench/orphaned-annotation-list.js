@@ -13,7 +13,6 @@ neonionApp.controller('OrphanedAnnotationListCtrl', ['$scope', '$sce', 'Document
 
             $scope.getQueryParams = function (pageNum) {
                 return {
-                    consumer: 'mockconsumer',
                     offset: pageNum * $scope.stepSize,
                     limit: $scope.stepSize
                 };

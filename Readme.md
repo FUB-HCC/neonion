@@ -13,8 +13,7 @@ For neonion you need Python with Django installed.
 In addition, a set of tools and services is needed:
 
 * [Python](https://www.python.org) (Python 2 >=2.7) with `pip` and `virtualenv`
-* [ElasticSearch](https://www.elastic.co) (=1.x)
-* [Annotator Store](https://github.com/openannotation/annotator-store)
+* [ElasticSearch](https://www.elastic.co) (<=2.x)
 * **Optional** 
   * [Sesame](http://rdf4j.org) (>=2.7)
 
@@ -29,11 +28,13 @@ virtualenv -p /usr/bin/python2.7 pyenv
 source pyenv/bin/activate
 pip install -r neonion/requirements.txt
 ```
+
 Setup neonion and startup the server:
 
 ```
 source pyenv/bin/activate
 cd neonion
+curl -XPUT 'http://127.0.0.1:9200/neonion/' -d @mapping.json
 python manage.py migrate
 python manage.py loaddata fixtures/*
 python manage.py runserver

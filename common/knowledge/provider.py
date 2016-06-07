@@ -71,5 +71,9 @@ class Provider(object):
         }
 
         url = self.elastic_search_url + '/' + index + '/_search?size='+str(size)+'&pretty=true&source={}'.format(json.dumps(query))
-        print(url)
-        return requests.get(url).json()
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            return map(lambda item: item['_source'], response.json()['hits']['hits'])
+        else:
+            return []

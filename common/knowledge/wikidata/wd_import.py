@@ -6,7 +6,22 @@ import calendar
 from json import loads
 from os import path
 from bz2 import BZ2File
-from pyelasticsearch import ElasticSearch
+from pyelasticsearch import ElasticSearch, bulk_chunks
+from pyelasticsearch.exceptions import BulkError
+
+
+# create generator
+def get_chunks(conn, entries):
+    for entry in entries:
+        yield conn.index_op(entry, overwrite_existing=True)
+
+
+def bulk_entries(conn, es_index, doc_type, entries):
+    for chunk in bulk_chunks(get_chunks(conn, entries), docs_per_chunk=5000, bytes_per_chunk=10000):
+        try:
+            conn.bulk(chunk, doc_type=doc_type, index=es_index)
+        except BulkError:
+            pass
 
 
 def import_json_into_es(types, inputfolder, logger):
@@ -28,7 +43,6 @@ def import_json_into_es(types, inputfolder, logger):
     except:
         logger.warning('cant delete wikidata index')
 
-
     # convert type dictionary
     wd_types = dict()
     for key in types.keys():
@@ -36,52 +50,54 @@ def import_json_into_es(types, inputfolder, logger):
         wd_types[value] = {'type': key,
                            'filename': path.join(inputfolder, '{}.json.bz2'.format(key))}
 
-
     # import each given type
     for key in wd_types:
         logger.info(wd_types[key])
 
+        documents_per_chunk = 5000
         done = 0
         items = []
 
-        for line in BZ2File(wd_types[key]['filename'],'rb'):
-            line = line.strip()
-            item = loads(line)
-            item['uri'] = 'http://wikidata.org/wiki/' + item['id']
+        data_file = BZ2File(wd_types[key]['filename'], 'rb')
+        try:
+            for line in data_file:
+                line = line.strip()
+                item = loads(line)
+                item['uri'] = 'http://wikidata.org/wiki/' + item['id']
 
-            if 'birth' in item and isinstance(item['birth'], basestring):
-                item['birth'] = item['birth'].replace('-00','-01')
-                item['birth'] = item['birth'].replace('-02-30','-02-29')
-                item['birth'] = item['birth'].replace('-02-31','-02-29')
-                item['birth'] = item['birth'].replace('-04-31','-04-30')
-                item['birth'] = item['birth'].replace('-06-31','-06-30')
-                item['birth'] = item['birth'].replace('-09-31','-09-30')
-                item['birth'] = item['birth'].replace('-11-31','-11-30')
+                if 'birth' in item and isinstance(item['birth'], basestring):
+                    item['birth'] = item['birth'].replace('-00', '-01')
+                    item['birth'] = item['birth'].replace('-02-30', '-02-29')
+                    item['birth'] = item['birth'].replace('-02-31', '-02-29')
+                    item['birth'] = item['birth'].replace('-04-31', '-04-30')
+                    item['birth'] = item['birth'].replace('-06-31', '-06-30')
+                    item['birth'] = item['birth'].replace('-09-31', '-09-30')
+                    item['birth'] = item['birth'].replace('-11-31', '-11-30')
 
-                if item['birth'][-5:] == '02-29':
-                    year = item['birth'][:4]
-                    if not calendar.isleap(int(year)):
-                        item['birth'] = year+'-02-28'
+                    if item['birth'][-5:] == '02-29':
+                        year = item['birth'][:4]
+                        if not calendar.isleap(int(year)):
+                            item['birth'] = year + '-02-28'
 
-                if item['birth'][-2:] == '-0':
-                    del item['birth']
+                    if item['birth'][-2:] == '-0':
+                        del item['birth']
 
-            items.append(item)
-            done += 1
+                items.append(item)
+                done += 1
 
-            if ( done % 5000 == 0 ):
-                es.bulk_index(es_index, wd_types[key]['type'], items, id_field='id')
-                items = []
+                if done % documents_per_chunk == 0:
+                    bulk_entries(es, es_index, wd_types[key]['type'], items)
+                    logger.info('imported {}: {}'.format(wd_types[key]['type'], format(done, ',d')))
+                    del items[:]
 
-            # if done % len(wd_types) / 10 == 0: # log 10% steps
-            #     logger.info('imported {}: {:,d} ({:,d})'.format(wd_types[key]['type'],done, 100*len(wd_types)/done ))
-
-            if done % 10000 == 0:
-                logger.info('imported {}: {}'.format(wd_types[key]['type'],format(done, ',d')))
-
-        if len(items) > 0:
-            es.bulk_index(es_index, wd_types[key]['type'], items, id_field='id')
-        logger.info('imported {}: {}'.format(wd_types[key]['type'],format(done, ',d')))
+            if len(items) > 0:
+                bulk_entries(es, es_index, wd_types[key]['type'], items)
+                logger.info('imported {}: {}'.format(wd_types[key]['type'], format(done, ',d')))
+        finally:
+            # release the file handler
+            data_file.close()
+            # refresh the index
+            es.refresh(es_index)
 
 
 if __name__ == '__main__':
@@ -101,5 +117,6 @@ if __name__ == '__main__':
     formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s', "%H:%M:%S")
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
+    logging.getLogger('elasticsearch').propagate = False
 
-    import_json_into_es({'person': 'http://www.wikidata.org/entity/Q5'},args.folder, logging.getLogger('import'))
+    import_json_into_es({'person': 'http://www.wikidata.org/entity/Q5'}, args.folder, logging.getLogger('import'))

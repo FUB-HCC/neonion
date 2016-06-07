@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'pipeline',
     'neonion',
     'api',
+    'store',
     'documents',
     'accounts',
     'endpoint',
@@ -186,6 +187,8 @@ REST_FRAMEWORK = {
 
 # neonion specific settings
 NEONION_BASE_NAMESPACE = 'http://neonion.org/'
+ELASTICSEARCH_URL = "http://127.0.0.1:9200"
+ELASTICSEARCH_INDEX = "neonion"
 
 # settings for serialization to triple store
 ENDPOINT_ENABLED = False

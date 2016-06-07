@@ -1,0 +1,80 @@
+{
+  "mappings": {
+    "annotation": {
+      "properties": {
+        "id": {"type": "string", "index": "no"},
+        "created": {"type": "date"},
+        "updated": {"type": "date"},
+        "quote": {"type": "string", "analyzer": "standard"},
+        "text": {"type": "string", "analyzer": "standard"},
+        "uri": {"type": "string", "index": "not_analyzed"},
+        "oa": {
+          "properties": {
+            "@id": {"type": "string", "index": "no"},
+            "@type": {"type": "string", "index": "not_analyzed"},
+            "@context": {"type": "string", "index": "no"},
+            "annotatedAt": {"type": "date"},
+            "motivatedBy": {"type": "string", "index": "not_analyzed"},
+            "hasBody": {
+              "properties": {
+                "@id": {"type": "string", "index": "no"},
+                "@type": {"type": "string", "index": "not_analyzed"}
+              }
+            },
+            "hasTarget": {
+              "properties": {
+                "@id": {"type": "string", "index": "no"},
+                "@type": {"type": "string", "index": "not_analyzed"},
+                "hasSource": {
+                  "properties": {
+                    "@id": {"type": "string", "index": "not_analyzed"},
+                    "@type": {"type": "string", "index": "not_analyzed"}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "neonion": {
+          "properties": {
+            "context": {
+              "properties": {
+                "pageIndex": {"type": "integer"},
+                "surrounding": {
+                  "properties": {
+                    "left": {"type": "string", "index": "no"},
+                    "right": {"type": "string", "index": "no"}
+                  }
+                },
+                "normalizedHighlights": {
+                  "properties": {
+                    "left": {"type": "double"},
+                    "top": {"type": "double"},
+                    "width": {"type": "double"},
+                    "height": {"type": "double"}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ranges": {
+            "properties": {
+                "start": {"type": "string", "index": "no"},
+                "end": {"type": "string", "index": "no"},
+                "startOffset": {"type": "integer", "index": "no"},
+                "endOffset": {"type": "integer", "index": "no"}
+            }
+        },
+        "permissions": {
+            "properties": {
+                "read": {"type": "string"},
+                "update": {"type": "string"},
+                "delete": {"type": "string"},
+                "admin": {"type": "string"}
+            }
+        }
+      }
+    }
+  }
+}

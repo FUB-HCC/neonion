@@ -321,7 +321,7 @@
             unspecified: function (params) {
                 return {
                     uri: params.uri,
-                    limit: 999999
+                    limit: 999
                 };
             },
             space: function (params) {

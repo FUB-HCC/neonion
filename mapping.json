@@ -68,10 +68,10 @@
         },
         "permissions": {
             "properties": {
-                "read": {"type": "string"},
-                "update": {"type": "string"},
-                "delete": {"type": "string"},
-                "admin": {"type": "string"}
+                "read": {"type": "string", "index": "not_analyzed"},
+                "update": {"type": "string", "index": "not_analyzed"},
+                "delete": {"type": "string", "index": "not_analyzed"},
+                "admin": {"type": "string", "index": "not_analyzed"}
             }
         }
       }

@@ -1,5 +1,6 @@
 import datetime
 import json
+import uuid
 
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
@@ -75,17 +76,17 @@ class AnnotationListView(APIView):
         except (InvalidAnnotationError, InvalidResourceTypeError):
             return HttpResponse(status=400)
         else:
-            annotation['id'] = generate_uri(neonion.ANNOTATION)
+            annotation['id'] = uuid.uuid1().hex
             ann.add_creator(annotation, request.user.email)
             annotation['created'] = datetime.datetime.now().isoformat()
-            annotation['updated'] = datetime.datetime.now().isoformat()
+            annotation['updated'] = annotation['created']
 
             # OA specific enrichment
             if 'oa' in annotation:
                 # add context JSON-LD embedding
                 annotation['oa']['@context'] = settings.NEONION_BASE_NAMESPACE.rstrip('/') + "/ns/neonion-context.jsonld",
                 # generate URI for annotation
-                annotation['oa']['@id'] = annotation['id']
+                annotation['oa']['@id'] = generate_uri(neonion.ANNOTATION)
 
                 # enrich body
                 if 'hasBody' in annotation['oa']:

@@ -23,11 +23,19 @@ class Migration(migrations.Migration):
                 ('password', models.CharField(max_length=128, verbose_name='password')),
                 ('last_login', models.DateTimeField(default=django.utils.timezone.now, verbose_name='last login')),
                 ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
+<<<<<<< HEAD
+=======
+                ('username', models.CharField(unique=True, max_length=150, verbose_name=b'username')),
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
                 ('email', models.EmailField(unique=True, max_length=75, verbose_name=b'email address')),
                 ('name', models.CharField(max_length=256, verbose_name=b'persons name', blank=True)),
                 ('surname', models.CharField(max_length=256, verbose_name=b'persons surname', blank=True)),
                 ('joined', models.DateTimeField(auto_now_add=True)),
                 ('is_active', models.BooleanField(default=True)),
+<<<<<<< HEAD
+=======
+                ('is_staff', models.BooleanField(default=False)),
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
                 ('groups', models.ManyToManyField(related_query_name='user', related_name='user_set', to='auth.Group', blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of his/her group.', verbose_name='groups')),
                 ('hidden_documents', models.ManyToManyField(related_name=b'hidden_documents', null=True, to='documents.Document', blank=True)),
                 ('owned_documents', models.ManyToManyField(to='documents.Document', null=True, blank=True)),
@@ -56,7 +64,11 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=128, verbose_name=b'group name')),
                 ('comment', models.CharField(max_length=500, verbose_name=b'group description', blank=True)),
                 ('concept_set', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='annotationsets.ConceptSet', null=True)),
+<<<<<<< HEAD
                 ('documents', models.ManyToManyField(to='documents.Document')),
+=======
+                ('documents', models.ManyToManyField(to='documents.Document', blank=True)),
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
                 ('members', models.ManyToManyField(related_name=b'group_members', through='accounts.Membership', to=settings.AUTH_USER_MODEL)),
                 ('owner', models.ForeignKey(related_name=b'group_owner', to=settings.AUTH_USER_MODEL, null=True)),
             ],

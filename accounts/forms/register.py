@@ -28,6 +28,10 @@ class RegistrationForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super(RegistrationForm, self).save(commit=False)
+<<<<<<< HEAD
+=======
+        user.username = user.email
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
         user.set_password(self.cleaned_data['password'])
         if commit:
             user.save()

@@ -1,6 +1,9 @@
 from django.conf.urls import url, include
 from rest_framework import routers
+<<<<<<< HEAD
 from api import views, annotationstore
+=======
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
 from viewsets import UserViewSet, WorkingGroupViewSet, DocumentViewSet, ConceptSetViewSet, ConceptViewSet, \
     PropertyViewSet, LinkedConceptViewSet, MembershipViewSet
 
@@ -18,6 +21,7 @@ router.register(r'properties', PropertyViewSet)
 urlpatterns = [
     url(r'^', include(router.urls)),
 
+<<<<<<< HEAD
     # AnnotationStore proxy API
     url(r'^store/$', 'api.annotationstore.root'),
     url(r'^store/search$', 'api.annotationstore.search'),
@@ -29,4 +33,9 @@ urlpatterns = [
     # ElasticSearch proxy
     url(r'^es/search/(?P<index>.+)/(?P<type>.+)/(?P<term>.+)$', 'api.views.es_search'),
     url(r'^es/import/(?P<index>.+)/(?P<type>.+)$', 'api.views.es_bulk_import'),
+=======
+    # ElasticSearch proxy
+    url(r'^es/search/(?P<index>.+)/(?P<type>.+)/(?P<term>.+)$', 'api.views.entity_search'),
+    url(r'^es/import/(?P<index>.+)/(?P<type>.+)$', 'api.views.entity_bulk_import'),
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
 ]

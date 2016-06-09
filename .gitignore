@@ -1,0 +1,23 @@
+.idea/
+venv
+*.pyc
+*.pyo
+db.*
+db.sqlite3
+staticfiles
+__pycache__
+*.log
+/plugins/*/*
+!plugins/__init__.py
+*.*~
+
+# styleguide
+/node_modules
+/neonion/static/styleguide
+
+# converage.py files
+.coverage
+/htmlcov
+
+# ignore bash scrips
+*.sh

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Vocabulary{% endblock %}
+{% block page_id %}vocabulary{% endblock %}
+
+{% block content %}
+    <div ng-init="tab = 1" ng-cloak>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li ng-class="{active:tab===1}"><a ng-click="tab = 1">Concept Sets</a></li>
+                    <li ng-class="{active:tab===2}"><a ng-click="tab = 2">Concepts</a></li>
+                    <li ng-class="{active:tab===3}"><a ng-click="tab = 3">Properties</a></li>
+                </ul>
+                <form class="navbar-form navbar-right" role="search">
+                    <filter/>
+                </form>
+            </div>
+        </nav>
+
+        <div class="wrapper" ng-switch="tab">
+            <div ng-switch-when="1">
+                <ng-include
+                        src="'{% static 'partials/generic-resource-list.html' %}'"
+                        ng-controller="ConceptSetListCtrl"></ng-include>
+            </div>
+            <div ng-switch-when="2">
+                <ng-include
+                        src="'{% static 'partials/generic-resource-list.html' %}'"
+                        ng-controller="ConceptListCtrl"></ng-include>
+            </div>
+            <div ng-switch-when="3">
+                <ng-include
+                        src="'{% static 'partials/generic-resource-list.html' %}'"
+                        ng-controller="PropertyListCtrl"></ng-include>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

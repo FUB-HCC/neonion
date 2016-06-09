@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" ng-app="neonionApp">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>neonion - {% block title %}{% endblock %}</title>
+    {% load staticfiles %}
+    {% load pipeline %}
+    {% load custom_filters %}
+    <link rel="stylesheet" href="{% static 'main.css' %}" type="text/css" media="screen" />
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
+    {% javascript 'stats' %}
+</head>
+
+<body id="page-{% block page_id %}general{% endblock %}" ng-controller="MainCtrl as main">
+    <div class="container-fluid">
+        <div class="row">
+            {% csrf_token %}
+
+            {% block left %}
+            <div class="sidebar col-md-2">
+                <div id="sidebarnav" data-spy="affix">
+                    <div class="logo-wrapper">
+                        <img class="logo" src="{% static 'img/logo.png' %}" />
+                    </div>
+                    {% include "navigation.html" %}
+                </div>
+            </div>
+            {% endblock %}
+
+            {% block right %}
+            <div class="col-md-9">
+                <div class="row">
+                    <div class="header col-md-12">
+                        {% block header %}
+                            {# Search field #}
+                            <div id="search-form" ng-show="search.enabled" ng-model="common.search.query" ng-cloak>
+                                <button id="search-icon" class="fa fa-search"></button>
+                                <input id="search" type="text" autocomplete="off"/>
+                            </div>
+                            {# User context #}
+                            <ul class="list-inline">
+                                <li class="pull-right"><logged-user/></li>
+                            </ul>
+                        {% endblock %}
+                    </div>
+                    <div class="content col-md-12">
+                        {% block content %}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+
+            <!-- FIXING AFFIX - set width of fixed element manually -->
+            <!-- https://github.com/twbs/bootstrap/issues/6350 -->
+            <script>
+                function setNavWidth() {
+                    var sideBarNavWidth = $('.sidebar').width() - parseInt($('#sidebarnav').css('paddingLeft')) - parseInt($('#sidebarnav').css('paddingRight'));
+                    $('#sidebarnav').css('width', sideBarNavWidth);
+                }
+
+                window.addEventListener("resize", setNavWidth);
+                setNavWidth();
+            </script>
+
+            {% javascript 'angular_app' %}
+            <script>
+                // inject system settings to app
+                neonionApp.constant("systemSettings", {{ system|toJSON }});
+            </script>
+
+            {% block scripts %}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+
+</html>

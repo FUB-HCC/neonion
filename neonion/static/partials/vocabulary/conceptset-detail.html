@@ -1,0 +1,49 @@
+<form ng-controller="ConceptSetDetailCtrl">
+    <fieldset>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-toolbar pull-right">
+                    <button ng-show="form.isEditing" class="btn btn-link" type="button"
+                            ng-click="delete()" disabled>Delete
+                    </button>
+                    <button class="btn btn-default" type="button"
+                            ng-click="return()">Cancel
+                    </button>
+                    <button ng-hide="form.isEditing" class="btn btn-primary" type="button"
+                            ng-click="create()">Create
+                    </button>
+                    <button ng-show="form.isEditing" class="btn btn-primary" type="button"
+                            ng-click="update()">Save
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label" for="label">Label</label>
+                    <input type="text" class="form-control" id="label" placeholder="Displayed name of the concept set"
+                           ng-model="conceptSet.label" autocomplete="off">
+                </div>
+            </div>
+            <div class="col-md-6" ng-show="conceptSet.uri">
+                <div class="form-group">
+                    <label class="control-label" for="uri">URI</label>
+                    <input type="text" class="form-control" id="uri" placeholder=""
+                           ng-model="conceptSet.uri" readonly="true">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="control-label" for="description">Description</label>
+                    <textarea id="description" class="form-control" rows="3"
+                              placeholder="Description of the concept set"
+                              ng-model="conceptSet.comment"></textarea>
+                </div>
+            </div>
+        </div>
+        <ng-include src="'/static/partials/vocabulary/multiselect.html'"></ng-include>
+    </fieldset>
+</form>

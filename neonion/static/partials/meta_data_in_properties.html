@@ -1,0 +1,22 @@
+<p>Please choose the properties you want to consider for your documents <br> which correspond to the Dublin Core Metadata Element Set</p>
+
+<table id="meta-table" class="table" ng-controller="MetaDataCtrl">
+    <thead>
+        <tr>
+            <th>Chosen</th>
+            <th>Property</th>
+            <th>Definition</th>
+        </tr>
+    </thead>
+    <tbody id="metadata">
+        <tr ng-repeat="(key, value) in metaDataValues | orderBy:identity">
+            <td>
+                <input type="checkbox"
+                       ng-model="metaDataValues[key].checked"
+                       ng-submit="submit()"/>
+            </td>
+            <td>{{ key }}</td>
+            <td>{{ value.definition }}</td>
+        </tr>
+    </tbody>
+</table>

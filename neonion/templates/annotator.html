@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load pipeline %}
+
+{% block title %}Annotator{% endblock %}
+{% block page_id %}annotator{% endblock %}
+
+{% block left %}
+<div class="sidebar col-md-1">
+    <div data-spy="affix">
+        <ng-include src="'{% static 'partials/annotator/annotator-navigation.html' %}'"></ng-include>
+    </div>
+</div>
+{% endblock %}
+
+{% block right %}
+<div class="col-md-10 content-inverted">
+    <div class="row">
+        <div class="header col-md-11 col-md-offset-1">
+            {% block header %}
+                <annotator-context group-id="{{ group_pk }}" document-id="{{ document_pk }}" />
+            {% endblock %}
+        </div>
+        <div class="content content-inverted col-md-11 col-md-offset-1">
+            <annotator group-id="{{ group_pk }}" document-id="{{ document_pk }}" class="col-md-6" />
+        </div>
+    </div>  
+</div>
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+
+{% block scripts %}
+    {% javascript 'annotator' %}
+{% endblock %}

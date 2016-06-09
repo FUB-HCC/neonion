@@ -1,0 +1,15 @@
+<div class="row" ng-cloak>
+    <div id="document-frame" class="gap-top gap-bottom">
+        <div ng-switch on="document.attached_file.content_type">
+            <div ng-switch-when="text/plain">
+                <plain-render path="{{ getDocumentUrl() }}"/>
+            </div>
+            <div ng-switch-when="text/html">
+                <plain-render path="{{ getDocumentUrl() }}"/>
+            </div>
+            <div ng-switch-when="application/pdf">
+                <pdf-render path="{{ getDocumentUrl() }}"/>
+            </div>
+        </div>
+    </div>
+</div>

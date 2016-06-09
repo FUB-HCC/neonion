@@ -1,0 +1,187 @@
+[
+  {
+    "fields": {
+      "comment": "To be brought to an end; be annulled or terminated",
+      "linked_properties": [],
+      "range": [
+        "date"
+      ],
+      "inverse_property": null,
+      "label": "dissolved"
+    },
+    "model": "annotationsets.property",
+    "pk": "dissolved"
+  },
+  {
+    "fields": {
+      "comment": "To establish or set up, especially with provision for continuing existence",
+      "linked_properties": [],
+      "range": [
+        "date"
+      ],
+      "inverse_property": null,
+      "label": "founded"
+    },
+    "model": "annotationsets.property",
+    "pk": "founded"
+  },
+  {
+    "fields": {
+      "comment": "",
+      "linked_properties": [],
+      "range": [
+        "person_function"
+      ],
+      "inverse_property": null,
+      "label": "has role"
+    },
+    "model": "annotationsets.property",
+    "pk": "has_role"
+  },
+  {
+    "fields": {
+      "comment": "",
+      "linked_properties": [],
+      "range": [
+        "person"
+      ],
+      "inverse_property": "member_of",
+      "label": "member"
+    },
+    "model": "annotationsets.property",
+    "pk": "member"
+  },
+  {
+    "fields": {
+      "comment": "",
+      "linked_properties": [],
+      "range": [
+        "consortium",
+        "institution"
+      ],
+      "inverse_property": "member",
+      "label": "member of"
+    },
+    "model": "annotationsets.property",
+    "pk": "member_of"
+  },
+  {
+    "fields": {
+      "comment": "",
+      "endpoint": "http://dbpedia.org/sparql",
+      "custom_query": null,
+      "linked_type": "http://dbpedia.org/ontology/Scientist",
+      "retrieved_at": "2015-08-18T09:16:49.992Z",
+      "label": "Person@DBpedia",
+      "provider_class": "common.knowledge.dbpedia.DBpedia"
+    },
+    "model": "annotationsets.linkedconcept",
+    "pk": "dbpedia_person"
+  },
+  {
+    "fields": {
+      "comment": "",
+      "endpoint": "https://www.wikidata.org",
+      "custom_query": null,
+      "linked_type": "https://www.wikidata.org/wiki/Q178706",
+      "retrieved_at": null,
+      "label": "Institution@Wikidata",
+      "provider_class": ""
+    },
+    "model": "annotationsets.linkedconcept",
+    "pk": "wikidata_institution"
+  },
+  {
+    "fields": {
+      "comment": "",
+      "endpoint": "https://www.wikidata.org",
+      "custom_query": null,
+      "linked_type": "https://www.wikidata.org/wiki/Q5",
+      "retrieved_at": null,
+      "label": "Person@Wikidata",
+      "provider_class": ""
+    },
+    "model": "annotationsets.linkedconcept",
+    "pk": "wikidata_person"
+  },
+  {
+    "fields": {
+      "comment": "A cooperative arrangement among groups or institutions",
+      "properties": [
+        "dissolved",
+        "founded",
+        "member"
+      ],
+      "linked_concepts": [],
+      "label": "Consortium"
+    },
+    "model": "annotationsets.concept",
+    "pk": "consortium"
+  },
+  {
+    "fields": {
+      "comment": "A particular point or period of time at which something happened or existed, or is expected to happen",
+      "properties": [],
+      "linked_concepts": [],
+      "label": "Date"
+    },
+    "model": "annotationsets.concept",
+    "pk": "date"
+  },
+  {
+    "fields": {
+      "comment": "An established organization or foundation, especially one dedicated to education, public service, or culture",
+      "properties": [
+        "dissolved",
+        "founded",
+        "member"
+      ],
+      "linked_concepts": [
+        "wikidata_institution"
+      ],
+      "label": "Institution"
+    },
+    "model": "annotationsets.concept",
+    "pk": "institution"
+  },
+  {
+    "fields": {
+      "comment": "An individual human being",
+      "properties": [
+        "has_role",
+        "member_of"
+      ],
+      "linked_concepts": [
+        "wikidata_person"
+      ],
+      "label": "Person"
+    },
+    "model": "annotationsets.concept",
+    "pk": "person"
+  },
+  {
+    "fields": {
+      "comment": "",
+      "properties": [],
+      "linked_concepts": [],
+      "label": "Person Function"
+    },
+    "model": "annotationsets.concept",
+    "pk": "person_function"
+  },
+  {
+    "fields": {
+      "comment": "The default concept set for annotating documents",
+      "concepts": [
+        "consortium",
+        "date",
+        "institution",
+        "person",
+        "person_function"
+      ],
+      "label": "Default"
+    },
+    "model": "annotationsets.conceptset",
+    "pk": "default"
+  }
+]

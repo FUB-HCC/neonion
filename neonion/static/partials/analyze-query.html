@@ -1,0 +1,54 @@
+<div class="btn-toolbar gap-top pull-right">
+    <input type="submit" value="Query" class="btn btn-primary pull-right" ng-click="executeQuery()"/>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <form>
+            <fieldset>
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <select id="subject" class="form-control"
+                            ng-model="form.selectedSubject"
+                            ng-options="item.label.value for item in form.subjects"
+                            ng-change="assembleQuery()">
+                        <option value=""></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="predicate">Predicate</label>
+                    <select id="predicate" class="form-control"
+                            ng-model="form.selectedPredicate"
+                            ng-options="item.predicate.value for item in form.predicates"
+                            ng-change="assembleQuery()">
+                        <option value=""></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="object">Object</label>
+                    <select id="object" class="form-control"
+                            ng-model="form.selectedObject"
+                            ng-options="item.label for item in form.concepts"
+                            ng-change="assembleQuery()">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </fieldset>
+
+            <div class="form-group">
+                <label for="query-prefixes">Prefixes</label>
+                <pre id="query-prefixes">{{ form.prefixes }}</pre>
+            </div>
+            <div class="form-group">
+                <label for="query">Query</label>
+                <textarea ng-model="form.query" class="form-control"
+                          id="query" rows="10">
+                    {{ form.query }}
+                </textarea>
+            </div>
+
+            <div id="query-result"></div>
+        </form>
+    </div>
+</div>

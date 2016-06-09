@@ -1,0 +1,8 @@
+Django==1.7
+djangorestframework==3.2.3
+django-pipeline==1.5.1
+requests==2.4.3
+enum34==1.0.4
+pyelasticsearch==1.4
+SPARQLWrapper==1.6.4
+beautifulsoup4==4.3.2

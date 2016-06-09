@@ -1,0 +1,11 @@
+<div ng-repeat="workspace in workspaces">
+    <h4 ng-show="showWorkspaceName">{{ workspace.name }}</h4>
+    <a class="btn btn-primary gap-bottom" href="/import/" ng-show="allowImport"><i class="fa fa-file-text-o fa-fw"></i>Import to Workspace</a>
+
+    <div class="list-group">
+        <a class="list-group-item" ng-href="/annotator/{{ workspace.id }}/{{ document.id }}" ng-repeat="document in workspace.documents | filter:filterDocuments | orderBy:'title'">
+            {{ document.title }}
+            <i ng-show="allowRemove" class="fa fa-trash-o pull-right" ng-click="removeDocument(workspace, document)"></i>
+        </a>
+    </div>
+</div>

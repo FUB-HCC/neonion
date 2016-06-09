@@ -1,0 +1,10 @@
+<div ng-controller="AnnotationOccurrenceListCtrl" ng-cloak>
+    <div class="list-group gap-top">
+        <a class="list-group-item" ng-href="/annotator/{{ annotation.uri }}"
+           ng-repeat="annotation in annotations | orderBy:'-created' | unique: 'uri'">
+            {{ documentTitles[annotation.uri] }}
+            <i ng-show="allowRemove" class="fa fa-trash-o pull-right"
+               ng-click="removeDocument(workspace, document)"></i>
+        </a>
+    </div>
+</div>

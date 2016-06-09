@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Annotations{% endblock %}
+{% block page_id %}Annotations{% endblock %}
+
+{% block content %}
+    <div>
+        <ng-include src="'{% static 'partials/annotation-list.html' %}'"></ng-include>
+    </div>
+{% endblock %}

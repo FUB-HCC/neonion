@@ -1,0 +1,73 @@
+<table class="table" ng-controller='GroupListCtrl'>
+    <thead>
+        <tr>
+            <td colspan="2">
+                <div class="input-group">
+                     <input class="form-control" 
+                        type="text" ng-model="form.groupName" 
+                        required ng-trim="true" />
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" 
+                            type="button"
+                            ng-click="createGroup()">Create
+                        </button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </thead>
+    <thead>
+        <tr>
+            <th>Group</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+         <tr ng-repeat="group in groups | orderBy:'name'">
+            <td class="col-md-3">{{ group.name }}</td>
+            <td class="col-md-9">
+                <select 
+                    ng-options="set.id as set.label for set in conceptSets"
+                    ng-model="group.concept_set"
+                    ng-change="updateGroup(group)">
+                </select>
+                <button class="btn btn-default" type="button"
+                        ng-click="showMembership(group)">Membership
+                </button>
+                <button class="btn btn-link" type="button"
+                        ng-click="deleteGroup(group)">Delete
+                </button>
+                <div ng-show="group.id == form.selectedGroup">
+                    <table class="table">
+                        <tr>
+                            <th>User</th>
+                            <th>Document</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div ng-repeat="user in users | orderBy:'email'">
+                                    <input id="ch_{{ group.id }}_{{ user.id }}"
+                                    type="checkbox"
+                                    style="width:auto;"
+                                    ng-click="toggleMembership(group, user)"
+                                    ng-checked="userEntitled(group, user)" />
+                                    <label>{{ user.email }}</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div ng-repeat="document in documents | orderBy:'title'">
+                                    <input id="ch_{{ group.id }}_{{ user.id }}"
+                                    type="checkbox"
+                                    style="width:auto;"
+                                    ng-click="toggleDocumentAssignment(group, document)"
+                                    ng-checked="documentEntitled(group, document)" />
+                                    <label>{{ document.title }}</label>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

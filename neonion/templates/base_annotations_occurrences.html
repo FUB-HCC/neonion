@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}All Occurrences{% endblock %}
+{% block page_id %}allOccurrences{% endblock %}
+
+{% block content %}
+    <ng-include src="'{% static 'partials/annotations/annotation-occurrence-list.html' %}'"></ng-include>
+{% endblock %}

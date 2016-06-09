@@ -1,0 +1,46 @@
+{% extends "base_accounts.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Sign Up{% endblock %}
+{% block page_id %}signup{% endblock %}
+
+{% block registration %}
+<div class="row">
+    <div class="col-md-4">
+        <form action="" method="post" class="gap-top">
+            {% csrf_token %}
+            <fieldset>
+                <p>You need to register in order to use neonion.</p>
+                <!-- {{ form.as_p }} -->
+                <div class="form-group {% if form.email.errors %}has-error{% endif %}">
+                    <label class="control-label" for="{{ form.email.auto_id }}">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}
+                        <div class="has-error"><span class="help-block">{{ error|escape }}</span></div>
+                    {% endfor %}
+                </div>
+                <div class="form-group {% if form.password.errors %}has-error{% endif %}">
+                    <label class="control-label" for="{{ form.password.auto_id }}">{{ form.password.label }}</label>
+                    {{ form.password }}
+                    {% for error in form.password.errors %}
+                        <div class="has-error"><span class="help-block">{{ error|escape }}</span></div>
+                    {% endfor %}
+                </div>
+                <div class="form-group pull-right">
+                    <button type="button" class="btn btn-link">Already a user?</button>
+                    <button class="btn btn-primary">Sign Up</button>
+                </div>
+            </fieldset>
+        </form>
+
+        {% if success %}
+            {% if show_activation_info %}
+                <div class="alert alert-info" role="alert">You have successfully registered. An administrator must approve this request before you can login.</div>
+            {% else %}
+                <div class="alert alert-info" role="alert">You have successfully registered.</div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

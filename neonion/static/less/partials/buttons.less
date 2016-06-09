@@ -1,0 +1,44 @@
+// Buttons
+//
+// We are using the same buttons as in bootstrap, look [here](http://getbootstrap.com/css/#buttons).
+// Buttons can also be styled as links.
+// We added a `btn-secondary` for grey buttons on white background used in the annotator.
+// `btn-xs` from bootstrap can also be used.
+//
+// .btn-default - Used for not primary action (e.g. cancel) on grey bg.
+// .btn-primary - Used for primary action (e.g. save).
+// .btn-secondary - Used for buttons on white background (e.g. in annotator).
+// .btn-link - Deemphasize buttons (e.g. delete).
+//
+// markup:
+// <a class="btn {$modifiers}" href="#">Button</a>
+// <a class="btn {$modifiers}" href="#">
+//   <i class="fa fa-file-text-o fa-fw"></i>
+//   button with an icon
+// </a>
+//
+//
+// Styleguide 3.7
+
+.btn-secondary {
+  .button-variant(@btn-secondary-color; @btn-secondary-bg; @btn-secondary-border);
+}
+
+// Size and Spacing
+//
+// Sometimes buttons need to be smaller, e.g in annotator.
+// And also need to have some spacing around them, so when having multiple
+// buttons below each other they dont stick together.
+//
+// .btn-xs - Extra small buttons.
+// .btn-spacing - Add some extra spacing around them.
+//
+// markup:
+// <a class="btn btn-default {$modifiers}" href="#">Button</a><br>
+// <a class="btn btn-primary {$modifiers}" href="#">Button</a><br>
+// <a class="btn btn-secondary {$modifiers}" href="#">Button</a>
+//
+// Styleguide 3.7.1
+.btn-spacing {
+  margin: @gap-h/4;
+}

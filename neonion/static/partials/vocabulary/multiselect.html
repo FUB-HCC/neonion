@@ -1,0 +1,41 @@
+<div class="row">
+    <div class="col-md-12">
+        <label>{{ literals.multiselect.assigned }}</label>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="list-group">
+            <li class="list-group-item"
+                ng-repeat="item in assignedItems | orderBy : 'label'">
+                <i class="fa fa-minus-circle pull-right" ng-click="unassignItem(item)"></i>
+                <b class="list-group-item-heading">{{ item.label }}</b>
+                <p class="list-group-item-text" ng-show="item.comment">{{ item.comment }}</p>
+            </li>
+            <li class="list-group-item" ng-hide="assignedItems.length">{{ literals.multiselect.nothingAssigned }}</li>
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <label>{{ literals.multiselect.assignable }}</label>
+    </div>
+    <div class="col-md-6">
+        <input type="text" class="form-control gap-bottom" id="label"
+               placeholder="{{ literals.multiselect.placeholder }}"
+               ng-model="form.multiselect.query" autocomplete="off">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="list-group">
+            <li class="list-group-item"
+                ng-repeat="item in assignableItems | filter:filterByQuery | orderBy : 'label'">
+                <i class="fa fa-plus-circle pull-right" ng-click="assignItem(item)"></i>
+                <b class="list-group-item-heading">{{ item.label }}</b>
+                <p class="list-group-item-text" ng-show="item.comment">{{ item.comment }}</p>
+            </li>
+            <li class="list-group-item" ng-hide="assignableItems.length">{{ literals.multiselect.nothingAssignable }}</li>
+        </ul>
+    </div>
+</div>

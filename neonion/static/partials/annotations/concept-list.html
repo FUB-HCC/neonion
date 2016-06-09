@@ -1,0 +1,38 @@
+<div ng-controller="AnnotationListCtrl" ng-cloak>
+    <div class="row">
+        <div class="col-md-12">
+            <a class="btn btn-primary pull-right" ng-click="downloadConceptsAndStatements('csv')">
+                <span class="fa fa-download fa-fw"></span>Download
+            </a>
+        </div>
+    </div>
+    <div ng-repeat="(concept, annotationByConceptType) in annotations | filterByConceptAnnotation | filter:filterConceptAnnotations | orderBy: 'oa.hasBody.classifiedAs' | groupBy: 'oa.hasBody.classifiedAs'">
+        <h4>
+            {{ (annotationByConceptType | first)['neonion']['viewer']['conceptLabel'] }}
+        </h4>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Concept Name</th>
+                <th>Details</th>
+                <th>Last Created</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="(key, annotationByConcept) in annotationByConceptType | orderBy: 'oa.hasBody.label' | groupBy: 'oa.hasBody.contextualizedAs'">
+                <td class="col-md-6">{{ (annotationByConcept | first)['oa']['hasBody']['label'] }}</td>
+                <td class="col-md-4">
+                    <a class="link" href="/annotation_occurrences#?rdf.uri={{ key | escape }}&oa.annotatedBy.email={{ user.email }}">
+                        {{ annotationByConcept.length }} Occurrences
+                    </a>
+                    in
+                    <a class="link" href="/annotation_documents#?rdf.uri={{ key | escape }}&oa.annotatedBy.email={{ user.email }}">
+                        {{ (annotationByConcept | unique : 'uri').length }} Documents
+                    </a>
+                </td>
+                <td class="col-md-2">{{ (annotationByConcept | last).created | date : "MM/dd/yyyy 'at' h:mma" }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,146 @@
+@import "vendor/annotator.less";
+
+// Colour Palette
+//
+// This section describes our used color paletts.
+// 
+// Styleguide 1.0
+@import "modules/colors.less";
+ 
+// Typography and Icons
+//
+// This section describes the fonts and icons we are using. Headline and basic
+// layout like paragraphs, basic list and so on are explained as well.
+// [Inline lists](http://getbootstrap.com/css/#inline) from bootstrap are used.
+// 
+// Styleguide 2.0
+@import "partials/font.less";
+
+// Icons
+//
+// For Icons we user [Font Awesome](https://fortawesome.github.io/Font-Awesome/)
+//  in general. For the name of icons have a look
+// at the [cheatcheet](https://fortawesome.github.io/Font-Awesome/cheatsheet/).
+// 
+// markup:
+// <ul class="list-unstyled">
+// <li><i class="fa fa-home fa-fw"></i>Home</li>
+// <li><i class="fa fa-bookmark fa-fw"></i>Annotations</li>
+// <li><i class="fa fa-upload fa-fw"></i>Import</li>
+// <li><i class="fa fa-download fa-fw"></i>Download</li>
+// <li><i class="fa fa-bookmark fa-fw"></i>Vocabulary</li>
+// <li><i class="fa fa-cog fa-fw"></i>Settings</li>
+// <li><i class="fa fa-cube fa-fw"></i>Query</li>
+// <li><i class="fa fa-users fa-fw"></i>Users, Contributers</li>
+// <li><i class="fa fa-sign-out fa-fw"></i>Logout</li>
+// <li><i class="fa fa-trash-o fa-fw"></i>Trash</li>
+// <li><i class="fa fa-user fa-fw"></i>Single User</li>
+// <li><i class="fa fa-magic fa-fw"></i>NER</li>
+// <li><i class="fa fa-pencil fa-fw"></i>Pen, Annotation Mode </li>
+// <li><i class="fa fa-arrow-circle-down fa-fw"></i>Scroll down</li>
+// <li><i class="fa fa-expand fa-fw"></i>Distraction free</li>
+// <li><i class="fa fa-caret-right fa-fw small"></i>Small arrow for Drop Down Menu</li>
+// <li><i class="fa fa-circle-o fa-fw"></i>Group (private, public, ...)</li>
+// </ul>
+// 
+// Styleguide 2.4
+@import "vendor/font-awesome.min.less";
+
+
+// Misc
+//
+// This section describes all the other stuff.
+//
+// Styleguide 4.0
+@import "custom-bootstrap.less";
+@import "modules/variables.less";
+
+// UI Elements
+//
+// This section describes UI elements like navigation, buttons, form elements
+// and so on.
+//
+// We completely use [form elements](http://getbootstrap.com/css/#forms)
+// from bootstrap.
+//
+// To define column width for `<table class="table">` use bootstrap grid classes
+// on `<td>`s.
+//
+// For **error messages** have a look at the following:
+// * http://getbootstrap.com/components/#alerts
+// * http://getbootstrap.com/css/#forms-help-text
+// * http://getbootstrap.com/css/#forms-control-validation
+// 
+// Styleguide 3.0
+@import "partials/base.less";
+@import "partials/helper.less";
+@import "partials/buttons.less";
+@import "partials/links.less";
+@import "partials/annotator.neonion.less";
+
+
+// Grid
+//
+// This section descibes the overall grid. We use the Bootstrap 12 column
+// grid. It is a **fluid** full-width layout using `.container-fluid`. Have a
+// look at the bootstrap documentation about [grid](http://getbootstrap.com/css/#grid).
+// 
+// We do not optimize for mobile yet so we are only using `col-md-x`. Columns
+// need to be placed in `.row` elements. Placing `.row`s inside columns
+// results in remove the left an rigth padding, which is sometimes not needed.
+//
+// ### Base layout
+// * `col-md-2` for left **sidebar** area
+// * `col-md-9` for **content** are (not 10 because would be touching the right end of
+// screen on small screens)
+// * `col-md-4` is used for login/register inside content area (its a 3rd)
+// * every thing else inside content area is full width
+//
+// ### Annotator layout
+// * `col-md-1` for left **sidebar** area
+// * `col-md-10` for **content** area (which gets one column offset to the left)
+// * `col-md-6` is used for the textare
+// * the annotator itself is fixed width
+//
+// Styleguide 4.2
+
+// Sticky Navigation
+//
+// For having a fixed menu on the left
+// **[bootstrap affix](http://getbootstrap.com/javascript/#affix)**
+// is used in the base layout and within the annotator.
+//
+// Styleguide 4.3
+
+// Headlines
+//
+// We use the headlines defined in Bootstrap. Usually `<h4>` is used. Also it is
+// possible to place a secondary text with `<small>`.
+// 
+// markup:
+// <h1>Headline 1</h1>
+// <h2>Headline 2</h2>
+// <h3>Headline 3</h3>
+// <h5>Headline 5</h5>
+// <br>
+// <h4>Document Title<small><i class="fa fa-circle-o fa-fw"></i>Public</small></h4>
+//
+// Styleguide 2.3
+
+
+// Body
+//
+// The base font size is **16px**.
+// 
+// markup:
+//  <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+// nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
+// diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
+// clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+//  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+// eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
+// voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
+// clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit
+// amet.</p>
+//
+// Styleguide 2.2

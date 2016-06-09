@@ -1,0 +1,37 @@
+<form ng-controller="BulkUploadCtrl">
+    <div class="row">
+        <div class="col-md-8">
+            <fieldset>
+                <legend>Bulk Import</legend>
+                <div class="form-group">
+                    <label class="control-label" for="form-index">Index</label>
+                    <input type="text" class="form-control" id="form-index" placeholder="Name of the index"
+                           ng-model="form.index" required>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="form-type">Type</label>
+                    <input type="text" class="form-control" id="form-type" placeholder="Name of the type"
+                           ng-model="form.type" required>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="form-file">Uploaded File</label>
+                    <input type="file" ngf-accept="'*.json'" id="form-file" name="file" ngf-select
+                           ng-model="file"/>
+                </div>
+                <div class="form-group">
+                    <button type="button" ng-disabled="form.upload.uploading"
+                            class="btn btn-default" ng-click="uploadFile(file)">Submit</button>
+                    <button type="button" ng-show="form.upload.uploading"
+                            class="btn btn-danger" ng-click="cancelUpload()">Cancel</button>
+                </div>
+                <div class="progress" ng-show="form.upload.uploading">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0"
+                         aria-valuemax="100" ng-style="{'width':form.upload.progress + '%' }">
+                        {{ form.upload.progress }}%
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+</form>

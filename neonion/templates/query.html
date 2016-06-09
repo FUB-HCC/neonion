@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Query{% endblock %}
+
+{% block content %}
+    <ng-include src="'{% static 'partials/analyze-query.html' %}'" ng-controller="AnalyzeQueryCtrl"></ng-include>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static 'js/sgvizler.min.js' %}"></script>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+{% endblock %}

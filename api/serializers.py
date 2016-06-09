@@ -54,7 +54,11 @@ class MembershipSerializer(serializers.ModelSerializer):
 class WorkingGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkingGroup
+<<<<<<< HEAD
+        fields = ('id', 'name', 'owner', 'members', 'documents')
+=======
         fields = ('id', 'name', 'owner', 'members', 'documents', 'concept_set')
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
         read_only_fields = ('owner', 'members')
 
 

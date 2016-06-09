@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+<<<<<<< HEAD
+from django.contrib.auth.models import BaseUserManager, Permission
+=======
 from django.contrib.auth.models import Permission
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
 from django.conf import settings
 from documents.models import Document
 from annotationsets.models import ConceptSet
@@ -8,9 +12,32 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.db import transaction
 
+<<<<<<< HEAD
+#import sys
+#sys.path.append(r'/Projects/neonion/common/logging/account')
+#from accounts import *
+
+
+class NeonionUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **kwargs):
+        user = self.model(email=email, **kwargs)
+        user.set_password(password)
+        user.save()        
+        return user
+
+    def create_superuser(self, email, password, **kwargs):
+        user = self.model(email=email, is_superuser=True, **kwargs)
+        user.set_password(password)
+        user.save()
+        return user
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+=======
 
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField('username', max_length=150, unique=True)
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
     email = models.EmailField('email address', unique=True)
     name = models.CharField('persons name', blank=True, max_length=256)
     surname = models.CharField('persons surname', blank=True, max_length=256)
@@ -21,12 +48,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     owned_documents = models.ManyToManyField(Document, blank=True, null=True)
     hidden_documents = models.ManyToManyField(Document, related_name='hidden_documents', blank=True, null=True)
 
+<<<<<<< HEAD
+    USERNAME_FIELD = 'email'
+   
+=======
     USERNAME_FIELD = 'username'
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
 
     def join_group(self, group):
         if not Membership.objects.filter(user=self, group=group).exists():
             membership = Membership.objects.create(user=self, group=group)
             membership.save()
+<<<<<<< HEAD
+             
+=======
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
 
     def unjoin_group(self, group):
         if Membership.objects.filter(user=self, group=group).exists():
@@ -39,10 +75,17 @@ class User(AbstractBaseUser, PermissionsMixin):
                 pass
 
     def join_public_group(self):
+<<<<<<< HEAD
+        # get public group
+        public_group = WorkingGroup.objects.get(pk=1)
+        self.join_group(public_group)
+        
+=======
         if WorkingGroup.objects.filter(pk=1).exists():
             # get public group
             public_group = WorkingGroup.objects.get(pk=1)
             self.join_group(public_group)
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
 
     def hide_document(self, document):
         with transaction.atomic():
@@ -67,10 +110,17 @@ class WorkingGroup(models.Model):
     comment = models.CharField('group description', max_length=500, blank=True)
     owner = models.ForeignKey(User, related_name="group_owner", null=True, unique=False)
     members = models.ManyToManyField(User, through='Membership', related_name="group_members")
+<<<<<<< HEAD
+    documents = models.ManyToManyField(Document)
+    concept_set = models.ForeignKey(ConceptSet, blank=True, null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):        
+=======
     documents = models.ManyToManyField(Document, blank=True)
     concept_set = models.ForeignKey(ConceptSet, blank=True, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
         return self.name
 
 
@@ -79,7 +129,11 @@ class Membership(models.Model):
     group = models.ForeignKey(WorkingGroup)
     date_joined = models.DateField(auto_now_add=True)
     invite_reason = models.CharField(max_length=64, blank=True)
+<<<<<<< HEAD
+    permissions = models.ManyToManyField(Permission, blank=True)    
+=======
     permissions = models.ManyToManyField(Permission, blank=True)
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
 
 
 # Signal which ensures that newly created users joins the public group automatically
@@ -87,3 +141,15 @@ class Membership(models.Model):
 def user_joins_public_group(sender, instance, created, **kwargs):
     if created:
         instance.join_public_group()
+<<<<<<< HEAD
+       
+        
+'''
+def extrafunc():
+    from common.logging.account.accounts import funk
+    funk() 
+    from common.logging.account.accounts import user_joins_public_group
+    user_joins_public_group() 
+'''
+=======
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8

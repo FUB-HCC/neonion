@@ -12,10 +12,17 @@
             {% csrf_token %}
             <fieldset>
                 <p>Please Sign In before using neonion.</p>
+<<<<<<< HEAD
+                <div class="form-group {% if form.email.errors %}has-error{% endif %}">
+                    <label class="control-label" for="{{ form.email.auto_id }}">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}
+=======
                 <div class="form-group {% if form.username.errors %}has-error{% endif %}">
                     <label class="control-label" for="{{ form.username.auto_id }}">{{ form.username.label }}</label>
                     {{ form.username }}
                     {% for error in form.username.errors %}
+>>>>>>> 1bea216863a0081c62611ce1969537c2b6a727d8
                         <div class="has-error"><span class="help-block">{{ error|escape }}</span></div>
                     {% endfor %}
                 </div>

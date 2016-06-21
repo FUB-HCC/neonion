@@ -1,10 +1,10 @@
 # neonion
 
-neonion is a user-centered, web application for the collaborative annotation of texts developed at the Human-Centered Computing group at Freie Universität Berlin.
+neonion is a user-centered, web application for the collaborative annotation of texts developed at the [Human-Centered Computing group](https://www.mi.fu-berlin.de/inf/groups/hcc/) at Freie Universität Berlin.
 
 neonion supports semantic annotations and open standards but does not presuppose any knowledge about the technologies involved. It is the perfect fit for people who want their annotations to be exchangeable between different tools and projects. Moreover, your annotations can be connected to the linked data cloud.
 
-The usage of neonion is explained in the [user's manual](http://fub-hcc.github.io/neonion/).
+You can [try a demo](https://demo.neonion.imp.fu-berlin.de) of neonion. The usage is explained in the [user's manual](http://fub-hcc.github.io/neonion/).
 
 
 ## Prerequisites

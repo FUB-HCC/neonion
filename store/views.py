@@ -16,6 +16,7 @@ from common.uri import generate_uri, generate_urn
 from common.vocab import neonion, OpenAnnotation
 from store.decorators import require_group_permission
 from documents.models import Document
+from logging.annotatorLogger import *
 
 
 es = ElasticSearch(settings.ELASTICSEARCH_URL)
@@ -129,6 +130,7 @@ class AnnotationListView(APIView):
 
             try:
                 es.index(settings.ELASTICSEARCH_INDEX, ANNOTATION_TYPE, annotation, id=annotation['id'])
+		log_annotation_created(request)
             except:
                 return HttpResponse(status=500)
             else:
@@ -168,6 +170,7 @@ class AnnotationDetailView(APIView):
             try:
                 es.index(settings.ELASTICSEARCH_INDEX, ANNOTATION_TYPE, annotation,
                          id=annotation['id'], overwrite_existing=True)
+		log_annotation_edited(request) 
             except:
                 return HttpResponse(status=500)
             else:
@@ -178,6 +181,7 @@ class AnnotationDetailView(APIView):
         """Deletes the specified annotation object"""
         try:
             es.delete(settings.ELASTICSEARCH_INDEX, ANNOTATION_TYPE, annotation_pk)
+            log_annotation_deleted(request)
         except:
             return HttpResponse(status=500)
         else:

@@ -61,6 +61,13 @@
                     <i class="fa fa-users fa-fw"></i>Users
                 </a>
             </li>
+	    
+	    {# Kibana #}
+	    
+	    {% if system.services.user_logging.enabled %}
+            <li><a href="{{ system.services.user_logging.kibana_url }}" target="_blank"><i class="fa fa-bar-chart"></i>Kibana </a>	
+	    </li>
+ 	    {% endif %}
         {% endif %}
         {# Logout #}
         <li {% if request.path == url_logout %}class="active"{% endif %}>
@@ -77,14 +84,12 @@
                 <i class="fa fa-sign-in fa-fw"></i>Sign In
             </a>
         </li>
-        {% if system.allow_registration %}
         {# Register #}
         <li {% if request.path == url_register %}class="active"{% endif %}>
             <a href="{{ url_register }}">
                 <i class="fa fa-plus-square-o fa-fw"></i>Sign Up
             </a>
         </li>
-        {% endif %}
     {% endif %}
     </ul>
 </nav>

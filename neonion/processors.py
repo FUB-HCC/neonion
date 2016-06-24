@@ -3,8 +3,11 @@ def system_settings(request):
 
     return {
         'system': {
-            'allow_registration' : 'accounts.backends.EmailAuthBackend' in settings.AUTHENTICATION_BACKENDS,
             'services': {
+		'user_logging': {
+		    'kibana_url': settings.KIBANA_URL,
+		    'enabled': settings.USER_LOGGING_ENABLED,
+		},
                 'endpoint': {
                     'enabled': settings.ENDPOINT_ENABLED,
                 }

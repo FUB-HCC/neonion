@@ -216,16 +216,10 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'logging.log',
-	    'formatter': 'simple'
-        },
     },
     'loggers': {
         'django': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'propagate': True,
 	    'level':'INFO',
         },
@@ -235,15 +229,15 @@ LOGGING = {
             'propagate': False,
         },
         'documents': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'level': 'DEBUG',
         },
         'accounts': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'level': 'DEBUG',
         },
         'store': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'level': 'DEBUG',
         }
     }

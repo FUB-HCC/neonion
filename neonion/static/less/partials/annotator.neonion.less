@@ -5,9 +5,9 @@
 // sometimes have to set "font-family: 'FontAwesome'" again
 // dont no how to do it differently
 .annotator-notice *,
-.annotator-adder *, 
+.annotator-adder *,
 .annotator-filter *,
-.annotator-widget *{
+.annotator-widget * {
   &:extend(.annotator-basefontsize);
   &:extend(.annotator-font);
   color: @ship-gray;
@@ -18,7 +18,7 @@
   display: none;
 }
 
-// Kommentarfeld
+// Comment field
 #annotator-field-0 {
   &:extend(.annotator-basefontsize);
   background: @white;
@@ -56,11 +56,17 @@
     &:hover {
       background-color: @tangerine;
       color: @white;
-      span, i { color: @gallery; }
+      span, i {
+        color: @gallery;
+      }
     }
-    span { font-size: 14px; }
+    span {
+      font-size: 14px;
+    }
 
-    i:hover {color: @black;}
+    i:hover {
+      color: @black;
+    }
 
     &.unknown {
       background-image: url("img/unknown.png");
@@ -80,7 +86,12 @@
 .annotator-adder {
   width: auto;
   height: auto;
-  button { white-space: nowrap; }
+  background-image: url(img/annotator-icon-sprite.png);
+  background-repeat: no-repeat;
+
+  button {
+    white-space: nowrap;
+  }
 }
 
 /* Annotator Outer
@@ -187,7 +198,9 @@
     text-shadow: none;
   }
 
-  i { font-family: 'FontAwesome' !important; }
+  i {
+    font-family: 'FontAwesome' !important;
+  }
 }
 
 .annotator-viewer {
@@ -202,12 +215,14 @@
   .annotator-widget {
     border: 0px;
     border-radius: 0px;
+    min-width: 300px;
 
     .annotator-controls {
       right: 5px;
       padding: @lh/2 @gap-h @lh/2 0;
       position: absolute;
       margin: 0px;
+      background-color: @white;
 
       button {
         padding: 0 0 0 0;
@@ -224,9 +239,10 @@
     border-bottom: 1px solid @silver;
     font-style: normal;
     padding: @lh/2 @gap-h;
-    padding-right: 50px; // because controls cover text otherwise
     &:extend(.annotator-basefontsize);
-    &:last-child { border-bottom: none; }
+    &:last-child {
+      border-bottom: none;
+    }
   }
 }
 
@@ -239,29 +255,195 @@
   z-index: -100;
 }
 
-.annotator-relation-line {
+@keyframes fade-in {
+  from {
+    //stroke-opacity: 0.0;
+  }
+  to {
+    stroke-opacity: 1.0;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    stroke-opacity: 1.0;
+  }
+  to {
+    stroke-opacity: 0.0;
+  }
+}
+
+@keyframes fade-out-half {
+  from {
+    stroke-opacity: 1.0;
+  }
+  to {
+    stroke-opacity: 0.3;
+  }
+}
+
+@keyframes fade-in-half {
+  from {
+    stroke-opacity: 0.3;
+  }
+  to {
+    stroke-opacity: 1.0;
+  }
+}
+
+.annotator-relation-overlay {
   pointer-events: none;
-  position: absolute;
-  z-index: 100;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+
+  .annotator-relation-runner {
+    pointer-events: visiblePainted;
+  }
+
+  .annotator-relation-line {
+    pointer-events: none;
+    fill: none;
+    stroke: @ship-gray;
+    stroke-width: 2;
+    stroke-linecap: butt;
+    stroke-linejoin: round;
+
+    &.existing {
+      stroke: @tangerine;
+    }
+
+    &.fadeIn {
+      -webkit-animation: fade-in-half 0.2s ease forwards;
+      -moz-animation: fade-in-half 0.2s ease forwards;
+      animation: fade-in-half 0.2s ease forwards;
+    }
+
+    &.fadeOut {
+      -webkit-animation: fade-out-half 0.2s ease forwards;
+      -moz-animation: fade-out-half 0.2s ease forwards;
+      animation: fade-out-half 0.2s ease forwards;
+    }
+
+    &.hideLine {
+      -webkit-animation: fade-out 0.4s ease forwards;
+      -moz-animation: fade-out 0.4s ease forwards;
+      animation: fade-out 0.4s ease forwards;
+    }
+  }
+
+  .annotator-relation-caption {
+    color: @ship-gray;
+    text-anchor: end;
+    alignment-baseline: after-edge;
+  }
 }
 
-.annotator-svg-relation {
-  fill: none;
-  stroke: @manatee;
-  stroke-width: 1
-}
-
-.annotator-relation-line.fade {
-  opacity: 0;
-  -webkit-transition: opacity 0.5s ease-in;
-  -moz-transition: opacity 0.5s ease-in;
-  -ms-transition: opacity 0.5s ease-in;
-  -o-transition: opacity 0.5s ease-in;
-  transition: opacity 0.5s ease-in;
-}
-
-.annotator-relation-line.fade.in {
+.annotator-hl {
   opacity: 1;
+
+  &.annotator-relation-outline {
+    outline: 2px solid @ship-gray;
+  }
+
+  &.fade {
+    opacity: 0.3;
+    -webkit-transition: opacity 0.2s ease;
+    -moz-transition: opacity 0.2s ease;
+    transition: opacity 0.2s ease;
+  }
+
+}
+
+.annotator-viewer-relation {
+  overflow-y: auto;
+  max-height: 200px;
+
+  button {
+    width: 100%;
+    border: none;
+    white-space: nowrap;
+
+    &:before {
+      vertical-align: middle;
+      margin-right: 3px;
+      content: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' width='12px' height='12px' viewBox='0 0 24 24' xml:space='preserve'></svg>");
+    }
+
+    &:hover:before {
+      content: url(img/annotator/relation_remove_black.svg);
+    }
+
+  }
+}
+
+.annotator-relation-menu {
+  .annotator-adder;
+
+  position: fixed;
+
+  hr {
+    margin: 0px;
+    height: 1px;
+    background-color: @manatee;
+  }
+
+  button {
+    width: 100%;
+    height: 40px;
+
+    &:before {
+      vertical-align: middle;
+      margin-right: 3px;
+      content: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' width='12px' height='12px' viewBox='0 0 24 24' xml:space='preserve'></svg>");
+    }
+
+    &:hover:before {
+      content: url(img/annotator/relation_checkmark_white.svg);
+    }
+
+    &.exist:before {
+      content: url(img/annotator/relation_checkmark_black.svg);
+    }
+
+    &.exist:hover:before {
+      content: url(img/annotator/relation_remove_white.svg);
+    }
+  }
+
+  .annotator-creator {
+    &:extend(.annotator-basefontsize);
+    &:extend(.annotator-font);
+    color: @ship-gray;
+    background-color: @white;
+    padding: 11px 12px 11px 12px;
+  }
+}
+
+.annotator-viewer-relation,
+.annotator-relation-menu {
+
+  .subject, .predicate, .object {
+    color: @black;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 2px;
+    margin-right: 2px;
+  }
+
+  .predicate {
+    font-weight: bold;
+  }
+
+  .subject, .object {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
 }
 
 .annotator-listing {
@@ -276,28 +458,7 @@
   }
 }
 
-// Modalbox for choosing linked annotation item
-dialog {
-  border: 1px solid @silver;
-  padding: 0px;
-  &:extend(.shadow);
-  h5 { white-space: nowrap; }
-
-  section {
-    padding: 10px;
-
-    .btn-group-vertical {
-      width: 100%;
-    }
-  }
-}
-
 // Override Path for images form annotator
-
-.annotator-adder {
-  background-image: url(img/annotator-icon-sprite.png);
-  background-repeat: no-repeat;
-}
 
 .annotator-resize,
 .annotator-widget::after,
@@ -328,4 +489,5 @@ dialog {
 .annotator-hl-filtered.annotator-hl-concept {
   background-color: transparent;
 }
+
 // styleguide:ignore:end

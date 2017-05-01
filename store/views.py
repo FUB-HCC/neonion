@@ -45,14 +45,12 @@ def get_filter_query(parameters):
 
     return {
         "query": {
-            "match_all": {}
-        },
-        'filter': {
-            'bool': {
-                'must': query_params
+          "bool": {
+            "must": {"match_all": {}},
+            "filter": query_params
             }
+          }
         }
-    }
 
 
 class AnnotationListView(APIView):
@@ -170,7 +168,7 @@ class AnnotationDetailView(APIView):
             try:
                 es.index(settings.ELASTICSEARCH_INDEX, ANNOTATION_TYPE, annotation,
                          id=annotation['id'], overwrite_existing=True)
-		log_annotation_edited(request) 
+		log_annotation_edited(request)
             except:
                 return HttpResponse(status=500)
             else:

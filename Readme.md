@@ -13,7 +13,7 @@ For neonion you need Python with Django installed.
 In addition, a set of tools and services is needed:
 
 * [Python](https://www.python.org) (Python 2 >=2.7) with `pip` and `virtualenv`
-* [ElasticSearch](https://www.elastic.co) (<=2.x)
+* [ElasticSearch](https://www.elastic.co) (>=5.x)
 * **Optional** 
   * [Sesame](http://rdf4j.org) (>=2.7)
 

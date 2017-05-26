@@ -41,10 +41,19 @@ neonionApp.controller('MetaDataCtrl', ['$scope',
 
     metaData.forEach(function (entry) {
         $scope.metaDataValues[entry] = {};
-        $scope.metaDataValues[entry].value = "";
+        $scope.metaDataValues[entry].value = formVar[entry];
         $scope.metaDataValues[entry].checked = false;
         $scope.metaDataValues[entry].definition = definitions[entry];
     });
+
+    //Check fields for valid inputs
+    //$scope.submit = function() {
+    //    alter("HELLO")
+    //    primaryMetaData.foreach(function(entry) {
+    //        if($scope.metaDataValues[entry].value=="")
+    //            alert("Mandatory fields empty")
+    //    });
+    //}
 
     $scope.fileLoad = function ($files) {
         /* TODO */

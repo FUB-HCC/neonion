@@ -6,6 +6,51 @@
 {% block page_id %}import{% endblock %}
 
 {% block content %}
+
+{% if form %}
+<script>
+var formVar = {}
+formVar.title = "{{ form.title }}"
+formVar.creator = "{{ form.creator }}"
+formVar.type = "{{ form.type }}"
+formVar.contributor = "{{form.contributor}}"
+formVar.coverage = "{{ form.coverage }}"
+formVar.date = "{{ form.date }}"
+formVar.description = "{{ form.description }}"
+formVar.format = "{{ form.format }}"
+formVar.identifier = "{{ form.identifier }}"
+formVar.language = "{{ form.language }}"
+formVar.publisher = "{{ form.publisher }}"
+formVar.relation = "{{ form.relation }}"
+formVar.rights = "{{ form.rights }}"
+formVar.source = "{{ form.source }}"
+formVar.subject = "{{ form.subject }}"
+</script>
+{% else %}
+<script>
+var formVar = {}
+formVar.title = ""
+formVar.creator = ""
+formVar.type = ""
+formVar.contributor = ""
+formVar.coverage = ""
+formVar.date = ""
+formVar.description = ""
+formVar.format = ""
+formVar.identifier = ""
+formVar.language = ""
+formVar.publisher = ""
+formVar.relation = ""
+formVar.rights = ""
+formVar.source = ""
+formVar.subject = ""
+</script>
+{% endif %}
+<ul>
+{% for error in errors %}
+    <li>{{error}}</li>
+{% endfor %}
+</ul>
     <form method="post" action="{% url 'documents.views.upload_file' %}" class="gap-top" enctype="multipart/form-data">
         <fieldset>
             {% csrf_token %}
@@ -13,7 +58,7 @@
             <div class="form-group">
                 <label for="exampleInputFile">File input</label>
                 <input id="file-upload" name="file-upload"
-                       type="file" change="fileLoad($files)">
+                       type="file" onchange="searchMetaData();fileLoad($files)">
             </div>
             <div id="import-metadata">
                 <ng-include src="'{% static 'partials/import-meta-data.html' %}'"></ng-include>

@@ -20,6 +20,13 @@ class DocumentViewSet(viewsets.ModelViewSet):
         else:
             return DocumentSerializer
 
+    @detail_route(methods=['post'])
+    def modify_document(self, request, pk, format=None):
+        if Document.objects.filter(id=request.data[pk]).exists():
+            document = Document.objects.get(pk)
+            document.save()
+        return Response(status=status.HTTP_200_OK)
+
 
 # ViewSets for properties.
 class PropertyViewSet(viewsets.ModelViewSet):

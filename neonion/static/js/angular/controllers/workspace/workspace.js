@@ -6,6 +6,7 @@ neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'UserService', 'Works
         "use strict";
 
         $scope.allowRemove = false;
+        $scope.allowModify = false;
         $scope.allowImport = false;
         $scope.showWorkspaceName = false;
 
@@ -17,6 +18,7 @@ neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'UserService', 'Works
 
         $scope.initPrivateWorkspace = function () {
             $scope.allowRemove = true;
+            $scope.allowModify = true;
             $scope.allowImport = true;
             return $scope.getCurrentUser().then(function () {
                 $scope.workspaces = [{id: $scope.user.email, name: 'Private', documents: $scope.user.owned_documents}];
@@ -49,8 +51,21 @@ neonionApp.controller('WorkspaceCtrl', ['$scope', '$http', 'UserService', 'Works
                 });
         };
 
-        $scope.removeDocument = function (workspace, document) {
+        //Stub to modify document
+        $scope.modifyDocument = function ($event, workspace, document) {
+            $event.preventDefault();
+            if (workspace.id == $scope.user.email) {
+                location.href = "/modify/" + document.id;
+                WorkspaceService.modifyDocument($scope.user, document.id).then(function (result) {
+                    var idx = workspace.documents.indexOf(document);
+                    workspace.documents.splice(idx, 1);
+                });
+            }
+        }
+
+        $scope.removeDocument = function ($event, workspace, document) {
             // allow remove on private workspace
+            $event.preventDefault();
             if (workspace.id == $scope.user.email) {
                 WorkspaceService.removeDocument($scope.user, document.id).then(function (result) {
                     var idx = workspace.documents.indexOf(document);

@@ -45,6 +45,51 @@ formVar.rights = ""
 formVar.source = ""
 formVar.subject = ""
 </script>
+<script type="text/javascript" src="/static/js/pdf.worker.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/js/pdf.js" charset="utf-8"></script>
+<script>
+function searchMetaData()
+{
+    PDFJS.workerSrc = '/static/js/pdf/pdf.worker.js';
+    file = document.getElementById("file-upload").files[0];
+    reader = new FileReader();
+    reader.onloadend = function()
+    {
+        data = new Uint8Array(this.result)
+        PDFJS.getDocument(data).then(function(pdf_)
+        {
+            pdf = pdf_
+            pdf.getMetadata().then(function(mt)
+            {
+                title = mt.info.Title
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("GET", "/documents/search_metadata/"+escape(title), true);
+                xhttp.setRequestHeader("Content-type", "application/json");
+                xhttp.onload = function(response)
+                {
+                    var mt_data = JSON.parse(xhttp.responseText);
+                    document.getElementById("meta-0").value = title;
+                    document.getElementById("meta-1").value = mt_data.author[0].family
+                    document.getElementById("meta-2").value = mt_data.type;
+                    document.getElementById("meta-3").value = mt_data.author.slice(1).reduce(function(acc,val){return acc+val.family+";"},"").slice(0,-1);
+                    document.getElementById("meta-5").value = mt_data['published-print']['date-parts'][0][1]+"."+mt_data['published-print']['date-parts'][0][0];
+                    document.getElementById("meta-7").value = "PDF";
+                    document.getElementById("meta-8").value = mt_data.DOI;
+                    document.getElementById("meta-10").value = mt_data.publisher;
+                    document.getElementById("meta-14").value = mt_data.subject.join(";");
+                    console.info(mt_data)
+                }
+                xhttp.onerror = function(error)
+                {
+                    console.info("ERROR")
+                }
+                xhttp.send(null)
+            })
+        })
+    }
+    reader.readAsArrayBuffer(file)
+}
+</script>
 {% endif %}
 <ul>
 {% for error in errors %}

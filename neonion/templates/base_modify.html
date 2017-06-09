@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Modify Document Meta Data{% endblock %}
+{% block page_id %}Modify Document Meta Data{% endblock %}
+
+{% block content %}
+
+<script>
+formVar = {}
+formVar.title = "{{doc.title}}"
+formVar.creator = "{{doc.creator}}"
+formVar.type = "{{doc.type}}"
+formVar.contributor = "{{doc.contributor}}"
+formVar.coverage = "{{doc.coverage}}"
+formVar.date = "{{doc.date}}"
+formVar.description = "{{doc.description}}"
+formVar.format = "{{doc.format}}"
+formVar.identifier = "{{doc.identifier}}"
+formVar.language = "{{doc.language}}"
+formVar.publisher = "{{doc.publisher}}"
+formVar.relation = "{{doc.relation}}"
+formVar.rights = "{{doc.rights}}"
+formVar.source = "{{doc.source}}"
+formVar.subject = "{{doc.subject}}"
+</script>
+<ul>
+{% for error in errors %}
+    <li>{{error}}</li>
+{% endfor %}
+</ul>
+    <form method="post" action="{% url 'documents.views.modify_document' doc_id %}" class="gap-top" enctype="multipart/form-data">
+        <fieldset>
+            {% csrf_token %}
+            <input class="btn btn-primary pull-right" type="submit"/>
+            <div id="import-metadata">
+                <ng-include src="'{% static 'partials/import-meta-data.html' %}'"></ng-include>
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}

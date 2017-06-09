@@ -7,10 +7,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.utils.html import escape
-import urllib
-import httplib
-import json
-
+import requests
 
 @login_required
 @require_POST
@@ -87,6 +84,12 @@ def modify_document(request,document_pk):
         return render_to_response('base_modify.html',{'form' : document_properties,'errors' : errors})
 
     return redirect('/')
+
+@require_GET
+def search_metadata(request, title):
+    result = requests.get('http://api.crossref.org/works?query.title='+title).json()
+    document = result['message']['items'][0]
+    return JsonResponse(document)
 
 @login_required
 @require_GET

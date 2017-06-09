@@ -67,3 +67,10 @@ def render_workbench(request):
 def import_document(request):
     return render_to_response('base_import.html', context_instance=RequestContext(request))
 
+@login_required
+def modify_document(request,document_pk):
+    if Document.objects.filter(id=document_pk).exists():
+        document = Document.objects.get(id=document_pk)
+        return render_to_response('base_modify.html', context_instance=RequestContext(request, {"doc_id" : document_pk,"doc" : document}))
+    return render_to_response("/",context_instance=RequestContext(request))
+

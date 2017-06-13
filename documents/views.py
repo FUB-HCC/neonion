@@ -7,7 +7,6 @@ from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.utils.html import escape
-from django.conf import settings
 import requests
 from logging.signals import log_document_metadata_request_error
 

@@ -20,3 +20,7 @@ def document_created(sender, instance, created, **kwargs):
                 log.info('document_created=_%s'%(title))
             except Exception as e:
                 print(e.message)
+
+def log_document_metadata_request_error(error):
+    #if settings.USER_LOGGING_ENABLED:
+        log.error(error)

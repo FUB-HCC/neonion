@@ -8,6 +8,8 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.utils.html import escape
 import requests
+from logging.signals import log_document_metadata_request_error
+
 
 @login_required
 @require_POST
@@ -87,9 +89,17 @@ def modify_document(request,document_pk):
 
 @require_GET
 def search_metadata(request, title):
-    result = requests.get('http://api.crossref.org/works?query.title='+title).json()
-    document = result['message']['items'][0]
-    return JsonResponse(document)
+    try:
+        result = requests.get('http://api.crossref.org/works?query.title='+title,timeout=10).json()
+        document = result['message']['items'][0]
+        return JsonResponse(document)
+    except requests.Timeout as e:
+        #Logging
+        log_document_metadata_request_error('TIMEOUT: Failed to request metadata from api.crossref.org')
+        return JsonResponse({"error":"Timeout"})
+    except requests.ConnectionError as e:	
+        log_document_metadata_request_error('CONERROR: Failed to connect to api.crossref.org')
+        return JsonResponse({"error":"Connection Error"})
 
 @login_required
 @require_GET

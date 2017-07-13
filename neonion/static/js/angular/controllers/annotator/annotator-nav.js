@@ -2,12 +2,13 @@
  * AnnotatorMenu controller
  */
 neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$cookies',
-    'cookieKeys', 'systemSettings', 'AnnotatorService',
-    function ($scope, $window, $location, $cookies, cookieKeys, systemSettings, AnnotatorService) {
+    'cookieKeys', 'systemSettings', 'AnnotatorService', 'ConceptSetService',
+    function ($scope, $window, $location, $cookies, cookieKeys, systemSettings, AnnotatorService, ConceptSetService) {
         "use strict";
 
         $scope.systemSettings = systemSettings;
         $scope.annotatorService = AnnotatorService;
+        $scope.conceptSetService = ConceptSetService;
         $scope.mode = {
             commenting: {
                 shortCut: "A",

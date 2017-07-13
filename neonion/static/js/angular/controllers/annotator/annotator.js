@@ -33,7 +33,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
         $scope.getConceptSet = function () {
             var conceptSetId = $scope.group ? $scope.group.concept_set : 'default';
 
-            return ConceptSetService.getDeep({id: conceptSetId}, 
+            return ConceptSetService.resource.getDeep({id: conceptSetId},
                 function (conceptSet) {
                     $scope.conceptSet = conceptSet
                 }).$promise;                

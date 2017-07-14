@@ -14,7 +14,7 @@ neonionApp.controller('ConceptSetListCtrl', ['$scope', '$sce', 'CommonService', 
             };
 
             $scope.queryConceptSets = function () {
-                return ConceptSetService.resource.query(function (data) {
+                return ConceptSetService.query(function (data) {
                     $scope.resources = data;
                 }).$promise;
             };

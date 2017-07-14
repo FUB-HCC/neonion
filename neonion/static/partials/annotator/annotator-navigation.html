@@ -59,6 +59,8 @@
             </ul>
         </li>
 
+
+
         <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 <i class="fa fa-weixin" aria-hidden="true"></i>
@@ -66,10 +68,10 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-side">
                 <li class="dropdown-header">Select Concept Set</li>
-                <li class="dropdown-item" ng-repeat="conceptSet in conceptSets">
+                <li class="dropdown-item" ng-repeat="conceptSet in conceptSets" ng-click="switchConceptSet(conceptSet.id)">
                     <a>
-                        <i class="fa fa-fw" ng-class="{'fa-eye': conceptSet.selectConceptSet}"></i>
-                        <span>{{ conceptSet.label}}</span>
+                        <i class="fa fa-check fa-fw" ng-class="{invisible: document.concept_set !== conceptSet.id || !document.concept_set}"/>
+                        <span>{{ conceptSet.label}}</span><small>{{ conceptSet.comment }}</small>
                     </a>
                 </li>
             </ul>

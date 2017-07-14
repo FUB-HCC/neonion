@@ -3,9 +3,9 @@
 /**
  * Annotator controller
  */
-neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce', 'cookieKeys',
+neonionApp.controller('AnnotatorCtrl', ['$scope', '$rootScope', '$cookies', '$location', '$sce', 'cookieKeys',
     'UserService', 'AnnotatorService', 'DocumentService', 'GroupService', 'ConceptSetService',
-    function ($scope, $cookies, $location, $sce, cookieKeys, UserService, AnnotatorService, 
+    function ($scope, $rootScope, $cookies, $location, $sce, cookieKeys, UserService, AnnotatorService,
             DocumentService, GroupService, ConceptSetService) {
         "use strict";
 
@@ -13,6 +13,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
             if ($scope.hasOwnProperty("documentId")) {
                 return DocumentService.get({id: $scope.documentId}, function (document) {
                     $scope.document = document;
+                    $rootScope.document = document;
                 }).$promise;
             }
             return Promise.resolve(true);
@@ -31,7 +32,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
         };
 
         $scope.getConceptSet = function () {
-            var conceptSetId = $scope.group ? $scope.group.concept_set : 'default';
+            var conceptSetId = $scope.document ? $scope.document.concept_set : 'default';
 
             return ConceptSetService.getDeep({id: conceptSetId},
                 function (conceptSet) {
@@ -59,6 +60,7 @@ neonionApp.controller('AnnotatorCtrl', ['$scope', '$cookies', '$location', '$sce
                 };
             }).$promise
                 .then(function () {
+                    $rootScope.documentId = $scope.documentId;
                     angular.element("#document-body").annotator()
                         // add store plugin
                         .annotator('addPlugin', 'Store', {

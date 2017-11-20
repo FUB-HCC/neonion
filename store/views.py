@@ -4,7 +4,7 @@ import uuid
 
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
-from pyelasticsearch import ElasticSearch, exceptions
+from elasticsearch import Elasticsearch, exceptions
 from rest_framework import permissions, generics
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
@@ -19,7 +19,7 @@ from documents.models import Document
 from logging.annotatorLogger import *
 
 
-es = ElasticSearch(settings.ELASTICSEARCH_URL)
+es = Elasticsearch(settings.ELASTICSEARCH_URL)
 ANNOTATION_TYPE = 'annotation'
 PAGE_SIZE = 1000
 
@@ -127,8 +127,8 @@ class AnnotationListView(APIView):
                     pass
 
             try:
-                es.index(settings.ELASTICSEARCH_INDEX, ANNOTATION_TYPE, annotation, id=annotation['id'])
-		log_annotation_created(request)
+                es.index(index=settings.ELASTICSEARCH_INDEX, doc_type=ANNOTATION_TYPE, body=annotation, id=annotation['id'])
+                log_annotation_created(request)
             except:
                 return HttpResponse(status=500)
             else:
@@ -144,7 +144,7 @@ class AnnotationDetailView(APIView):
     def get(self, request, group_pk, document_pk, annotation_pk, format=None):
         """Returns the specified annotation object"""
         try:
-            annotation = es.get(settings.ELASTICSEARCH_INDEX, ANNOTATION_TYPE, annotation_pk)
+            annotation = es.get(index=settings.ELASTICSEARCH_INDEX, doc_type=ANNOTATION_TYPE, id=annotation_pk)
         except:
             return HttpResponse(status=500)
         else:
@@ -166,9 +166,9 @@ class AnnotationDetailView(APIView):
             annotation['updated'] = datetime.datetime.now().isoformat()
 
             try:
-                es.index(settings.ELASTICSEARCH_INDEX, ANNOTATION_TYPE, annotation,
-                         id=annotation['id'], overwrite_existing=True)
-		log_annotation_edited(request)
+                es.index(index=settings.ELASTICSEARCH_INDEX, doc_type=ANNOTATION_TYPE, body=annotation,
+                         id=annotation['id'], overwrite_existing=True) # overwrite?
+                log_annotation_edited(request)
             except:
                 return HttpResponse(status=500)
             else:
@@ -178,7 +178,7 @@ class AnnotationDetailView(APIView):
     def delete(self, request, group_pk, document_pk, annotation_pk, format=None):
         """Deletes the specified annotation object"""
         try:
-            es.delete(settings.ELASTICSEARCH_INDEX, ANNOTATION_TYPE, annotation_pk)
+            es.delete(index=settings.ELASTICSEARCH_INDEX, doc_type=ANNOTATION_TYPE, id=annotation_pk)
             log_annotation_deleted(request)
         except:
             return HttpResponse(status=500)
@@ -198,8 +198,8 @@ class SearchView(generics.GenericAPIView):
 
         try:
             query = get_filter_query(params)
-            response = es.search(query, index=settings.ELASTICSEARCH_INDEX,
-                                 doc_type=ANNOTATION_TYPE, es_from=offset, size=size)
+            response = es.search(body=query, index=settings.ELASTICSEARCH_INDEX,
+                                 doc_type=ANNOTATION_TYPE, from_=offset, size=size)
         except exceptions.ElasticHttpNotFoundError:
             return JsonResponse(empty_result())
         except:
@@ -221,8 +221,8 @@ def search(request, format=None):
 
     try:
         query = get_filter_query(params)
-        response = es.search(query, index=settings.ELASTICSEARCH_INDEX,
-                             doc_type=ANNOTATION_TYPE, es_from=offset, size=size)
+        response = es.search(body=query, index=settings.ELASTICSEARCH_INDEX,
+                             doc_type=ANNOTATION_TYPE, from_=offset, size=size)
     except exceptions.ElasticHttpNotFoundError:
         return JsonResponse(empty_result())
     except:

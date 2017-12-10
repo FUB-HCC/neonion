@@ -19,6 +19,9 @@ class File(models.Model):
     origin_url = models.CharField('origin_url', max_length=500, null=True)
     raw_data = models.BinaryField()
 
+    class Meta:
+        app_label = "documents"
+
 
 class DocumentManager(models.Manager):
 
@@ -87,6 +90,9 @@ class Document(ResourceMixin, models.Model):
 
     def __unicode__(self):
         return self.id
+
+    class Meta:
+        app_label = "documents"
 
 
 # Signal which ensures that metadata gets saved automatically after newly created document

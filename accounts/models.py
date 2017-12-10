@@ -23,6 +23,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'username'
 
+
+    class Meta:
+        app_label = "accounts"
+
+
     def join_group(self, group):
         if not Membership.objects.filter(user=self, group=group).exists():
             membership = Membership.objects.create(user=self, group=group)
@@ -70,6 +75,9 @@ class WorkingGroup(models.Model):
     documents = models.ManyToManyField(Document, blank=True)
     concept_set = models.ForeignKey(ConceptSet, blank=True, null=True, on_delete=models.SET_NULL)
 
+    class Meta:
+        app_label = "accounts"
+
     def __str__(self):
         return self.name
 
@@ -80,6 +88,9 @@ class Membership(models.Model):
     date_joined = models.DateField(auto_now_add=True)
     invite_reason = models.CharField(max_length=64, blank=True)
     permissions = models.ManyToManyField(Permission, blank=True)
+
+    class Meta:
+        app_label = "accounts"
 
 
 # Signal which ensures that newly created users joins the public group automatically

@@ -9,6 +9,9 @@ class LinkedProperty(ResourceMixin, models.Model):
 
     class_uri = neonion.LINKED_PROPERTY
 
+    class Meta:
+        app_label = "annotationsets"
+
 
 class Property(ResourceMixin, models.Model):
     range = models.ManyToManyField("Concept", blank=True)
@@ -18,6 +21,10 @@ class Property(ResourceMixin, models.Model):
     linked_properties = models.ManyToManyField("LinkedProperty", blank=True)
 
     class_uri = neonion.PROPERTY
+
+    class Meta:
+        app_label = "annotationsets"
+
 
 
 class LinkedConcept(ResourceMixin, models.Model):
@@ -31,6 +38,10 @@ class LinkedConcept(ResourceMixin, models.Model):
 
     class_uri = neonion.LINKED_CONCEPT
 
+    class Meta:
+        app_label = "annotationsets"
+
+
 
 class Concept(ResourceMixin, models.Model):
     # list of resource provider to external knowledge
@@ -39,9 +50,18 @@ class Concept(ResourceMixin, models.Model):
 
     class_uri = neonion.CONCEPT
 
+    class Meta:
+        app_label = "annotationsets"
+
+
 
 class ConceptSet(ResourceMixin, models.Model):
     # list of concepts associated with set
     concepts = models.ManyToManyField("Concept", blank=True)
 
     class_uri = neonion.CONCEPT_SET
+
+    class Meta:
+        app_label = "annotationsets"
+
+

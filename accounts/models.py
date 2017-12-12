@@ -18,10 +18,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=settings.DEFAULT_USER_ACTIVE_STATE)
     is_staff = models.BooleanField(default=False)
 
-    owned_documents = models.ManyToManyField(Document, blank=True, null=True)
-    hidden_documents = models.ManyToManyField(Document, related_name='hidden_documents', blank=True, null=True)
+    owned_documents = models.ManyToManyField(Document, blank=True)
+    hidden_documents = models.ManyToManyField(Document, related_name='hidden_documents', blank=True)
 
     USERNAME_FIELD = 'username'
+
+
+    class Meta:
+        app_label = "accounts"
+
 
     def join_group(self, group):
         if not Membership.objects.filter(user=self, group=group).exists():
@@ -70,6 +75,9 @@ class WorkingGroup(models.Model):
     documents = models.ManyToManyField(Document, blank=True)
     concept_set = models.ForeignKey(ConceptSet, blank=True, null=True, on_delete=models.SET_NULL)
 
+    class Meta:
+        app_label = "accounts"
+
     def __str__(self):
         return self.name
 
@@ -80,6 +88,9 @@ class Membership(models.Model):
     date_joined = models.DateField(auto_now_add=True)
     invite_reason = models.CharField(max_length=64, blank=True)
     permissions = models.ManyToManyField(Permission, blank=True)
+
+    class Meta:
+        app_label = "accounts"
 
 
 # Signal which ensures that newly created users joins the public group automatically

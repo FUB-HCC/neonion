@@ -9,15 +9,22 @@ class LinkedProperty(ResourceMixin, models.Model):
 
     class_uri = neonion.LINKED_PROPERTY
 
+    class Meta:
+        app_label = "annotationsets"
+
 
 class Property(ResourceMixin, models.Model):
-    range = models.ManyToManyField("Concept", null=True, blank=True)
+    range = models.ManyToManyField("Concept", blank=True)
     # inverse property is the property to the inverse direction
     inverse_property = models.ForeignKey('self', blank=True, null=True, on_delete=models.SET_NULL)
     # list of linked properties
-    linked_properties = models.ManyToManyField("LinkedProperty", null=True, blank=True)
+    linked_properties = models.ManyToManyField("LinkedProperty", blank=True)
 
     class_uri = neonion.PROPERTY
+
+    class Meta:
+        app_label = "annotationsets"
+
 
 
 class LinkedConcept(ResourceMixin, models.Model):
@@ -31,17 +38,30 @@ class LinkedConcept(ResourceMixin, models.Model):
 
     class_uri = neonion.LINKED_CONCEPT
 
+    class Meta:
+        app_label = "annotationsets"
+
+
 
 class Concept(ResourceMixin, models.Model):
     # list of resource provider to external knowledge
-    linked_concepts = models.ManyToManyField("LinkedConcept", null=True, blank=True)
-    properties = models.ManyToManyField("Property", null=True, blank=True)
+    linked_concepts = models.ManyToManyField("LinkedConcept", blank=True)
+    properties = models.ManyToManyField("Property", blank=True)
 
     class_uri = neonion.CONCEPT
+
+    class Meta:
+        app_label = "annotationsets"
+
 
 
 class ConceptSet(ResourceMixin, models.Model):
     # list of concepts associated with set
-    concepts = models.ManyToManyField("Concept", null=True, blank=True)
+    concepts = models.ManyToManyField("Concept", blank=True)
 
     class_uri = neonion.CONCEPT_SET
+
+    class Meta:
+        app_label = "annotationsets"
+
+

@@ -34,7 +34,7 @@ Setup neonion and startup the server:
 ```
 source pyenv/bin/activate
 cd neonion
-curl -XPUT 'http://127.0.0.1:9200/neonion/' -d @mapping.json
+curl -XPUT -H'Content-Type: application/json' 'http://127.0.0.1:9200/neonion/' -d @mapping.json
 python manage.py migrate
 python manage.py loaddata fixtures/*
 python manage.py runserver

@@ -5,8 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
-from pyelasticsearch import ElasticSearch, bulk_chunks
-from pyelasticsearch.exceptions import IndexAlreadyExistsError, BulkError, ElasticHttpError, ElasticHttpNotFoundError
+from elasticsearch import Elasticsearch, TransportError, helpers
+from elasticsearch.helpers import BulkIndexError
 
 from common.knowledge.provider import Provider
 
@@ -22,33 +22,33 @@ def entity_bulk_import(request, index, type):
 
     data = json.loads(json_data)
 
-    es = ElasticSearch(settings.ELASTICSEARCH_URL)
+    es = Elasticsearch(settings.ELASTICSEARCH_URL)
     try:
-        es.create_index(index)
-    except IndexAlreadyExistsError:
-        pass
-    except ElasticHttpError:
+        es.indices.create(index)
+    except TransportError:
         pass
 
     # clear item of type in document
     try:
-        es.delete_all(index, type)
-    except (ElasticHttpError, ElasticHttpNotFoundError):
+        es.delete_by_query(index=index, doc_type=type, body='{"query":{"match_all":{}}}')
+    except Exception:
         pass
 
+    # https://gist.github.com/jayswan/a8d9920ef74516a02fe1
     # create generator
     def items():
         for item in data:
-            yield es.index_op(item)
+            item['_type'] = type
+            item['_index'] = index
+            yield item
 
-    for chunk in bulk_chunks(items(), docs_per_chunk=500, bytes_per_chunk=10000):
-        try:
-            es.bulk(chunk, doc_type=type, index=index)
-        except BulkError:
-            pass
+    try:
+        helpers.bulk(es, items())
+    except BulkIndexError:
+        pass
 
     # refresh the index
-    es.refresh(index)
+    es.indices.refresh(index=index)
 
     return HttpResponse(status=201)
 

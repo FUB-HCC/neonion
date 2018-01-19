@@ -198,7 +198,8 @@
                 'contextInformation',
                 'visualizeRelationship',
                 'viewerSummarizeStatements',
-                'pointAndLightRelations'
+                'pointAndLightRelations',
+                'wikidataLiveEntitySearch'
             ],
             lookup: {
                 prefix: "/api/es/",

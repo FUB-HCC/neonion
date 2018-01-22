@@ -8,7 +8,7 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$
 
         $scope.systemSettings = systemSettings;
         $scope.annotatorService = AnnotatorService;
-        $scope.conceptSetService = ConceptSetService;
+
         $scope.mode = {
             commenting: {
                 shortCut: "A",
@@ -23,6 +23,9 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$
                 value: Annotator.Plugin.neonion.prototype.annotationModes.conceptTagging
             }
         };
+
+        $scope.conceptSets = ConceptSetService.query();
+
 
         $scope.shortCutModifier = {
             default: {

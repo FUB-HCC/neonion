@@ -20,21 +20,25 @@ wbapi_url_template = "https://www.wikidata.org/w/api.php?format=json&language=en
 types_query_template = 'VALUES ?item {{{}}} . VALUES ?type {{{}}} . ?item wdt:P31/wdt:P279* ?type.'
 
 # insert filtered list of items
-birth_death_query_template = 'VALUES ?item {{{}}} . OPTIONAL {{ ?item wdt:P569 ?birth }} . OPTIONAL {{ ?item wdt:P570 ?death }}'
+birth_death_query_template = 'VALUES ?item {{{}}} . {}'
 
 # regular expression for parsing wikidata xs:dateTime literals
 rx_dateTime = re.compile('^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-2][0-9]:[0-5][0-9]:[0-5][0-9]).*$')
 
-
-#temporal_properties = {
-#        "birth": "P569",
-#        "death": "P570"
-#        }
+# when querying for additional information to render into search result list, we look for these properties
+temporal_properties = {
+        "birth": "P569",
+        "death": "P570"
+        }
 
 
 # render QId list to string with wd: prefix for every ID and space as delimiter
 # (can be used for sparql expression ' VALUES ?item {...} . '
 wd_item_id_list = lambda qids: ' '.join(['wd:' + qid for qid in qids])
+# prepare query components for temporal_properties defined above
+wd_opt_props = ' . '.join(
+        ['OPTIONAL {{ ?item wdt:{} ?{} }}'.format(v, k)
+            for k, v in temporal_properties.items()])
 
 def wbsearchentities(terms, limit=50):
     """Queries Wikidata's Wikibase API endpoint with action wbsearchentities"""
@@ -73,10 +77,12 @@ def validate_item_types(results, concept):
 def add_temporal_data(results):
     """Try to retrieve timespan information like dates of birth and death."""
     # insert item IDs into SPARQL query template (only items of valid type for classifying concept)
+    # insert OPTIONAL clauses matching properties defined above (temporal_properties)
     query = birth_death_query_template.format(
             wd_item_id_list(
                 [k for k,v in results.items() if v.get('valid')]
-                )
+                ),
+            wd_opt_props
             )
     # query WDQS endpoint and retrieve JSON
     data = wiki.sparql(query)
@@ -89,7 +95,7 @@ def add_temporal_data(results):
         # get corresponding entry in results dictionary (key: wd url hindmost segment of path)
         item = results.get(row.get('item', {}).get('value', '').split('/')[-1])
         # parse values for specified properties
-        for prop in ['birth', 'death']:
+        for prop in temporal_properties.keys():
             predicate = row.get(prop, {})
             if predicate.get('datatype') == 'http://www.w3.org/2001/XMLSchema#dateTime' and predicate.get('type') == 'literal':
                 values = rx_dateTime.findall(predicate.get('value', ''))
@@ -105,7 +111,8 @@ mappings = {
         "description" : "descr",
         "concepturi": "uri",
         "repository": None,
-        "title": None
+        "title": None,
+        "match": None
         }
 
 def map_result(item):

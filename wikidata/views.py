@@ -13,8 +13,7 @@ from annotationsets.models import Concept, LinkedConcept
 import wiki
 
 # action, search, limit
-# TODO determine lang parameter based on language of document
-wbapi_url_template = "https://www.wikidata.org/w/api.php?format=json&language=en&uselang=en&{}"
+wbapi_url_template = "https://www.wikidata.org/w/api.php?format=json&{}"
 
 # insert 2 lists of items: instances and types to match against
 types_query_template = 'VALUES ?item {{{}}} . VALUES ?type {{{}}} . ?item wdt:P31/wdt:P279* ?type.'
@@ -40,14 +39,17 @@ wd_opt_props = ' . '.join(
         ['OPTIONAL {{ ?item wdt:{} ?{} }}'.format(v, k)
             for k, v in temporal_properties.items()])
 
-def wbsearchentities(terms, limit=50):
+# TODO determine lang parameter based on language of document
+def wbsearchentities(terms, limit=50, lang='en'):
     """Queries Wikidata's Wikibase API endpoint with action wbsearchentities"""
     res = []
     if terms and len(terms) > 0:
         url = wbapi_url_template.format(urlencode({
             "action": "wbsearchentities",
             "search": terms,
-            "limit": limit
+            "limit": limit,
+            "language": lang,
+            "uselang": lang
             }))
         response = requests.get(url)
         if response.status_code == 200:

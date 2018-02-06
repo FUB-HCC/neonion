@@ -6,22 +6,23 @@ import calendar
 from json import loads
 from os import path
 from bz2 import BZ2File
-from pyelasticsearch import ElasticSearch, bulk_chunks
-from pyelasticsearch.exceptions import BulkError
+from elasticsearch import Elasticsearch, helpers
+from elasticsearch.helpers import BulkIndexError
 
 
 # create generator
-def get_chunks(conn, entries):
+def get_chunks(conn, entries, index, doc_type):
     for entry in entries:
-        yield conn.index_op(entry, overwrite_existing=True)
+        entry['_index'] = index
+        entry['_type'] = doc_type
+        yield entry
 
 
 def bulk_entries(conn, es_index, doc_type, entries):
-    for chunk in bulk_chunks(get_chunks(conn, entries), docs_per_chunk=5000, bytes_per_chunk=10000):
-        try:
-            conn.bulk(chunk, doc_type=doc_type, index=es_index)
-        except BulkError:
-            pass
+    try:
+        helpers.bulk(conn, get_chunks(conn, entries, index, doc_type))
+    except BulkIndexError:
+        pass
 
 
 def import_json_into_es(types, inputfolder, logger):
@@ -33,12 +34,12 @@ def import_json_into_es(types, inputfolder, logger):
     :return:
     """
 
-    es = ElasticSearch(config.ELASTICSEARCH_URL)
+    es = Elasticsearch(config.ELASTICSEARCH_URL)
     es_index = 'wikidata.org'
 
     try:
-        es.delete_index(es_index)
-        es.create_index(es_index)
+        es.indices.delete(es_index)
+        es.indices.create(es_index)
         logger.info('rebuild index [wikidata]')
     except:
         logger.warning('cant delete wikidata index')
@@ -97,7 +98,7 @@ def import_json_into_es(types, inputfolder, logger):
             # release the file handler
             data_file.close()
             # refresh the index
-            es.refresh(es_index)
+            es.indices.refresh(es_index)
 
 
 if __name__ == '__main__':

@@ -198,7 +198,8 @@
                 'contextInformation',
                 'visualizeRelationship',
                 'viewerSummarizeStatements',
-                'pointAndLightRelations'
+                'pointAndLightRelations',
+                'wikidataLiveEntitySearch'
             ],
             lookup: {
                 prefix: "/api/es/",
@@ -857,7 +858,11 @@
 
         formatter: {
             'default': function (value) {
-                return "<span>" + value.label + "</span>";
+                var repr = "<span>" + value.label + "</span>";
+                if (value.descr) {
+                    repr += "<br/><span>" + value.descr + "</span>";
+                }
+                return repr;
             }
         }
 

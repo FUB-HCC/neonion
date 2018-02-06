@@ -16,7 +16,7 @@ from logging.signals import log_document_metadata_request_error
 def upload_file(request):
     document_properties = {}
     document_fields = ["title", "creator", "type", "contributor", "coverage", "description", "format", "identifier",
-                       "language", "publisher", "relation", "rights", "source", "subject"]
+                       "language", "publisher", "relation", "rights", "source", "subject", "concept_set"]
 
     for m in document_fields:
         document_properties[m] = request.POST.get(m, None)  # fetches value or provides default if it does not exist

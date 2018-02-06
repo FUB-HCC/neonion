@@ -63,6 +63,9 @@ class DocumentManager(models.Manager):
 
 
 class Document(ResourceMixin, models.Model):
+
+    concept_set = models.ForeignKey('annotationsets.ConceptSet', on_delete=models.SET_DEFAULT, default='default')
+
     title = models.CharField('name', max_length=500)
     attached_file = models.OneToOneField(File, null=True)
     creator = models.CharField('creator', max_length=500, default='', null=True)

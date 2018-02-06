@@ -9,4 +9,5 @@ neonionApp.factory('ConceptSetService', ['$resource',
                 }
             );
         }]
+
 );

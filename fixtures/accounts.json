@@ -39,7 +39,10 @@
       "is_superuser": true,
       "password": "pbkdf2_sha256$12000$TG8p0bASUBWu$0VvZ5qoawys5kyFogTxRDy4pn33Vv4V/Xot//X9MraU=",
       "email": "neonion-admin@fu-berlin.de",
-      "username": "neonion-admin@fu-berlin.de"
+      "username": "neonion-admin@fu-berlin.de",
+			"owned_documents": [
+				"ac93538cc28a11e4b948c42c0303b893"
+			]
     },
     "model": "accounts.user",
     "pk": 2

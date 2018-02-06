@@ -15,7 +15,7 @@ class FileSerializer(serializers.ModelSerializer):
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
-        fields = ('id', 'uri', 'title', 'created', 'updated', 'workinggroup_set')
+        fields = ('id', 'uri', 'title', 'created', 'updated', 'workinggroup_set', 'concept_set')
 
 
 # Serializers for full document representation representation.
@@ -24,7 +24,7 @@ class DocumentDetailedSerializer(DocumentSerializer):
 
     class Meta:
         model = Document
-        fields = ('id', 'uri', 'title', 'created', 'updated', 'attached_file', 'workinggroup_set')
+        fields = ('id', 'uri', 'title', 'created', 'updated', 'attached_file', 'workinggroup_set', 'concept_set') #'annotation_set_id'
 
 
 # Serializer for user representation.

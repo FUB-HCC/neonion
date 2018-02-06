@@ -26,6 +26,9 @@ urlpatterns = [
     url(r'^documents/', include('documents.urls')),
     url(r'^endpoint/', include('endpoint.urls')),
 
+    # wikidata application
+    url(r'^wikidata/', include('wikidata.urls')),
+
 
     # Django rest
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))

@@ -339,6 +339,7 @@
                 // replace list with spinner while loading
                 list.html(factory.templates.spinner);
 
+                // XXX ufff selection of first linked concept is hard-coded
                 var indexName = factory.getIndexName(concept.linked_concepts[0].endpoint);
                 // lookup resource by search term and provided index
                 this.search(concept.id, searchTerm, indexName)
@@ -386,12 +387,15 @@
             }
         };
 
+
         factory.search = function (type, searchText, index) {
             var url = scope.options.lookup.prefix + scope.options.lookup.urls.search +
                 "/" + encodeURI(index) + "/" + encodeURI(type) + "/" + encodeURI(searchText);
             return $.getJSON(url);
         };
 
+
+        // XXX mystisch
         factory.updateScoreAccordingOccurrence = function (items) {
             var annotations = scope.getAnnotations();
             var occurrence = {};

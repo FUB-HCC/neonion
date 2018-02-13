@@ -2,11 +2,13 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('annotationsets', '0001_initial'),
     ]
 
     operations = [
@@ -33,10 +35,6 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
             ],
-            options={
-                'abstract': False,
-            },
-            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='File',
@@ -49,14 +47,15 @@ class Migration(migrations.Migration):
                 ('origin_url', models.CharField(max_length=500, null=True, verbose_name=b'origin_url')),
                 ('raw_data', models.BinaryField()),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
         migrations.AddField(
             model_name='document',
             name='attached_file',
             field=models.OneToOneField(null=True, to='documents.File'),
-            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='document',
+            name='concept_set',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_DEFAULT, default=b'default', to='annotationsets.ConceptSet'),
         ),
     ]

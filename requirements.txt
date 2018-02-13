@@ -6,4 +6,7 @@ elasticsearch==6.0.0
 enum34==1.0.4
 SPARQLWrapper==1.6.4
 beautifulsoup4==4.3.2
-pywikibot==3.0.dev0
+pywikibot==3.0.20180204
+six==1.10.0
+packaging==16.8
+appdirs==1.4.3

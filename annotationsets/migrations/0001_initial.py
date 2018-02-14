@@ -18,6 +18,10 @@ class Migration(migrations.Migration):
                 ('label', models.CharField(max_length=100, verbose_name=b'label')),
                 ('comment', models.CharField(max_length=500, verbose_name=b'comment', blank=True)),
             ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='ConceptSet',
@@ -25,8 +29,12 @@ class Migration(migrations.Migration):
                 ('id', models.CharField(max_length=50, serialize=False, verbose_name=b'id', primary_key=True)),
                 ('label', models.CharField(max_length=100, verbose_name=b'label')),
                 ('comment', models.CharField(max_length=500, verbose_name=b'comment', blank=True)),
-                ('concepts', models.ManyToManyField(to='annotationsets.Concept', blank=True)),
+                ('concepts', models.ManyToManyField(to='annotationsets.Concept', null=True, blank=True)),
             ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='LinkedConcept',
@@ -36,11 +44,12 @@ class Migration(migrations.Migration):
                 ('comment', models.CharField(max_length=500, verbose_name=b'comment', blank=True)),
                 ('endpoint', models.URLField(max_length=300, null=True, verbose_name=b'endpoint', blank=True)),
                 ('linked_type', models.URLField(max_length=300, verbose_name=b'linked_type')),
-                ('provider_class', models.CharField(max_length=100, null=True, verbose_name=b'provider_class', blank=True)),
-                ('custom_query', models.CharField(max_length=500, null=True, blank=True)),
-                ('retrieved_at', models.DateTimeField(null=True, blank=True)),
-                ('super_types', models.ManyToManyField(related_name='super_types_rel_+', to='annotationsets.LinkedConcept', blank=True)),
+                ('provider_class', models.CharField(max_length=100, verbose_name=b'provider_class')),
             ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='LinkedProperty',
@@ -50,6 +59,10 @@ class Migration(migrations.Migration):
                 ('comment', models.CharField(max_length=500, verbose_name=b'comment', blank=True)),
                 ('linked_property', models.URLField(max_length=300, verbose_name=b'linked_property')),
             ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Property',
@@ -58,18 +71,24 @@ class Migration(migrations.Migration):
                 ('label', models.CharField(max_length=100, verbose_name=b'label')),
                 ('comment', models.CharField(max_length=500, verbose_name=b'comment', blank=True)),
                 ('inverse_property', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='annotationsets.Property', null=True)),
-                ('linked_properties', models.ManyToManyField(to='annotationsets.LinkedProperty', blank=True)),
-                ('range', models.ManyToManyField(to='annotationsets.Concept', blank=True)),
+                ('linked_properties', models.ManyToManyField(to='annotationsets.LinkedProperty', null=True, blank=True)),
+                ('range', models.ManyToManyField(to='annotationsets.Concept', null=True, blank=True)),
             ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
         ),
         migrations.AddField(
             model_name='concept',
             name='linked_concepts',
-            field=models.ManyToManyField(to='annotationsets.LinkedConcept', blank=True),
+            field=models.ManyToManyField(to='annotationsets.LinkedConcept', null=True, blank=True),
+            preserve_default=True,
         ),
         migrations.AddField(
             model_name='concept',
             name='properties',
-            field=models.ManyToManyField(to='annotationsets.Property', blank=True),
+            field=models.ManyToManyField(to='annotationsets.Property', null=True, blank=True),
+            preserve_default=True,
         ),
     ]

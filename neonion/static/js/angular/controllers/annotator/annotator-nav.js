@@ -119,7 +119,7 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$
 
             return ConceptSetService.getDeep({id: conceptSetId},
                 function (conceptSet) {
-                    $scope.conceptSet = conceptSet
+                    $scope.conceptSet = conceptSet;
                 }).$promise;
         };
 
@@ -132,7 +132,7 @@ neonionApp.controller('AnnotatorMenuCtrl', ['$scope', '$window', '$location', '$
                     $scope.conceptSet = conceptSet
                 }).$promise.then(function(data){
                     AnnotatorService.annotator().plugins.neonion.conceptSet($scope.conceptSet.concepts);
-                    $scope.document.$update($scope.return);
+                    //$scope.document.$update($scope.return);
             });
         }
 

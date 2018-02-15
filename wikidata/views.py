@@ -1,3 +1,4 @@
+import os
 import re
 import json
 import requests
@@ -10,6 +11,7 @@ from django.views.decorators.http import require_GET
 
 from annotationsets.models import Concept, LinkedConcept
 
+os.environ["PYWIKIBOT2_NO_USER_CONFIG"] = "1"
 import wiki
 
 # action, search, limit

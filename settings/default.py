@@ -51,7 +51,7 @@ INSTALLED_APPS = (
     'accounts',
     'endpoint',
     'annotationsets',
-    'wikidata',
+    'wikidata'
 )
 
 AUTH_USER_MODEL = 'accounts.User'

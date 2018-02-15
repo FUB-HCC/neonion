@@ -4,8 +4,6 @@ import re as _re
 from datetime import datetime
 
 import pywikibot as _wiki
-print(_wiki.version.getversiondict())
-
 from pywikibot import pagegenerators as pg
 
 from SPARQLWrapper import SPARQLWrapper, JSON
@@ -83,5 +81,5 @@ def sparql(query, limit=500):
 
 
 def query(query):
-    gen = pg.WikidataSPARQLPageGenerator('select ?item where {{{}}}'.format(query))
+    gen = pg.WikidataSPARQLPageGenerator('select ?item where {{{}}}'.format(query), site=_site)
     return [q for q in gen]

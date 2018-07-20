@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+import django
 from django.db import models, migrations
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('annotationsets', '0002_auto_20150818_0905'),
     ]
-
     operations = [
         migrations.CreateModel(
             name='Document',
@@ -32,7 +32,8 @@ class Migration(migrations.Migration):
                 ('subject', models.CharField(default=b'', max_length=200, null=True, verbose_name=b'subject')),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
-            ],
+                ('concept_set', models.ForeignKey(on_delete=django.db.models.deletion.SET_DEFAULT, default="default", to='annotationsets.ConceptSet'))
+    ],
             options={
                 'abstract': False,
             },

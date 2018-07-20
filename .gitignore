@@ -22,3 +22,5 @@ __pycache__
 
 # ignore bash scrips
 *.sh
+
+.DS_Store

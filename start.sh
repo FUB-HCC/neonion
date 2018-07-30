@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "Running the init-scripts"
+python manage.py migrate --noinput
+
 # start Gunicorn processes
 echo "Starting Gunicorn."
 exec gunicorn wsgi_dev:application \

@@ -139,11 +139,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',)
 }
 
-# neonion specific settings
-NEONION_BASE_NAMESPACE = 'http://neonion.org/'
-ELASTICSEARCH_URL = "http://127.0.0.1:9200"
-ELASTICSEARCH_INDEX = "neonion"
-
 # settings for serialization to triple store
 ENDPOINT_ENABLED = False
 ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/neonion'

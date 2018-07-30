@@ -1,14 +1,21 @@
-web:
-  build: .
-  command: python manage.py runserver 0.0.0.0:8000
-  links:
-    - elasticsearch
-  volumes:
-    - ./data:/data
-  ports:
-    - "8000:8000"
+version: '3'
 
-elasticsearch:
-  image: elasticsearch
-  ports:
+services:
+  web:
+    build: .
+    ports:
+    - "8000:8000"
+    volumes:
+    - ./database:/usr/src/app/database
+    links:
+    - elasticsearch
+    depends_on:
+    - elasticsearch
+
+  elasticsearch:
+    image: elasticsearch
+    ports:
     - "9200:9200"
+    - "9300:9300"
+    volumes:
+    - ./database:/usr/share/elasticsearch/data

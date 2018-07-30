@@ -10,9 +10,9 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-# BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-# TODO This is still wrong somehow.
-BASE_DIR = os.path.dirname('/data/')
+
+# on docker, this BASE_DIR resolves to: /usr/src/app
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880
 
@@ -34,7 +34,7 @@ ALLOWED_HOSTS = ['*']
 LOCALE_PATHS = (os.path.join(
     BASE_DIR,
     'templates',
-    'locale',),)
+    'locale', ),)
 
 # Application definition
 
@@ -63,7 +63,7 @@ WSGI_APPLICATION = 'wsgi_dev.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'database', 'db.sqlite3'),
     }
 }
 
@@ -111,21 +111,21 @@ PIPELINE_JS = {
                              'js/angular/lib/angular-filter.min.js', 'js/angular/lib/ng-file-upload-shim.min.js',
                              'js/angular/lib/ng-file-upload.min.js', 'js/bootstrap.min.js'),
         'output_filename':
-        'js/stats.js',
+            'js/stats.js',
     },
     'annotator': {
         'source_filenames':
-        ('js/annotator/annotator.min.js', 'js/annotator.store.min.js', 'js/annotator/annotator.neonion.js',
-         'js/annotator/annotator.neonion.*.js', 'js/annotator/annotator.ner.js', 'js/pdf/pdf.js',
-         'js/pdf/text_layer_builder.js', 'js/pdf/ui_utils.js'),
+            ('js/annotator/annotator.min.js', 'js/annotator.store.min.js', 'js/annotator/annotator.neonion.js',
+             'js/annotator/annotator.neonion.*.js', 'js/annotator/annotator.ner.js', 'js/pdf/pdf.js',
+             'js/pdf/text_layer_builder.js', 'js/pdf/ui_utils.js'),
         'output_filename':
-        'js/annotator.js',
+            'js/annotator.js',
     },
     'angular_app': {
         'source_filenames': ('js/angular/app.js', 'js/angular/filters.js', 'js/angular/components.js',
                              'js/angular/root.js', 'js/angular/services/*.js', 'js/angular/controllers/**/*.js',),
         'output_filename':
-        'js/angular_app.js',
+            'js/angular_app.js',
     }
 }
 
@@ -153,7 +153,7 @@ ENDPOINT_UPDATE = 'http://localhost:8080/openrdf-sesame/repositories/neonion/sta
 NER_SERVICE_ENABLED = False
 NER_SERVICE_URL = 'http://localhost:6000'
 
-#LOGGING_CONFIG
+# LOGGING_CONFIG
 KIBANA_URL = 'http://127.0.0.1:5601'
 USER_LOGGING_ENABLED = False
 LOGGING = {

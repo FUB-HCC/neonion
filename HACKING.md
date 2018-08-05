@@ -52,30 +52,68 @@ For each kind of data, we briefly describe where and how the data is stored.
 
 Document data is stored in sqlite database. The tables are `documents_document` and `documents_file`. Correspondingly in `./documents/models.py`, there are `Document` and `File`. A `File` contains the raw data of the file. A `Document` is used in annotating and contains meta data about the `File` attached, e.g. title, creator, contributor, language, concept set (see also "vocabulary" section), etc.
 
-#### account
+#### account and permission
 
 Account data is stored in sqlite database. The tables are `accounts_*`. Correspondingly in `./accounts/models.py`, there are `User` and `WorkingGroup`.
 
 A User can own a WorkingGroup. A User can have one or more documents.
-A WorkingGroup can have many users as members. The member relationship is defined as `Membership`. A WorkingGroup is tied to a ConceptSet (see "vocabulary" section). This means that a WorkingGroup (their members) can decide and agree on what vocabulary they want to use for annotating.
 
-#### vocabulary: semantic anotation model
+A WorkingGroup can have many users as members. The member relationship is defined as `Membership`. A WorkingGroup is tied to a `ConceptSet` (see "vocabulary" section). This means that a WorkingGroup (their members) can decide and agree on what vocabulary they want to use for annotating.
+A WorkingGroup also have a set of `Document`s that only the group members can access.
+
+#### vocabulary: semantic annotation model
 
 Vocabulary are concepts and properties that are used in semantic annotation, e.g. semantic tagging and semantic linking ([Breitenfeld2018], [Breitenfeld2017]).
 Vocabulary data is stored in sqlite database. The table are `annotationsets_*`.
 Correspondingly in in `./annotationsets/models.py`, there are `Concept`, `Property`, `ConceptSet`, `LinkedConcept`, etc.
 
 A `Concept` can have many `Property`s. A `Property` has a range that can be many `Concept`s.
-In this way, we can express a triple structure: "Subject - Predicate — Object" (SPO). A resource (subject) has a property (predicate) with a value (object). A resource can be identified by semantic tagging.
+In this way, we can express a triple structure: "Subject - Predicate — Object" (SPO) for describing a relationship between a subject and an object.
+(To understand the design of our semantic annotation model, please see our publications for more details)
 
-A `ConcetSet` has one or many concepts associated. This is related to a WorkingGroup such that each group can have its own concepts and properties by that members can use to annotate collaboratively.
+A `ConcetSet` has one or many concepts associated. This is tied to a WorkingGroup such that each group can have its own concepts and properties by that members can use to annotate collaboratively.
 
 A `LinkedConcept` is a concept in then external ontology. At the moment, neonion only support the concept "Person" in Wikidata.
 
 #### annotation
 
 Annotations are highlight, comment and semantic annotation.
-The annotation data is stored in Elasticsearch annotation store.
+While semantic annotation model is stored in a sqlite database, the actual annotation data is stored in Elasticsearch annotation store.
+The annotation extensively uses the functionality provided by the Annotator.js core.
+
+With respect to the data storage, Annotator.js introduces an own annotation format.
+However, at the time of developing neonion, the format is not compliant with the [Open Annotation](http://www.openannotation.org/spec/core/) (OA) data model yet.
+
+It was necessary to design a solution so that the default format and the OA extension can coexist.
+The data structure was embed the entire OA annotation as sub-field in the annotation object.
+Following the recommendation of the OA community, the embedded annotation is stored as JSON-LD (JavaScript Object Notation for Linked Data). For example, relationship annotations were named as Linked Annotations in neonion due to the motivation oa:linking.
+
+The schema can be found in the endpoint by default:
+
+* http://localhost:9200/neonion
+
+The annotation data can be found in the endpoints by default:
+
+* from ElasticSearch store:
+  http://localhost:9200/neonion/_search
+* from neonion endpoint:
+  http://localhost:8000/store/search
+
+The fields related to OA in an annotation mainly contains the following parts:
+
+* `oa`:
+  * `motivatedBy`: possible values are for example, `oa:highlighting` for highlight annotation, `oa:classifying` for identifying (classifying) annotation with a concept, `oa:identifying` for identifying annotation with a concept that is in wikidata (an external knowledge base, a linked data cloud), `oa:linking` for linking relationship between annotations having `oa:classifying` or `oa:identifying` attribute.
+  * `hasBody`: for enriching body
+    * `@id`:
+    * ...
+  * `hasTarget`: for enriching target
+    * `@id`:
+    * `hasSource`:
+    * `hasSelector`:
+    * ...
+
+The fields relate to `permission` are:
+`read`, `update`, `delete`, `admin` for who and which group can access the annotation.
 
 ## How to add a new type of document/annotation?
 

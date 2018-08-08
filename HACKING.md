@@ -115,7 +115,15 @@ The fields related to OA in an annotation mainly contains the following parts:
 The fields relate to `permission` are:
 `read`, `update`, `delete`, `admin` for who and which group can access the annotation.
 
-## How to add a new type of document/annotation?
+## How to add a new type of document?
+
+Currently, neonion support file (pdf, txt, html) as document type. If you want to support image as document type for example, you may investigate in the following places.
+
+* In `documents/views.py`, check the `upload_file` function. In the function, you can find where the document is getting created.
+* In `documents/models.py`, check the `DocumentManager` class. Based on your desired file.content_type, you need to add corresponding parts for creating and handling it. If needed, adapt the `Document` and `File` class.
+* In `documents/views.py`, check the `viewer` function. Based on what you had changed in the `File`, update the part of response, e.g. `str(f.raw_data)` correspondingly.
+
+## How to add a new type of annotation?
 
 ## How to add/change endpoints for the API?
 

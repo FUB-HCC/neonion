@@ -2,6 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_GET
 from django.http import JsonResponse
 from django.http import HttpResponse
+
+from annotationsets.models import ConceptSet
 from documents.models import Document, File
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
@@ -20,6 +22,7 @@ def upload_file(request):
 
     for m in document_fields:
         document_properties[m] = request.POST.get(m, None)  # fetches value or provides default if it does not exist
+    document_properties['concept_set'] = ConceptSet.objects.get(id="default")
 
     for upload_field in request.FILES:
         errors = [];
@@ -33,18 +36,19 @@ def upload_file(request):
             if errors == []:
                 document = Document.objects.create_document_from_file(f, **document_properties)
                 document.save()
- 
+
                 if document is not None:
                     # import document into workspace
                     request.user.owned_documents.add(document)
             else:
-                return render_to_response('base_import.html',{'form' : document_properties,'errors' : errors})
+                return render_to_response('base_import.html', {'form': document_properties, 'errors': errors})
 
     return redirect('/')
 
+
 @login_required
 @require_POST
-def modify_document(request,document_pk):
+def modify_document(request, document_pk):
     document_properties = {}
     document_fields = ["title", "creator", "type", "contributor", "coverage", "description", "format", "identifier",
                        "language", "publisher", "relation", "rights", "source", "subject"]
@@ -63,7 +67,7 @@ def modify_document(request,document_pk):
         if Document.objects.filter(id=document_pk).exists():
             document = Document.objects.get(id=document_pk)
             document.title = document_properties['title']
-            #attached_file = models.OneToOneField(File, null=True)
+            # attached_file = models.OneToOneField(File, null=True)
             document.creator = document_properties['creator']
             document.type = document_properties['type']
             document.contributor = document_properties['contributor']
@@ -79,27 +83,29 @@ def modify_document(request,document_pk):
             document.rights = document_properties['rights']
             document.source = document_properties['source']
             document.subject = document_properties['subject']
-            #created = models.DateTimeField(auto_now_add=True)
-            #updated = models.DateTimeField(auto_now=True)
+            # created = models.DateTimeField(auto_now_add=True)
+            # updated = models.DateTimeField(auto_now=True)
             document.save()
     else:
-        return render_to_response('base_modify.html',{'form' : document_properties,'errors' : errors})
+        return render_to_response('base_modify.html', {'form': document_properties, 'errors': errors})
 
     return redirect('/')
+
 
 @require_GET
 def search_metadata(request, title):
     try:
-        result = requests.get('http://api.crossref.org/works?query.title='+title,timeout=10).json()
+        result = requests.get('http://api.crossref.org/works?query.title=' + title, timeout=10).json()
         document = result['message']['items'][0]
         return JsonResponse(document)
     except requests.Timeout as e:
-        #Logging
+        # Logging
         log_document_metadata_request_error('TIMEOUT: Failed to request metadata from api.crossref.org')
-        return JsonResponse({"error":"Timeout"})
-    except requests.ConnectionError as e:	
+        return JsonResponse({"error": "Timeout"})
+    except requests.ConnectionError as e:
         log_document_metadata_request_error('CONERROR: Failed to connect to api.crossref.org')
-        return JsonResponse({"error":"Connection Error"})
+        return JsonResponse({"error": "Connection Error"})
+
 
 @login_required
 @require_GET

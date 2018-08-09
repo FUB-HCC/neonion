@@ -1,30 +1,14 @@
-FROM ubuntu:14.04
+# FROM directive instructing base image to build upon
+FROM python:2-onbuild
 
-RUN apt-get -y update
-RUN apt-get -y upgrade
-RUN apt-get -y install python2.7 python2.7-dev python-pip
-RUN apt-get -y install ruby
-RUN gem install sass
+# map folder inside docker to outside (VM)
+VOLUME /data
 
-# RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# COPY startup script into known file location in container
+COPY start.sh /start.sh
 
-ENV BASEDIR /src
-ENV CODEDIR $BASEDIR/code
-ENV STATICFILES $CODEDIR/neonion/static/
+# EXPOSE port 8000 to allow communication to/from server
+EXPOSE 8000
 
-COPY . $CODEDIR
-# bugfix for hardcoded urls
-COPY settings/docker.py $CODEDIR/settings/development.py
-
-# install requirements
-RUN /usr/bin/pip install -r ${CODEDIR}/requirements.txt
-
-# build css
-RUN /usr/local/bin/sass $STATICFILES/stylesheets/main.scss $STATICFILES/css/main.css
-
-# init djang
-WORKDIR $CODEDIR
-RUN /usr/bin/python manage.py syncdb --noinput
-RUN /usr/bin/python manage.py loaddata fixtures/*.json
-
-RUN /usr/bin/python manage.py collectstatic --noinput
+# CMD specifies the command to execute to start the server running.
+CMD ["/start.sh"]

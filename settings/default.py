@@ -10,6 +10,8 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
+# on docker, this BASE_DIR resolves to: /usr/src/app
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880
@@ -25,46 +27,29 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'templates'),
-)
+TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
 
 ALLOWED_HOSTS = ['*']
 
-LOCALE_PATHS = (
-    os.path.join(BASE_DIR, 'templates', 'locale',),
-)
+LOCALE_PATHS = (os.path.join(
+    BASE_DIR,
+    'templates',
+    'locale', ),)
 
 # Application definition
 
-INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'pipeline',
-    'neonion',
-    'api',
-    'store',
-    'documents',
-    'accounts',
-    'endpoint',
-    'annotationsets',
-    'wikidata'
-)
+INSTALLED_APPS = ('django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions',
+                  'django.contrib.staticfiles', 'rest_framework', 'pipeline', 'neonion', 'api', 'store', 'documents',
+                  'accounts', 'endpoint', 'annotationsets', 'wikidata')
 
 AUTH_USER_MODEL = 'accounts.User'
 AUTHENTICATION_BACKENDS = ['accounts.backends.EmailAuthBackend']
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
-MIDDLEWARE_CLASSES = (
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
+MIDDLEWARE_CLASSES = ('django.contrib.sessions.middleware.SessionMiddleware',
+                      'django.middleware.common.CommonMiddleware', 'django.middleware.csrf.CsrfViewMiddleware',
+                      'django.contrib.auth.middleware.AuthenticationMiddleware',
+                      'django.middleware.clickjacking.XFrameOptionsMiddleware',)
 
 LOGIN_URL = '/accounts/login'
 
@@ -72,14 +57,13 @@ ROOT_URLCONF = 'neonion.urls'
 
 WSGI_APPLICATION = 'wsgi_dev.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'database', 'db.sqlite3'),
     }
 }
 
@@ -113,83 +97,47 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'pipeline.finders.PipelineFinder',
-    'pipeline.finders.CachedFileFinder',
-)
+STATICFILES_FINDERS = ('django.contrib.staticfiles.finders.FileSystemFinder',
+                       'django.contrib.staticfiles.finders.AppDirectoriesFinder', 'pipeline.finders.PipelineFinder',
+                       'pipeline.finders.CachedFileFinder',)
 # PIPELINE_COMPILERS = (
 #     'pipeline.compilers.sass.SASSCompiler',
 # )
 
-
 PIPELINE_JS = {
     'stats': {
-        'source_filenames': (
-            'js/jquery.min.js',
-            'js/jquery-ui.min.js',
-            'js/angular/lib/angular.min.js',
-            'js/angular/lib/angular-cookies.min.js',
-            'js/angular/lib/angular-resource.min.js',
-            'js/angular/lib/angular-filter.min.js',
-            'js/angular/lib/ng-file-upload-shim.min.js',
-            'js/angular/lib/ng-file-upload.min.js',
-            'js/bootstrap.min.js'
-        ),
-        'output_filename': 'js/stats.js',
+        'source_filenames': ('js/jquery.min.js', 'js/jquery-ui.min.js', 'js/angular/lib/angular.min.js',
+                             'js/angular/lib/angular-cookies.min.js', 'js/angular/lib/angular-resource.min.js',
+                             'js/angular/lib/angular-filter.min.js', 'js/angular/lib/ng-file-upload-shim.min.js',
+                             'js/angular/lib/ng-file-upload.min.js', 'js/bootstrap.min.js'),
+        'output_filename':
+            'js/stats.js',
     },
     'annotator': {
-        'source_filenames': (
-            'js/annotator/annotator.min.js',
-            'js/annotator.store.min.js',
-            'js/annotator/annotator.neonion.js',
-            'js/annotator/annotator.neonion.*.js',
-            'js/annotator/annotator.ner.js',
-            'js/pdf/pdf.js',
-            'js/pdf/text_layer_builder.js',
-            'js/pdf/ui_utils.js'
-        ),
-        'output_filename': 'js/annotator.js',
+        'source_filenames':
+            ('js/annotator/annotator.min.js', 'js/annotator.store.min.js', 'js/annotator/annotator.neonion.js',
+             'js/annotator/annotator.neonion.*.js', 'js/annotator/annotator.ner.js', 'js/pdf/pdf.js',
+             'js/pdf/text_layer_builder.js', 'js/pdf/ui_utils.js'),
+        'output_filename':
+            'js/annotator.js',
     },
     'angular_app': {
-        'source_filenames': (
-            'js/angular/app.js',
-            'js/angular/filters.js',
-            'js/angular/components.js',
-            'js/angular/root.js',
-            'js/angular/services/*.js',
-            'js/angular/controllers/**/*.js',
-        ),
-        'output_filename': 'js/angular_app.js',
+        'source_filenames': ('js/angular/app.js', 'js/angular/filters.js', 'js/angular/components.js',
+                             'js/angular/root.js', 'js/angular/services/*.js', 'js/angular/controllers/**/*.js',),
+        'output_filename':
+            'js/angular_app.js',
     }
 }
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
-    "django.core.context_processors.request",
-    "neonion.processors.system_settings",
-)
-
+TEMPLATE_CONTEXT_PROCESSORS = ("django.contrib.auth.context_processors.auth", "django.core.context_processors.debug",
+                               "django.core.context_processors.i18n", "django.core.context_processors.media",
+                               "django.core.context_processors.static", "django.core.context_processors.tz",
+                               "django.core.context_processors.request", "neonion.processors.system_settings",)
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication'
-    ],
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    )
+    'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.SessionAuthentication'],
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',)
 }
-
-# neonion specific settings
-NEONION_BASE_NAMESPACE = 'http://neonion.org/'
-ELASTICSEARCH_URL = "http://127.0.0.1:9200"
-ELASTICSEARCH_INDEX = "neonion"
 
 # settings for serialization to triple store
 ENDPOINT_ENABLED = False
@@ -200,7 +148,7 @@ ENDPOINT_UPDATE = 'http://localhost:8080/openrdf-sesame/repositories/neonion/sta
 NER_SERVICE_ENABLED = False
 NER_SERVICE_URL = 'http://localhost:6000'
 
-#LOGGING_CONFIG
+# LOGGING_CONFIG
 KIBANA_URL = 'http://127.0.0.1:5601'
 USER_LOGGING_ENABLED = False
 LOGGING = {
@@ -222,7 +170,7 @@ LOGGING = {
         'django': {
             'handlers': ['console'],
             'propagate': True,
-	    'level':'INFO',
+            'level': 'INFO',
         },
         'django.request': {
             'handlers': ['console'],

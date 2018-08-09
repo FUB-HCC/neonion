@@ -20,7 +20,4 @@ __pycache__
 .coverage
 /htmlcov
 
-# ignore bash scrips
-*.sh
-
 .DS_Store

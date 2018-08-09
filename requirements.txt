@@ -10,3 +10,4 @@ pywikibot==3.0.20180204
 six==1.10.0
 packaging==16.8
 appdirs==1.4.3
+gunicorn==19.6.0

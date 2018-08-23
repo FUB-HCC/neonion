@@ -112,6 +112,8 @@ The fields related to OA in an annotation mainly contains the following parts:
     * `hasSelector`:
     * ...
 
+You can find this information in `store/views.py`, in the class `AnnotationListView`.
+
 The fields relate to `permission` are:
 `read`, `update`, `delete`, `admin` for who and which group can access the annotation.
 
@@ -124,6 +126,192 @@ Currently, neonion support file (pdf, txt, html) as document type. If you want t
 * In `documents/views.py`, check the `viewer` function. Based on what you had changed in the `File`, update the part of response, e.g. `str(f.raw_data)` correspondingly.
 
 ## How to add a new type of annotation?
+
+Depends on what kinds of annotation you want to create, preferably using a suitable type recommended by [OA] and adapt it in `oa`. Assumingly we want to describe something, we can therefore use `oa:describing` as motiviation. We here briefly demonstate how to base on the existing Comment annotation type and extend it to a Describing type of annotation.
+We show here some example code snippets.
+
+* in `neonion/static/js/angular/controllers/annotator/annotator-nav.js`, add describing annotation mode:
+
+```javascript
+$scope.mode = {
+	commenting: {
+		shortCut: 'A',
+		value: Annotator.Plugin.neonion.prototype.annotationModes.commenting
+	},
+	// ...
+	describing: {
+		shortCut: 'F',
+		value: Annotator.Plugin.neonion.prototype.annotationModes.describing
+	}
+};
+```
+
+* in `neonion/static/js/angular/controllers/annotations/annotation-list.js`:
+
+```javascript
+$scope.filterDescribingAnnotations = function(annotation) {
+	if (CommonService.filter.query.length > 0) {
+		var show = $scope.filterCommonFields(annotation);
+		show |= annotation.text.toLowerCase().indexOf(CommonService.filter.query.toLowerCase()) != -1;
+		return show;
+	}
+	return true;
+};
+```
+
+* in `neonion/static/js/angular/filters.js`,
+
+```javascript
+.filter('filterByDescribingAnnotation', function () {
+  return function (annotations) {
+    if (!angular.isUndefined(annotations)) {
+        return annotations.filter(function (value) {
+            return (value['oa']['motivatedBy'] == "oa:describing");
+        });
+    }
+    else {
+        return [];
+    }
+  };
+})
+```
+
+* in `neonion/static/js/annotator/annotator.neonion.js`,
+
+```javascript
+this.initEditorField = function() {
+	$('.annotator-editor').append(this.templates.editorLine);
+	// create a mapping from motivation to editor field
+	var mapping = {};
+	mapping[this.oa.motivation.commenting] = this.initCommentField();
+	mapping[this.oa.motivation.describing] = this.initCommentField();
+	return mapping;
+};
+```
+
+```javascript
+// ...
+
+  annotationModes: {
+    commenting: 1,
+    // ...
+    describing:5
+  },
+// ...
+```
+
+```javascript
+// stub representing a description
+    createDescribeAnnotationStub: function () {
+      return $.extend(true, Annotator.Plugin.neonion.prototype.oa.stubs.createHighlightAnnotationStub(),
+        {
+          "motivatedBy": "oa:describing",
+          "hasBody": {
+              "@type": ["dctypes:Text", "cnt:ContentAsText"],
+              "chars": ""
+          }
+        });
+    },
+// ...
+```
+
+```javascript
+// prepare annotation according current annotation mode
+switch (this.editorState.annotationMode) {
+	case this.annotationModes.conceptTagging:
+		// ...
+		break;
+	case this.annotationModes.describing:
+		annotation['oa'] = this.oa.stubs.createDescribeAnnotationStub();
+		break;
+	case this.annotationModes.commenting:
+		annotation['oa'] = this.oa.stubs.createCommentAnnotationStub();
+		break;
+	//...
+}
+```
+
+```javascript
+// annotation editor textarea
+  annotationEditorShown: function (editor, annotation) {
+      // ...
+      switch (annotation['oa']['motivatedBy']) {
+          case this.oa.motivation.commenting:
+              // ...
+              break
+          case this.oa.motivation.describing:
+              if (!annotation.hasOwnProperty("text")) {
+                  $(field)
+                      .find("textarea")
+                      .val(annotation.quote)
+                      .select();
+              }
+              break
+        // ...
+      }
+  }
+```
+
+* in `neonion/static/partials/annotation-list.html`, add an additional tab called "Describing" in Annotation section for listing the created describing annotations.
+
+```html
+<li ng-class="{active:tab===4}">
+  <a href="" ng-click="tab = 4">Describing</a>
+</li>
+```
+
+```html
+<div ng-switch-when="4">
+  <ng-include src="'/static/partials/annotations/describing-list.html'"></ng-include>
+</div>
+```
+
+* For the annotating page having a describing mode to switch on, in `neonion/static/partials/annotator/annotator-navigation.html`,
+
+```html
+<li class="dropdown-item" ng-click="setAnnotationMode(mode.describing.value)">
+    <a>
+        <i class="fa fa-check fa-fw" ng-class="{invisible: getAnnotationMode()!==mode.describing.value}"></i><span>Describing<small>{{ shortCutModifier.default.modifierText + mode.describing.shortCut }}</small></span>
+        <div class="dropdown-item-color annotator-hl-describing"></div>
+    </a>
+</li>
+<li class="dropdown-item" ng-click="setAnnotationMode(mode.commenting.value)">
+```
+
+* in `neonion/static/partials/annotations/describing-list.html`, copy the code in `neonion/static/partials/annotations/comment-list.html` and change parts for describing, e.g.
+
+```html
+...
+<div ng-repeat="(documentKey, annotationByDocument) in annotations | filterByDescribingAnnotation | filter:filterDescribingAnnotations | groupBy: 'uri'">
+...
+</div>
+...
+```
+
+* in `neonion/static/js/angular/services/annotator.js`, color for the describing annotation.
+
+```javascript
+switch (annotation['oa']['motivatedBy']) {
+	// ...
+	case Annotator.Plugin.neonion.prototype.oa.motivation.commenting:
+		hlClass = 'annotator-hl-comment';
+		break;
+	case Annotator.Plugin.neonion.prototype.oa.motivation.describing:
+		hlClass = 'annotator-hl-describing';
+		break;
+	// ...
+}
+```
+
+* in `neonion/static/main.css`, for the new describing annotation styling and color,
+
+```css
+.annotator-hl-describing {
+	background-color: rgba(103, 140, 120, 0.4);
+}
+```
+
+_(for this exercise example, you can find the code in here [add-describing-annotation-type](https://github.com/mingtung/neonion/tree/add-describing-annotation-type))_
 
 ## How to add/change endpoints for the API?
 

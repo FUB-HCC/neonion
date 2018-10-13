@@ -1,15 +1,121 @@
 # Preparations
 
-Run neonion followed the instructions in README, therefore here we assume that the application runs on http://localhost:8000.
+Run neonion followed the instructions in README, therefore here we assume that the django application runs on http://localhost:8000, Elasticsearch store runs on http://localhost:9200.
 
-# REST APIs
+# APIs
 
-All of the APIs are routed by django rest_framework.
+All of the APIs in django are routed by django rest_framework.
 Currently, the APIs only support for getting data. They are not supporting create, update, delete data. It is currently not possible to get data by some kind of parameters (e.g. id(s), key(s)) either. They simple returns all the data at the specific kinds the endpoint.
 
 ## Annotation
 
-### Get all annotaions
+### Get all annotations from (1) elasticsearch store
+
+**URL**: `http://localhost:9200/neonion/_search`
+
+**Method**: `GET`
+
+**Return**: a JSON containing all the annotations
+
+Sample JSON response:
+By running `curl http://localhost:9200/neonion/_search` in command line,
+
+```json
+{
+	"took": 94,
+	"timed_out": false,
+	"_shards": {
+		"total": 5,
+		"successful": 5,
+		"skipped": 0,
+		"failed": 0
+	},
+	"hits": {
+		"total": 2,
+		"max_score": 1,
+		"hits": [
+			{...},
+			{
+				"_index": "neonion",
+				"_type": "annotation",
+				"_id": "65d54678ced911e8bd1e0242ac120003",
+				"_score": 1,
+				"_source": {
+					"updated": "2018-10-13T11:16:14.651621",
+					"created": "2018-10-13T11:16:14.651621",
+					"quote": "cratic Nation",
+					"uri": "ac93538cc28a11e4b948c42c0303b893",
+					"oa": {
+						"annotatedBy": {
+							"mbox": {
+								"@id": "mailto:neonion-admin@fu-berlin.de"
+							},
+							"@id": "http://neonion.org/user/a1b94e3b42e25e09bdd55788304ce428",
+							"@type": "foaf:person"
+						},
+						"motivatedBy": "oa:highlighting",
+						"annotatedAt": "2018-10-13T11:16:14.539Z",
+						"hasTarget": {
+							"@id": "urn:uuid:65d585f2ced911e8bd1e0242ac120003",
+							"hasSelector": {
+								"conformsTo": "http://tools.ietf.org/rfc/rfc3778",
+								"@id": "urn:uuid:65d5f492ced911e8bd1e0242ac120003",
+								"@type": "oa:FragmentSelector",
+								"value":
+									"#page=1&highlight=0.07797897196261683,1,0.002242152466367713,0.998704534130543"
+							},
+							"@type": "oa:SpecificResource",
+							"hasSource": {
+								"@id": "http://neonion.org/document/ac93538cc28a11e4b948c42c0303b893",
+								"@type": "dctypes:Text"
+							}
+						},
+						"@context": ["http://neonion.org/ns/neonion-context.jsonld"],
+						"@id": "http://neonion.org/annotation/65d58476ced911e8bd1e0242ac120003",
+						"@type": "oa:Annotation"
+					},
+					"id": "65d54678ced911e8bd1e0242ac120003",
+					"ranges": [
+						{
+							"start": "/div[1]/p[1]",
+							"end": "/div[1]/p[1]",
+							"startOffset": 154,
+							"endOffset": 167
+						}
+					],
+					"text": "",
+					"neonion": {
+						"context": {
+							"normalizedHighlights": [
+								{
+									"width": 0.16369742990654207,
+									"top": 0.002242152466367713,
+									"height": 0.0009466865969108122,
+									"left": 0.07797897196261683
+								}
+							],
+							"pageIdx": 0,
+							"surrounding": {
+								"right": "al Committee (DNC) headquarters at the Watergate office complex in",
+								"left": "in the 1970s as a result of the June 17, 1972, break-in at the Demo"
+							}
+						},
+						"creator": "neonion-admin@fu-berlin.de"
+					},
+					"permissions": {
+						"read": ["neonion-admin@fu-berlin.de"],
+						"admin": ["neonion-admin@fu-berlin.de"],
+						"update": ["neonion-admin@fu-berlin.de"],
+						"delete": ["neonion-admin@fu-berlin.de"]
+					}
+				}
+			}
+		]
+	}
+}
+```
+
+### Get all annotaions from (2) django application
 
 **URL**: `http://localhost:8000/store/search`
 

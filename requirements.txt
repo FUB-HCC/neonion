@@ -1,4 +1,4 @@
-Django==1.7
+Django==1.8.18
 Flask==0.10.1
 Jinja2==2.7.3
 Mako==1.0.0
@@ -28,7 +28,7 @@ pyelasticsearch==0.7.1
 pyparsing==2.0.3
 python-slugify==0.1.0
 rdflib==4.1.2
-requests==2.4.3
+requests==2.20.0
 simplejson==3.6.4
 six==1.8.0
 static3==0.5.1

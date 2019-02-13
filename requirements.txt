@@ -1,7 +1,7 @@
-Django==1.8
+Django==1.8.18
 djangorestframework==3.2.3
 django-pipeline==1.5.1
-requests==2.4.3
+requests==2.20.0
 elasticsearch==6.0.0
 enum34==1.0.4
 SPARQLWrapper==1.6.4
